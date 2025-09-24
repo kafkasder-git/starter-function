@@ -32,7 +32,7 @@ jobs:
       - name: Run ESLint
         run: |
           echo "🔍 Running ESLint..."
-          npm run lint > eslint-results.json || true
+          npm run lint:check > eslint-results.json || true
           echo "ESLint check completed"
 
       - name: Analyze code quality metrics

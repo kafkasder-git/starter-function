@@ -122,3 +122,6 @@ vi.mock('sonner', () => ({
   },
   Toaster: vi.fn(() => null),
 }));
+
+// Export test utilities
+export { createMockKumbara, createMockQRData, createMockCollection, createMockUser, createMockBeneficiary, waitFor } from './utils';

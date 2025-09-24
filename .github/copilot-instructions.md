@@ -6,7 +6,7 @@ This is a **Dernek Yönetim Sistemi** (Association Management System) - a modern
 
 ### Core Stack
 - **Frontend**: React 18 + TypeScript + Vite + SWC
-- **Backend**: Supabase (auth, database, real-time)  
+- **Backend**: Supabase (auth, database, real-time)
 - **State**: Zustand stores + React Context providers
 - **UI**: Radix UI components + Tailwind CSS
 - **Build**: Vite with PWA support, Sentry monitoring
@@ -17,8 +17,17 @@ This is a **Dernek Yönetim Sistemi** (Association Management System) - a modern
 All business logic lives in `services/` using inheritance from `BaseService<T>`:
 
 ```typescript
-// Example: All services extend BaseService with consistent pagination, delay simulation
-abstract class BaseService<T extends BaseEntity, TInsert, TUpdate, TFilters>
+// services/baseService.ts - Abstract base class for all services
+export abstract class BaseService<
+  T extends BaseEntity,
+  TInsert,
+  TUpdate,
+  TFilters extends BaseFilters = BaseFilters,
+> {
+  protected delay(ms: number = SERVICE_CONFIG.DEFAULT_DELAY_MS): Promise<void>
+  protected paginateResults<TData>(data: TData[], page: number, pageSize: number): PaginatedResponse<TData>
+  protected applySearchFilter(data: T[], searchTerm: string, searchFields: (keyof T)[]): T[]
+}
 ```
 
 Key services: `membersService`, `donationsService`, `beneficiariesService`, `aidRequestsService`
@@ -28,11 +37,17 @@ Key services: `membersService`, `donationsService`, `beneficiariesService`, `aid
 - **Zustand Stores**: UI state (`uiStore`), complex client state
 - **Pattern**: Use contexts for auth/user data, stores for UI/app state
 
+```typescript
+// Pattern: Auth state via context, UI state via store
+const { user, isAuthenticated } = useSupabaseAuth(); // Context
+const { sidebarCollapsed, setSidebarCollapsed } = useUIStore(); // Zustand store
+```
+
 ### Component Organization
 ```
 components/
 ├── [feature]/          # Feature-specific (beneficiary/, auth/, etc.)
-├── [utility]/          # Cross-cutting (ui/, utils/, accessibility/)  
+├── [utility]/          # Cross-cutting (ui/, utils/, accessibility/)
 └── [layout]/           # Layout components (Header, Sidebar, PageLayout)
 ```
 
@@ -48,7 +63,7 @@ Centralized AI provider in `components/ai/EnhancedAIProvider.tsx`:
 ### Environment Setup
 ```bash
 npm run dev          # Development server with HMR
-npm run build       # TypeScript check + Vite build  
+npm run build       # TypeScript check + Vite build
 npm run preview     # Preview production build
 npm run lint:fix    # ESLint with auto-fix
 ```
@@ -74,12 +89,12 @@ if (isSupabaseConfigured) {
 
 ### Turkish Language Support
 This is a Turkish application (`lang: 'tr'` in manifest):
-- UI text in Turkish  
+- UI text in Turkish
 - Date/number formatting for Turkish locale
 - AI prompts optimized for Turkish context
 - Comments can be in English, but user-facing text in Turkish
 
-### Mobile-First Responsive Design  
+### Mobile-First Responsive Design
 Mobile optimization is critical:
 - `components/mobile/` for mobile-specific components
 - `hooks/useMobileForm.ts`, `useTouchDevice.ts` for mobile interactions
@@ -93,7 +108,7 @@ Mobile optimization is critical:
 
 ### Data Flow Architecture
 1. **Services** handle all external API calls (Supabase/mock data)
-2. **Hooks** (`hooks/`) provide React integration for services  
+2. **Hooks** (`hooks/`) provide React integration for services
 3. **Stores** manage client-side state with persistence
 4. **Components** consume via hooks, never directly call services
 
@@ -106,7 +121,7 @@ const { user, isAuthenticated, signIn, signOut } = useSupabaseAuth();
 ```
 
 ### Data Fetching Pattern
-```typescript  
+```typescript
 // Pattern: Services return consistent ApiResponse<T> format
 const response = await membersService.getMembers(filters);
 if (response.success) {
@@ -123,6 +138,33 @@ const { generateContent, trackAIUsage } = useAI();
 const response = await generateContent(prompt, { language: 'tr' });
 ```
 
+### Validation Pattern
+```typescript
+// Pattern: Use centralized validation utilities
+import { VALIDATION_PATTERNS, sanitizeInput } from '@/lib/validation';
+
+// Turkish phone validation, IBAN validation, etc.
+const isValidPhone = VALIDATION_PATTERNS.phone.test(phoneNumber);
+const sanitizedInput = sanitizeInput.html(userInput);
+```
+
+### PWA Configuration
+```typescript
+// vite.config.ts - Extensive PWA setup with Turkish shortcuts
+VitePWA({
+  manifest: {
+    name: 'Dernek Yönetim Sistemi',
+    short_name: 'DernekYS',
+    lang: 'tr',
+    shortcuts: [
+      { name: 'Yardım Başvuruları', url: '/#/yardim/basvurular' },
+      { name: 'Bağış Kaydet', url: '/#/bagis/yeni' },
+      // ... more Turkish shortcuts
+    ]
+  }
+})
+```
+
 ## Development Commands & Debugging
 
 ### Essential Commands
@@ -135,5 +177,16 @@ const response = await generateContent(prompt, { language: 'tr' });
 - Use React DevTools for Zustand store inspection
 - Sentry captures errors in production - check dashboard
 - AI usage tracking available in browser DevTools under "AI"
+
+### Build Configuration
+- **Path aliases**: `@/*` maps to `./` (configured in `tsconfig.json`)
+- **PWA**: Extensive offline support with service worker
+- **Bundle analysis**: `npm run analyze` generates visual bundle report
+- **Sentry**: Error monitoring with source maps (commented out in config)
+
+### Testing Strategy
+- **Vitest**: Modern testing framework with UI mode
+- **Coverage**: `npm run test:coverage` for detailed reports
+- **Service mocking**: All services support mock data fallback
 
 Remember: This codebase prioritizes **Turkish language support**, **mobile responsiveness**, and **graceful degradation** when external services (Supabase) are unavailable.

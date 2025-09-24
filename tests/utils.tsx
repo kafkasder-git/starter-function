@@ -3,9 +3,8 @@ import React from 'react';
 import type { RenderOptions } from '@testing-library/react';
 import { render } from '@testing-library/react';
 import { vi } from 'vitest';
-import { SupabaseAuthProvider } from '../../contexts/SupabaseAuthContext';
-import { NotificationProvider } from '../../contexts/NotificationContext';
-import { ToastProvider } from '../../components/ToastProvider';
+// import { SupabaseAuthProvider } from '../../contexts/SupabaseAuthContext';
+// import { ToastProvider } from '../../components/ToastProvider';
 
 // Mock Supabase client for testing
 const mockSupabaseClient = {
@@ -62,18 +61,60 @@ export const createMockBeneficiary = (overrides = {}) => ({
   ...overrides,
 });
 
-export const createMockDonation = (overrides = {}) => ({
-  id: '1',
-  donorName: 'Test Donor',
-  amount: 1000,
-  donationType: 'money',
-  paymentMethod: 'credit_card',
+export const createMockKumbara = (overrides = {}) => ({
+  id: 'kumbara-123',
+  code: 'KMB-001',
+  name: 'Test Kumbara',
+  location: 'Test Location',
+  address: 'Test Address 123',
+  status: 'active' as const,
+  installDate: new Date().toISOString(),
+  lastCollection: null,
+  totalAmount: 1500,
+  monthlyAverage: 125,
+  qrCode: 'KMB-001-QR',
+  contactPerson: 'Test Person',
+  phone: '05551234567',
+  notes: 'Test notes',
+  coordinates: {
+    lat: 41.0082,
+    lng: 28.9784,
+  },
   created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString(),
+  created_by: 'user-123',
+  ...overrides,
+});
+
+export const createMockQRData = (overrides = {}) => ({
+  code: 'KMB-001',
+  name: 'Test Kumbara',
+  location: 'Test Location',
+  amount: 1500,
+  lastCollection: new Date().toISOString(),
+  contactPerson: 'Test Person',
+  phone: '05551234567',
+  ...overrides,
+});
+
+export const createMockCollection = (overrides = {}) => ({
+  id: 'collection-123',
+  kumbara_id: 'kumbara-123',
+  collection_date: new Date().toISOString(),
+  amount: 500,
+  currency: 'TRY',
+  collector_name: 'Test Collector',
+  collector_id: 'user-123',
+  notes: 'Test collection',
+  collection_method: 'scheduled' as const,
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString(),
+  created_by: 'user-123',
   ...overrides,
 });
 
 // Utility functions for testing
-export const waitForLoadingToFinish = () => new Promise((resolve) => setTimeout(resolve, 0));
+export const waitFor = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const mockLocalStorage = () => {
   const store: Record<string, string> = {};

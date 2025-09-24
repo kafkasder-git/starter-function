@@ -252,6 +252,37 @@ export function cleanup(): void {
   store.destroy();
 }
 
-// Export rate limit configurations for external use
-export type { RateLimitConfig };
-export { defaultConfigs };
+// Rate Limiter class for testing
+export class RateLimiter {
+  private static attempts = new Map<string, { count: number; resetTime: number }>();
+
+  static checkLimit(userId: string, maxAttempts: number = 5, windowMs: number = 15 * 60 * 1000): boolean {
+    const key = userId;
+    const now = Date.now();
+
+    let entry = this.attempts.get(key);
+    if (!entry || now > entry.resetTime) {
+      entry = { count: 0, resetTime: now + windowMs };
+    }
+
+    entry.count++;
+    this.attempts.set(key, entry);
+
+    return entry.count <= maxAttempts;
+  }
+
+  static getRemainingAttempts(userId: string, maxAttempts: number = 5): number {
+    const entry = this.attempts.get(userId);
+    if (!entry) return maxAttempts;
+    return Math.max(0, maxAttempts - entry.count);
+  }
+
+  static resetAttempts(userId: string): void {
+    this.attempts.delete(userId);
+  }
+
+  static getResetTime(userId: string): number | null {
+    const entry = this.attempts.get(userId);
+    return entry ? entry.resetTime : null;
+  }
+}

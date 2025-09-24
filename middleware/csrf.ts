@@ -1,4 +1,3 @@
-import type { NextRequest } from 'next/server';
 import crypto from 'crypto';
 
 // CSRF token store (in production, use Redis or database)
@@ -35,6 +34,15 @@ class CSRFTokenStore {
     this.store.delete(key);
   }
 
+  // Add method to revoke all tokens for a user
+  revokeUserTokens(userId: string): void {
+    for (const [token, entry] of this.store.entries()) {
+      if (entry.userId === userId) {
+        this.store.delete(token);
+      }
+    }
+  }
+
   private cleanup(): void {
     const now = Date.now();
     for (const [key, entry] of this.store.entries()) {
@@ -54,7 +62,10 @@ const tokenStore = new CSRFTokenStore();
 
 // Generate a secure random token
 function generateToken(): string {
-  return crypto.randomBytes(32).toString('hex');
+  // Use web crypto API for compatibility
+  const array = new Uint8Array(32);
+  crypto.getRandomValues(array);
+  return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
 }
 
 // Extract user ID from JWT token
@@ -90,7 +101,7 @@ export function generateCSRFToken(userId: string): string {
 }
 
 // Validate CSRF token
-export async function validateCSRF(request: NextRequest): Promise<boolean> {
+export async function validateCSRF(request: Request): Promise<boolean> {
   try {
     // Skip CSRF validation for safe methods
     if (['GET', 'HEAD', 'OPTIONS'].includes(request.method)) {
@@ -156,7 +167,7 @@ export async function validateCSRF(request: NextRequest): Promise<boolean> {
 }
 
 // Validate CSRF token with additional security checks
-export async function validateCSRFStrict(request: NextRequest): Promise<boolean> {
+export async function validateCSRFStrict(request: Request): Promise<boolean> {
   const isValid = await validateCSRF(request);
 
   if (!isValid) {
@@ -217,11 +228,7 @@ export function revokeCSRFToken(token: string): void {
 
 // Revoke all CSRF tokens for a user
 export function revokeUserCSRFTokens(userId: string): void {
-  for (const [token, entry] of tokenStore.store.entries()) {
-    if (entry.userId === userId) {
-      tokenStore.delete(token);
-    }
-  }
+  tokenStore.revokeUserTokens(userId);
 }
 
 // Get CSRF token info
@@ -240,14 +247,47 @@ export function getCSRFTokenInfo(token: string): CSRFTokenEntry | null {
   return entry;
 }
 
-// Cleanup function for graceful shutdown
-export function cleanup(): void {
-  tokenStore.destroy();
+// CSRF Protection class for testing
+export class CSRFProtection {
+  private static tokens = new Map<string, { token: string; userId: string; expiresAt: number }>();
+
+  static generateToken(userId: string): string {
+    const token = generateToken();
+    const expiresAt = Date.now() + 2 * 60 * 60 * 1000; // 2 hours
+
+    this.tokens.set(token, { token, userId, expiresAt });
+    return token;
+  }
+
+  static validateToken(token: string, userId: string): boolean {
+    const entry = this.tokens.get(token);
+    if (!entry) return false;
+
+    if (Date.now() > entry.expiresAt) {
+      this.tokens.delete(token);
+      return false;
+    }
+
+    return entry.userId === userId;
+  }
+
+  static cleanExpiredTokens(): void {
+    const now = Date.now();
+    for (const [token, entry] of this.tokens.entries()) {
+      if (now > entry.expiresAt) {
+        this.tokens.delete(token);
+      }
+    }
+  }
+
+  static revokeToken(token: string): void {
+    this.tokens.delete(token);
+  }
 }
 
 // CSRF middleware for API routes
-export function withCSRF(handler: (request: NextRequest, ...args: unknown[]) => Promise<Response>) {
-  return async (request: NextRequest, ...args: unknown[]) => {
+export function withCSRF(handler: (request: Request, ...args: unknown[]) => Promise<Response>) {
+  return async (request: Request, ...args: unknown[]) => {
     const isValid = await validateCSRF(request);
 
     if (!isValid) {
@@ -263,9 +303,9 @@ export function withCSRF(handler: (request: NextRequest, ...args: unknown[]) => 
 
 // CSRF middleware with strict validation
 export function withCSRFStrict(
-  handler: (request: NextRequest, ...args: unknown[]) => Promise<Response>,
+  handler: (request: Request, ...args: unknown[]) => Promise<Response>,
 ) {
-  return async (request: NextRequest, ...args: unknown[]) => {
+  return async (request: Request, ...args: unknown[]) => {
     const isValid = await validateCSRFStrict(request);
 
     if (!isValid) {

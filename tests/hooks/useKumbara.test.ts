@@ -7,17 +7,42 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useKumbara, useKumbaraDashboard, useKumbaraDetail } from '../../hooks/useKumbara';
 import kumbaraService from '../../services/kumbaraService';
 import type { KumbaraFilters, KumbaraInsert, KumbaraUpdate } from '../../types/kumbara';
-import testUtils from '../setup';
+import { createMockKumbara, createMockCollection } from '../utils';
 
 // Mock the service
-vi.mock('../../services/kumbaraService');
-vi.mock('sonner', () => ({
-  toast: {
-    success: vi.fn(),
-    error: vi.fn(),
-    info: vi.fn(),
+vi.mock('../../services/kumbaraService', () => ({
+  kumbaraService: {
+    getKumbaras: vi.fn(),
+    createKumbara: vi.fn(),
+    updateKumbara: vi.fn(),
+    deleteKumbara: vi.fn(),
+    getKumbara: vi.fn(),
+    getCollections: vi.fn(),
+    recordCollection: vi.fn(),
+    validateKumbaraData: vi.fn(),
+    exportKumbaras: vi.fn(),
+    getDashboardStats: vi.fn(),
+    getKumbaraAlerts: vi.fn(),
+    acknowledgeAlert: vi.fn(),
+  },
+  default: {
+    getKumbaras: vi.fn(),
+    createKumbara: vi.fn(),
+    updateKumbara: vi.fn(),
+    deleteKumbara: vi.fn(),
+    getKumbara: vi.fn(),
+    getCollections: vi.fn(),
+    recordCollection: vi.fn(),
+    validateKumbaraData: vi.fn(),
+    exportKumbaras: vi.fn(),
+    getDashboardStats: vi.fn(),
+    getKumbaraAlerts: vi.fn(),
+    acknowledgeAlert: vi.fn(),
   },
 }));
+
+// Get the mocked service using vi.mocked
+const mockedKumbaraService = vi.mocked((await import('../../services/kumbaraService')).default);
 
 describe('useKumbara Hook', () => {
   beforeEach(() => {
@@ -45,8 +70,8 @@ describe('useKumbara Hook', () => {
     });
 
     it('should auto-fetch data when autoFetch is true', async () => {
-      const mockKumbaras = [testUtils.createMockKumbara()];
-      vi.mocked(kumbaraService.getKumbaras).mockResolvedValue({
+      const mockKumbaras = [createMockKumbara()];
+      mockedKumbaraService.getKumbaras.mockResolvedValue({
         kumbaras: mockKumbaras,
         total_count: 1,
         page: 1,
@@ -61,24 +86,24 @@ describe('useKumbara Hook', () => {
         expect(result.current.kumbaras).toEqual(mockKumbaras);
       });
 
-      expect(kumbaraService.getKumbaras).toHaveBeenCalledWith({});
+      expect(mockedKumbaraService.getKumbaras).toHaveBeenCalledWith({});
     });
 
     it('should not auto-fetch when autoFetch is false', () => {
       renderHook(() => useKumbara({ autoFetch: false }));
 
-      expect(kumbaraService.getKumbaras).not.toHaveBeenCalled();
+      expect(mockedKumbaraService.getKumbaras).not.toHaveBeenCalled();
     });
   });
 
   describe('fetchKumbaras', () => {
     it('should fetch kumbaras successfully', async () => {
       const mockKumbaras = [
-        testUtils.createMockKumbara({ id: '1' }),
-        testUtils.createMockKumbara({ id: '2' }),
+        createMockKumbara({ id: '1' }),
+        createMockKumbara({ id: '2' }),
       ];
 
-      vi.mocked(kumbaraService.getKumbaras).mockResolvedValue({
+      mockedKumbaraService.getKumbaras.mockResolvedValue({
         kumbaras: mockKumbaras,
         total_count: 2,
         page: 1,
@@ -100,7 +125,7 @@ describe('useKumbara Hook', () => {
 
     it('should handle fetch errors', async () => {
       const errorMessage = 'Network error';
-      vi.mocked(kumbaraService.getKumbaras).mockRejectedValue(new Error(errorMessage));
+      mockedKumbaraService.getKumbaras.mockRejectedValue(new Error(errorMessage));
 
       const { result } = renderHook(() => useKumbara({ autoFetch: false }));
 
@@ -119,7 +144,7 @@ describe('useKumbara Hook', () => {
         search_term: 'test',
       };
 
-      vi.mocked(kumbaraService.getKumbaras).mockResolvedValue({
+      mockedKumbaraService.getKumbaras.mockResolvedValue({
         kumbaras: [],
         total_count: 0,
         page: 1,
@@ -134,7 +159,7 @@ describe('useKumbara Hook', () => {
         await result.current.fetchKumbaras(customFilters);
       });
 
-      expect(kumbaraService.getKumbaras).toHaveBeenCalledWith(customFilters);
+      expect(mockedKumbaraService.getKumbaras).toHaveBeenCalledWith(customFilters);
     });
 
     it('should set loading state correctly', async () => {
@@ -143,7 +168,7 @@ describe('useKumbara Hook', () => {
         resolvePromise = resolve;
       });
 
-      vi.mocked(kumbaraService.getKumbaras).mockReturnValue(promise as any);
+      mockedKumbaraService.getKumbaras.mockReturnValue(promise as any);
 
       const { result } = renderHook(() => useKumbara({ autoFetch: false }));
 
@@ -182,13 +207,13 @@ describe('useKumbara Hook', () => {
         created_by: 'test-user',
       };
 
-      const createdKumbara = testUtils.createMockKumbara(newKumbaraData);
+      const createdKumbara = createMockKumbara(newKumbaraData);
 
-      vi.mocked(kumbaraService.validateKumbaraData).mockReturnValue({
+      mockedKumbaraService.validateKumbaraData.mockReturnValue({
         isValid: true,
         errors: [],
       });
-      vi.mocked(kumbaraService.createKumbara).mockResolvedValue(createdKumbara);
+      mockedKumbaraService.createKumbara.mockResolvedValue(createdKumbara);
 
       const { result } = renderHook(() => useKumbara({ autoFetch: false }));
 
@@ -211,7 +236,7 @@ describe('useKumbara Hook', () => {
         created_by: 'test-user',
       };
 
-      vi.mocked(kumbaraService.validateKumbaraData).mockReturnValue({
+      mockedKumbaraService.validateKumbaraData.mockReturnValue({
         isValid: false,
         errors: ['Kumbara adı en az 3 karakter olmalıdır'],
       });
@@ -236,11 +261,11 @@ describe('useKumbara Hook', () => {
         created_by: 'test-user',
       };
 
-      vi.mocked(kumbaraService.validateKumbaraData).mockReturnValue({
+      mockedKumbaraService.validateKumbaraData.mockReturnValue({
         isValid: true,
         errors: [],
       });
-      vi.mocked(kumbaraService.createKumbara).mockRejectedValue(new Error('Creation failed'));
+      mockedKumbaraService.createKumbara.mockRejectedValue(new Error('Creation failed'));
 
       const { result } = renderHook(() => useKumbara({ autoFetch: false }));
 
@@ -256,14 +281,14 @@ describe('useKumbara Hook', () => {
 
   describe('updateKumbara', () => {
     it('should update kumbara successfully', async () => {
-      const existingKumbara = testUtils.createMockKumbara();
+      const existingKumbara = createMockKumbara();
       const updateData: KumbaraUpdate = {
         name: 'Updated Name',
         updated_by: 'test-user',
       };
       const updatedKumbara = { ...existingKumbara, ...updateData };
 
-      vi.mocked(kumbaraService.updateKumbara).mockResolvedValue(updatedKumbara);
+      mockedKumbaraService.updateKumbara.mockResolvedValue(updatedKumbara);
 
       const { result } = renderHook(() => useKumbara({ autoFetch: false }));
 
@@ -282,14 +307,14 @@ describe('useKumbara Hook', () => {
     });
 
     it('should update local state after successful update', async () => {
-      const existingKumbara = testUtils.createMockKumbara();
+      const existingKumbara = createMockKumbara();
       const updateData: KumbaraUpdate = {
         name: 'Updated Name',
         updated_by: 'test-user',
       };
       const updatedKumbara = { ...existingKumbara, ...updateData };
 
-      vi.mocked(kumbaraService.updateKumbara).mockResolvedValue(updatedKumbara);
+      mockedKumbaraService.updateKumbara.mockResolvedValue(updatedKumbara);
 
       const { result } = renderHook(() => useKumbara({ autoFetch: false }));
 
@@ -310,9 +335,9 @@ describe('useKumbara Hook', () => {
 
   describe('deleteKumbara', () => {
     it('should delete kumbara successfully', async () => {
-      const existingKumbara = testUtils.createMockKumbara();
+      const existingKumbara = createMockKumbara();
 
-      vi.mocked(kumbaraService.deleteKumbara).mockResolvedValue(true);
+      mockedKumbaraService.deleteKumbara.mockResolvedValue(true);
 
       const { result } = renderHook(() => useKumbara({ autoFetch: false }));
 
@@ -326,10 +351,10 @@ describe('useKumbara Hook', () => {
     });
 
     it('should remove kumbara from local state after deletion', async () => {
-      const kumbara1 = testUtils.createMockKumbara({ id: '1' });
-      const kumbara2 = testUtils.createMockKumbara({ id: '2' });
+      const kumbara1 = createMockKumbara({ id: '1' });
+      const kumbara2 = createMockKumbara({ id: '2' });
 
-      vi.mocked(kumbaraService.deleteKumbara).mockResolvedValue(true);
+      mockedKumbaraService.deleteKumbara.mockResolvedValue(true);
 
       const { result } = renderHook(() => useKumbara({ autoFetch: false }));
 
@@ -356,8 +381,8 @@ describe('useKumbara Hook', () => {
         created_by: 'test-user',
       };
 
-      const mockCollection = testUtils.createMockCollection(collectionData);
-      vi.mocked(kumbaraService.recordCollection).mockResolvedValue(mockCollection);
+      const mockCollection = createMockCollection(collectionData);
+      mockedKumbaraService.recordCollection.mockResolvedValue(mockCollection);
 
       const { result } = renderHook(() => useKumbara({ autoFetch: false }));
 
@@ -372,7 +397,7 @@ describe('useKumbara Hook', () => {
     });
 
     it('should update kumbara total amount after collection', async () => {
-      const existingKumbara = testUtils.createMockKumbara({
+      const existingKumbara = createMockKumbara({
         id: 'test-kumbara-1',
         totalAmount: 1000,
       });
@@ -384,8 +409,8 @@ describe('useKumbara Hook', () => {
         created_by: 'test-user',
       };
 
-      const mockCollection = testUtils.createMockCollection(collectionData);
-      vi.mocked(kumbaraService.recordCollection).mockResolvedValue(mockCollection);
+      const mockCollection = createMockCollection(collectionData);
+      mockedKumbaraService.recordCollection.mockResolvedValue(mockCollection);
 
       const { result } = renderHook(() => useKumbara({ autoFetch: false }));
 
@@ -412,7 +437,7 @@ describe('useKumbara Hook', () => {
       const customErrorHandler = vi.fn();
       const errorMessage = 'Custom error';
 
-      vi.mocked(kumbaraService.getKumbaras).mockRejectedValue(new Error(errorMessage));
+      mockedKumbaraService.getKumbaras.mockRejectedValue(new Error(errorMessage));
 
       const { result } = renderHook(() =>
         useKumbara({
@@ -431,7 +456,7 @@ describe('useKumbara Hook', () => {
 
     it('should use default error handler when none provided', async () => {
       const errorMessage = 'Default error handling';
-      vi.mocked(kumbaraService.getKumbaras).mockRejectedValue(new Error(errorMessage));
+      mockedKumbaraService.getKumbaras.mockRejectedValue(new Error(errorMessage));
 
       const { result } = renderHook(() => useKumbara({ autoFetch: false }));
 
@@ -471,13 +496,13 @@ describe('useKumbara Hook', () => {
         created_by: 'test-user',
       };
 
-      const createdKumbara = testUtils.createMockKumbara(newKumbaraData);
+      const createdKumbara = createMockKumbara(newKumbaraData);
 
-      vi.mocked(kumbaraService.validateKumbaraData).mockReturnValue({
+      mockedKumbaraService.validateKumbaraData.mockReturnValue({
         isValid: true,
         errors: [],
       });
-      vi.mocked(kumbaraService.createKumbara).mockResolvedValue(createdKumbara);
+      mockedKumbaraService.createKumbara.mockResolvedValue(createdKumbara);
 
       const { result } = renderHook(() =>
         useKumbara({
@@ -498,7 +523,7 @@ describe('useKumbara Hook', () => {
   describe('exportKumbaras', () => {
     it('should export kumbaras and trigger download', async () => {
       const mockBlob = new Blob(['mock-csv-content'], { type: 'text/csv' });
-      vi.mocked(kumbaraService.exportKumbaras).mockResolvedValue(mockBlob);
+      mockedKumbaraService.exportKumbaras.mockResolvedValue(mockBlob);
 
       // Mock document.createElement for download link
       const mockAnchor = {
@@ -525,7 +550,7 @@ describe('useKumbara Hook', () => {
 
   describe('refresh', () => {
     it('should refresh all data', async () => {
-      vi.mocked(kumbaraService.getKumbaras).mockResolvedValue({
+      mockedKumbaraService.getKumbaras.mockResolvedValue({
         kumbaras: [],
         total_count: 0,
         page: 1,
@@ -533,7 +558,7 @@ describe('useKumbara Hook', () => {
         total_pages: 1,
         filters_applied: {},
       });
-      vi.mocked(kumbaraService.getDashboardStats).mockResolvedValue({
+      mockedKumbaraService.getDashboardStats.mockResolvedValue({
         total_kumbaras: 0,
         active_kumbaras: 0,
         inactive_kumbaras: 0,
@@ -547,7 +572,7 @@ describe('useKumbara Hook', () => {
         maintenance_alerts: [],
         performance_trends: [],
       });
-      vi.mocked(kumbaraService.getKumbaraAlerts).mockResolvedValue([]);
+      mockedKumbaraService.getKumbaraAlerts.mockResolvedValue([]);
 
       const { result } = renderHook(() => useKumbara({ autoFetch: false }));
 
@@ -555,9 +580,9 @@ describe('useKumbara Hook', () => {
         await result.current.refresh();
       });
 
-      expect(kumbaraService.getKumbaras).toHaveBeenCalled();
-      expect(kumbaraService.getDashboardStats).toHaveBeenCalled();
-      expect(kumbaraService.getKumbaraAlerts).toHaveBeenCalled();
+      expect(mockedKumbaraService.getKumbaras).toHaveBeenCalled();
+      expect(mockedKumbaraService.getDashboardStats).toHaveBeenCalled();
+      expect(mockedKumbaraService.getKumbaraAlerts).toHaveBeenCalled();
     });
   });
 });
@@ -569,11 +594,11 @@ describe('useKumbaraDetail Hook', () => {
 
   it('should fetch kumbara details on mount', async () => {
     const kumbaraId = 'test-kumbara-1';
-    const mockKumbara = testUtils.createMockKumbara({ id: kumbaraId });
-    const mockCollections = [testUtils.createMockCollection()];
+    const mockKumbara = createMockKumbara({ id: kumbaraId });
+    const mockCollections = [createMockCollection()];
 
-    vi.mocked(kumbaraService.getKumbara).mockResolvedValue(mockKumbara);
-    vi.mocked(kumbaraService.getCollections).mockResolvedValue(mockCollections);
+    mockedKumbaraService.getKumbara.mockResolvedValue(mockKumbara);
+    mockedKumbaraService.getCollections.mockResolvedValue(mockCollections);
 
     const { result } = renderHook(() => useKumbaraDetail(kumbaraId));
 
@@ -582,23 +607,23 @@ describe('useKumbaraDetail Hook', () => {
       expect(result.current.collections).toEqual(mockCollections);
     });
 
-    expect(kumbaraService.getKumbara).toHaveBeenCalledWith(kumbaraId);
-    expect(kumbaraService.getCollections).toHaveBeenCalledWith(kumbaraId);
+    expect(mockedKumbaraService.getKumbara).toHaveBeenCalledWith(kumbaraId);
+    expect(mockedKumbaraService.getCollections).toHaveBeenCalledWith(kumbaraId);
   });
 
   it('should not fetch when ID is empty', () => {
     renderHook(() => useKumbaraDetail(''));
 
-    expect(kumbaraService.getKumbara).not.toHaveBeenCalled();
-    expect(kumbaraService.getCollections).not.toHaveBeenCalled();
+    expect(mockedKumbaraService.getKumbara).not.toHaveBeenCalled();
+    expect(mockedKumbaraService.getCollections).not.toHaveBeenCalled();
   });
 
   it('should refresh data when refresh is called', async () => {
     const kumbaraId = 'test-kumbara-1';
-    const mockKumbara = testUtils.createMockKumbara({ id: kumbaraId });
+    const mockKumbara = createMockKumbara({ id: kumbaraId });
 
-    vi.mocked(kumbaraService.getKumbara).mockResolvedValue(mockKumbara);
-    vi.mocked(kumbaraService.getCollections).mockResolvedValue([]);
+    mockedKumbaraService.getKumbara.mockResolvedValue(mockKumbara);
+    mockedKumbaraService.getCollections.mockResolvedValue([]);
 
     const { result } = renderHook(() => useKumbaraDetail(kumbaraId));
 
@@ -607,8 +632,8 @@ describe('useKumbaraDetail Hook', () => {
     });
 
     // Should be called twice (initial + refresh)
-    expect(kumbaraService.getKumbara).toHaveBeenCalledTimes(2);
-    expect(kumbaraService.getCollections).toHaveBeenCalledTimes(2);
+    expect(mockedKumbaraService.getKumbara).toHaveBeenCalledTimes(2);
+    expect(mockedKumbaraService.getCollections).toHaveBeenCalledTimes(2);
   });
 });
 
@@ -648,8 +673,8 @@ describe('useKumbaraDashboard Hook', () => {
       },
     ];
 
-    vi.mocked(kumbaraService.getDashboardStats).mockResolvedValue(mockStats);
-    vi.mocked(kumbaraService.getKumbaraAlerts).mockResolvedValue(mockAlerts);
+    mockedKumbaraService.getDashboardStats.mockResolvedValue(mockStats);
+    mockedKumbaraService.getKumbaraAlerts.mockResolvedValue(mockAlerts);
 
     const { result } = renderHook(() => useKumbaraDashboard());
 
@@ -658,17 +683,17 @@ describe('useKumbaraDashboard Hook', () => {
       expect(result.current.alerts).toEqual(mockAlerts);
     });
 
-    expect(kumbaraService.getDashboardStats).toHaveBeenCalled();
-    expect(kumbaraService.getKumbaraAlerts).toHaveBeenCalled();
+    expect(mockedKumbaraService.getDashboardStats).toHaveBeenCalled();
+    expect(mockedKumbaraService.getKumbaraAlerts).toHaveBeenCalled();
   });
 
   it('should acknowledge alerts successfully', async () => {
     const alertId = 'test-alert-1';
     const acknowledgedBy = 'test-user';
 
-    vi.mocked(kumbaraService.acknowledgeAlert).mockResolvedValue(true);
-    vi.mocked(kumbaraService.getDashboardStats).mockResolvedValue({} as any);
-    vi.mocked(kumbaraService.getKumbaraAlerts).mockResolvedValue([]);
+    mockedKumbaraService.acknowledgeAlert.mockResolvedValue(true);
+    mockedKumbaraService.getDashboardStats.mockResolvedValue({} as any);
+    mockedKumbaraService.getKumbaraAlerts.mockResolvedValue([]);
 
     const { result } = renderHook(() => useKumbaraDashboard());
 
@@ -678,12 +703,12 @@ describe('useKumbaraDashboard Hook', () => {
     });
 
     expect(acknowledgeResult).toBe(true);
-    expect(kumbaraService.acknowledgeAlert).toHaveBeenCalledWith(alertId, acknowledgedBy);
+    expect(mockedKumbaraService.acknowledgeAlert).toHaveBeenCalledWith(alertId, acknowledgedBy);
   });
 
   it('should refresh dashboard data', async () => {
-    vi.mocked(kumbaraService.getDashboardStats).mockResolvedValue({} as any);
-    vi.mocked(kumbaraService.getKumbaraAlerts).mockResolvedValue([]);
+    mockedKumbaraService.getDashboardStats.mockResolvedValue({} as any);
+    mockedKumbaraService.getKumbaraAlerts.mockResolvedValue([]);
 
     const { result } = renderHook(() => useKumbaraDashboard());
 
@@ -692,8 +717,8 @@ describe('useKumbaraDashboard Hook', () => {
     });
 
     // Should be called twice (initial + refresh)
-    expect(kumbaraService.getDashboardStats).toHaveBeenCalledTimes(2);
-    expect(kumbaraService.getKumbaraAlerts).toHaveBeenCalledTimes(2);
+    expect(mockedKumbaraService.getDashboardStats).toHaveBeenCalledTimes(2);
+    expect(mockedKumbaraService.getKumbaraAlerts).toHaveBeenCalledTimes(2);
   });
 });
 
