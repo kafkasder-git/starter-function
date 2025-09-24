@@ -39,7 +39,7 @@ jobs:
             ${{ runner.os }}-node-
 
       - name: Run TypeScript check
-        run: npm run typecheck
+        run: npm run type-check
 
       - name: Run ESLint
         run: npm run lint:check
