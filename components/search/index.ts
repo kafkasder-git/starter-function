@@ -3,7 +3,7 @@ export { SearchProvider, useSearchContext, useQuickSearch } from './SearchProvid
 export { EnhancedSearchInput } from './EnhancedSearchInput';
 export { FilterPanel } from './FilterPanel';
 export { DataTable } from './DataTable';
-export { SearchExample } from './SearchExample';
+// export { SearchExample } from './SearchExample'; // File doesn't exist
 
 // Hooks
 export { useSearch } from '../../hooks/useSearch';

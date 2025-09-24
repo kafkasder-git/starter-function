@@ -84,6 +84,7 @@ export interface AIContextType {
 
   // Core AI Functions
   generateText: (prompt: string, options?: Partial<AIConfig>) => Promise<AIResponse>;
+  trackAIUsage: (action: string, data?: any) => void;
   generateCode: (
     prompt: string,
     language: string,
@@ -115,6 +116,10 @@ export interface AIContextType {
 export interface AIProviderProps {
   children: ReactNode;
   config?: Partial<AIConfig>;
+  onNavigate?: (module: string, page?: string, subPage?: string) => void;
+  currentModule?: string;
+  currentPage?: string;
+  currentSubPage?: string;
 }
 
 // =============================================================================
@@ -218,7 +223,8 @@ class AIService {
       return {
         ...response,
         metadata: {
-          ...response.metadata,
+          model: response.metadata?.model || 'unknown',
+          provider: response.metadata?.provider || 'unknown',
           processingTime,
           timestamp: new Date(),
         },
@@ -279,6 +285,8 @@ class AIService {
       metadata: {
         model: config.model,
         provider: 'openrouter',
+        processingTime: 0,
+        timestamp: new Date(),
       },
     };
   }
@@ -302,6 +310,8 @@ class AIService {
       metadata: {
         model: config.model,
         provider: 'freeai',
+        processingTime: 0,
+        timestamp: new Date(),
       },
     };
   }
@@ -484,6 +494,10 @@ export const EnhancedAIProvider: React.FC<AIProviderProps> = ({
     isLoading,
     isInitialized,
     error,
+    conversationHistory: [], // TODO: Implement conversation history
+    currentContext: '', // TODO: Implement current context
+    memory: new Map(), // TODO: Implement memory
+    isStreaming: false, // TODO: Implement streaming
 
     // Configuration
     config,
@@ -496,6 +510,9 @@ export const EnhancedAIProvider: React.FC<AIProviderProps> = ({
     ),
 
     // Core AI Functions
+    trackAIUsage: useCallback((action: string, data?: any) => {
+      console.log('AI Usage tracked:', { action, data, timestamp: new Date() });
+    }, []),
     generateText: useCallback(
       async (prompt: string, options?: Partial<AIConfig>) => {
         setIsLoading(true);

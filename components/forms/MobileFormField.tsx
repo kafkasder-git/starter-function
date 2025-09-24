@@ -115,7 +115,7 @@ export const MobileFormField = forwardRef<
       if (isMobile && mobileOptimizations) {
         // Scroll field into view after a small delay to allow keyboard to appear
         setTimeout(() => {
-          const element = ref?.current || document.activeElement;
+          const element = (ref && typeof ref === 'object' && 'current' in ref) ? ref.current : document.activeElement;
           if (element && 'scrollIntoView' in element) {
             (element as HTMLElement).scrollIntoView({
               behavior: 'smooth',

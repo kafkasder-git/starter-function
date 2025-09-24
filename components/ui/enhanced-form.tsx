@@ -306,14 +306,11 @@ export function EnhancedField({
   const [showPassword, setShowPassword] = useState(false);
   const [focused, setFocused] = useState(false);
 
-  const {
-    field,
-    fieldState: { error, invalid, isDirty },
-  } = Controller({
-    name,
-    control: form.control,
-    render: ({ field }) => ({ field }),
-  });
+  const field = form.register(name);
+  const fieldState = form.formState.errors[name];
+  const error = fieldState?.message;
+  const invalid = !!error;
+  const isDirty = form.formState.dirtyFields[name];
 
   const sizeClasses = {
     sm: 'text-sm py-2',
@@ -324,7 +321,6 @@ export function EnhancedField({
   const handleFocus = () => {
     setFocused(true);
     onFocus?.();
-    field.onBlur();
   };
 
   const handleBlur = () => {
@@ -345,7 +341,7 @@ export function EnhancedField({
       return <AlertCircle className="w-4 h-4 text-red-500" />;
     }
 
-    if (!invalid && field.value) {
+    if (!invalid && form.getValues(name)) {
       return <CheckCircle className="w-4 h-4 text-green-500" />;
     }
 
@@ -424,7 +420,7 @@ export function EnhancedField({
 
       case 'select':
         return (
-          <Select value={field.value || ''} onValueChange={handleChange} disabled={disabled}>
+          <Select value={form.getValues(name) || ''} onValueChange={handleChange} disabled={disabled}>
             <SelectTrigger className={cn(sizeClasses[size], error && 'border-red-500')}>
               <SelectValue placeholder={placeholder} />
             </SelectTrigger>
@@ -455,7 +451,7 @@ export function EnhancedField({
           <div className="flex items-center space-x-2">
             <Checkbox
               id={fieldId}
-              checked={field.value || false}
+              checked={form.getValues(name) || false}
               onCheckedChange={handleChange}
               disabled={disabled}
             />
@@ -465,7 +461,7 @@ export function EnhancedField({
 
       case 'radio':
         return (
-          <RadioGroup value={field.value} onValueChange={handleChange} disabled={disabled}>
+          <RadioGroup value={form.getValues(name)} onValueChange={handleChange} disabled={disabled}>
             {options.map((option) => (
               <div key={option.value} className="flex items-center space-x-2">
                 <RadioGroupItem value={String(option.value)} id={`${fieldId}-${option.value}`} />
@@ -480,7 +476,7 @@ export function EnhancedField({
           <div className="flex items-center space-x-2">
             <Switch
               id={fieldId}
-              checked={field.value || false}
+              checked={form.getValues(name) || false}
               onCheckedChange={handleChange}
               disabled={disabled}
             />
@@ -496,19 +492,19 @@ export function EnhancedField({
                 variant="outline"
                 className={cn(
                   'w-full justify-start text-left font-normal',
-                  !field.value && 'text-muted-foreground',
+                  !form.getValues(name) && 'text-muted-foreground',
                   sizeClasses[size],
                   error && 'border-red-500',
                 )}
               >
                 <Calendar className="mr-2 h-4 w-4" />
-                {field.value ? format(field.value, 'dd/MM/yyyy', { locale: tr }) : placeholder}
+                {form.getValues(name) ? format(form.getValues(name), 'dd/MM/yyyy', { locale: tr }) : placeholder}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
               <CalendarComponent
                 mode="single"
-                selected={field.value}
+                selected={form.getValues(name)}
                 onSelect={handleChange}
                 initialFocus
               />
@@ -581,9 +577,9 @@ export function EnhancedField({
                 <Upload className="w-4 h-4" />
                 Dosya Seç
               </Button>
-              {field.value && (
+              {form.getValues(name) && (
                 <span className="text-sm text-gray-600">
-                  {Array.isArray(field.value) ? `${field.value.length} dosya` : field.value.name}
+                  {Array.isArray(form.getValues(name)) ? `${form.getValues(name).length} dosya` : form.getValues(name).name}
                 </span>
               )}
             </div>

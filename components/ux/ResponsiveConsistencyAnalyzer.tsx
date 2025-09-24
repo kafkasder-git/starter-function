@@ -3,7 +3,11 @@ import { Monitor, Smartphone, Tablet, AlertTriangle, CheckCircle2, Info } from '
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Badge } from '../ui/badge';
-import { ResponsiveSection } from '../EnhancedResponsiveWrapper';
+// import { ResponsiveSection } from '../EnhancedResponsiveWrapper'; // File doesn't exist
+// Using a simple div as fallback
+const ResponsiveSection = ({ children, className }: { children: React.ReactNode; className?: string }) => (
+  <div className={className}>{children}</div>
+);
 
 /**
  * Responsive Consistency Analyzer

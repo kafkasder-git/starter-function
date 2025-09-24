@@ -62,8 +62,8 @@ function AppContent() {
       'input[placeholder*="⌘K"], input[placeholder*="Ctrl+K"], input[placeholder*="Ara"]',
     )!;
     if (searchInput) {
-      searchInput.focus();
-      searchInput.select();
+      (searchInput as HTMLInputElement).focus();
+      (searchInput as HTMLInputElement).select();
     }
   }, []);
 
@@ -86,7 +86,7 @@ function AppContent() {
         addButton.textContent?.includes('Yeni') ||
         addButton.querySelector('svg'))
     ) {
-      addButton.click();
+      (addButton as HTMLElement).click();
     }
   }, []);
 
@@ -163,7 +163,12 @@ function AppContent() {
                 notificationComponent={
                   <SafeWrapper componentName="SmartNotificationCenter">
                     <SmartNotificationCenter
-                      notifications={notificationState.notifications}
+                      notifications={notificationState.notifications.map(notif => ({
+                        ...notif,
+                        actionable: notif.actionUrl ? true : false,
+                        timestamp: notif.createdAt,
+                        archived: false,
+                      }))}
                       onMarkAsRead={notificationActions.markAsRead}
                       onMarkAllAsRead={notificationActions.markAllAsRead}
                       onArchive={notificationActions.archive}

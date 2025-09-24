@@ -15,7 +15,7 @@ import {
 } from '../ui/command';
 import { useSearchContext } from './SearchProvider';
 import { useIsMobile } from '../../hooks/useTouchDevice';
-import { useLocalStorage } from '../../hooks/useLocalStorage';
+import useLocalStorage from '../../hooks/useLocalStorage';
 import { cn } from '../ui/utils';
 import { SEARCH_SUGGESTIONS } from '../../types/search';
 

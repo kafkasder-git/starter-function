@@ -130,7 +130,7 @@ export function AdvancedSearch({
       case 'select':
         return (
           <Select
-            value={value || ''}
+            value={String(value || '')}
             onValueChange={(newValue) => {
               handleFilterChange(filter.key, newValue);
             }}
@@ -181,7 +181,7 @@ export function AdvancedSearch({
         return (
           <Input
             type="date"
-            value={value || ''}
+            value={String(value || '')}
             onChange={(e) => {
               handleFilterChange(filter.key, e.target.value);
             }}
@@ -197,17 +197,17 @@ export function AdvancedSearch({
             <div className="grid grid-cols-2 gap-2">
               <Input
                 type="date"
-                value={value?.from || ''}
+                value={typeof value === 'object' && value?.from ? String(value.from) : ''}
                 onChange={(e) => {
-                  handleFilterChange(filter.key, { ...value, from: e.target.value });
+                  handleFilterChange(filter.key, typeof value === 'object' && value ? { ...value, from: e.target.value } : { from: e.target.value, to: '' });
                 }}
                 placeholder="Başlangıç"
               />
               <Input
                 type="date"
-                value={value?.to || ''}
+                value={typeof value === 'object' && value?.to ? String(value.to) : ''}
                 onChange={(e) => {
-                  handleFilterChange(filter.key, { ...value, to: e.target.value });
+                  handleFilterChange(filter.key, typeof value === 'object' && value ? { ...value, to: e.target.value } : { from: '', to: e.target.value });
                 }}
                 placeholder="Bitiş"
               />
@@ -219,7 +219,7 @@ export function AdvancedSearch({
         return (
           <Input
             type="number"
-            value={value || ''}
+            value={String(value || '')}
             onChange={(e) => {
               handleFilterChange(filter.key, e.target.value);
             }}
@@ -232,7 +232,7 @@ export function AdvancedSearch({
         return (
           <Input
             type="text"
-            value={value || ''}
+            value={String(value || '')}
             onChange={(e) => {
               handleFilterChange(filter.key, e.target.value);
             }}
@@ -368,7 +368,7 @@ export function AdvancedSearch({
               let displayValue = value;
               if (Array.isArray(value)) {
                 displayValue = value.length > 1 ? `${value.length} seçili` : value[0];
-              } else if (typeof value === 'object' && value.from && value.to) {
+              } else if (typeof value === 'object' && value && 'from' in value && 'to' in value) {
                 displayValue = `${value.from} - ${value.to}`;
               }
 

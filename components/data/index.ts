@@ -1,7 +1,7 @@
 // Data management exports
 export { ExportModal } from './ExportModal';
 export { BulkOperationPanel } from './BulkOperationPanel';
-export { DataExample } from './DataExample';
+// export { DataExample } from './DataExample'; // File doesn't exist
 
 // Hooks
 export { useDataExport } from '../../hooks/useDataExport';

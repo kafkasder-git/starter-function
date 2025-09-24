@@ -11,7 +11,7 @@ import {
   Clock,
   Database,
   RefreshCw,
-  Sync,
+  RefreshCw as Sync,
   Trash2,
   Upload,
   Wifi,

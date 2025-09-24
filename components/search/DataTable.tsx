@@ -98,7 +98,7 @@ export function DataTable<T = any>({
       return columns.some((column) => {
         if (!column.filterable) return false;
 
-        const value = column.accessorKey ? row[column.accessorKey] : null;
+        const value = column.accessorKey ? (row as any)[column.accessorKey] : null;
         if (value == null) return false;
 
         return String(value).toLowerCase().includes(quickFilter.toLowerCase());
@@ -304,7 +304,6 @@ export function DataTable<T = any>({
                   <TableHead className="w-12">
                     <Checkbox
                       checked={isAllSelected}
-                      indeterminate={isIndeterminate}
                       onCheckedChange={handleSelectAll}
                       aria-label="Tümünü seç"
                     />
@@ -391,7 +390,7 @@ export function DataTable<T = any>({
                           <Checkbox
                             checked={selectedRows.has(index)}
                             onCheckedChange={(checked) => {
-                              handleRowSelect(index, checked);
+                              handleRowSelect(index, Boolean(checked));
                             }}
                             onClick={(e) => {
                               e.stopPropagation();

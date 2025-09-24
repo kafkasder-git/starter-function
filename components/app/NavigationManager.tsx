@@ -1,7 +1,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useUserPreferences } from '../../hooks/useLocalStorage';
 import { useUXAnalytics } from '../../components/ux/hooks/useUXAnalytics';
-import { monitoring } from '../../services/monitoringService';
+import monitoringService from '../../services/monitoringService';
 
 export interface NavigationState {
   activeModule: string;
@@ -88,7 +88,7 @@ export function NavigationProvider({
         loading: false,
         selectedBeneficiaryId: null, // Reset selected beneficiary on module change
       }));
-      monitoring.trackFeatureUsage('navigation', 'module_change', { moduleId });
+      monitoringService.trackFeatureUsage('navigation', 'module_change', { moduleId });
       updatePreference('lastModule', moduleId);
     },
     [trackNavigation, navigationState.activeModule, updatePreference],

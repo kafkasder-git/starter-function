@@ -224,20 +224,11 @@ class NativeFeaturesService {
   }
 
   /**
-   * Trigger device vibration
+   * Trigger device vibration (public interface)
    */
   vibrate(pattern: number | number[]): boolean {
-    try {
-      if (!navigator.vibrate) {
-        return false;
-      }
-
-      navigator.vibrate(pattern);
-      return true;
-    } catch (error) {
-      console.error('Vibration failed:', error);
-      return false;
-    }
+    const patternArray = Array.isArray(pattern) ? pattern : [pattern];
+    return this.vibrateInternal(patternArray);
   }
 
   /**
@@ -613,9 +604,9 @@ class NativeFeaturesService {
   };
 
   /**
-   * Trigger vibration
+   * Internal vibration implementation
    */
-  private vibrate(pattern: number[]): boolean {
+  private vibrateInternal(pattern: number[]): boolean {
     try {
       if (navigator.vibrate) {
         navigator.vibrate(pattern);

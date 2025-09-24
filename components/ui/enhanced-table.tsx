@@ -977,9 +977,6 @@ export function EnhancedTable<T extends Record<string, any> = any>({
                           checked={
                             paginatedData.length > 0 && selectedRows.size === paginatedData.length
                           }
-                          indeterminate={
-                            selectedRows.size > 0 && selectedRows.size < paginatedData.length
-                          }
                           onCheckedChange={handleSelectAll}
                         />
                       </TableHead>

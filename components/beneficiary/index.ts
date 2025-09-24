@@ -7,7 +7,7 @@ export { BeneficiaryFamily } from './BeneficiaryFamily';
 export { BeneficiaryFinancial } from './BeneficiaryFinancial';
 export { BeneficiaryHeader } from './BeneficiaryHeader';
 export { BeneficiaryHealthInfo } from './BeneficiaryHealthInfo';
-export { BeneficiaryOptimized } from './BeneficiaryOptimized';
+// export { BeneficiaryOptimized } from './BeneficiaryOptimized'; // File deleted
 export { BeneficiaryPersonalInfo } from './BeneficiaryPersonalInfo';
 
 // Types

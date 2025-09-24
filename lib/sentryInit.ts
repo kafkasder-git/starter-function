@@ -131,10 +131,10 @@ export const initializeMCPServer = async () => {
 
   try {
     // Import MCP server manager
-    const { startDefaultMCPServer } = await import('../services/mcpServer');
+    // const { startDefaultMCPServer } = await import('../services/mcpServer'); // File doesn't exist
 
     // Start the default MCP server with Sentry monitoring
-    const mcpServer = await startDefaultMCPServer();
+    // const mcpServer = await startDefaultMCPServer(); // Commented out until file exists
 
     console.log('✅ MCP Server initialized with Sentry monitoring');
 

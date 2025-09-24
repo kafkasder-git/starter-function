@@ -318,7 +318,7 @@ export function useSearch<T = unknown>({
     () => ({
       hasActiveFilters: searchState.filters.length > 0,
       hasResults: searchState.results.length > 0,
-      isEmpty: !searchState.isLoading && searchState.results.length === 0 && (searchState.query || searchState.filters.length > 0),
+      isEmpty: Boolean(!searchState.isLoading && searchState.results.length === 0 && (searchState.query || searchState.filters.length > 0)),
     }),
     [searchState.filters.length, searchState.results.length, searchState.isLoading, searchState.query],
   );

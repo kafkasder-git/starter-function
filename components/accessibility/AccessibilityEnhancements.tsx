@@ -18,6 +18,7 @@ import {
   Info,
   Zap,
   Focus,
+  Cpu,
   ArrowUp,
   ArrowDown,
   ArrowLeft,
@@ -139,7 +140,7 @@ export function AccessibilityEnhancements({
   // Ekran okuyucu duyuruları
   useEffect(() => {
     if (announcements.length > 0 && announcementRef.current) {
-      announcementRef.current.focus();
+      (announcementRef.current as HTMLElement).focus();
     }
   }, [announcements]);
 
@@ -420,7 +421,7 @@ export function AccessibilityEnhancements({
             '[tabindex]:not([tabindex="-1"]), button, a, input, select, textarea',
           )!;
           if (firstFocusable) {
-            firstFocusable.focus();
+            (firstFocusable as HTMLElement).focus();
             announceToScreenReader('İlk etkileşimli elemente odaklandı');
           }
           break;
@@ -605,7 +606,7 @@ export function AccessibilityEnhancements({
                 Motor
               </TabsTrigger>
               <TabsTrigger value="cognitive" className="flex items-center gap-2">
-                <Brain className="w-4 h-4" />
+                <Cpu className="w-4 h-4" />
                 Bilişsel
               </TabsTrigger>
               <TabsTrigger value="results" className="flex items-center gap-2">
@@ -833,7 +834,7 @@ export function AccessibilityEnhancements({
                   <Card>
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
-                        <Brain className="w-5 h-5 text-indigo-600" />
+                        <Cpu className="w-5 h-5 text-indigo-600" />
                         Bilişsel Ayarlar
                       </CardTitle>
                     </CardHeader>

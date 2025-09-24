@@ -3,15 +3,15 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
-import userManagementService from '../services/userManagementService';
-
-// Placeholder types
-type ManagedUser = any;
-type CreateUserRequest = any;
-type UpdateUserRequest = any;
-type UserFilters = any;
-type UserListResponse = any;
-type UserActivity = any;
+import {
+  userManagementService,
+  type ManagedUser,
+  type CreateUserRequest,
+  type UpdateUserRequest,
+  type UserFilters,
+  type UserListResponse,
+  type UserActivity,
+} from '../services/userManagementService';
 
 interface UseUserManagementReturn {
   // State
