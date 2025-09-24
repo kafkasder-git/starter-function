@@ -1,0 +1,148 @@
+name: Code Quality Checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  NODE_VERSION: '22'
+
+jobs:
+  quality-check:
+    name: Code Quality Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run TypeScript type checking
+        run: npm run typecheck
+
+      - name: Run ESLint
+        run: |
+          echo "🔍 Running ESLint..."
+          npm run lint > eslint-results.json || true
+          echo "ESLint check completed"
+
+      - name: Analyze code quality metrics
+        run: |
+          echo "📊 Analyzing code quality metrics..."
+
+          # Count total lines of code
+          JS_TS_FILES=$(find src -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" | wc -l)
+          TOTAL_LINES=$(find src -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" | xargs wc -l | tail -1 | awk '{print $1}')
+
+          echo "📁 Files analyzed: $JS_TS_FILES"
+          echo "📝 Total lines of code: $TOTAL_LINES"
+
+          # Bundle size analysis
+          npm run build
+          BUNDLE_SIZE=$(du -sh dist/ | cut -f1)
+          echo "📦 Bundle size: $BUNDLE_SIZE"
+
+          # Generate quality report
+          echo "# Code Quality Report" > quality-report.md
+          echo "" >> quality-report.md
+          echo "## Metrics" >> quality-report.md
+          echo "- Total Files: $JS_TS_FILES" >> quality-report.md
+          echo "- Total Lines: $TOTAL_LINES" >> quality-report.md
+          echo "- Bundle Size: $BUNDLE_SIZE" >> quality-report.md
+          echo "" >> quality-report.md
+          echo "## Build Status" >> quality-report.md
+          echo "✅ Build successful" >> quality-report.md
+          echo "" >> quality-report.md
+          echo "## Generated at: $(date)" >> quality-report.md
+
+      - name: Upload quality reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: quality-reports
+          path: |
+            quality-report.md
+            eslint-results.json
+            coverage/
+
+  lighthouse-check:
+    name: Lighthouse Performance Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npm run build
+
+      - name: Run Lighthouse CI
+        run: npm run lighthouse
+        continue-on-error: true
+
+      - name: Upload Lighthouse report
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-report
+          path: |
+            .lighthouseci/
+            lighthouseci-results.json
+        continue-on-error: true
+
+  bundle-analysis:
+    name: Bundle Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build and analyze bundle
+        run: |
+          echo "🔍 Analyzing bundle size..."
+          npm run build
+
+          echo "📊 Bundle Analysis Results:" > bundle-analysis.md
+          echo "" >> bundle-analysis.md
+
+          # List all JS files in dist with sizes
+          echo "## JavaScript Files" >> bundle-analysis.md
+          find dist -name "*.js" -exec ls -lh {} \; | head -20 >> bundle-analysis.md
+
+          echo "" >> bundle-analysis.md
+          echo "## CSS Files" >> bundle-analysis.md
+          find dist -name "*.css" -exec ls -lh {} \; >> bundle-analysis.md
+
+          echo "" >> bundle-analysis.md
+          echo "## Total Bundle Size" >> bundle-analysis.md
+          du -sh dist/ >> bundle-analysis.md
+
+      - name: Upload bundle analysis
+        uses: actions/upload-artifact@v4
+        with:
+          name: bundle-analysis
+          path: bundle-analysis.md

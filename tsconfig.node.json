@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "composite": true,
+    "skipLibCheck": true,
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "isolatedModules": true,
+    "types": ["node", "vite/client"]
+  },
+  "include": [
+    "vite.config.ts",
+    "vitest.config.ts",
+    "lib/cursor-optimization-essentials.ts"
+  ]
+}

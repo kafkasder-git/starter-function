@@ -1,0 +1,305 @@
+# 🚀 DERNEK YÖNETİM SİSTEMİ - PRODUCTION GITIGNORE
+
+# ==========================================
+# ENVIRONMENT & CONFIGURATION
+# ==========================================
+
+
+# Environment variables (KRİTİK - GÜVENLİK!)
+.env.
+
+.env.development
+.env.production
+.env.test
+
+# Environment variables backup
+.env.backup
+.env.old
+
+# ==========================================
+# DEPENDENCIES
+# ==========================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Package manager lock files (keep package-lock.json)
+yarn.lock
+pnpm-lock.yaml
+
+# ==========================================
+# BUILD OUTPUTS
+# ==========================================
+dist/
+build/
+out/
+.next/
+.nuxt/
+.vuepress/dist
+
+# Vite build cache
+.vite/
+.vite-cache/
+
+# ==========================================
+# DEVELOPMENT
+# ==========================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Local development
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ==========================================
+# TESTING
+# ==========================================
+coverage/
+.nyc_output/
+test-results/
+playwright-report/
+test-results.xml
+
+# Jest
+.jest/
+
+# Vitest
+.vitest/
+
+# ==========================================
+# LOGS
+# ==========================================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# ==========================================
+# TEMPORARY FILES
+# ==========================================
+.tmp/
+.temp/
+.temporary/
+.cache/
+
+# ==========================================
+# SUPABASE
+# ==========================================
+.supabase/
+supabase/.branches/
+supabase/.temp/
+
+# Local Supabase files
+
+
+# ==========================================
+# DEPLOYMENT
+# ==========================================
+.vercel/
+.netlify/
+.firebase/
+.aws/
+
+# Deployment configs (keep vercel.json)
+.vercelignore
+.netlifyignore
+
+# ==========================================
+# SECURITY & KEYS
+# ==========================================
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# API keys
+api-keys.json
+secrets.json
+credentials.json
+
+# Database dumps
+*.sql
+*.dump
+*.backup
+
+# ==========================================
+# MONITORING & ANALYTICS
+# ==========================================
+.monitoring/
+.analytics/
+.lighthouse/
+lighthouse-results/
+
+# Performance monitoring
+.perf/
+performance-*.json
+
+# ==========================================
+# DOCUMENTATION GENERATED
+# ==========================================
+docs/build/
+docs/dist/
+*.md.bak
+
+# Generated documentation
+api-docs/
+storybook-static/
+
+# ==========================================
+# IDE & EDITORS
+# ==========================================
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*.un~
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# ==========================================
+# OPERATING SYSTEM
+# ==========================================
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# ==========================================
+# MISC
+# ==========================================
+# Backup files
+*.bak
+*.backup
+*.old
+*.orig
+*.rej
+
+# Archive files
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# ==========================================
+# PROJECT SPECIFIC
+# ==========================================
+# CSV imports
+imports/
+exports/
+*.csv.backup
+
+# Generated reports
+reports/
+exports/
+
+# User uploads (if stored locally)
+uploads/
+files/
+documents/
+
+# Local database files
+*.db
+*.sqlite
+*.sqlite3
+
+# ==========================================
+# PRODUCTION NOTES
+# ==========================================
+# ✅ Environment variables excluded
+# ✅ Build outputs excluded
+# ✅ Temporary files excluded
+# ✅ Security files excluded
+# ✅ OS files excluded
+# ✅ IDE files excluded
+# ✅ Log files excluded
+
+# ==========================================
+# KEEP THESE FILES
+# ==========================================
+# !package-lock.json (keep for consistency)
+# !vercel.json (keep deployment config)
+# !README.md (keep documentation)
+# !.github/ (keep CI/CD configs)
+.vercel
+
+# Sentry Config File
+.env.sentry-build-plugin
+
+.vercel

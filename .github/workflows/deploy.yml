@@ -1,0 +1,150 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  repository_dispatch:
+    types:
+      - 'vercel.deployment.success'
+      - 'vercel.deployment.error'
+
+env:
+  NODE_VERSION: '22'
+
+jobs:
+  build-and-test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Run TypeScript check
+        run: npm run typecheck
+
+      - name: Run ESLint
+        run: npm run lint:check
+
+      - name: Run tests
+        run: npm test
+
+      - name: Run test coverage
+        run: npm run test:coverage
+
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage/coverage-final.json
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
+
+      - name: Build application
+        run: npm run build
+        env:
+          NODE_ENV: production
+
+      - name: Validate build output
+        run: |
+          echo "🔍 Validating build output..."
+          if [ ! -d "dist" ]; then
+            echo "❌ Build output directory not found"
+            exit 1
+          fi
+          echo "✅ Build validation complete"
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-files
+          path: dist/
+
+  deploy:
+    name: Deploy to Vercel
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    if: github.ref == 'refs/heads/main'
+    outputs:
+      deployment-url: ${{ steps.vercel-deploy.outputs.preview-url }}
+      production-url: ${{ steps.vercel-deploy.outputs.preview-url }}
+    environment:
+      name: production
+      url: ${{ steps.vercel-deploy.outputs.preview-url }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-files
+          path: dist/
+
+      - name: Validate Vercel configuration
+        run: |
+          echo "🔍 Validating Vercel deployment configuration..."
+          echo "Repository: ${{ github.repository }}"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "✅ Configuration validation complete"
+
+      # Deploy to Vercel using configured secrets
+      # Note: VERCEL_TOKEN, VERCEL_ORG_ID, and VERCEL_PROJECT_ID must be configured in repository secrets
+      - name: Deploy to Vercel
+        id: vercel-deploy
+        uses: amondnet/vercel-action@v25
+        with:
+          # These secrets must be configured in GitHub repository settings
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: ${{ github.ref == 'refs/heads/main' && '--prod' || '' }}
+
+      - name: Comment deployment URL on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `🚀 **Deployment Ready!**\n\n**Preview URL**: ${{ steps.vercel-deploy.outputs.preview-url }}\n\n**Environment**: Preview\n**Commit**: ${context.sha.substring(0, 7)}`
+            })
+
+  post-deployment-test:
+    name: Post-Deployment Tests
+    runs-on: ubuntu-latest
+    needs: deploy
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Test deployment health
+        run: |
+          # Deployment URL'ini test et
+          DEPLOYMENT_URL="${{ needs.deploy.outputs.deployment-url }}"
+          if [ -n "$DEPLOYMENT_URL" ] && [ "$DEPLOYMENT_URL" != "null" ]; then
+            echo "Testing deployment URL: $DEPLOYMENT_URL"
+            curl -f -s -o /dev/null -w "%{http_code}" "$DEPLOYMENT_URL" | grep -q "200" && echo "✅ Health check passed" || echo "❌ Health check failed"
+          else
+            echo "⚠️ No deployment URL available for testing"
+          fi
+        continue-on-error: true

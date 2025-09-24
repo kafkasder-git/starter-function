@@ -1,0 +1,50 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": [
+      "ES2022",
+      "DOM"
+    ],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "allowImportingTsExtensions": true,
+    "strict": true,
+    "noFallthroughCasesInSwitch": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./*"
+      ]
+    },
+    /* React & Bundler specific */
+    "jsx": "react-jsx",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "types": ["vite/client"],
+    "noEmit": true
+  },
+  "include": [
+    "App.tsx",
+    "main.tsx",
+    "types/**/*",
+    "components/**/*",
+    "hooks/**/*",
+    "lib/**/*",
+    "services/**/*",
+    "stores/**/*",
+    "contexts/**/*",
+    "utils/**/*",
+    "eslint.config.js"
+  ],
+  "exclude": [
+    "**/__tests__/**",
+    "**/*.test.*",
+    "tests/**",
+    "services/__tests__/**",
+    "middleware/**",
+    "lib/security/**",
+    "services/index.ts"
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "name": "Kafkas Derneği Yönetim Sistemi",
+  "short_name": "Kafkas Panel",
+  "description": "Kar amacı gütmeyen dernekler için modern, kapsamlı yönetim sistemi. 11 modül ile tam dernek operasyonlarını yönetin.",
+  "theme_color": "#3B82F6",
+  "background_color": "#FFFFFF",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "start_url": "/",
+  "lang": "tr",
+  "dir": "ltr",
+  "categories": ["business", "productivity", "social"],
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Yardım Başvuruları",
+      "url": "/#/yardim/basvurular",
+      "description": "Yardım başvurularını görüntüle ve yönet",
+      "icons": [
+        {
+          "src": "/favicon.svg",
+          "sizes": "any"
+        }
+      ]
+    },
+    {
+      "name": "Bağış Kaydet",
+      "url": "/#/bagis/yeni",
+      "description": "Yeni bağış kaydı oluştur",
+      "icons": [
+        {
+          "src": "/favicon.svg",
+          "sizes": "any"
+        }
+      ]
+    },
+    {
+      "name": "Üye Yönetimi",
+      "url": "/#/uyeler",
+      "description": "Üye listesini görüntüle ve yönet",
+      "icons": [
+        {
+          "src": "/favicon.svg",
+          "sizes": "any"
+        }
+      ]
+    }
+  ]
+}

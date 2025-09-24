@@ -1,0 +1,190 @@
+import { sentryVitePlugin } from '@sentry/vite-plugin';
+import react from '@vitejs/plugin-react-swc';
+import path from 'path';
+import { visualizer } from 'rollup-plugin-visualizer';
+import { defineConfig } from 'vite';
+import { VitePWA } from 'vite-plugin-pwa';
+
+export default defineConfig({
+  plugins: [
+    react({
+      // Disable TypeScript checking for development
+      typescript: {
+        ignoreBuildErrors: true,
+      },
+    }),
+    VitePWA({
+      registerType: 'autoUpdate',
+      includeAssets: ['favicon.svg'],
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+        maximumFileSizeToCacheInBytes: 3000000,
+        // NavigateFallback must be null for SPAs
+        navigateFallback: null,
+        navigateFallbackDenylist: [/^\/_/, /\/[^/?]+\.[^/]+$/],
+      },
+      manifest: {
+        name: 'Dernek Yönetim Sistemi',
+        short_name: 'DernekYS',
+        description:
+          'Kar amacı gütmeyen dernekler için modern, kapsamlı yönetim sistemi. 11 modül ile tam dernek operasyonlarını yönetin.',
+        theme_color: '#1e3a8a',
+        background_color: '#ffffff',
+        display: 'standalone',
+        orientation: 'portrait-primary',
+        scope: '/',
+        start_url: '/',
+        lang: 'tr',
+        dir: 'ltr',
+        categories: ['business', 'productivity', 'social'],
+        icons: [
+          {
+            src: '/favicon.svg',
+            sizes: 'any',
+            type: 'image/svg+xml',
+            purpose: 'any maskable',
+          },
+        ],
+        shortcuts: [
+          {
+            name: 'Yardım Başvuruları',
+            url: '/#/yardim/basvurular',
+            description: 'Yardım başvurularını görüntüle ve yönet',
+            icons: [{ src: '/favicon.svg', sizes: 'any' }],
+          },
+          {
+            name: 'Bağış Kaydet',
+            url: '/#/bagis/yeni',
+            description: 'Yeni bağış kaydı oluştur',
+            icons: [{ src: '/favicon.svg', sizes: 'any' }],
+          },
+          {
+            name: 'Üye Listesi',
+            url: '/#/uye/liste',
+            description: 'Üye listesini görüntüle',
+            icons: [{ src: '/favicon.svg', sizes: 'any' }],
+          },
+          {
+            name: 'Dashboard',
+            url: '/#/genel',
+            description: 'Ana dashboard ve istatistikler',
+            icons: [{ src: '/favicon.svg', sizes: 'any' }],
+          },
+        ],
+        screenshots: [
+          {
+            src: '/screenshots/desktop-dashboard.png',
+            sizes: '1280x720',
+            type: 'image/png',
+            form_factor: 'wide',
+            label: 'Ana dashboard görünümü',
+          },
+          {
+            src: '/screenshots/mobile-navigation.png',
+            sizes: '390x844',
+            type: 'image/png',
+            form_factor: 'narrow',
+            label: 'Mobil navigasyon menüsü',
+          },
+        ],
+        related_applications: [],
+        prefer_related_applications: false,
+      },
+    }),
+    visualizer({
+      filename: 'dist/bundle-analysis.html',
+      open: false,
+      gzipSize: true,
+      brotliSize: true,
+    }),
+    // sentryVitePlugin({
+    //   org: 'kafkasder-sa',
+    //   project: 'node',
+    // }),
+  ],
+  resolve: {
+    extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
+    alias: {
+      '@': path.resolve(__dirname, '.'),
+      'react': path.resolve(__dirname, './node_modules/react'),
+      'react-dom': path.resolve(__dirname, './node_modules/react-dom'),
+    },
+  },
+  build: {
+    target: 'esnext',
+    outDir: 'dist',
+    chunkSizeWarningLimit: 1500, // Daha düşük limit
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Optimize edilmiş chunk stratejisi
+          'react-vendor': ['react', 'react-dom'],
+          'ui-vendor': [
+            '@radix-ui/react-dialog',
+            '@radix-ui/react-dropdown-menu',
+            '@radix-ui/react-select',
+            '@radix-ui/react-popover',
+            '@radix-ui/react-tooltip',
+          ],
+          'supabase-vendor': ['@supabase/supabase-js'],
+          'chart-vendor': ['recharts'],
+          'form-vendor': ['react-hook-form', '@hookform/resolvers', 'zod'],
+          'utils-vendor': ['date-fns', 'clsx', 'tailwind-merge'],
+          'icons-vendor': ['lucide-react'],
+          'motion-vendor': ['motion'],
+        },
+        // Daha iyi cache stratejisi
+        chunkFileNames: (chunkInfo) => {
+          const facadeModuleId = chunkInfo.facadeModuleId
+            ? chunkInfo.facadeModuleId.split('/').pop()
+            : 'chunk';
+          return `js/[name]-[hash].js`;
+        },
+        entryFileNames: 'js/[name]-[hash].js',
+        assetFileNames: (assetInfo) => {
+          const safeName = assetInfo.name || 'asset.bin';
+          const info = safeName.split('.');
+          const ext = info[info.length - 1] || 'bin';
+          if (/\.(css)$/.test(safeName)) {
+            return `css/[name]-[hash].${ext}`;
+          }
+          return `assets/[name]-[hash].${ext}`;
+        },
+      },
+    },
+    sourcemap: false, // Production'da sourcemap kapalı
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+        passes: 2, // Daha fazla optimizasyon
+        unsafe: false,
+        // Daha agresif optimizasyonlar
+        pure_funcs: ['console.log', 'console.info', 'console.debug'],
+        dead_code: true,
+        unused: true,
+      },
+      mangle: {
+        safari10: true,
+        // Daha iyi mangle stratejisi
+        properties: {
+          regex: /^_/,
+        },
+      },
+      format: {
+        comments: false,
+        // Daha kompakt output
+        beautify: false,
+      },
+    },
+    // Daha hızlı build
+    reportCompressedSize: false,
+    // CSS optimizasyonu
+    cssCodeSplit: true,
+  },
+  server: {
+    port: 5173,
+    open: true,
+  },
+});
