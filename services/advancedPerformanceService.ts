@@ -3,7 +3,13 @@
  * @description Gelişmiş performans izleme ve optimizasyon servisi
  */
 
+import React from 'react';
 import { monitoring } from './monitoringService';
+
+// Declare gtag for analytics (if available)
+declare global {
+  function gtag(...args: unknown[]): void;
+}
 
 // Performans metrikleri
 interface PerformanceMetrics {
@@ -267,14 +273,11 @@ class AdvancedPerformanceService {
    * Metrik raporla
    */
   private reportMetric(key: keyof PerformanceMetrics, value: number): void {
-    // Sentry'ye gönder
-    monitoring.captureMessage(`Performance metric: ${key} = ${value}ms`, {
-      level: 'info',
-      tags: {
-        metric: key,
-        value: value.toString(),
-        url: window.location.pathname,
-      },
+    // Monitor with tracking
+    monitoring.trackEvent('performance_metric', {
+      metric: key,
+      value: value,
+      url: window.location.pathname,
     });
 
     // Analytics'e gönder

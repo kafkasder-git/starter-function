@@ -390,14 +390,22 @@ export class DataProcessor {
     });
   }
 
-  private static generateSingleMetric<T>(data: T[], metricConfig: { key: string; field?: string; aggregationType?: string; format?: string }): MetricData {
+  private static generateSingleMetric<T extends Record<string, unknown>>(
+    data: T[], 
+    metricConfig: { 
+      key: string; 
+      field?: string; 
+      aggregationType?: string; 
+      format?: 'number' | 'currency' | 'percentage' 
+    }
+  ): MetricData {
     const { key, field, aggregationType = 'sum', format = 'number' } = metricConfig;
 
     if (!key) {
       throw new Error('Metric key is required');
     }
 
-    const value = this.calculateMetricValue(data, field, aggregationType);
+    const value = this.calculateMetricValue(data, field || 'value', aggregationType);
     const trend = field ? this.calculateTrend(data, field) : 'stable';
     const change = this.calculateMetricChange(trend);
 
@@ -496,11 +504,11 @@ export class DataProcessor {
     };
   }
 
-  private static itemPassesFilters<T extends Record<string, unknown>>(item: T, context: { dateRange?: DateRange; categories?: Set<string> | null; statusSet?: Set<string> | null; amountRange?: { min: number; max: number }; searchTerm?: string }): boolean {
+  private static itemPassesFilters<T extends Record<string, unknown>>(item: T, context: { dateRange?: DateRange; categories?: Set<string> | null | undefined; statusSet?: Set<string> | null | undefined; amountRange?: { min: number; max: number }; searchTerm?: string }): boolean {
     return (
       this.passesDateFilter(item, context.dateRange) &&
-      this.passesCategoryFilter(item, context.categories) &&
-      this.passesStatusFilter(item, context.statusSet) &&
+      this.passesCategoryFilter(item, context.categories ?? null) &&
+      this.passesStatusFilter(item, context.statusSet ?? null) &&
       this.passesAmountFilter(item, context.amountRange) &&
       this.passesSearchFilter(item, context.searchTerm)
     );
@@ -710,59 +718,65 @@ export class DataProcessor {
           statistics: { q1: 0, q3: 0, iqr: 0, bounds: { lower: 0, upper: 0 } },
         };
       }
-    } catch (error) {
+
+      const values = data
+        .map((item) => Number(item[field]))
+        .filter((val): val is number => typeof val === 'number' && !isNaN(val))
+        .sort((a, b) => a - b);
+
+      if (values.length < this.CONFIG.MIN_OUTLIER_DETECTION_SIZE) {
+        return {
+          outliers: [],
+          cleaned: data,
+          statistics: { q1: 0, q3: 0, iqr: 0, bounds: { lower: 0, upper: 0 } },
+        };
+      }
+
+      const q1Index = Math.floor(values.length * 0.25);
+      const q3Index = Math.floor(values.length * 0.75);
+      const q1 = values[q1Index];
+      const q3 = values[q3Index];
+      const iqr = q3 - q1;
+      const lowerBound = q1 - this.CONFIG.IQR_MULTIPLIER * iqr;
+      const upperBound = q3 + this.CONFIG.IQR_MULTIPLIER * iqr;
+
+      const outliers: T[] = [];
+      const cleaned: T[] = [];
+
+      data.forEach((item) => {
+        const value = item[field];
+        if (typeof value === 'number' && (value < lowerBound || value > upperBound)) {
+          outliers.push(item);
+        } else {
+          cleaned.push(item);
+        }
+      });
+
+      return {
+        outliers,
+        cleaned: cleaned,
+        statistics: {
+          q1,
+          q3,
+          iqr,
+          bounds: {
+            lower: lowerBound,
+            upper: upperBound,
+          },
+        },
+      };
+    } catch (error: any) {
       return this.handleError('Outlier detection', error, {
         outliers: [],
-        cleaned: [],
-        statistics: { q1: 0, q3: 0, iqr: 0, bounds: { lower: 0, upper: 0 } },
-      });
-    }
-
-    const values = data
-      .map((item) => Number(item[field]))
-      .filter((val): val is number => typeof val === 'number' && !isNaN(val))
-      .sort((a, b) => a - b);
-
-    if (values.length < this.CONFIG.MIN_OUTLIER_DETECTION_SIZE) {
-      return {
-        outliers: [],
         cleaned: data,
-        statistics: { q1: 0, q3: 0, iqr: 0, bounds: { lower: 0, upper: 0 } },
-      };
+        statistics: {
+          q1: 0,
+          q3: 0,
+          iqr: 0,
+          bounds: { lower: 0, upper: 0 },
+        },
+      }) as { outliers: T[]; cleaned: T[]; statistics: { q1: number; q3: number; iqr: number; bounds: { lower: number; upper: number } } };
     }
-
-    const q1Index = Math.floor(values.length * 0.25);
-    const q3Index = Math.floor(values.length * 0.75);
-    const q1 = values[q1Index];
-    const q3 = values[q3Index];
-    const iqr = q3 - q1;
-    const lowerBound = q1 - this.CONFIG.IQR_MULTIPLIER * iqr;
-    const upperBound = q3 + this.CONFIG.IQR_MULTIPLIER * iqr;
-
-    const outliers: T[] = [];
-    const cleaned: T[] = [];
-
-    data.forEach((item) => {
-      const value = item[field];
-      if (typeof value === 'number' && (value < lowerBound || value > upperBound)) {
-        outliers.push(item);
-      } else {
-        cleaned.push(item);
-      }
-    });
-
-    return {
-      outliers,
-      clean: cleaned,
-      stats: {
-        q1,
-        q3,
-        iqr,
-        lowerBound,
-        upperBound,
-        outlierCount: outliers.length,
-      },
-    };
   }
 }
 

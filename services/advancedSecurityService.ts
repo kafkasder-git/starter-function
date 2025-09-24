@@ -3,6 +3,7 @@
  * @description Gelişmiş güvenlik ve tehdit algılama servisi
  */
 
+import React from 'react';
 import { monitoring } from './monitoringService';
 
 // Güvenlik olay türleri
@@ -425,6 +426,7 @@ class AdvancedSecurityService {
       await this.recordSecurityEvent({
         type: blocked ? 'malicious_request' : 'suspicious_activity',
         level: this.getRiskLevel(riskScore),
+        timestamp: new Date(),
         source: {
           ip: clientIP,
           userAgent: navigator.userAgent,
@@ -464,6 +466,7 @@ class AdvancedSecurityService {
       this.recordSecurityEvent({
         type: 'data_breach_attempt',
         level: 'high',
+        timestamp: new Date(),
         source: {
           ip: this.getClientIP(),
           userAgent: navigator.userAgent,
@@ -502,6 +505,7 @@ class AdvancedSecurityService {
       this.recordSecurityEvent({
         type: 'suspicious_activity',
         level: 'medium',
+        timestamp: new Date(),
         source: {
           ip: this.getClientIP(),
           userAgent: navigator.userAgent,
@@ -663,15 +667,13 @@ class AdvancedSecurityService {
 
     this.events.push(event);
 
-    // Sentry'ye gönder
-    monitoring.captureMessage(`Security event: ${event.type}`, {
-      level: this.getSentryLevel(event.level),
-      tags: {
-        security_event: event.type,
-        risk_score: event.metadata.riskScore.toString(),
-        source_ip: event.source.ip,
-      },
-      extra: event,
+    // Monitor security event
+    monitoring.trackEvent('security_event', {
+      event_type: event.type,
+      severity_level: event.level,
+      risk_score: event.metadata.riskScore,
+      source_ip: event.source.ip,
+      timestamp: event.timestamp.toISOString(),
     });
 
     // Kritik olaylar için ek önlemler

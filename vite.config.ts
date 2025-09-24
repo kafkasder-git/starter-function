@@ -8,10 +8,8 @@ import { VitePWA } from 'vite-plugin-pwa';
 export default defineConfig({
   plugins: [
     react({
-      // Disable TypeScript checking for development
-      typescript: {
-        ignoreBuildErrors: true,
-      },
+      // SWC plugin with proper configuration
+      tsDecorators: true,
     }),
     VitePWA({
       registerType: 'autoUpdate',

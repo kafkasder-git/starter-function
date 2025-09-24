@@ -5,8 +5,8 @@ import type {
   BeneficiaryInsert,
   BeneficiaryUpdate,
 } from '../types/beneficiary';
-import { BaseService } from './baseService';
 import type { ApiResponse, PaginatedResponse } from './config';
+import { supabase } from '../lib/supabase';
 
 // Service-specific types
 export interface BeneficiarySearchFilters extends BeneficiaryFilters {
@@ -16,15 +16,8 @@ export interface BeneficiarySearchFilters extends BeneficiaryFilters {
   sort_order?: 'asc' | 'desc';
 }
 
-class BeneficiariesService extends BaseService<
-  Beneficiary,
-  BeneficiaryInsert,
-  BeneficiaryUpdate,
-  BeneficiaryFilters
-> {
-  constructor() {
-    super('beneficiaries');
-  }
+class BeneficiariesService {
+  private supabase = supabase;
 
   // Gelişmiş arama ve filtreleme
   async getAll(
@@ -56,8 +49,8 @@ class BeneficiariesService extends BaseService<
         query = query.eq('kategori', filters.category);
       }
       
-      if (filters.searchTerm) {
-        query = query.or(`ad.ilike.%${filters.searchTerm}%,soyad.ilike.%${filters.searchTerm}%,tc_no.ilike.%${filters.searchTerm}%`);
+      if (filters.search_term) {
+        query = query.or(`ad.ilike.%${filters.search_term}%,soyad.ilike.%${filters.search_term}%,tc_no.ilike.%${filters.search_term}%`);
       }
       
       // Apply sorting
@@ -124,6 +117,87 @@ class BeneficiariesService extends BaseService<
     } catch (error) {
       console.error('Error creating beneficiary from form:', error);
       return { data: null, error: 'Beneficiary oluşturulamadı' };
+    }
+  }
+
+  // Base methods implementation
+  async getById(id: string): Promise<ApiResponse<Beneficiary>> {
+    try {
+      const { data, error } = await this.supabase
+        .from('ihtiyac_sahipleri')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (error) {
+        console.error('Error fetching beneficiary:', error);
+        return { data: null, error: error.message };
+      }
+
+      return { data, error: null };
+    } catch (error) {
+      console.error('Error fetching beneficiary:', error);
+      return { data: null, error: 'Beneficiary bulunamadı' };
+    }
+  }
+
+  async create(data: BeneficiaryInsert): Promise<ApiResponse<Beneficiary>> {
+    try {
+      const { data: result, error } = await this.supabase
+        .from('ihtiyac_sahipleri')
+        .insert(data)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error creating beneficiary:', error);
+        return { data: null, error: error.message };
+      }
+
+      return { data: result, error: null };
+    } catch (error) {
+      console.error('Error creating beneficiary:', error);
+      return { data: null, error: 'Beneficiary oluşturulamadı' };
+    }
+  }
+
+  async update(id: string, data: BeneficiaryUpdate): Promise<ApiResponse<Beneficiary>> {
+    try {
+      const { data: result, error } = await this.supabase
+        .from('ihtiyac_sahipleri')
+        .update({ ...data, updated_at: new Date().toISOString() })
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error updating beneficiary:', error);
+        return { data: null, error: error.message };
+      }
+
+      return { data: result, error: null };
+    } catch (error) {
+      console.error('Error updating beneficiary:', error);
+      return { data: null, error: 'Beneficiary güncellenemedi' };
+    }
+  }
+
+  async delete(id: string): Promise<ApiResponse<boolean>> {
+    try {
+      const { error } = await this.supabase
+        .from('ihtiyac_sahipleri')
+        .delete()
+        .eq('id', id);
+
+      if (error) {
+        console.error('Error deleting beneficiary:', error);
+        return { data: false, error: error.message };
+      }
+
+      return { data: true, error: null };
+    } catch (error) {
+      console.error('Error deleting beneficiary:', error);
+      return { data: false, error: 'Beneficiary silinemedi' };
     }
   }
 

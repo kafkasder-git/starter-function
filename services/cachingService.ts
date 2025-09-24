@@ -754,14 +754,14 @@ export class CachingService {
           staleTime: 5 * 60 * 1000, // 5 minutes
           gcTime: 10 * 60 * 1000, // 10 minutes
           retry: 2,
-          retryDelay: (attemptIndex: number) => Math.min(1000 * 2 ** attemptIndex, 30000),
+          retryDelay: 1000, // 1 second default delay
           refetchOnWindowFocus: false,
           refetchOnReconnect: true,
-          refetchInterval: false,
+          refetchInterval: 0, // 0 means no automatic refetch
         },
         mutations: {
           retry: 1,
-          retryDelay: (attemptIndex: number) => Math.min(1000 * 2 ** attemptIndex, 30000),
+          retryDelay: 1000, // 1 second default delay
         },
       },
       strategies: {

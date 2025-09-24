@@ -8,6 +8,7 @@ interface MemoCache<T> {
 
 export class MemoizationService {
   private static readonly MAX_CACHE_SIZE = 1000;
+  private static cache = new Map<string, MemoCache<unknown>>();
 
   static memoize<TArgs extends unknown[], TReturn>(
     fn: (...args: TArgs) => TReturn,

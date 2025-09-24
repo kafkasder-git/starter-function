@@ -3,6 +3,8 @@
  * @description Gelişmiş test ve kalite güvence servisi
  */
 
+import React from 'react';
+
 // Test türleri
 export type TestType =
   | 'unit'
