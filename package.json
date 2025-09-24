@@ -25,7 +25,19 @@
     "format:check": "prettier --check .",
     "analyze": "npm run build && npx vite-bundle-visualizer",
     "lighthouse": "lhci autorun",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "quality:check": "npm run lint:check && npm run type-check && npm run format:check",
+    "quality:fix": "npm run lint:fix && npm run format",
+    "deps:check": "npm outdated",
+    "deps:update": "npm update",
+    "deps:audit": "npm audit --audit-level moderate",
+    "deps:fix": "npm audit fix",
+    "clean": "rm -rf dist node_modules/.vite .tsbuildinfo",
+    "fresh": "npm run clean && npm install",
+    "precommit": "lint-staged",
+    "postinstall": "husky install",
+    "cleanup:imports": "node scripts/cleanup-imports.js",
+    "cleanup:all": "npm run cleanup:imports && npm run format"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
@@ -147,6 +159,7 @@
     "msw": "^2.11.2",
     "playwright": "^1.48.2",
     "prettier": "^3.6.2",
+    "prettier-plugin-tailwindcss": "^0.6.14",
     "react-router-dom": "^6.30.1",
     "rollup-plugin-visualizer": "^6.0.3",
     "terser": "^5.44.0",
@@ -160,6 +173,18 @@
   "engines": {
     "node": ">=22.0.0",
     "npm": ">=10.0.0"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ],
+    "*.{css,scss}": [
+      "prettier --write"
+    ]
   },
   "browserslist": {
     "production": [

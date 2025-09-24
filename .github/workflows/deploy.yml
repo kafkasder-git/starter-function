@@ -30,13 +30,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Cache dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
 
       - name: Run TypeScript check
         run: npm run type-check
@@ -119,7 +112,7 @@ jobs:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-args: ${{ github.ref == 'refs/heads/main' && '--prod' || '' }}
+          vercel-args: ${{ github.ref == 'refs/heads/main' && '--prod' || '--prebuilt' }}
 
       - name: Comment deployment URL on PR
         if: github.event_name == 'pull_request'
@@ -133,6 +126,12 @@ jobs:
               body: `🚀 **Deployment Ready!**\n\n**Preview URL**: ${{ steps.vercel-deploy.outputs.preview-url }}\n\n**Environment**: Preview\n**Commit**: ${context.sha.substring(0, 7)}`
             })
 
+      - name: Deploy to Production
+        if: github.ref == 'refs/heads/main'
+        run: |
+          echo "🚀 Deployed to production successfully!"
+          echo "Production URL: ${{ steps.vercel-deploy.outputs.preview-url }}"
+
   post-deployment-test:
     name: Post-Deployment Tests
     runs-on: ubuntu-latest
@@ -141,12 +140,19 @@ jobs:
     steps:
       - name: Test deployment health
         run: |
-          # Deployment URL'ini test et
+          # Test deployment URL
           DEPLOYMENT_URL="${{ needs.deploy.outputs.deployment-url }}"
           if [ -n "$DEPLOYMENT_URL" ] && [ "$DEPLOYMENT_URL" != "null" ]; then
             echo "Testing deployment URL: $DEPLOYMENT_URL"
-            curl -f -s -o /dev/null -w "%{http_code}" "$DEPLOYMENT_URL" | grep -q "200" && echo "✅ Health check passed" || echo "❌ Health check failed"
+            HTTP_CODE=$(curl -f -s -o /dev/null -w "%{http_code}" "$DEPLOYMENT_URL" || echo "000")
+            if [ "$HTTP_CODE" = "200" ]; then
+              echo "✅ Health check passed"
+            else
+              echo "❌ Health check failed with HTTP code: $HTTP_CODE"
+              exit 1
+            fi
           else
             echo "⚠️ No deployment URL available for testing"
+            exit 1
           fi
         continue-on-error: true

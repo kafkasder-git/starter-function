@@ -258,6 +258,22 @@ Temporary Items
 *.zip
 
 # ==========================================
+# CODE QUALITY & BUILD
+# ==========================================
+# TypeScript build info
+.tsbuildinfo
+*.tsbuildinfo
+
+# ESLint cache
+.eslintcache
+
+# Prettier cache
+.prettiercache
+
+# Bundle analyzer
+bundle-analysis.html
+
+# ==========================================
 # PROJECT SPECIFIC
 # ==========================================
 # CSV imports
