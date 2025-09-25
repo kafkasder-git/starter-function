@@ -1,3 +1,10 @@
+/**
+ * @fileoverview SmartNotificationSystem Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
@@ -38,6 +45,11 @@ export type NotificationType =
   | 'event'
   | 'system';
 
+/**
+ * Notification Interface
+ * 
+ * @interface Notification
+ */
 export interface Notification {
   id: string;
   type: NotificationType;
@@ -145,6 +157,12 @@ interface SmartNotificationSystemProps {
   onMarkAllAsRead?: () => void;
 }
 
+/**
+ * SmartNotificationSystem function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function SmartNotificationSystem({
   className = '',
   onNotificationClick,
@@ -587,7 +605,7 @@ export function SmartNotificationSystem({
                     <Bell className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                     <h3 className="text-lg font-medium text-gray-900 mb-2">Bildirim Bulunamadı</h3>
                     <p className="text-gray-500">
-                      {searchQuery || filterType !== 'all' || filterPriority !== 'all'
+                      {searchQuery ?? filterType !== 'all' || filterPriority !== 'all'
                         ? 'Arama kriterlerinize uygun bildirim bulunamadı'
                         : 'Henüz bildirim bulunmuyor'}
                     </p>

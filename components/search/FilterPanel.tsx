@@ -1,3 +1,10 @@
+/**
+ * @fileoverview FilterPanel Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { useState } from 'react';
 import { motion } from 'motion/react';
 import {
@@ -36,6 +43,12 @@ interface FilterPanelProps {
   title?: string;
 }
 
+/**
+ * FilterPanel function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function FilterPanel({
   filters,
   className,
@@ -65,7 +78,7 @@ export function FilterPanel({
     value: any,
     operator: FilterValue['operator'] = 'eq',
   ) => {
-    if (value === undefined || value === null || value === '') {
+    if (value === undefined ?? value === null ?? value === '') {
       removeFilter(field);
     } else {
       addFilter({ field, value, operator });
@@ -98,7 +111,7 @@ export function FilterPanel({
             </Label>
             <Input
               id={filter.field}
-              value={currentValue || ''}
+              value={currentValue ?? ''}
               onChange={(e) => {
                 handleFilterChange(filter.field, e.target.value, 'contains');
               }}
@@ -113,13 +126,13 @@ export function FilterPanel({
           <div className="space-y-2">
             <Label className="text-sm font-medium">{filter.label}</Label>
             <Select
-              value={currentValue || ''}
+              value={currentValue ?? ''}
               onValueChange={(value) => {
                 handleFilterChange(filter.field, value);
               }}
             >
               <SelectTrigger className="h-9">
-                <SelectValue placeholder={filter.placeholder || 'Seçin'} />
+                <SelectValue placeholder={filter.placeholder ?? 'Seçin'} />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="">Tümü</SelectItem>
@@ -297,7 +310,7 @@ export function FilterPanel({
         <div className="flex flex-wrap gap-1">
           {searchState.filters.map((filter, index) => {
             const config = filters.find((f) => f.field === filter.field);
-            const label = config?.label || filter.field;
+            const label = config?.label ?? filter.field;
 
             return (
               <Badge

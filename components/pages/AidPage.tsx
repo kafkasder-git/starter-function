@@ -1,3 +1,10 @@
+/**
+ * @fileoverview AidPage Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { useState } from 'react';
 import { PageLayout } from '../PageLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
@@ -37,6 +44,12 @@ interface AidRequest {
 // TODO: Load from API
 const mockAidRequests: AidRequest[] = [];
 
+/**
+ * AidPage function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function AidPage() {
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -262,7 +275,7 @@ export function AidPage() {
                     <TableCell className="text-gray-500">
                       {new Date(request.submitDate).toLocaleDateString('tr-TR')}
                     </TableCell>
-                    <TableCell className="text-gray-600">{request.assignedTo || '-'}</TableCell>
+                    <TableCell className="text-gray-600">{request.assignedTo ?? '-'}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex gap-1 justify-end">
                         <Button variant="ghost" size="sm">

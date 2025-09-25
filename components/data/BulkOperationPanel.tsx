@@ -1,3 +1,10 @@
+/**
+ * @fileoverview BulkOperationPanel Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
@@ -37,6 +44,12 @@ interface BulkOperationPanelProps {
   autoHide?: boolean;
 }
 
+/**
+ * BulkOperationPanel function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function BulkOperationPanel({
   className,
   maxHeight = '400px',
@@ -58,7 +71,7 @@ export function BulkOperationPanel({
 
   const stats = getOperationStats();
   const visibleOperations = showCompleted ? getAllOperations() : getActiveOperations();
-  const hasActiveOperations = stats.running > 0 || stats.pending > 0;
+  const hasActiveOperations = stats.running > 0 ?? stats.pending > 0;
 
   // Auto-hide when no active operations
   if (autoHide && !hasActiveOperations && visibleOperations.length === 0) {
@@ -136,7 +149,7 @@ export function BulkOperationPanel({
   // Format duration
   const formatDuration = (operation: BulkOperation) => {
     const start = operation.startTime;
-    const end = operation.endTime || new Date();
+    const end = operation.endTime ?? new Date();
     const duration = Math.round((end.getTime() - start.getTime()) / 1000);
 
     if (duration < 60) {

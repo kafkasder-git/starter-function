@@ -1,6 +1,19 @@
+/**
+ * @fileoverview useDebounce Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { useState, useEffect, useRef } from 'react';
 
 // Debounce hook for search and input optimization
+/**
+ * useDebounce function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = useState<T>(value);
 
@@ -18,6 +31,12 @@ export function useDebounce<T>(value: T, delay: number): T {
 }
 
 // Throttle hook for scroll and resize events
+/**
+ * useThrottle function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useThrottle<T>(value: T, delay: number): T {
   const [throttledValue, setThrottledValue] = useState<T>(value);
   const lastExecuted = useRef<number>(Date.now());
@@ -42,6 +61,12 @@ export function useThrottle<T>(value: T, delay: number): T {
 }
 
 // Optimized search hook
+/**
+ * useSearch function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useSearch<T>(
   items: T[],
   searchFields: (keyof T)[],
@@ -73,6 +98,12 @@ export function useSearch<T>(
 }
 
 // Intersection Observer hook for lazy loading
+/**
+ * useIntersectionObserver function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useIntersectionObserver(
   elementRef: React.RefObject<Element>,
   options?: IntersectionObserverInit,
@@ -98,6 +129,12 @@ export function useIntersectionObserver(
 }
 
 // Virtual scrolling hook for large lists
+/**
+ * useVirtualScroll function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useVirtualScroll<T>(
   items: T[],
   containerHeight: number,

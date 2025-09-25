@@ -1,3 +1,10 @@
+/**
+ * @fileoverview BankPaymentOrdersPage Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import {
   Building2,
   Calendar,
@@ -129,6 +136,12 @@ const mockPaymentOrders: PaymentOrder[] = [
   },
 ];
 
+/**
+ * BankPaymentOrdersPage function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function BankPaymentOrdersPage() {
   const [paymentOrders, setPaymentOrders] = useState<PaymentOrder[]>(mockPaymentOrders);
   const [searchTerm, setSearchTerm] = useState('');
@@ -219,10 +232,10 @@ export function BankPaymentOrdersPage() {
       recipientName: newOrder.recipientName,
       recipientId: newOrder.recipientId,
       recipientIban: newOrder.recipientIban,
-      recipientBank: newOrder.recipientBank || 'Belirtilmemiş',
+      recipientBank: newOrder.recipientBank ?? 'Belirtilmemiş',
       amount,
       description: newOrder.description,
-      aidType: newOrder.aidType || 'Nakdi Yardım',
+      aidType: newOrder.aidType ?? 'Nakdi Yardım',
       createdDate: new Date().toISOString().slice(0, 16).replace('T', ' '),
       scheduledDate: newOrder.scheduledDate,
       status: 'pending',

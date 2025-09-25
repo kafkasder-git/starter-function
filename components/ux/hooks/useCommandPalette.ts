@@ -1,3 +1,10 @@
+/**
+ * @fileoverview useCommandPalette Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { useState, useEffect, useCallback } from 'react';
 
 interface UseCommandPaletteOptions {
@@ -7,6 +14,12 @@ interface UseCommandPaletteOptions {
   disabled?: boolean;
 }
 
+/**
+ * useCommandPalette function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useCommandPalette({
   shortcut = 'cmd+k',
   onOpen,
@@ -39,7 +52,7 @@ export function useCommandPalette({
     if (disabled) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      const isCmd = e.metaKey || e.ctrlKey;
+      const isCmd = e.metaKey ?? e.ctrlKey;
       const key = e.key.toLowerCase();
 
       // Parse shortcut (e.g., "cmd+k", "ctrl+/")

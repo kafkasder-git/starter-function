@@ -1,7 +1,20 @@
+/**
+ * @fileoverview AIAssistantPage Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { Bot, Lightbulb, MessageSquare, Zap } from 'lucide-react';
 import { PageLayout } from '../PageLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 
+/**
+ * AIAssistantPage function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export default function AIAssistantPage() {
   return (
     <PageLayout title="AI Asistan" subtitle="Tüm modüllerle çalışabilen akıllı asistan sistemi">

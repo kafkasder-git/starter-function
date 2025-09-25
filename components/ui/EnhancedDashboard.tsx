@@ -1,3 +1,10 @@
+/**
+ * @fileoverview EnhancedDashboard Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { Activity, Calendar, Clock, Heart, RefreshCw, Users } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import React from 'react';

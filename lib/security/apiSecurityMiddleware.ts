@@ -1,5 +1,13 @@
+/**
+ * @fileoverview apiSecurityMiddleware Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { z } from 'zod';
 import { ServiceError, ServiceErrorCode } from '../../services/config';
+import { logger } from '../lib/logging/logger';
 import {
   RateLimiter,
   InputSanitizer,
@@ -13,6 +21,11 @@ import {
 } from './apiSecurity';
 
 // Request context interface
+/**
+ * SecurityContext Interface
+ * 
+ * @interface SecurityContext
+ */
 export interface SecurityContext {
   userId?: string;
   sessionId: string;
@@ -25,6 +38,11 @@ export interface SecurityContext {
 }
 
 // Security middleware result
+/**
+ * SecurityResult Interface
+ * 
+ * @interface SecurityResult
+ */
 export interface SecurityResult {
   allowed: boolean;
   error?: ServiceError;
@@ -37,6 +55,13 @@ export interface SecurityResult {
 }
 
 // API Security Middleware class
+/**
+ * APISecurityMiddleware Service
+ * 
+ * Service class for handling apisecuritymiddleware operations
+ * 
+ * @class APISecurityMiddleware
+ */
 export class APISecurityMiddleware {
   private readonly rateLimiters = new Map<string, RateLimiter>();
   private config: APISecurityConfig;
@@ -162,7 +187,7 @@ export class APISecurityMiddleware {
     const checks = [
       { key: 'global', limiter: this.rateLimiters.get('global')! },
       {
-        key: `user:${context.userId || context.ipAddress}`,
+        key: `user:${context.userId ?? context.ipAddress}`,
         limiter: this.rateLimiters.get('per-user')!,
       },
     ];
@@ -171,7 +196,7 @@ export class APISecurityMiddleware {
     const endpointLimiter = this.rateLimiters.get(`endpoint:${context.endpoint}`);
     if (endpointLimiter) {
       checks.push({
-        key: `endpoint:${context.endpoint}:${context.userId || context.ipAddress}`,
+        key: `endpoint:${context.endpoint}:${context.userId ?? context.ipAddress}`,
         limiter: endpointLimiter,
       });
     }
@@ -199,7 +224,7 @@ export class APISecurityMiddleware {
 
     // Return rate limit info for the most restrictive limiter
     const userLimiter = this.rateLimiters.get('per-user')!;
-    const userKey = `user:${context.userId || context.ipAddress}`;
+    const userKey = `user:${context.userId ?? context.ipAddress}`;
 
     return {
       allowed: true,
@@ -345,6 +370,12 @@ export class APISecurityMiddleware {
 export const apiSecurityMiddleware = new APISecurityMiddleware();
 
 // Helper function to create security context
+/**
+ * createSecurityContext function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function createSecurityContext(
   endpoint: string,
   method: string,
@@ -358,17 +389,23 @@ export function createSecurityContext(
 ): SecurityContext {
   return {
     userId: options.userId,
-    sessionId: options.sessionId || 'anonymous',
-    ipAddress: options.ipAddress || '127.0.0.1',
-    userAgent: options.userAgent || 'Unknown',
+    sessionId: options.sessionId ?? 'anonymous',
+    ipAddress: options.ipAddress ?? '127.0.0.1',
+    userAgent: options.userAgent ?? 'Unknown',
     endpoint,
     method: method.toUpperCase(),
-    version: options.version || DEFAULT_SECURITY_CONFIG.apiVersioning.currentVersion,
+    version: options.version ?? DEFAULT_SECURITY_CONFIG.apiVersioning.currentVersion,
     timestamp: Date.now(),
   };
 }
 
 // Decorator for securing service methods
+/**
+ * SecureEndpoint function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function SecureEndpoint(endpoint: string, options: { requireAuth?: boolean } = {}) {
   return function (target: any, propertyName: string, descriptor: PropertyDescriptor) {
     const method = descriptor.value;
@@ -385,7 +422,7 @@ export function SecureEndpoint(endpoint: string, options: { requireAuth?: boolea
       }
 
       if (securityResult.warnings) {
-        console.warn('Security warnings:', securityResult.warnings);
+        logger.warn('Security warnings:', securityResult.warnings);
       }
 
       return method.apply(this, args);

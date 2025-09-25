@@ -8,10 +8,16 @@ import { environment } from '../lib/environment';
 import { monitoring } from './monitoringService';
 import { queryOptimizationService } from './queryOptimizationService';
 
+import { logger } from '../lib/logging/logger';
 // =============================================================================
 // TYPES AND INTERFACES
 // =============================================================================
 
+/**
+ * DatabaseIndex Interface
+ * 
+ * @interface DatabaseIndex
+ */
 export interface DatabaseIndex {
   indexName: string;
   tableName: string;
@@ -28,6 +34,11 @@ export interface DatabaseIndex {
   definition: string;
 }
 
+/**
+ * IndexSuggestion Interface
+ * 
+ * @interface IndexSuggestion
+ */
 export interface IndexSuggestion {
   table: string;
   columns: string[];
@@ -39,6 +50,11 @@ export interface IndexSuggestion {
   priority: number;
 }
 
+/**
+ * IndexAnalysis Interface
+ * 
+ * @interface IndexAnalysis
+ */
 export interface IndexAnalysis {
   tableName: string;
   totalIndexes: number;
@@ -55,6 +71,11 @@ export interface IndexAnalysis {
   };
 }
 
+/**
+ * IndexMaintenance Interface
+ * 
+ * @interface IndexMaintenance
+ */
 export interface IndexMaintenance {
   operation: 'create' | 'drop' | 'rebuild' | 'analyze';
   indexName: string;
@@ -70,6 +91,13 @@ export interface IndexMaintenance {
 // INDEX MANAGEMENT SERVICE CLASS
 // =============================================================================
 
+/**
+ * IndexManagementService Service
+ * 
+ * Service class for handling indexmanagementservice operations
+ * 
+ * @class IndexManagementService
+ */
 export class IndexManagementService {
   private static instance: IndexManagementService;
   private readonly indexCache = new Map<string, DatabaseIndex[]>();
@@ -120,11 +148,11 @@ export class IndexManagementService {
         isUnique: row.is_unique,
         isPrimary: row.is_primary,
         isClustered: row.is_clustered,
-        size: row.size_bytes || 0,
-        usageCount: row.usage_count || 0,
+        size: row.size_bytes ?? 0,
+        usageCount: row.usage_count ?? 0,
         lastUsed: row.last_used ? new Date(row.last_used) : undefined,
         createdAt: new Date(row.created_at),
-        definition: row.definition || '',
+        definition: row.definition ?? '',
       }));
 
       this.setCachedIndexes(cacheKey, indexes);
@@ -169,7 +197,7 @@ export class IndexManagementService {
 
       const tableNames = [...new Set(indexes.map((idx) => idx.tableName))];
       const analysis: IndexAnalysis = {
-        tableName: tableName || 'all_tables',
+        tableName: tableName ?? 'all_tables',
         totalIndexes: indexes.length,
         usedIndexes: 0,
         unusedIndexes: 0,
@@ -221,7 +249,7 @@ export class IndexManagementService {
         category: 'database',
         action: 'analyze_indexes',
         metadata: {
-          tableName: tableName || 'all',
+          tableName: tableName ?? 'all',
           totalIndexes: analysis.totalIndexes,
           usedIndexes: analysis.usedIndexes,
           efficiency: analysis.scanEfficiency.efficiency,
@@ -261,12 +289,12 @@ export class IndexManagementService {
       }
 
       return {
-        seqScans: data.seq_scans || 0,
-        indexScans: data.index_scans || 0,
-        bitmapScans: data.bitmap_scans || 0,
+        seqScans: data.seq_scans ?? 0,
+        indexScans: data.index_scans ?? 0,
+        bitmapScans: data.bitmap_scans ?? 0,
       };
     } catch (error) {
-      console.warn(`Failed to get scan stats for ${tableName}:`, error);
+      logger.warn(`Failed to get scan stats for ${tableName}:`, error);
       return { seqScans: 0, indexScans: 0, bitmapScans: 0 };
     }
   }
@@ -321,7 +349,7 @@ export class IndexManagementService {
       const uniqueSuggestions = this.deduplicateSuggestions(suggestions);
       return uniqueSuggestions.sort((a, b) => b.priority - a.priority);
     } catch (error) {
-      console.warn('Failed to generate index suggestions:', error);
+      logger.warn('Failed to generate index suggestions:', error);
       return [];
     }
   }
@@ -342,9 +370,9 @@ export class IndexManagementService {
         const whereClause = whereMatch[1];
         const columns = this.extractColumnsFromCondition(whereClause);
 
-        if (columns.length > 0 && (!targetTable || this.queryUsesTable(sql, targetTable))) {
+        if (columns.length > 0 && (!targetTable ?? this.queryUsesTable(sql, targetTable))) {
           suggestions.push({
-            table: targetTable || 'unknown',
+            table: targetTable ?? 'unknown',
             columns,
             indexType: columns.length === 1 ? 'btree' : 'btree',
             reason: 'WHERE clause filtering',
@@ -384,7 +412,7 @@ export class IndexManagementService {
 
         if (orderColumns.length > 0) {
           suggestions.push({
-            table: targetTable || 'unknown',
+            table: targetTable ?? 'unknown',
             columns: orderColumns,
             indexType: 'btree',
             reason: 'ORDER BY sorting',
@@ -396,7 +424,7 @@ export class IndexManagementService {
         }
       }
     } catch (error) {
-      console.warn('Query analysis failed:', error);
+      logger.warn('Query analysis failed:', error);
     }
 
     return suggestions;
@@ -508,8 +536,8 @@ export class IndexManagementService {
     const startTime = Date.now();
 
     try {
-      const indexName = options.indexName || this.generateIndexName(tableName, columnNames);
-      const schema = options.schema || 'public';
+      const indexName = options.indexName ?? this.generateIndexName(tableName, columnNames);
+      const schema = options.schema ?? 'public';
       const concurrently = options.concurrently !== false;
 
       const { error } = await supabase.rpc('create_database_index', {
@@ -517,8 +545,8 @@ export class IndexManagementService {
         table_name: tableName,
         index_name: indexName,
         column_names: columnNames,
-        index_type: options.indexType || 'btree',
-        is_unique: options.unique || false,
+        index_type: options.indexType ?? 'btree',
+        is_unique: options.unique ?? false,
         concurrently,
       });
 
@@ -535,7 +563,7 @@ export class IndexManagementService {
         tableName,
         indexName,
         columnCount: columnNames.length,
-        indexType: options.indexType || 'btree',
+        indexType: options.indexType ?? 'btree',
       });
 
       return { success: true, indexName };
@@ -570,7 +598,7 @@ export class IndexManagementService {
     const startTime = Date.now();
 
     try {
-      const schema = options.schema || 'public';
+      const schema = options.schema ?? 'public';
       const concurrently = options.concurrently !== false;
       const ifExists = options.ifExists !== false;
 
@@ -624,7 +652,7 @@ export class IndexManagementService {
     const startTime = Date.now();
 
     try {
-      const schema = options.schema || 'public';
+      const schema = options.schema ?? 'public';
       const concurrently = options.concurrently !== false;
 
       const { error } = await supabase.rpc('rebuild_database_index', {
@@ -797,7 +825,7 @@ export class IndexManagementService {
       };
       localStorage.setItem(`index_cache_${key}`, JSON.stringify(cacheData));
     } catch (error) {
-      console.warn('Failed to cache indexes:', error);
+      logger.warn('Failed to cache indexes:', error);
     }
   }
 
@@ -839,7 +867,7 @@ export class IndexManagementService {
           try {
             await this.performIndexMaintenance();
           } catch (error) {
-            console.warn('Index maintenance failed:', error);
+            logger.warn('Index maintenance failed:', error);
           }
         },
         24 * 60 * 60 * 1000,
@@ -893,7 +921,7 @@ export class IndexManagementService {
       // Clear old cache entries
       this.clearExpiredCache();
     } catch (error) {
-      console.warn('Index maintenance failed:', error);
+      logger.warn('Index maintenance failed:', error);
     }
   }
 

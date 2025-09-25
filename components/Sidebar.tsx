@@ -1,3 +1,10 @@
+/**
+ * @fileoverview Sidebar Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import {
   BarChart3,
   Bot,
@@ -47,6 +54,12 @@ interface SidebarProps {
   onMobileToggle?: () => void;
 }
 
+/**
+ * Sidebar function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function Sidebar({
   activeModule = 'genel',
   onModuleChange,

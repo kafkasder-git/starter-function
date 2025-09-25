@@ -1,3 +1,10 @@
+/**
+ * @fileoverview LegalReportsPage Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { useState } from 'react';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
@@ -13,6 +20,12 @@ import {
   Download,
 } from 'lucide-react';
 
+/**
+ * LegalReportsPage function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export default function LegalReportsPage() {
   const [activeTab, setActiveTab] = useState('overview');
 

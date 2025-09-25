@@ -1,3 +1,10 @@
+/**
+ * @fileoverview AllAidListPage Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { useState } from 'react';
 import { PageLayout } from '../PageLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
@@ -125,6 +132,12 @@ const mockAidRecords: AidRecord[] = [
   },
 ];
 
+/**
+ * AllAidListPage function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function AllAidListPage() {
   const [aidRecords, setAidRecords] = useState<AidRecord[]>(mockAidRecords);
   const [searchTerm, setSearchTerm] = useState('');

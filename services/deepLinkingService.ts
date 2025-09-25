@@ -1,8 +1,21 @@
 /**
+ * @fileoverview deepLinkingService Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
+import { logger } from '../lib/logging/logger';
+/**
  * Deep Linking Service
  * Handles deep links, URL parameters, and navigation state
  */
 
+/**
+ * DeepLinkRoute Interface
+ * 
+ * @interface DeepLinkRoute
+ */
 export interface DeepLinkRoute {
   path: string;
   module: string;
@@ -11,11 +24,21 @@ export interface DeepLinkRoute {
   state?: any;
 }
 
+/**
+ * DeepLinkHandler Interface
+ * 
+ * @interface DeepLinkHandler
+ */
 export interface DeepLinkHandler {
   pattern: RegExp;
   handler: (match: RegExpMatchArray, params: URLSearchParams) => DeepLinkRoute;
 }
 
+/**
+ * ShareableLink Interface
+ * 
+ * @interface ShareableLink
+ */
 export interface ShareableLink {
   url: string;
   title: string;
@@ -197,7 +220,7 @@ class DeepLinkingService {
         params: Object.fromEntries(searchParams.entries()),
       };
     } catch (error) {
-      console.error('Failed to parse URL:', error);
+      logger.error('Failed to parse URL:', error);
       return null;
     }
   }
@@ -216,8 +239,8 @@ class DeepLinkingService {
     try {
       const fullRoute: DeepLinkRoute = {
         path: route.path || `/${route.module}${route.page ? `/${route.page}` : ''}`,
-        module: route.module || 'genel',
-        page: route.page || 'dashboard',
+        module: route.module ?? 'genel',
+        page: route.page ?? 'dashboard',
         params: route.params || {},
         state: route.state,
       };
@@ -238,9 +261,9 @@ class DeepLinkingService {
       this.currentRoute = fullRoute;
       this.notifyListeners(fullRoute);
 
-      console.log('Navigated to:', fullRoute);
+      logger.info('Navigated to:', fullRoute);
     } catch (error) {
-      console.error('Navigation failed:', error);
+      logger.error('Navigation failed:', error);
     }
   }
 
@@ -267,12 +290,12 @@ class DeepLinkingService {
     // Add timestamp for unique sharing
     currentUrl.searchParams.set('shared', Date.now().toString());
 
-    const route = this.currentRoute || this.parseCurrentUrl();
+    const route = this.currentRoute ?? this.parseCurrentUrl();
 
     return {
       url: currentUrl.href,
-      title: options.title || this.getPageTitle(route),
-      description: options.description || this.getPageDescription(route),
+      title: options.title ?? this.getPageTitle(route),
+      description: options.description ?? this.getPageDescription(route),
       metadata: {
         module: route?.module,
         page: route?.page,
@@ -299,7 +322,7 @@ class DeepLinkingService {
 
       return route;
     } catch (error) {
-      console.error('Failed to parse shared link:', error);
+      logger.error('Failed to parse shared link:', error);
       return null;
     }
   }
@@ -334,7 +357,7 @@ class DeepLinkingService {
       try {
         listener(route);
       } catch (error) {
-        console.error('Route listener error:', error);
+        logger.error('Route listener error:', error);
       }
     });
   }
@@ -423,7 +446,7 @@ class DeepLinkingService {
 
       return null;
     } catch (error) {
-      console.error('Failed to handle custom protocol:', error);
+      logger.error('Failed to handle custom protocol:', error);
       return null;
     }
   }
@@ -439,10 +462,10 @@ class DeepLinkingService {
           `${window.location.origin}/#/handle-protocol?url=%s`,
           'Dernek Yönetim Sistemi',
         );
-        console.log('Protocol handler registered');
+        logger.info('Protocol handler registered');
       }
     } catch (error) {
-      console.error('Failed to register protocol handler:', error);
+      logger.error('Failed to register protocol handler:', error);
     }
   }
 
@@ -514,7 +537,7 @@ class DeepLinkingService {
 
       return null;
     } catch (error) {
-      console.error('Failed to parse entity link:', error);
+      logger.error('Failed to parse entity link:', error);
       return null;
     }
   }

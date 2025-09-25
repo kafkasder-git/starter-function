@@ -1,3 +1,10 @@
+/**
+ * @fileoverview useBulkImport Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 // 📊 BULK DATA IMPORT HOOK
 // High-performance bulk data import with progress tracking and error handling
 
@@ -5,6 +12,11 @@ import { useState, useCallback, useRef } from 'react';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
+/**
+ * BulkImportProgress Interface
+ * 
+ * @interface BulkImportProgress
+ */
 export interface BulkImportProgress {
   readonly total: number;
   readonly processed: number;
@@ -17,6 +29,11 @@ export interface BulkImportProgress {
   readonly processingSpeed: number; // records per second
 }
 
+/**
+ * BulkImportError Interface
+ * 
+ * @interface BulkImportError
+ */
 export interface BulkImportError {
   readonly rowIndex: number;
   readonly rowData: Record<string, unknown>;
@@ -24,6 +41,11 @@ export interface BulkImportError {
   readonly field?: string;
 }
 
+/**
+ * BulkImportResult Interface
+ * 
+ * @interface BulkImportResult
+ */
 export interface BulkImportResult<T> {
   readonly successful: T[];
   readonly failed: BulkImportError[];
@@ -36,6 +58,11 @@ export interface BulkImportResult<T> {
   };
 }
 
+/**
+ * BulkImportOptions Interface
+ * 
+ * @interface BulkImportOptions
+ */
 export interface BulkImportOptions {
   readonly batchSize?: number;
   readonly delayBetweenBatches?: number;
@@ -57,6 +84,12 @@ const DEFAULT_OPTIONS: Required<BulkImportOptions> = {
 /**
  * High-performance bulk import hook with comprehensive error handling
  * Supports batch processing, progress tracking, and rollback mechanisms
+ */
+/**
+ * useBulkImport function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
  */
 export function useBulkImport<T extends Record<string, unknown>>(
   schema: z.ZodSchema<T>,
@@ -374,7 +407,7 @@ export function useBulkImport<T extends Record<string, unknown>>(
         [
           error.rowIndex,
           error.error.replace(/,/g, ';'),
-          error.field || '',
+          error.field ?? '',
           JSON.stringify(error.rowData).replace(/,/g, ';'),
         ].join(','),
       ),

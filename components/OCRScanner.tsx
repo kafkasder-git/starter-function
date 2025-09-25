@@ -1,3 +1,10 @@
+/**
+ * @fileoverview OCRScanner Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { Button } from './ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from './ui/dialog';
@@ -16,6 +23,7 @@ import {
 import { cn } from './ui/utils';
 import { toast } from 'sonner';
 
+import { logger } from '../lib/logging/logger';
 interface OCRScannerProps {
   isOpen: boolean;
   onClose: () => void;
@@ -50,9 +58,9 @@ const processOCR = async (
     try {
       const tesseractModule = await import('tesseract.js');
       // Handle both default and named exports
-      Tesseract = tesseractModule.default || tesseractModule;
+      Tesseract = tesseractModule.default ?? tesseractModule;
     } catch (importError) {
-      console.error('Tesseract.js import failed:', importError);
+      logger.error('Tesseract.js import failed:', importError);
       throw new Error('OCR kütüphanesi yüklenemedi. İnternet bağlantınızı kontrol edin.');
     }
 
@@ -60,7 +68,7 @@ const processOCR = async (
     try {
       worker = await Tesseract.createWorker('tur+eng', 1);
     } catch (workerError) {
-      console.error('Worker creation failed:', workerError);
+      logger.error('Worker creation failed:', workerError);
       // Fallback to basic worker creation
       try {
         worker = await Tesseract.createWorker();
@@ -69,14 +77,14 @@ const processOCR = async (
         await worker.loadLanguage('tur+eng');
         await worker.initialize('tur+eng');
       } catch (fallbackError) {
-        console.error('Fallback worker creation failed:', fallbackError);
+        logger.error('Fallback worker creation failed:', fallbackError);
         throw new Error('OCR işlemcisi oluşturulamadı.');
       }
     }
 
     try {
       // Set OCR parameters for better document recognition
-      console.log('Configuring OCR parameters...');
+      logger.info('Configuring OCR parameters...');
       await worker.setParameters({
         tessedit_pageseg_mode: '1', // Automatic page segmentation with OSD
         tessedit_char_whitelist:
@@ -101,7 +109,7 @@ const processOCR = async (
         documentType,
       };
     } catch (ocrError) {
-      console.error('OCR processing failed:', ocrError);
+      logger.error('OCR processing failed:', ocrError);
 
       if (ocrError instanceof Error) {
         if (ocrError.message.includes('language') || ocrError.message.includes('Loading')) {
@@ -119,7 +127,7 @@ const processOCR = async (
       throw new Error('OCR işlemi başarısız oldu. Görüntü kalitesini artırın.');
     }
   } catch (error) {
-    console.error('OCR processing error:', error);
+    logger.error('OCR processing error:', error);
 
     // Re-throw known errors
     if (
@@ -140,7 +148,7 @@ const processOCR = async (
       try {
         await worker.terminate();
       } catch (terminateError) {
-        console.warn('Worker termination warning:', terminateError);
+        logger.warn('Worker termination warning:', terminateError);
       }
     }
   }
@@ -198,8 +206,8 @@ const parseDocumentText = (text: string, documentType: 'id' | 'passport') => {
     const birthPlace = extractBirthPlace(cleanText);
 
     return {
-      name: name || '',
-      surname: surname || '',
+      name: name ?? '',
+      surname: surname ?? '',
       idNumber: idMatch?.[1] || '',
       birthDate: dateMatch
         ? `${dateMatch[1].padStart(2, '0')}.${dateMatch[2].padStart(2, '0')}.${dateMatch[3]}`
@@ -250,8 +258,8 @@ const parseDocumentText = (text: string, documentType: 'id' | 'passport') => {
     const birthPlace = extractBirthPlace(cleanText);
 
     return {
-      name: name || '',
-      surname: surname || '',
+      name: name ?? '',
+      surname: surname ?? '',
       documentNumber: docMatch?.[1] || '',
       birthDate: dateMatch
         ? `${dateMatch[1].padStart(2, '0')}.${dateMatch[2].padStart(2, '0')}.${dateMatch[3]}`
@@ -341,6 +349,12 @@ const extractBirthPlace = (text: string): string => {
   return '';
 };
 
+/**
+ * OCRScanner function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function OCRScanner({
   isOpen,
   onClose,
@@ -400,7 +414,7 @@ export function OCRScanner({
       setIsScanning(true);
       setCameraPermission('granted');
     } catch (error) {
-      console.error('Camera access error:', error);
+      logger.error('Camera access error:', error);
       setCameraPermission('denied');
       setError(
         'Kameraya erişilemedi. Lütfen kamera izni verin veya dosya yükleme seçeneğini kullanın.',
@@ -491,7 +505,7 @@ export function OCRScanner({
           );
         }
       } catch (error) {
-        console.error('OCR processing error:', error);
+        logger.error('OCR processing error:', error);
         const errorMessage =
           error instanceof Error
             ? error.message
@@ -568,7 +582,7 @@ export function OCRScanner({
           score -= 0.2;
         }
 
-        if (img.width < 800 || img.height < 600) {
+        if (img.width < 800 ?? img.height < 600) {
           issues.push('Düşük çözünürlük');
           score -= 0.2;
         }
@@ -790,12 +804,7 @@ export function OCRScanner({
     if (!scanResult) return null;
 
     const hasData =
-      scanResult.name ||
-      scanResult.surname ||
-      scanResult.idNumber ||
-      scanResult.documentNumber ||
-      scanResult.birthDate ||
-      scanResult.birthPlace;
+      scanResult.name ?? scanResult.surname ?? scanResult.idNumber ?? scanResult.documentNumber ?? scanResult.birthDate ?? scanResult.birthPlace;
 
     return (
       <div className="space-y-4">

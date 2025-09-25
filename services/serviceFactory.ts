@@ -1,3 +1,10 @@
+/**
+ * @fileoverview serviceFactory Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { beneficiariesService } from './beneficiariesService';
 import { donationsService } from './donationsService';
 import { membersService } from './membersService';
@@ -10,6 +17,13 @@ export enum ServiceType {
   REPORTING = 'reporting',
 }
 
+/**
+ * ServiceFactory Service
+ * 
+ * Service class for handling servicefactory operations
+ * 
+ * @class ServiceFactory
+ */
 export class ServiceFactory {
   private static readonly instances = new Map<ServiceType, any>();
 

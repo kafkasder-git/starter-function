@@ -1,8 +1,16 @@
+/**
+ * @fileoverview environment Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 // 🌍 ENVIRONMENT CONFIGURATION MANAGER
 // Centralized environment variable management
 
 import { generateTestSecret } from './security/testSecrets';
 
+import { logger } from '../lib/logging/logger';
 interface EnvironmentConfig {
   // Application
   app: {
@@ -99,9 +107,9 @@ function getEnvVar(key: string, defaultValue?: string): string {
   }
 
   // If no environment variable is set, use default value
-  if (!value || value === '') {
+  if (!value ?? value === '') {
     if (defaultValue === undefined) {
-      console.warn(`Environment variable ${key} is not defined and no default provided`);
+      logger.warn(`Environment variable ${key} is not defined and no default provided`);
       return '';
     }
     return defaultValue;
@@ -135,7 +143,7 @@ function validateEnvironment(): void {
       process.env.VITE_SUPABASE_ANON_KEY ??= 'test-anon-key';
       process.env.VITE_CSRF_SECRET ??= generateTestSecret('csrf');
     }
-    console.log('🧪 Test mode: Using default environment values');
+    logger.info('🧪 Test mode: Using default environment values');
     return;
   }
 
@@ -145,7 +153,7 @@ function validateEnvironment(): void {
 
   for (const varName of requiredVars) {
     const value = getEnvVar(varName, '');
-    if (!value || value === '') {
+    if (!value ?? value === '') {
       missingVars.push(varName);
     }
   }
@@ -200,19 +208,25 @@ Bu çok tehlikelidir! Lütfen:
     }
   }
 
-  console.log('✅ Environment validation başarılı');
+  logger.info('✅ Environment validation başarılı');
 }
 
 // Lazy environment validation - only validate when explicitly requested
 let environmentValidated = false;
 
+/**
+ * validateEnvironmentIfNeeded function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function validateEnvironmentIfNeeded(): void {
   if (environmentValidated) return;
 
   const appMode = getEnvVar('VITE_APP_MODE', 'development');
   const forceValidation = getEnvVar('VITE_FORCE_ENV_VALIDATION', 'false');
   const shouldValidate = appMode !== 'test' || forceValidation === 'true';
-  console.log('🔧 Environment validation check:', {
+  logger.info('🔧 Environment validation check:', {
     mode: appMode,
     shouldValidate,
     forceValidation,
@@ -221,7 +235,7 @@ export function validateEnvironmentIfNeeded(): void {
   if (shouldValidate) {
     validateEnvironment();
   } else {
-    console.log('🧪 Skipping environment validation in test mode');
+    logger.info('🧪 Skipping environment validation in test mode');
   }
 
   environmentValidated = true;
@@ -313,6 +327,12 @@ export const environment: EnvironmentConfig = {
 };
 
 // Environment info for debugging
+/**
+ * getEnvironmentInfo function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function getEnvironmentInfo() {
   return {
     config: environment,
@@ -348,7 +368,7 @@ export const isDevelopment = (): boolean => {
 export const log = {
   debug: (...args: unknown[]) => {
     if (environment.logging.console && environment.logging.level === 'debug') {
-      console.debug('[DEBUG]', ...args);
+      logger.debug('[DEBUG]', ...args);
     }
   },
 
@@ -363,13 +383,13 @@ export const log = {
       environment.logging.console &&
       ['debug', 'info', 'warn'].includes(environment.logging.level)
     ) {
-      console.warn('[WARN]', ...args);
+      logger.warn('[WARN]', ...args);
     }
   },
 
   error: (...args: unknown[]) => {
     if (environment.logging.console) {
-      console.error('[ERROR]', ...args);
+      logger.error('[ERROR]', ...args);
     }
 
     if (environment.logging.errorTracking) {

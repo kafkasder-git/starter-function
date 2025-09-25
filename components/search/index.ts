@@ -1,3 +1,10 @@
+/**
+ * @fileoverview index Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 // Search system exports
 export { SearchProvider, useSearchContext, useQuickSearch } from './SearchProvider';
 export { EnhancedSearchInput } from './EnhancedSearchInput';

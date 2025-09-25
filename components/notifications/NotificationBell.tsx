@@ -1,3 +1,10 @@
+/**
+ * @fileoverview NotificationBell Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Bell, BellRing } from 'lucide-react';
@@ -6,6 +13,7 @@ import { Badge } from '../ui/badge';
 import { useNotificationStore } from '../../stores/notificationStore';
 import { cn } from '../ui/utils';
 
+import { logger } from '../lib/logging/logger';
 interface NotificationBellProps {
   className?: string;
   showBadge?: boolean;
@@ -13,6 +21,12 @@ interface NotificationBellProps {
   variant?: 'default' | 'ghost' | 'outline';
 }
 
+/**
+ * NotificationBell function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function NotificationBell({
   className,
   showBadge = true,
@@ -44,7 +58,7 @@ export function NotificationBell({
 
   // Initialize store data
   useEffect(() => {
-    setUnreadCount(store.unreadCount || 0);
+    setUnreadCount(store.unreadCount ?? 0);
     setStoreReady(true);
   }, [store]);
 
@@ -91,7 +105,7 @@ export function NotificationBell({
     try {
       store.setShowNotificationCenter(true);
     } catch (error) {
-      console.error('Error opening notification center:', error);
+      logger.error('Error opening notification center:', error);
     }
   };
 
@@ -110,7 +124,7 @@ export function NotificationBell({
           try {
             handleClick();
           } catch (error) {
-            console.error('Error opening notification center:', error);
+            logger.error('Error opening notification center:', error);
           }
         }}
         aria-label={`Bildirimler ${store.unreadCount > 0 ? `(${store.unreadCount} okunmamış)` : ''}`}

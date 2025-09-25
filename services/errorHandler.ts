@@ -1,11 +1,26 @@
+/**
+ * @fileoverview errorHandler Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 // Centralized Error Handling for Services
 
 import type { ApiResponse } from './config';
 import { ServiceError, ServiceErrorCode } from './config';
 
+import { logger } from '../lib/logging/logger';
+/**
+ * ErrorHandler Service
+ * 
+ * Service class for handling errorhandler operations
+ * 
+ * @class ErrorHandler
+ */
 export class ErrorHandler {
   static handleServiceError<T>(error: unknown, context: string): ApiResponse<T> {
-    console.error(`Service error in ${context}:`, error);
+    logger.error(`Service error in ${context}:`, error);
 
     if (error instanceof ServiceError) {
       return {

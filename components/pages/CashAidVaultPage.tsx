@@ -1,3 +1,10 @@
+/**
+ * @fileoverview CashAidVaultPage Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import {
   ArrowDownCircle,
   ArrowUpCircle,
@@ -103,6 +110,12 @@ const mockTransactions: VaultTransaction[] = [
   },
 ];
 
+/**
+ * CashAidVaultPage function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function CashAidVaultPage() {
   const [transactions, setTransactions] = useState<VaultTransaction[]>(mockTransactions);
   const [searchTerm, setSearchTerm] = useState('');

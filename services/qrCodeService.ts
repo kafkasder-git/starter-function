@@ -1,3 +1,10 @@
+/**
+ * @fileoverview qrCodeService Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 // QR Code service placeholder
 export const qrCodeService = {
   generateQRCode: async (data: string): Promise<string> => {

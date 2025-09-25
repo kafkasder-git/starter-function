@@ -1,3 +1,10 @@
+/**
+ * @fileoverview enhanced-table Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
@@ -53,6 +60,7 @@ import { Label } from './label';
 import { Textarea } from './textarea';
 import { cn } from './utils';
 
+import { logger } from '../lib/logging/logger';
 // Enhanced Table Types - Improved with TypeScript best practices
 export type TableColumnType =
   | 'text'
@@ -68,6 +76,11 @@ export type TableColumnType =
 export type TableAlignment = 'left' | 'center' | 'right';
 export type TableAggregation = 'sum' | 'avg' | 'count' | 'min' | 'max';
 
+/**
+ * TableColumn Interface
+ * 
+ * @interface TableColumn
+ */
 export interface TableColumn<T = Record<string, unknown>> {
   readonly key: keyof T;
   readonly label: string;
@@ -90,6 +103,11 @@ export interface TableColumn<T = Record<string, unknown>> {
 
 export type TableActionVariant = 'default' | 'destructive' | 'outline' | 'ghost';
 
+/**
+ * TableAction Interface
+ * 
+ * @interface TableAction
+ */
 export interface TableAction<T = Record<string, unknown>> {
   readonly label: string;
   readonly icon?: React.ReactNode;
@@ -102,6 +120,16 @@ export interface TableAction<T = Record<string, unknown>> {
 
 export type BulkActionVariant = 'default' | 'destructive' | 'outline';
 
+/**
+ * BulkActionConfirmation Interface
+ * 
+ * @interface BulkActionConfirmation
+ */
+/**
+ * BulkAction Interface
+ * 
+ * @interface BulkAction
+ */
 export interface BulkActionConfirmation {
   readonly title: string;
   readonly description: string;
@@ -119,6 +147,11 @@ export interface BulkAction<T = Record<string, unknown>> {
   readonly confirmation?: BulkActionConfirmation;
 }
 
+/**
+ * TableFilter Interface
+ * 
+ * @interface TableFilter
+ */
 export interface TableFilter {
   key: string;
   label: string;
@@ -128,11 +161,21 @@ export interface TableFilter {
   multiple?: boolean;
 }
 
+/**
+ * SortConfig Interface
+ * 
+ * @interface SortConfig
+ */
 export interface SortConfig {
   key: string;
   direction: 'asc' | 'desc';
 }
 
+/**
+ * PaginationConfig Interface
+ * 
+ * @interface PaginationConfig
+ */
 export interface PaginationConfig {
   page: number;
   pageSize: number;
@@ -197,6 +240,12 @@ const columnTypeIcons = {
 };
 
 // Enhanced Table Component
+/**
+ * EnhancedTable function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function EnhancedTable<T extends Record<string, any> = any>({
   data,
   columns,
@@ -322,16 +371,16 @@ export function EnhancedTable<T extends Record<string, any> = any>({
         const column = columns.find((col) => col.key === sortConfig.key);
 
         if (column?.type === 'number' || column?.type === 'currency') {
-          const comparison = Number(aValue || 0) - Number(bValue || 0);
+          const comparison = Number(aValue ?? 0) - Number(bValue ?? 0);
           return sortConfig.direction === 'asc' ? comparison : -comparison;
         }
 
         if (column?.type === 'date') {
-          const comparison = new Date(aValue || 0).getTime() - new Date(bValue || 0).getTime();
+          const comparison = new Date(aValue ?? 0).getTime() - new Date(bValue ?? 0).getTime();
           return sortConfig.direction === 'asc' ? comparison : -comparison;
         }
 
-        const comparison = String(aValue || '').localeCompare(String(bValue || ''), 'tr-TR');
+        const comparison = String(aValue ?? '').localeCompare(String(bValue ?? ''), 'tr-TR');
         return sortConfig.direction === 'asc' ? comparison : -comparison;
       });
     }
@@ -399,7 +448,7 @@ export function EnhancedTable<T extends Record<string, any> = any>({
         await action.onClick(selectedData, selectedIndices);
         setSelectedRows(new Set());
       } catch (error) {
-        console.error('Bulk action failed:', error);
+        logger.error('Bulk action failed:', error);
       } finally {
         setBulkActionLoading(null);
       }
@@ -416,7 +465,7 @@ export function EnhancedTable<T extends Record<string, any> = any>({
         await onRowEdit(row, rowIndex, { [columnKey]: value });
         setEditingCell(null);
       } catch (error) {
-        console.error('Cell edit failed:', error);
+        logger.error('Cell edit failed:', error);
       }
     },
     [paginatedData, onRowEdit],
@@ -445,7 +494,7 @@ export function EnhancedTable<T extends Record<string, any> = any>({
 
       switch (column.type) {
         case 'currency':
-          return `₺${Number(value || 0).toLocaleString('tr-TR', { minimumFractionDigits: 2 })}`;
+          return `₺${Number(value ?? 0).toLocaleString('tr-TR', { minimumFractionDigits: 2 })}`;
         case 'date':
           return value ? new Date(value).toLocaleDateString('tr-TR') : '-';
         case 'phone':
@@ -476,7 +525,7 @@ export function EnhancedTable<T extends Record<string, any> = any>({
             </Badge>
           );
         default:
-          return value || '-';
+          return value ?? '-';
       }
     },
     [],
@@ -518,7 +567,7 @@ export function EnhancedTable<T extends Record<string, any> = any>({
                 .filter((col) => columnVisibility[col.key as string])
                 .map((col) => {
                   const value = row[col.key as string];
-                  return `"${String(value || '').replace(/"/g, '""')}"`;
+                  return `"${String(value ?? '').replace(/"/g, '""')}"`;
                 })
                 .join(','),
             ),
@@ -528,7 +577,7 @@ export function EnhancedTable<T extends Record<string, any> = any>({
           const url = URL.createObjectURL(blob);
           const a = document.createElement('a');
           a.href = url;
-          a.download = `${title || 'data'}.csv`;
+          a.download = `${title ?? 'data'}.csv`;
           a.click();
           URL.revokeObjectURL(url);
         }
@@ -892,7 +941,7 @@ export function EnhancedTable<T extends Record<string, any> = any>({
                 {bulkActions.map((action, idx) => (
                   <Button
                     key={idx}
-                    variant={action.variant || 'outline'}
+                    variant={action.variant ?? 'outline'}
                     size="sm"
                     onClick={() => handleBulkAction(action)}
                     disabled={bulkActionLoading === action.label}
@@ -928,10 +977,10 @@ export function EnhancedTable<T extends Record<string, any> = any>({
               {emptyState?.icon || <Search className="w-8 h-8 text-gray-400" />}
             </div>
             <h3 className="text-lg font-medium text-gray-900 mb-2">
-              {emptyState?.title || 'Veri bulunamadı'}
+              {emptyState?.title ?? 'Veri bulunamadı'}
             </h3>
             <p className="text-gray-600 mb-4">
-              {emptyState?.description || 'Aradığınız kriterlere uygun veri bulunamadı.'}
+              {emptyState?.description ?? 'Aradığınız kriterlere uygun veri bulunamadı.'}
             </p>
             {emptyState?.action && (
               <Button onClick={emptyState.action.onClick} className="gap-2">
@@ -967,7 +1016,7 @@ export function EnhancedTable<T extends Record<string, any> = any>({
                     {columns
                       .filter((col) => columnVisibility[col.key as string])
                       .map((column) => {
-                        const Icon = columnTypeIcons[column.type || 'text'];
+                        const Icon = columnTypeIcons[column.type ?? 'text'];
                         const isSorted = sortConfig?.key === column.key;
 
                         return (
@@ -1021,7 +1070,7 @@ export function EnhancedTable<T extends Record<string, any> = any>({
                   <AnimatePresence>
                     {paginatedData.map((row, index) => (
                       <motion.tr
-                        key={row.id || index}
+                        key={row.id ?? index}
                         component={TableRow}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}

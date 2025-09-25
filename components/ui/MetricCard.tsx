@@ -1,3 +1,10 @@
+/**
+ * @fileoverview MetricCard Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import React from 'react';
 import { motion } from 'motion/react';
 import { TrendingUp, TrendingDown, Activity } from 'lucide-react';
@@ -50,6 +57,12 @@ const colorClasses = {
   },
 };
 
+/**
+ * MetricCard function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function MetricCard({
   title,
   value,

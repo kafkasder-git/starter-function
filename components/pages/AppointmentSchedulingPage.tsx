@@ -1,3 +1,10 @@
+/**
+ * @fileoverview AppointmentSchedulingPage Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import {
   AlertCircle,
   Calendar,
@@ -130,6 +137,12 @@ const mockAppointments: Appointment[] = [
   },
 ];
 
+/**
+ * AppointmentSchedulingPage function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function AppointmentSchedulingPage() {
   const [appointments, setAppointments] = useState<Appointment[]>(mockAppointments);
   const [filteredAppointments, setFilteredAppointments] = useState<Appointment[]>(mockAppointments);

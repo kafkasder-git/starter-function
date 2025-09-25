@@ -1,9 +1,23 @@
+/**
+ * @fileoverview useAdvancedMobile Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { usePerformanceOptimization } from './usePerformanceOptimization';
 
+import { logger } from '../lib/logging/logger';
 /**
  * Advanced mobile optimization hook for the NGO management system
  * Handles touch interactions, device capabilities, and mobile-specific optimizations
+ */
+/**
+ * useAdvancedMobile function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
  */
 export function useAdvancedMobile() {
   const [deviceInfo, setDeviceInfo] = useState({
@@ -47,7 +61,7 @@ export function useAdvancedMobile() {
         (navigator as any).connection ||
         (navigator as any).mozConnection ||
         (navigator as any).webkitConnection;
-      const networkType = connection?.effectiveType || 'unknown';
+      const networkType = connection?.effectiveType ?? 'unknown';
 
       setDeviceInfo((prev) => ({
         ...prev,
@@ -95,7 +109,7 @@ export function useAdvancedMobile() {
             }));
           });
         } catch (error) {
-          console.warn('Battery API not available:', error);
+          logger.warn('Battery API not available:', error);
         }
       }
     };
@@ -178,7 +192,7 @@ export function useAdvancedMobile() {
   // Performance optimizations based on device capabilities
   const getOptimizedSettings = useCallback(() => {
     const isSlowNetwork = deviceInfo.networkType === 'slow-2g' || deviceInfo.networkType === '2g';
-    const isLowPowerMode = deviceInfo.isLowBattery || shouldReduceAnimations;
+    const isLowPowerMode = deviceInfo.isLowBattery ?? shouldReduceAnimations;
 
     return {
       // Animation settings
@@ -197,7 +211,7 @@ export function useAdvancedMobile() {
 
       // UI settings
       enableHapticFeedback: deviceInfo.isMobile && 'vibrate' in navigator,
-      showPerformanceIndicators: isSlowNetwork || isLowPowerMode,
+      showPerformanceIndicators: isSlowNetwork ?? isLowPowerMode,
       enableAdvancedFeatures: !isLowPowerMode && !isSlowNetwork,
     };
   }, [deviceInfo, shouldReduceAnimations]);
@@ -237,7 +251,7 @@ export function useAdvancedMobile() {
         const relatedApps = await (navigator as any).getInstalledRelatedApps();
         return relatedApps.length > 0;
       } catch (error) {
-        console.warn('PWA detection failed:', error);
+        logger.warn('PWA detection failed:', error);
         return false;
       }
     }
@@ -322,8 +336,8 @@ export function useAdvancedMobile() {
       if ('share' in navigator && 'canShare' in navigator) {
         const shareData = {
           files: [file],
-          title: title || 'Dernek Sistemi - Dosya Paylaşımı',
-          text: text || 'Dernek sistemi üzerinden paylaşılan dosya',
+          title: title ?? 'Dernek Sistemi - Dosya Paylaşımı',
+          text: text ?? 'Dernek sistemi üzerinden paylaşılan dosya',
         };
 
         if (navigator.canShare(shareData)) {
@@ -380,7 +394,7 @@ export function useAdvancedMobile() {
     // Device capability checks
     isMobile: deviceInfo.isMobile,
     isTablet: deviceInfo.isTablet,
-    isLowPowerMode: deviceInfo.isLowBattery || shouldReduceAnimations,
+    isLowPowerMode: deviceInfo.isLowBattery ?? shouldReduceAnimations,
     isSlowNetwork: deviceInfo.networkType === 'slow-2g' || deviceInfo.networkType === '2g',
 
     // Utility functions
@@ -401,6 +415,12 @@ export function useAdvancedMobile() {
 /**
  * Enhanced mobile form optimization hook
  */
+/**
+ * useMobileFormOptimization function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useMobileFormOptimization() {
   const { deviceInfo, optimizedSettings, triggerHapticFeedback } = useAdvancedMobile();
   const [keyboardHeight, setKeyboardHeight] = useState(0);
@@ -410,10 +430,10 @@ export function useMobileFormOptimization() {
   useEffect(() => {
     if (!deviceInfo.isMobile) return;
 
-    const initialViewportHeight = window.visualViewport?.height || window.innerHeight;
+    const initialViewportHeight = window.visualViewport?.height ?? window.innerHeight;
 
     const handleViewportChange = () => {
-      const currentHeight = window.visualViewport?.height || window.innerHeight;
+      const currentHeight = window.visualViewport?.height ?? window.innerHeight;
       const heightDiff = initialViewportHeight - currentHeight;
 
       setKeyboardHeight(Math.max(0, heightDiff));

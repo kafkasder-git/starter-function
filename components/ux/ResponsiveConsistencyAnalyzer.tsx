@@ -1,8 +1,16 @@
+/**
+ * @fileoverview ResponsiveConsistencyAnalyzer Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import React, { useState, useEffect } from 'react';
 import { Monitor, Smartphone, Tablet, AlertTriangle, CheckCircle2, Info } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Badge } from '../ui/badge';
+import { logger } from '../lib/logging/logger';
 // import { ResponsiveSection } from '../EnhancedResponsiveWrapper'; // File doesn't exist
 // Using a simple div as fallback
 const ResponsiveSection = ({ children, className }: { children: React.ReactNode; className?: string }) => (
@@ -34,6 +42,12 @@ interface DeviceMetrics {
   orientation: 'portrait' | 'landscape';
 }
 
+/**
+ * ResponsiveConsistencyAnalyzer function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function ResponsiveConsistencyAnalyzer() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [currentDevice, setCurrentDevice] = useState<'mobile' | 'tablet' | 'desktop'>('desktop');
@@ -47,7 +61,7 @@ export function ResponsiveConsistencyAnalyzer() {
       const metrics: DeviceMetrics = {
         screenWidth: window.screen.width,
         screenHeight: window.screen.height,
-        devicePixelRatio: window.devicePixelRatio || 1,
+        devicePixelRatio: window.devicePixelRatio ?? 1,
         viewportWidth: window.innerWidth,
         viewportHeight: window.innerHeight,
         userAgent: navigator.userAgent,
@@ -166,7 +180,7 @@ export function ResponsiveConsistencyAnalyzer() {
         const buttons = document.querySelectorAll('button, a[role="button"], [onclick]');
         const smallButtons = Array.from(buttons).filter((btn) => {
           const rect = btn.getBoundingClientRect();
-          return rect.width < 44 || rect.height < 44;
+          return rect.width < 44 ?? rect.height < 44;
         });
 
         if (smallButtons.length > 0) {
@@ -209,7 +223,7 @@ export function ResponsiveConsistencyAnalyzer() {
       setConsistencyIssues(issues);
       setAnalysisComplete(true);
     } catch (error) {
-      console.error('Consistency analysis error:', error);
+      logger.error('Consistency analysis error:', error);
     } finally {
       setIsAnalyzing(false);
     }

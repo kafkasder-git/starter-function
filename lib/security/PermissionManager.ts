@@ -1,4 +1,12 @@
 /**
+ * @fileoverview PermissionManager Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
+import { logger } from '../lib/logging/logger';
+/**
  * Role-Based Access Control (RBAC) System
  * Manages user roles, permissions, and access control
  */
@@ -96,13 +104,20 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
   volunteer: ['read:beneficiaries', 'read:donations'],
 };
 
+/**
+ * PermissionManager Service
+ * 
+ * Service class for handling permissionmanager operations
+ * 
+ * @class PermissionManager
+ */
 export class PermissionManager {
   private static currentUser: { role: UserRole; permissions: Permission[] } | null = null;
 
   static setCurrentUser(role: UserRole, customPermissions?: Permission[]): void {
     this.currentUser = {
       role,
-      permissions: customPermissions || ROLE_PERMISSIONS[role] || [],
+      permissions: customPermissions ?? ROLE_PERMISSIONS[role] || [],
     };
   }
 
@@ -182,6 +197,12 @@ export class PermissionManager {
 }
 
 // Permission decorators for functions
+/**
+ * requirePermission function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function requirePermission(permission: Permission) {
   return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
     const originalMethod = descriptor.value;
@@ -195,6 +216,12 @@ export function requirePermission(permission: Permission) {
   };
 }
 
+/**
+ * requireRole function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function requireRole(role: UserRole) {
   return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
     const originalMethod = descriptor.value;
@@ -209,6 +236,13 @@ export function requireRole(role: UserRole) {
 }
 
 // Audit logging
+/**
+ * AuditLogger Service
+ * 
+ * Service class for handling auditlogger operations
+ * 
+ * @class AuditLogger
+ */
 export class AuditLogger {
   private static logs: AuditLog[] = [];
 
@@ -218,7 +252,7 @@ export class AuditLogger {
     const auditLog: AuditLog = {
       id: crypto.getRandomValues(new Uint8Array(16)).join(''),
       timestamp: new Date().toISOString(),
-      userId: user?.role || 'anonymous',
+      userId: user?.role ?? 'anonymous',
       action,
       resource,
       details: details || {},
@@ -255,7 +289,7 @@ export class AuditLogger {
         body: JSON.stringify(log),
       });
     } catch (error) {
-      console.error('Failed to send audit log:', error);
+      logger.error('Failed to send audit log:', error);
     }
   }
 
@@ -268,6 +302,11 @@ export class AuditLogger {
   }
 }
 
+/**
+ * AuditLog Interface
+ * 
+ * @interface AuditLog
+ */
 export interface AuditLog {
   id: string;
   timestamp: string;

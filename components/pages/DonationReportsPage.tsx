@@ -1,3 +1,10 @@
+/**
+ * @fileoverview DonationReportsPage Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { BarChart3, Calendar, Download, Heart, PieChart, TrendingUp, Users } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useState } from 'react';
@@ -10,6 +17,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Progress } from '../ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
+/**
+ * DonationReportsPage function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function DonationReportsPage() {
   const isMobile = useIsMobile();
   const [reportType, setReportType] = useState('monthly');

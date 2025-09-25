@@ -1,3 +1,10 @@
+/**
+ * @fileoverview index Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 // API Security Core
 export * from './apiSecurity';
 export * from './apiSecurityMiddleware';

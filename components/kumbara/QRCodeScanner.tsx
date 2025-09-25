@@ -1,3 +1,10 @@
+/**
+ * @fileoverview QRCodeScanner Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 // 📷 QR CODE SCANNER COMPONENT
 // Professional QR code scanning component with camera and file support
 
@@ -16,6 +23,7 @@ import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 
+import { logger } from '../lib/logging/logger';
 interface QRCodeScannerProps {
   onScanSuccess: (result: QRScanResult, kumbaraData?: KumbaraQRData) => void;
   onScanError?: (error: string) => void;
@@ -32,6 +40,12 @@ interface ScannerState {
   lastScanResult: QRScanResult | null;
 }
 
+/**
+ * QRCodeScanner function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function QRCodeScanner({
   onScanSuccess,
   onScanError,
@@ -77,10 +91,10 @@ export function QRCodeScanner({
         ...prev,
         hasPermissions: true,
         availableCameras: cameras,
-        selectedCamera: cameras[0]?.id || null,
+        selectedCamera: cameras[0]?.id ?? null,
       }));
     } catch (error) {
-      console.error('Scanner initialization failed:', error);
+      logger.error('Scanner initialization failed:', error);
       setError('QR tarayıcı başlatılamadı');
       if (onScanError) {
         onScanError('QR tarayıcı başlatılamadı');
@@ -129,7 +143,7 @@ export function QRCodeScanner({
 
       setState((prev) => ({ ...prev, isScanning: true }));
     } catch (error) {
-      console.error('Camera scanning failed:', error);
+      logger.error('Camera scanning failed:', error);
       setError('Kamera tarama başlatılamadı');
       if (onScanError) {
         onScanError('Kamera tarama başlatılamadı');
@@ -145,7 +159,7 @@ export function QRCodeScanner({
       await qrScannerService.stopScanning();
       setState((prev) => ({ ...prev, isScanning: false }));
     } catch (error) {
-      console.error('Failed to stop scanning:', error);
+      logger.error('Failed to stop scanning:', error);
     }
   }, []);
 
@@ -173,13 +187,13 @@ export function QRCodeScanner({
           toast.info('QR kod okundu (Kumbara QR kodu değil)');
         }
       } else {
-        setError(result.error || 'QR kod okunamadı');
+        setError(result.error ?? 'QR kod okunamadı');
         if (onScanError) {
-          onScanError(result.error || 'QR kod okunamadı');
+          onScanError(result.error ?? 'QR kod okunamadı');
         }
       }
     } catch (error) {
-      console.error('File upload failed:', error);
+      logger.error('File upload failed:', error);
       setError('Dosya yüklenemedi');
       if (onScanError) {
         onScanError('Dosya yüklenemedi');
@@ -310,7 +324,7 @@ export function QRCodeScanner({
               {state.availableCameras.length > 1 && (
                 <div className="space-y-2">
                   <Label>Kamera Seçimi</Label>
-                  <Select value={state.selectedCamera || ''} onValueChange={switchCamera}>
+                  <Select value={state.selectedCamera ?? ''} onValueChange={switchCamera}>
                     <SelectTrigger>
                       <SelectValue placeholder="Kamera seçin" />
                     </SelectTrigger>
@@ -510,7 +524,7 @@ export function QRCodeScanner({
                   <span className="font-medium text-red-800">Tarama Başarısız</span>
                 </div>
                 <p className="text-sm text-red-700">
-                  {state.lastScanResult.error || 'QR kod okunamadı'}
+                  {state.lastScanResult.error ?? 'QR kod okunamadı'}
                 </p>
               </div>
             )}
@@ -532,7 +546,7 @@ export function QRCodeScanner({
             <div className="space-y-2">
               <Label>Kamera</Label>
               <Select
-                value={state.selectedCamera || ''}
+                value={state.selectedCamera ?? ''}
                 onValueChange={(value) => {
                   setState((prev) => ({ ...prev, selectedCamera: value }));
                 }}

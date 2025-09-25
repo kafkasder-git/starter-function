@@ -14,6 +14,13 @@ const ApiKeySchema = z.object({
   rateLimit: z.number().default(100),
 });
 
+/**
+ * MCPSecurityManager Service
+ * 
+ * Service class for handling mcpsecuritymanager operations
+ * 
+ * @class MCPSecurityManager
+ */
 export class MCPSecurityManager {
   private readonly apiKeys = new Map<string, z.infer<typeof ApiKeySchema>>();
   private readonly rateLimitStore = new Map<string, { count: number; resetTime: number }>();
@@ -48,12 +55,12 @@ export class MCPSecurityManager {
 
     let rateLimitData = this.rateLimitStore.get(key);
 
-    if (!rateLimitData || now > rateLimitData.resetTime) {
+    if (!rateLimitData ?? now > rateLimitData.resetTime) {
       rateLimitData = { count: 0, resetTime: now + windowMs };
     }
 
     const apiKeyData = this.apiKeys.get(apiKey);
-    const limit = apiKeyData?.rateLimit || 100;
+    const limit = apiKeyData?.rateLimit ?? 100;
 
     if (rateLimitData.count >= limit) {
       return false;

@@ -1,3 +1,10 @@
+/**
+ * @fileoverview mobile-responsive-table Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import React from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './table';
 
@@ -19,6 +26,12 @@ interface DesktopTableProps<T> {
   className?: string;
 }
 
+/**
+ * DesktopTable function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function DesktopTable<T extends { id: string | number }>({
   data,
   columns,
@@ -43,7 +56,7 @@ export function DesktopTable<T extends { id: string | number }>({
         <TableHeader>
           <TableRow className="bg-gray-50/50">
             {columns.map((column) => (
-              <TableHead key={column.key} className={`p-4 ${column.className || ''}`}>
+              <TableHead key={column.key} className={`p-4 ${column.className ?? ''}`}>
                 {column.label}
               </TableHead>
             ))}
@@ -57,7 +70,7 @@ export function DesktopTable<T extends { id: string | number }>({
               onClick={() => onRowClick?.(item)}
             >
               {columns.map((column) => (
-                <TableCell key={column.key} className={`p-4 ${column.className || ''}`}>
+                <TableCell key={column.key} className={`p-4 ${column.className ?? ''}`}>
                   {column.render ? column.render(item) : (item as any)[column.key]}
                 </TableCell>
               ))}
@@ -82,6 +95,12 @@ interface DesktopFiltersProps {
   className?: string;
 }
 
+/**
+ * DesktopFilters function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function DesktopFilters({
   children,
   searchValue,
@@ -90,7 +109,7 @@ export function DesktopFilters({
   className,
 }: DesktopFiltersProps) {
   return (
-    <Card className={`border-0 shadow-sm ${className || ''}`}>
+    <Card className={`border-0 shadow-sm ${className ?? ''}`}>
       <CardContent className="p-6">
         <div className="space-y-4">
           {/* Search Input */}
@@ -100,7 +119,7 @@ export function DesktopFilters({
               <Input
                 type="search"
                 placeholder={searchPlaceholder}
-                value={searchValue || ''}
+                value={searchValue ?? ''}
                 onChange={(e) => {
                   onSearchChange(e.target.value);
                 }}
@@ -136,18 +155,24 @@ interface DesktopActionButtonsProps {
   className?: string;
 }
 
+/**
+ * DesktopActionButtons function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function DesktopActionButtons({
   primaryAction,
   secondaryActions,
   className,
 }: DesktopActionButtonsProps) {
   return (
-    <div className={`flex gap-3 items-center justify-end ${className || ''}`}>
+    <div className={`flex gap-3 items-center justify-end ${className ?? ''}`}>
       {/* Secondary Actions */}
       {secondaryActions?.map((action, index) => (
         <Button
           key={index}
-          variant={action.variant || 'outline'}
+          variant={action.variant ?? 'outline'}
           size="default"
           className="px-4 py-2 border-gray-300 hover:border-gray-400"
           onClick={action.onClick}
@@ -196,6 +221,12 @@ interface DesktopStatsCardProps {
   };
 }
 
+/**
+ * DesktopStatsCard function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function DesktopStatsCard({
   title,
   value,

@@ -1,3 +1,10 @@
+/**
+ * @fileoverview OfflineIndicator Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { WifiOff, Wifi, RefreshCw, AlertCircle, CheckCircle } from 'lucide-react';
@@ -22,6 +29,12 @@ interface OfflineIndicatorProps {
   showDetails?: boolean;
 }
 
+/**
+ * OfflineIndicator function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function OfflineIndicator({
   className = '',
   position = 'top',
@@ -65,7 +78,7 @@ export function OfflineIndicator({
 
   // Format time since last online
   const getTimeSinceOnline = () => {
-    if (!lastOnlineTime || networkInfo.isOnline) return null;
+    if (!lastOnlineTime ?? networkInfo.isOnline) return null;
 
     const now = new Date();
     const diff = Math.floor((now.getTime() - lastOnlineTime.getTime()) / 1000);
@@ -291,6 +304,12 @@ export function OfflineIndicator({
 }
 
 // 🔍 Compact Network Status Badge
+/**
+ * NetworkStatusBadge function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function NetworkStatusBadge({ className = '' }: { className?: string }) {
   const [isOnline, setIsOnline] = useState(navigator?.onLine ?? true);
 

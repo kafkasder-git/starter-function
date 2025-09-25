@@ -5,6 +5,7 @@
 
 import React from 'react';
 
+import { logger } from '../lib/logging/logger';
 // Test türleri
 export type TestType =
   | 'unit'
@@ -18,6 +19,11 @@ export type TestType =
 export type TestStatus = 'pending' | 'running' | 'passed' | 'failed' | 'skipped';
 
 // Test sonucu
+/**
+ * TestResult Interface
+ * 
+ * @interface TestResult
+ */
 export interface TestResult {
   id: string;
   name: string;
@@ -39,6 +45,11 @@ export interface TestResult {
 }
 
 // Test suite
+/**
+ * TestSuite Interface
+ * 
+ * @interface TestSuite
+ */
 export interface TestSuite {
   id: string;
   name: string;
@@ -55,6 +66,11 @@ export interface TestSuite {
 }
 
 // Test konfigürasyonu
+/**
+ * TestConfig Interface
+ * 
+ * @interface TestConfig
+ */
 export interface TestConfig {
   timeout: number;
   retries: number;
@@ -127,7 +143,7 @@ class AdvancedTestingService {
    * Test sistemini başlat
    */
   private initializeTesting(): void {
-    console.log('[Testing] Advanced testing service initialized');
+    logger.info('[Testing] Advanced testing service initialized');
   }
 
   /**
@@ -400,7 +416,7 @@ class AdvancedTestingService {
     suite.skippedCount = suite.tests.filter((t) => t.status === 'skipped').length;
 
     // Coverage hesapla
-    const totalCoverage = suite.tests.reduce((sum, t) => sum + (t.coverage || 0), 0);
+    const totalCoverage = suite.tests.reduce((sum, t) => sum + (t.coverage ?? 0), 0);
     suite.coverage = suite.tests.length > 0 ? totalCoverage / suite.tests.length : 0;
 
     suite.updatedAt = new Date();

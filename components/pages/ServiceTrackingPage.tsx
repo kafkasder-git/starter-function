@@ -1,3 +1,10 @@
+/**
+ * @fileoverview ServiceTrackingPage Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { useState } from 'react';
 import { PageLayout } from '../PageLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
@@ -137,6 +144,12 @@ const mockServices: ServiceTracking[] = [
   },
 ];
 
+/**
+ * ServiceTrackingPage function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function ServiceTrackingPage() {
   const [services, setServices] = useState<ServiceTracking[]>(mockServices);
   const [searchTerm, setSearchTerm] = useState('');
@@ -212,8 +225,8 @@ export function ServiceTrackingPage() {
     inProgress: services.filter((s) => s.status === 'in_progress').length,
     completed: services.filter((s) => s.status === 'completed').length,
     totalCost: services
-      .filter((s) => s.actualCost || s.estimatedCost)
-      .reduce((sum, s) => sum + (s.actualCost || s.estimatedCost), 0),
+      .filter((s) => s.actualCost ?? s.estimatedCost)
+      .reduce((sum, s) => sum + (s.actualCost ?? s.estimatedCost), 0),
   };
 
   return (
@@ -437,7 +450,7 @@ export function ServiceTrackingPage() {
                       <TableCell>
                         <div>
                           <p className="font-medium">
-                            ₺{(service.actualCost || service.estimatedCost).toLocaleString('tr-TR')}
+                            ₺{(service.actualCost ?? service.estimatedCost).toLocaleString('tr-TR')}
                           </p>
                           <p className="text-xs text-muted-foreground">
                             {service.actualCost ? 'Gerçek' : 'Tahmini'}

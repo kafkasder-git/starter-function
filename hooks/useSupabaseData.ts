@@ -1,11 +1,28 @@
+/**
+ * @fileoverview useSupabaseData Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 // Lightweight stubs for Supabase data hooks to satisfy type-checking
 // Replace with real implementations as needed
 
+/**
+ * OrderByOption Interface
+ * 
+ * @interface OrderByOption
+ */
 export interface OrderByOption {
   column: string;
   ascending?: boolean;
 }
 
+/**
+ * UseSupabaseOptions Interface
+ * 
+ * @interface UseSupabaseOptions
+ */
 export interface UseSupabaseOptions {
   select?: string;
   orderBy?: OrderByOption;
@@ -17,6 +34,12 @@ export interface UseSupabaseOptions {
   searchFields?: string[];
 }
 
+/**
+ * useSupabaseData function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useSupabaseData<T = any>(
   _table: string,
   _options: UseSupabaseOptions = {},
@@ -56,6 +79,12 @@ export function useSupabaseData<T = any>(
   };
 }
 
+/**
+ * useSupabasePagination function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useSupabasePagination<T = any>(
   _table: string,
   _options: UseSupabaseOptions = {},
@@ -82,6 +111,12 @@ export function useSupabasePagination<T = any>(
   };
 }
 
+/**
+ * useSupabaseSearch function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useSupabaseSearch<T = any>(
   _table: string,
   _fields: string[],

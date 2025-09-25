@@ -1,3 +1,10 @@
+/**
+ * @fileoverview NewMemberPage Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { Save, Upload, UserPlus, X } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useState } from 'react';
@@ -11,6 +18,12 @@ import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Textarea } from '../ui/textarea';
 
+/**
+ * NewMemberPage function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function NewMemberPage() {
   const [formData, setFormData] = useState({
     firstName: '',

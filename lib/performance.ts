@@ -6,6 +6,11 @@
 import { logger } from './logging/logger';
 
 // Performance metrics interface
+/**
+ * PerformanceMetrics Interface
+ * 
+ * @interface PerformanceMetrics
+ */
 export interface PerformanceMetrics {
   loadTime: number;
   renderTime: number;
@@ -26,6 +31,13 @@ export const PERFORMANCE_THRESHOLDS = {
 
 /**
  * Performance Monitor class
+ */
+/**
+ * PerformanceMonitor Service
+ * 
+ * Service class for handling performancemonitor operations
+ * 
+ * @class PerformanceMonitor
  */
 export class PerformanceMonitor {
   private static instance: PerformanceMonitor | undefined;
@@ -381,7 +393,7 @@ export const PerformanceUtils = {
     if (typeof navigator === 'undefined') return false;
 
     // Check hardware concurrency
-    const cores = navigator.hardwareConcurrency || 1;
+    const cores = navigator.hardwareConcurrency ?? 1;
     if (cores < 4) return true;
 
     // Check memory (if available)

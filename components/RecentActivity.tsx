@@ -1,3 +1,10 @@
+/**
+ * @fileoverview RecentActivity Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
@@ -18,6 +25,12 @@ interface Activity {
 // TODO: Load from API
 const mockActivities: Activity[] = [];
 
+/**
+ * RecentActivity function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function RecentActivity() {
   const getActivityIcon = (type: Activity['type']) => {
     const icons = {

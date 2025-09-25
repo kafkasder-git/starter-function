@@ -9,12 +9,22 @@ import { z } from 'zod';
 // TYPE DEFINITIONS
 // =============================================================================
 
+/**
+ * ValidationResult Interface
+ * 
+ * @interface ValidationResult
+ */
 export interface ValidationResult<T = unknown> {
   success: boolean;
   data?: T;
   errors?: ValidationError[];
 }
 
+/**
+ * ValidationError Interface
+ * 
+ * @interface ValidationError
+ */
 export interface ValidationError {
   field: string;
   message: string;
@@ -22,6 +32,11 @@ export interface ValidationError {
   value?: unknown;
 }
 
+/**
+ * ValidationOptions Interface
+ * 
+ * @interface ValidationOptions
+ */
 export interface ValidationOptions {
   strict?: boolean;
   sanitize?: boolean;
@@ -129,6 +144,13 @@ export const commonSchemas = {
 // VALIDATION FUNCTIONS
 // =============================================================================
 
+/**
+ * ValidationService Service
+ * 
+ * Service class for handling validationservice operations
+ * 
+ * @class ValidationService
+ */
 export class ValidationService {
   /**
    * Validate email address

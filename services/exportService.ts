@@ -1,3 +1,10 @@
+/**
+ * @fileoverview exportService Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 // Gelişmiş Raporlama Sistemi - Export Servisi
 
 import type {
@@ -16,6 +23,11 @@ import {
   ExportTemplateUtils,
 } from './exportUtils';
 
+/**
+ * ExportProgress Interface
+ * 
+ * @interface ExportProgress
+ */
 export interface ExportProgress {
   stage: 'preparing' | 'processing' | 'formatting' | 'finalizing' | 'completed' | 'error';
   progress: number;
@@ -23,6 +35,11 @@ export interface ExportProgress {
   estimatedTimeRemaining?: number;
 }
 
+/**
+ * ExportResult Interface
+ * 
+ * @interface ExportResult
+ */
 export interface ExportResult {
   success: boolean;
   downloadUrl?: string;
@@ -37,6 +54,13 @@ export interface ExportResult {
   };
 }
 
+/**
+ * ExportService Service
+ * 
+ * Service class for handling exportservice operations
+ * 
+ * @class ExportService
+ */
 export class ExportService {
   private readonly progressCallbacks = new Map<string, (progress: ExportProgress) => void>();
 
@@ -175,7 +199,7 @@ export class ExportService {
 
       progressCallback?.(
         (i / exports.length) * 100,
-        `Export ${i + 1}/${exports.length}: ${config.filename || 'report'}`,
+        `Export ${i + 1}/${exports.length}: ${config.filename ?? 'report'}`,
       );
 
       const result = await this.exportReport(data, config);

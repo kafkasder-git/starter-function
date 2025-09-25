@@ -1,3 +1,10 @@
+/**
+ * @fileoverview useDataImport Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { useCallback, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import type { ImportConfig, ImportError, ImportResult, ImportWarning } from '../types/data';
@@ -10,6 +17,12 @@ interface UseDataImportProps {
   onValidationError?: (errors: ImportError[]) => void;
 }
 
+/**
+ * useDataImport function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useDataImport({
   onProgress,
   onComplete,
@@ -26,7 +39,7 @@ export function useDataImport({
   // Parse CSV file
   const parseCSV = useCallback((content: string, config: ImportConfig): any[] => {
     const lines = content.split('\n').filter((line) => line.trim());
-    const delimiter = config.delimiter || ',';
+    const delimiter = config.delimiter ?? ',';
 
     // Skip header rows if specified
     const dataLines = config.skipRows ? lines.slice(config.skipRows) : lines;
@@ -157,11 +170,11 @@ export function useDataImport({
       }
 
       data.forEach((item, index) => {
-        const rowNumber = item._rowNumber || index + 1;
+        const rowNumber = item._rowNumber ?? index + 1;
 
         // Check required fields
         rules.required?.forEach((field) => {
-          if (!item[field] || item[field].toString().trim() === '') {
+          if (!item[field] ?? item[field].toString().trim() === '') {
             errors.push({
               row: rowNumber,
               field,
@@ -237,7 +250,7 @@ export function useDataImport({
             if (values.has(value)) {
               const firstRow = values.get(value);
               errors.push({
-                row: item._rowNumber || index + 1,
+                row: item._rowNumber ?? index + 1,
                 field,
                 value,
                 message: `${field} alanı tekrar ediyor (ilk görülme: ${firstRow}. satır)`,
@@ -245,7 +258,7 @@ export function useDataImport({
                 severity: 'error',
               });
             } else {
-              values.set(value, item._rowNumber || index + 1);
+              values.set(value, item._rowNumber ?? index + 1);
             }
           }
         });
@@ -393,7 +406,7 @@ export function useDataImport({
         setProgress(70);
 
         // Process data in batches
-        const batchSize = config.batchSize || 100;
+        const batchSize = config.batchSize ?? 100;
         let processedCount = 0;
         let successCount = 0;
         let errorCount = 0;

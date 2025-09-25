@@ -1,3 +1,10 @@
+/**
+ * @fileoverview index Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 // Beneficiary Module - Optimized Components
 // Split from BeneficiaryDetailPageComprehensive for better performance
 
@@ -11,6 +18,11 @@ export { BeneficiaryHealthInfo } from './BeneficiaryHealthInfo';
 export { BeneficiaryPersonalInfo } from './BeneficiaryPersonalInfo';
 
 // Types
+/**
+ * BeneficiaryData Interface
+ * 
+ * @interface BeneficiaryData
+ */
 export interface BeneficiaryData {
   id: string;
   name: string;
@@ -41,6 +53,11 @@ export interface BeneficiaryData {
   aidHistory?: AidRecord[];
 }
 
+/**
+ * FamilyMember Interface
+ * 
+ * @interface FamilyMember
+ */
 export interface FamilyMember {
   id: string;
   name: string;
@@ -51,6 +68,11 @@ export interface FamilyMember {
   healthStatus?: string;
 }
 
+/**
+ * AidRecord Interface
+ * 
+ * @interface AidRecord
+ */
 export interface AidRecord {
   id: string;
   date: string;

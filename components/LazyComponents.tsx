@@ -1,6 +1,14 @@
+/**
+ * @fileoverview LazyComponents Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import React, { lazy, Suspense } from 'react';
 import { SkeletonLoader } from './LoadingSpinner';
 
+import { logger } from '../lib/logging/logger';
 // 🚀 LAZY LOADING OPTIMIZATION
 // Heavy components için performance optimization
 
@@ -160,7 +168,7 @@ export const withLazyPerformance = <P extends Record<string, any>>(
 
       return () => {
         const loadTime = performance.now() - startTime;
-        console.log(`[Lazy Loading] ${componentName} loaded in ${loadTime.toFixed(2)}ms`);
+        logger.info(`[Lazy Loading] ${componentName} loaded in ${loadTime.toFixed(2)}ms`);
 
         // Send to analytics in production
         if (process.env.NODE_ENV === 'production') {
@@ -199,7 +207,7 @@ export const useAdvancedLazyLoading = () => {
           });
         })
         .catch((error) => {
-          console.error(`Failed to preload ${componentName}:`, error);
+          logger.error(`Failed to preload ${componentName}:`, error);
           setLoadingComponents((prev) => {
             const newSet = new Set(prev);
             newSet.delete(componentName);

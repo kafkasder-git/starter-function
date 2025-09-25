@@ -1,3 +1,10 @@
+/**
+ * @fileoverview PageLayout Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import type { ReactNode } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from './ui/button';
@@ -11,6 +18,12 @@ interface PageLayoutProps {
   actions?: ReactNode;
 }
 
+/**
+ * PageLayout function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function PageLayout({
   title,
   subtitle,
@@ -21,7 +34,7 @@ export function PageLayout({
   className,
 }: PageLayoutProps & { className?: string }) {
   return (
-    <div className={`flex flex-col h-full ${className || ''}`}>
+    <div className={`flex flex-col h-full ${className ?? ''}`}>
       {/* Page Header */}
       <div className="bg-white border-b border-gray-200 shadow-sm z-30 relative">
         <div className="p-4 sm:p-6">

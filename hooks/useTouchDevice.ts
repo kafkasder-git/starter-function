@@ -1,3 +1,10 @@
+/**
+ * @fileoverview useTouchDevice Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { useState, useEffect } from 'react';
 
 interface TouchDeviceState {
@@ -8,6 +15,12 @@ interface TouchDeviceState {
   orientation: 'portrait' | 'landscape';
 }
 
+/**
+ * useTouchDevice function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useTouchDevice(): TouchDeviceState {
   const [state, setState] = useState<TouchDeviceState>(() => {
     // Initial state on server/first render
@@ -25,7 +38,7 @@ export function useTouchDevice(): TouchDeviceState {
   });
 
   function getDeviceState(): TouchDeviceState {
-    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    const isTouchDevice = 'ontouchstart' in window ?? navigator.maxTouchPoints > 0;
     const width = window.innerWidth;
     const height = window.innerHeight;
 
@@ -88,21 +101,45 @@ export function useTouchDevice(): TouchDeviceState {
 }
 
 // Additional utility hooks for common use cases
+/**
+ * useIsMobile function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useIsMobile(): boolean {
   const { isMobile } = useTouchDevice();
   return isMobile;
 }
 
+/**
+ * useIsTablet function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useIsTablet(): boolean {
   const { isTablet } = useTouchDevice();
   return isTablet;
 }
 
+/**
+ * useIsTouchDevice function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useIsTouchDevice(): boolean {
   const { isTouchDevice } = useTouchDevice();
   return isTouchDevice;
 }
 
+/**
+ * useScreenSize function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useScreenSize(): TouchDeviceState['screenSize'] {
   const { screenSize } = useTouchDevice();
   return screenSize;

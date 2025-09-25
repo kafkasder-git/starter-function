@@ -1,6 +1,14 @@
+/**
+ * @fileoverview useSupabaseConnection Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 
+import { logger } from '../lib/logging/logger';
 interface ConnectionStatus {
   isConnected: boolean;
   isLoading: boolean;
@@ -8,6 +16,12 @@ interface ConnectionStatus {
   projectUrl: string | null;
 }
 
+/**
+ * useSupabaseConnection function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useSupabaseConnection(): ConnectionStatus {
   const [status, setStatus] = useState<ConnectionStatus>({
     isConnected: false,
@@ -43,11 +57,11 @@ export function useSupabaseConnection(): ConnectionStatus {
           });
         }
       } catch (error: any) {
-        console.error('Supabase connection test failed:', error);
+        logger.error('Supabase connection test failed:', error);
         setStatus({
           isConnected: false,
           isLoading: false,
-          error: error.message || 'Supabase bağlantısı kurulamadı',
+          error: error.message ?? 'Supabase bağlantısı kurulamadı',
           projectUrl: null,
         });
       }
@@ -71,6 +85,12 @@ export function useSupabaseConnection(): ConnectionStatus {
 }
 
 // Utility function to check if Supabase is properly configured
+/**
+ * isSupabaseConfigured function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function isSupabaseConfigured(): boolean {
   const url = import.meta.env.VITE_SUPABASE_URL;
   const key = import.meta.env.VITE_SUPABASE_ANON_KEY;

@@ -1,3 +1,10 @@
+/**
+ * @fileoverview useInfiniteScroll Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { useState, useCallback, useRef, useEffect } from 'react';
 
 interface UseInfiniteScrollProps {
@@ -8,6 +15,12 @@ interface UseInfiniteScrollProps {
   rootMargin?: string;
 }
 
+/**
+ * useInfiniteScroll function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useInfiniteScroll({
   hasMore,
   loading,
@@ -70,6 +83,12 @@ interface UsePullToRefreshProps {
   enabled?: boolean;
 }
 
+/**
+ * usePullToRefresh function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function usePullToRefresh({
   onRefresh,
   threshold = 50,

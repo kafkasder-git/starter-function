@@ -1,3 +1,10 @@
+/**
+ * @fileoverview DistributionTrackingPage Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import {
   AlertTriangle,
   Calendar,
@@ -274,6 +281,12 @@ const mockAgreements: Agreement[] = [
   },
 ];
 
+/**
+ * PartnerAgreementsPage function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export default function PartnerAgreementsPage() {
   const [agreements, setAgreements] = useState<Agreement[]>(mockAgreements);
   const [filteredAgreements, setFilteredAgreements] = useState<Agreement[]>(mockAgreements);

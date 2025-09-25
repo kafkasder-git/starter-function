@@ -1,3 +1,10 @@
+/**
+ * @fileoverview PartnerAssociationsPage Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
@@ -49,9 +56,15 @@ const mockAssociations = [
   },
 ];
 
+/**
+ * PartnerAssociationsPage function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function PartnerAssociationsPage() {
   const activeAssociations = mockAssociations.filter((a) => a.status === 'Aktif').length;
-  const totalMembers = mockAssociations.reduce((sum, a) => sum + (a.memberCount || 0), 0);
+  const totalMembers = mockAssociations.reduce((sum, a) => sum + (a.memberCount ?? 0), 0);
   const collaborativeAssociations = mockAssociations.filter((a) => a.sharedProjects > 0).length;
   const largeAssociations = mockAssociations.filter(
     (a) => a.memberCount && a.memberCount >= 100,

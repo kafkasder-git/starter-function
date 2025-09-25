@@ -1,3 +1,10 @@
+/**
+ * @fileoverview memoization Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { SERVICE_CONFIG } from './config';
 
 interface MemoCache<T> {
@@ -6,6 +13,13 @@ interface MemoCache<T> {
   ttl: number;
 }
 
+/**
+ * MemoizationService Service
+ * 
+ * Service class for handling memoizationservice operations
+ * 
+ * @class MemoizationService
+ */
 export class MemoizationService {
   private static readonly MAX_CACHE_SIZE = 1000;
   private static readonly cache = new Map<string, MemoCache<unknown>>();
@@ -20,7 +34,7 @@ export class MemoizationService {
 
     return (...args: TArgs): TReturn => {
       const baseKey = keyGenerator ? keyGenerator(...args) : JSON.stringify(args);
-      const key = `${fn.name || 'anonymous'}_${baseKey}`; // Namespace by function name
+      const key = `${fn.name ?? 'anonymous'}_${baseKey}`; // Namespace by function name
       const cached = cache.get(key);
 
       if (cached && Date.now() - cached.timestamp < cached.ttl) {
@@ -61,7 +75,7 @@ export class MemoizationService {
 
     return async (...args: TArgs): Promise<TReturn> => {
       const baseKey = keyGenerator ? keyGenerator(...args) : JSON.stringify(args);
-      const key = `${fn.name || 'anonymous'}_${baseKey}`; // Namespace by function name
+      const key = `${fn.name ?? 'anonymous'}_${baseKey}`; // Namespace by function name
       const cached = cache.get(key);
 
       if (cached && Date.now() - cached.timestamp < cached.ttl) {

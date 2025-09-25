@@ -1,3 +1,10 @@
+/**
+ * @fileoverview QRCodeGenerator Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 // 🔳 QR CODE GENERATOR COMPONENT
 // Professional QR code generation and display component
 
@@ -21,6 +28,7 @@ import { Slider } from '../ui/slider';
 import { Switch } from '../ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 
+import { logger } from '../lib/logging/logger';
 interface QRCodeGeneratorProps {
   kumbara: Kumbara;
   onClose?: () => void;
@@ -39,6 +47,12 @@ interface QRCustomization {
   includeText: boolean;
 }
 
+/**
+ * QRCodeGenerator function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function QRCodeGenerator({ kumbara, onClose, className = '' }: QRCodeGeneratorProps) {
   const [qrResult, setQrResult] = useState<QRCodeGenerationResult | null>(null);
   const [loading, setLoading] = useState(false);
@@ -93,7 +107,7 @@ export function QRCodeGenerator({ kumbara, onClose, className = '' }: QRCodeGene
       }
     } catch (error) {
       toast.error('QR kod oluşturulamadı');
-      console.error('QR generation error:', error);
+      logger.error('QR generation error:', error);
     } finally {
       setLoading(false);
     }

@@ -1,3 +1,10 @@
+/**
+ * @fileoverview InternalMessagingPage Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
@@ -66,6 +73,12 @@ const messages: Message[] = [
   },
 ];
 
+/**
+ * InternalMessagingPage function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function InternalMessagingPage() {
   const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
   const [newMessage, setNewMessage] = useState('');
@@ -157,7 +170,7 @@ export function InternalMessagingPage() {
                         </div>
                         <div className="flex items-center justify-between">
                           <p className="text-xs sm:text-sm text-muted-foreground truncate">
-                            {conversation.lastMessage?.content || 'Henüz mesaj yok'}
+                            {conversation.lastMessage?.content ?? 'Henüz mesaj yok'}
                           </p>
                           {conversation.unreadCount > 0 && (
                             <Badge className="h-4 w-4 sm:h-5 sm:w-5 p-0 text-xs flex items-center justify-center">

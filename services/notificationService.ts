@@ -1,3 +1,10 @@
+/**
+ * @fileoverview notificationService Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 // Notification Service - Handles notification statistics and management
 import { logger } from '../lib/logging';
 

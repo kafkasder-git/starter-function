@@ -1,3 +1,10 @@
+/**
+ * @fileoverview ApplicationWorkflowPage Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import {
   AlertCircle,
   Building2,
@@ -143,6 +150,12 @@ const mockPartners: Partner[] = [
   },
 ];
 
+/**
+ * PartnerListPage function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export default function PartnerListPage() {
   const [partners, setPartners] = useState<Partner[]>(mockPartners);
   const [filteredPartners, setFilteredPartners] = useState<Partner[]>(mockPartners);

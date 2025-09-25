@@ -206,7 +206,7 @@ const PushNotificationManager: React.FC<PushNotificationManagerProps> = ({ class
             {!isSubscribed ? (
               <Button
                 onClick={handleSubscribe}
-                disabled={isLoading || permission === 'denied'}
+                disabled={isLoading ?? permission === 'denied'}
                 className="gap-2"
               >
                 {isLoading ? (

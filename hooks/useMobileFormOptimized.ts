@@ -1,3 +1,10 @@
+/**
+ * @fileoverview useMobileFormOptimized Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAdvancedMobile } from './useAdvancedMobile';
 import { usePerformanceOptimization } from './usePerformanceOptimization';
@@ -27,6 +34,12 @@ interface ValidationRule {
   custom?: (value: string) => string | null;
 }
 
+/**
+ * useMobileFormOptimized function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useMobileFormOptimized({
   validateOnBlur = true,
   submitOnEnter = false,

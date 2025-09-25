@@ -1,3 +1,10 @@
+/**
+ * @fileoverview useDataExport Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { useCallback, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import type { ExportConfig, ExportResult } from '../types/data';
@@ -45,6 +52,12 @@ interface UseDataExportProps {
   onError?: (error: string) => void;
 }
 
+/**
+ * useDataExport function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useDataExport({ onProgress, onComplete, onError }: UseDataExportProps = {}) {
   const [isExporting, setIsExporting] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -52,8 +65,8 @@ export function useDataExport({ onProgress, onComplete, onError }: UseDataExport
 
   // Generate CSV content
   const generateCSV = useCallback((data: ExportableData[], config: ExportConfig): string => {
-    const fields = config.fields || Object.keys(data[0] || {});
-    const headers = config.customHeaders || EXPORT_TEMPLATES.member.headers;
+    const fields = config.fields ?? Object.keys(data[0] || {});
+    const headers = config.customHeaders ?? EXPORT_TEMPLATES.member.headers;
 
     // Create header row
     const headerRow = fields.map((field) =>
@@ -75,7 +88,7 @@ export function useDataExport({ onProgress, onComplete, onError }: UseDataExport
         }
 
         // Escape CSV special characters
-        const stringValue = String(value || '');
+        const stringValue = String(value ?? '');
         if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')) {
           return `"${stringValue.replace(/"/g, '""')}"`;
         }
@@ -110,7 +123,7 @@ export function useDataExport({ onProgress, onComplete, onError }: UseDataExport
       <html>
       <head>
         <meta charset="utf-8">
-        <title>${config.filename || 'Export'}</title>
+        <title>${config.filename ?? 'Export'}</title>
         <style>
           body { font-family: Arial, sans-serif; margin: 20px; }
           table { width: 100%; border-collapse: collapse; margin-top: 20px; }
@@ -122,14 +135,14 @@ export function useDataExport({ onProgress, onComplete, onError }: UseDataExport
       </head>
       <body>
         <div class="header">
-          <h1>${config.filename || 'Veri Raporu'}</h1>
+          <h1>${config.filename ?? 'Veri Raporu'}</h1>
           <p>Oluşturulma Tarihi: ${DATA_FORMATTERS.date(new Date())}</p>
         </div>
 
         <table>
           <thead>
             <tr>
-              ${(config.fields || Object.keys(data[0] || {}))
+              ${(config.fields ?? Object.keys(data[0] || {}))
                 .map((field) => `<th>${config.customHeaders?.[field] || field}</th>`)
                 .join('')}
             </tr>
@@ -139,7 +152,7 @@ export function useDataExport({ onProgress, onComplete, onError }: UseDataExport
               .map(
                 (item) => `
               <tr>
-                ${(config.fields || Object.keys(item))
+                ${(config.fields ?? Object.keys(item))
                   .map((field) => {
                     let value = getNestedValue(item, field);
                     if (value instanceof Date) {
@@ -147,7 +160,7 @@ export function useDataExport({ onProgress, onComplete, onError }: UseDataExport
                     } else if (typeof value === 'number' && field.includes('amount')) {
                       value = DATA_FORMATTERS.currency(value);
                     }
-                    return `<td>${value || ''}</td>`;
+                    return `<td>${value ?? ''}</td>`;
                   })
                   .join('')}
               </tr>
@@ -186,7 +199,7 @@ export function useDataExport({ onProgress, onComplete, onError }: UseDataExport
         exportInfo: {
           timestamp: new Date().toISOString(),
           recordCount: data.length,
-          fields: config.fields || Object.keys(data[0] || {}),
+          fields: config.fields ?? Object.keys(data[0] || {}),
           filters: config.filters,
         },
         data: filteredData,
@@ -207,7 +220,7 @@ export function useDataExport({ onProgress, onComplete, onError }: UseDataExport
   const validateConfig = useCallback((data: ExportableData[], config: ExportConfig): string[] => {
     const errors: string[] = [];
 
-    if (!data || data.length === 0) {
+    if (!data ?? data.length === 0) {
       errors.push('Dışa aktarılacak veri bulunamadı');
     }
 

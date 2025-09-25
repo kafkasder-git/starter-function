@@ -1,3 +1,10 @@
+/**
+ * @fileoverview QRCodeManager Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 // 🔳📷 QR CODE MANAGER COMPONENT
 // Comprehensive QR code management with generation and scanning
 
@@ -32,6 +39,12 @@ interface QRActivity {
   details?: any;
 }
 
+/**
+ * QRCodeManager function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function QRCodeManager({
   kumbara,
   onKumbaraFound,
@@ -43,7 +56,7 @@ export function QRCodeManager({
   const [isGeneratorOpen, setIsGeneratorOpen] = useState(false);
   const [isScannerOpen, setIsScannerOpen] = useState(false);
   const [qrHistory, setQrHistory] = useState<QRActivity[]>([]);
-  const [selectedKumbara, setSelectedKumbara] = useState<Kumbara | null>(kumbara || null);
+  const [selectedKumbara, setSelectedKumbara] = useState<Kumbara | null>(kumbara ?? null);
 
   // Handle successful scan
   const handleScanSuccess = useCallback(
@@ -52,8 +65,8 @@ export function QRCodeManager({
       const activity: QRActivity = {
         id: Date.now().toString(),
         type: 'scanned',
-        kumbara_code: kumbaraData?.code || 'Unknown',
-        kumbara_name: kumbaraData?.name || 'Unknown',
+        kumbara_code: kumbaraData?.code ?? 'Unknown',
+        kumbara_name: kumbaraData?.name ?? 'Unknown',
         timestamp: new Date().toISOString(),
         details: result,
       };

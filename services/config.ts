@@ -1,5 +1,17 @@
+/**
+ * @fileoverview config Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 // Service Configuration and Common Types
 
+/**
+ * PaginatedResponse Interface
+ * 
+ * @interface PaginatedResponse
+ */
 export interface PaginatedResponse<T> {
   data: T[];
   count: number;
@@ -10,6 +22,11 @@ export interface PaginatedResponse<T> {
   hasPreviousPage: boolean;
 }
 
+/**
+ * ApiResponse Interface
+ * 
+ * @interface ApiResponse
+ */
 export interface ApiResponse<T> {
   data: T | null;
   error: string | null;
@@ -19,6 +36,11 @@ export type ServiceResult<T> =
   | { success: true; data: T; error: null }
   | { success: false; error: string };
 
+/**
+ * ValidationResult Interface
+ * 
+ * @interface ValidationResult
+ */
 export interface ValidationResult {
   isValid: boolean;
   errors: string[];
@@ -33,6 +55,13 @@ export enum ServiceErrorCode {
   UNKNOWN_ERROR = 'UNKNOWN_ERROR',
 }
 
+/**
+ * ServiceError Service
+ * 
+ * Service class for handling serviceerror operations
+ * 
+ * @class ServiceError
+ */
 export class ServiceError extends Error {
   constructor(
     public code: ServiceErrorCode,

@@ -1,3 +1,10 @@
+/**
+ * @fileoverview QuickStats Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { TrendingUp, TrendingDown } from 'lucide-react';
 import { Card, CardContent } from './ui/card';
 
@@ -11,6 +18,12 @@ interface StatCardProps {
   format?: 'currency' | 'number' | 'percentage';
 }
 
+/**
+ * StatCard function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function StatCard({
   title,
   value,

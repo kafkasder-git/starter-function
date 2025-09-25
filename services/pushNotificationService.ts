@@ -1,5 +1,17 @@
+/**
+ * @fileoverview pushNotificationService Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 // Simple in-browser push notification service stub
 
+/**
+ * NotificationPayload Interface
+ * 
+ * @interface NotificationPayload
+ */
 export interface NotificationPayload {
   title: string;
   body?: string;

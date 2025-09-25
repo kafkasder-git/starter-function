@@ -1,3 +1,10 @@
+/**
+ * @fileoverview SmartCommandPalette Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   Search,
@@ -17,6 +24,7 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription } from '../ui/dia
 import { Badge } from '../ui/badge';
 import { cn } from '../ui/utils';
 
+import { logger } from '../lib/logging/logger';
 interface CommandItem {
   id: string;
   title: string;
@@ -37,6 +45,12 @@ interface SmartCommandPaletteProps {
   currentModule?: string;
 }
 
+/**
+ * SmartCommandPalette function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function SmartCommandPalette({
   isOpen,
   onClose,
@@ -175,7 +189,7 @@ export function SmartCommandPalette({
         category: 'help',
         icon: <BookOpen className="w-4 h-4" />,
         onExecute: () => {
-          console.log('Help: Getting Started');
+          logger.info('Help: Getting Started');
         },
         keywords: ['yardım', 'rehber', 'başlangıç', 'nasıl', 'guide'],
         priority: 6,
@@ -188,7 +202,7 @@ export function SmartCommandPalette({
         icon: <HelpCircle className="w-4 h-4" />,
         shortcut: '⌘+?',
         onExecute: () => {
-          console.log('Help: Shortcuts');
+          logger.info('Help: Shortcuts');
         },
         keywords: ['klavye', 'kısayol', 'shortcut', 'hızlı'],
         priority: 5,

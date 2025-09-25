@@ -1,3 +1,10 @@
+/**
+ * @fileoverview KumbaraForm Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 // 🏦 KUMBARA FORM COMPONENT
 // Enhanced form with React Hook Form + Zod validation
 
@@ -16,6 +23,7 @@ import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Textarea } from '../ui/textarea';
 
+import { logger } from '../lib/logging/logger';
 // Enhanced Zod validation schemas with TypeScript best practices
 const TURKISH_NAME_REGEX = /^[a-zA-ZğüşıöçĞÜŞİÖÇ\s]+$/;
 const TURKISH_PHONE_REGEX = /^(\+90|0)?[5][0-9]{9}$/;
@@ -132,6 +140,11 @@ type CollectionFormData = z.infer<typeof collectionSchema>;
 // Enhanced component props with strict TypeScript typing
 export type KumbaraFormMode = 'create' | 'edit';
 
+/**
+ * KumbaraFormProps Interface
+ * 
+ * @interface KumbaraFormProps
+ */
 export interface KumbaraFormProps {
   readonly mode: KumbaraFormMode;
   readonly initialData?: Partial<KumbaraFormData>;
@@ -141,6 +154,11 @@ export interface KumbaraFormProps {
   readonly className?: string;
 }
 
+/**
+ * CollectionFormProps Interface
+ * 
+ * @interface CollectionFormProps
+ */
 export interface CollectionFormProps {
   readonly kumbaraId: string;
   readonly kumbaraName: string;
@@ -152,6 +170,12 @@ export interface CollectionFormProps {
 
 /**
  * Kumbara Create/Edit Form Component
+ */
+/**
+ * KumbaraForm function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
  */
 export function KumbaraForm({
   mode,
@@ -176,13 +200,13 @@ export function KumbaraForm({
   const form = useForm<KumbaraFormData>({
     resolver: zodResolver(kumbaraSchema),
     defaultValues: {
-      name: initialData?.name || '',
-      location: initialData?.location || '',
-      address: initialData?.address || '',
-      contactPerson: initialData?.contactPerson || '',
-      phone: initialData?.phone || '',
-      notes: initialData?.notes || '',
-      status: initialData?.status || 'active',
+      name: initialData?.name ?? '',
+      location: initialData?.location ?? '',
+      address: initialData?.address ?? '',
+      contactPerson: initialData?.contactPerson ?? '',
+      phone: initialData?.phone ?? '',
+      notes: initialData?.notes ?? '',
+      status: initialData?.status ?? 'active',
     },
   });
 
@@ -201,9 +225,9 @@ export function KumbaraForm({
       // Clean empty optional fields
       const cleanData = {
         ...data,
-        contactPerson: data.contactPerson || undefined,
-        phone: data.phone || undefined,
-        notes: data.notes || undefined,
+        contactPerson: data.contactPerson ?? undefined,
+        phone: data.phone ?? undefined,
+        notes: data.notes ?? undefined,
         created_by: 'current-user', // Replace with actual user ID
       };
 
@@ -217,13 +241,13 @@ export function KumbaraForm({
       }
     } catch (error) {
       toast.error('İşlem sırasında bir hata oluştu');
-      console.error('Form submission error:', error);
+      logger.error('Form submission error:', error);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const isLoading = loading || isSubmitting;
+  const isLoading = loading ?? isSubmitting;
 
   return (
     <Card className={`border-0 shadow-xl bg-white/95 backdrop-blur-sm ${className}`}>
@@ -463,6 +487,12 @@ export function KumbaraForm({
 /**
  * Collection Recording Form Component
  */
+/**
+ * CollectionForm function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function CollectionForm({
   kumbaraId,
   kumbaraName,
@@ -501,10 +531,10 @@ export function CollectionForm({
       const submitData = {
         ...data,
         kumbara_id: kumbaraId,
-        witness_name: data.witness_name || undefined,
-        witness_phone: data.witness_phone || undefined,
-        notes: data.notes || undefined,
-        weather_condition: data.weather_condition || undefined,
+        witness_name: data.witness_name ?? undefined,
+        witness_phone: data.witness_phone ?? undefined,
+        notes: data.notes ?? undefined,
+        weather_condition: data.weather_condition ?? undefined,
         created_by: 'current-user', // Replace with actual user ID
       };
 
@@ -514,13 +544,13 @@ export function CollectionForm({
       toast.success('Toplama kaydı başarıyla oluşturuldu');
     } catch (error) {
       toast.error('Toplama kaydı oluşturulamadı');
-      console.error('Collection form submission error:', error);
+      logger.error('Collection form submission error:', error);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const isLoading = loading || isSubmitting;
+  const isLoading = loading ?? isSubmitting;
 
   return (
     <Card className={`border-0 shadow-xl bg-white/95 backdrop-blur-sm ${className}`}>

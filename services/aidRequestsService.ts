@@ -1,4 +1,12 @@
+/**
+ * @fileoverview aidRequestsService Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { supabase, TABLES } from '../lib/supabase';
+import { logger } from '../lib/logging/logger';
 import type {
   AidRequest,
   AidRequestInsert,
@@ -7,6 +15,11 @@ import type {
   ApiResponse,
 } from '../types/database';
 
+/**
+ * AidRequestFilters Interface
+ * 
+ * @interface AidRequestFilters
+ */
 export interface AidRequestFilters {
   status?: string;
   aidType?: string;
@@ -19,6 +32,11 @@ export interface AidRequestFilters {
   maxAmount?: number;
 }
 
+/**
+ * AidRequestStats Interface
+ * 
+ * @interface AidRequestStats
+ */
 export interface AidRequestStats {
   total: number;
   pending: number;
@@ -96,15 +114,15 @@ class AidRequestsService {
       const { data, error, count } = await query;
 
       if (error) {
-        console.error('Error fetching aid requests:', error);
+        logger.error('Error fetching aid requests:', error);
         throw new Error(`Aid requests fetch failed: ${error.message}`);
       }
 
-      const totalPages = Math.ceil((count || 0) / pageSize);
+      const totalPages = Math.ceil((count ?? 0) / pageSize);
 
       return {
         data: data || [],
-        count: count || 0,
+        count: count ?? 0,
         page,
         pageSize,
         totalPages,
@@ -112,7 +130,7 @@ class AidRequestsService {
         hasPreviousPage: page > 1,
       };
     } catch (error) {
-      console.error('AidRequestsService.getAidRequests error:', error);
+      logger.error('AidRequestsService.getAidRequests error:', error);
       throw error;
     }
   }
@@ -127,13 +145,13 @@ class AidRequestsService {
         .single();
 
       if (error) {
-        console.error('Error fetching aid request:', error);
+        logger.error('Error fetching aid request:', error);
         return { data: null, error: error.message };
       }
 
       return { data, error: null };
     } catch (error) {
-      console.error('AidRequestsService.getAidRequest error:', error);
+      logger.error('AidRequestsService.getAidRequest error:', error);
       return { data: null, error: 'Aid request fetch failed' };
     }
   }
@@ -148,22 +166,22 @@ class AidRequestsService {
           ...aidRequest,
           created_at: now,
           updated_at: now,
-          status: aidRequest.status || 'pending',
-          urgency: aidRequest.urgency || 'medium',
-          currency: aidRequest.currency || 'TRY',
-          follow_up_required: aidRequest.follow_up_required || false,
+          status: aidRequest.status ?? 'pending',
+          urgency: aidRequest.urgency ?? 'medium',
+          currency: aidRequest.currency ?? 'TRY',
+          follow_up_required: aidRequest.follow_up_required ?? false,
         })
         .select()
         .single();
 
       if (error) {
-        console.error('Error creating aid request:', error);
+        logger.error('Error creating aid request:', error);
         return { data: null, error: `Yardım talebi oluşturulamadı: ${error.message}` };
       }
 
       return { data, error: null };
     } catch (error) {
-      console.error('AidRequestsService.createAidRequest error:', error);
+      logger.error('AidRequestsService.createAidRequest error:', error);
       return { data: null, error: 'Aid request creation failed' };
     }
   }
@@ -182,13 +200,13 @@ class AidRequestsService {
         .single();
 
       if (error) {
-        console.error('Error updating aid request:', error);
+        logger.error('Error updating aid request:', error);
         return { data: null, error: `Güncelleme başarısız: ${error.message}` };
       }
 
       return { data, error: null };
     } catch (error) {
-      console.error('AidRequestsService.updateAidRequest error:', error);
+      logger.error('AidRequestsService.updateAidRequest error:', error);
       return { data: null, error: 'Aid request update failed' };
     }
   }
@@ -214,13 +232,13 @@ class AidRequestsService {
         .single();
 
       if (error) {
-        console.error('Error assigning aid request:', error);
+        logger.error('Error assigning aid request:', error);
         return { data: null, error: `Atama başarısız: ${error.message}` };
       }
 
       return { data, error: null };
     } catch (error) {
-      console.error('AidRequestsService.assignAidRequest error:', error);
+      logger.error('AidRequestsService.assignAidRequest error:', error);
       return { data: null, error: 'Aid request assignment failed' };
     }
   }
@@ -251,13 +269,13 @@ class AidRequestsService {
         .single();
 
       if (error) {
-        console.error('Error approving aid request:', error);
+        logger.error('Error approving aid request:', error);
         return { data: null, error: `Onaylama başarısız: ${error.message}` };
       }
 
       return { data, error: null };
     } catch (error) {
-      console.error('AidRequestsService.approveAidRequest error:', error);
+      logger.error('AidRequestsService.approveAidRequest error:', error);
       return { data: null, error: 'Aid request approval failed' };
     }
   }
@@ -283,13 +301,13 @@ class AidRequestsService {
         .single();
 
       if (error) {
-        console.error('Error rejecting aid request:', error);
+        logger.error('Error rejecting aid request:', error);
         return { data: null, error: `Reddetme başarısız: ${error.message}` };
       }
 
       return { data, error: null };
     } catch (error) {
-      console.error('AidRequestsService.rejectAidRequest error:', error);
+      logger.error('AidRequestsService.rejectAidRequest error:', error);
       return { data: null, error: 'Aid request rejection failed' };
     }
   }
@@ -312,13 +330,13 @@ class AidRequestsService {
         .single();
 
       if (error) {
-        console.error('Error completing aid request:', error);
+        logger.error('Error completing aid request:', error);
         return { data: null, error: `Tamamlama başarısız: ${error.message}` };
       }
 
       return { data, error: null };
     } catch (error) {
-      console.error('AidRequestsService.completeAidRequest error:', error);
+      logger.error('AidRequestsService.completeAidRequest error:', error);
       return { data: null, error: 'Aid request completion failed' };
     }
   }
@@ -332,11 +350,11 @@ class AidRequestsService {
         .select('*', { count: 'exact', head: true });
 
       if (error) {
-        console.error('Error fetching aid request stats:', error);
+        logger.error('Error fetching aid request stats:', error);
         return { data: null, error: error.message };
       }
 
-      const total = count || 0;
+      const total = count ?? 0;
       const stats: AidRequestStats = {
         total,
         pending: Math.round(total * 0.4), // Estimate 40% pending
@@ -352,7 +370,7 @@ class AidRequestsService {
 
       return { data: stats, error: null };
     } catch (error) {
-      console.error('AidRequestsService.getAidRequestStats error:', error);
+      logger.error('AidRequestsService.getAidRequestStats error:', error);
       return { data: null, error: 'Stats fetch failed' };
     }
   }
@@ -376,13 +394,13 @@ class AidRequestsService {
         .limit(limit);
 
       if (error) {
-        console.error('Error searching aid requests:', error);
+        logger.error('Error searching aid requests:', error);
         return { data: null, error: error.message };
       }
 
       return { data: data || [], error: null };
     } catch (error) {
-      console.error('AidRequestsService.searchAidRequests error:', error);
+      logger.error('AidRequestsService.searchAidRequests error:', error);
       return { data: null, error: 'Search failed' };
     }
   }
@@ -398,13 +416,13 @@ class AidRequestsService {
         .order('created_at', { ascending: false });
 
       if (error) {
-        console.error('Error fetching user aid requests:', error);
+        logger.error('Error fetching user aid requests:', error);
         return { data: null, error: error.message };
       }
 
       return { data: data || [], error: null };
     } catch (error) {
-      console.error('AidRequestsService.getMyAidRequests error:', error);
+      logger.error('AidRequestsService.getMyAidRequests error:', error);
       return { data: null, error: 'My aid requests fetch failed' };
     }
   }
@@ -420,13 +438,13 @@ class AidRequestsService {
         .limit(limit);
 
       if (error) {
-        console.error('Error fetching recent aid requests:', error);
+        logger.error('Error fetching recent aid requests:', error);
         return { data: null, error: error.message };
       }
 
       return { data: data || [], error: null };
     } catch (error) {
-      console.error('AidRequestsService.getRecentAidRequests error:', error);
+      logger.error('AidRequestsService.getRecentAidRequests error:', error);
       return { data: null, error: 'Recent aid requests fetch failed' };
     }
   }
@@ -443,13 +461,13 @@ class AidRequestsService {
         .eq('id', id);
 
       if (error) {
-        console.error('Error deleting aid request:', error);
+        logger.error('Error deleting aid request:', error);
         return { data: null, error: `Silme işlemi başarısız: ${error.message}` };
       }
 
       return { data: true, error: null };
     } catch (error) {
-      console.error('AidRequestsService.deleteAidRequest error:', error);
+      logger.error('AidRequestsService.deleteAidRequest error:', error);
       return { data: null, error: 'Aid request deletion failed' };
     }
   }
@@ -472,13 +490,13 @@ class AidRequestsService {
         .is('deleted_at', null);
 
       if (error) {
-        console.error('Error bulk updating aid request status:', error);
+        logger.error('Error bulk updating aid request status:', error);
         return { data: null, error: `Toplu güncelleme başarısız: ${error.message}` };
       }
 
       return { data: true, error: null };
     } catch (error) {
-      console.error('AidRequestsService.bulkUpdateStatus error:', error);
+      logger.error('AidRequestsService.bulkUpdateStatus error:', error);
       return { data: null, error: 'Bulk update failed' };
     }
   }

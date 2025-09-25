@@ -1,3 +1,10 @@
+/**
+ * @fileoverview UserManagementPageReal Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 // 👥 REAL USER MANAGEMENT PAGE
 // Enhanced user management with real Supabase integration
 
@@ -155,6 +162,12 @@ const DEPARTMENTS = [
   'Muhasebe',
 ] as const;
 
+/**
+ * UserManagementPageReal function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function UserManagementPageReal() {
   // Real user management hook
   const {
@@ -211,7 +224,7 @@ export function UserManagementPageReal() {
   // Load users when filters change
   useEffect(() => {
     const filters = {
-      search: debouncedSearch || undefined,
+      search: debouncedSearch ?? undefined,
       role: roleFilter !== 'all' ? (roleFilter as UserRole) : undefined,
       status:
         statusFilter !== 'all'
@@ -274,9 +287,9 @@ export function UserManagementPageReal() {
       name: user.name,
       role: user.role,
       status: user.status === 'pending' ? 'inactive' : user.status,
-      phone: user.phone || '',
-      department: user.department || '',
-      notes: user.notes || '',
+      phone: user.phone ?? '',
+      department: user.department ?? '',
+      notes: user.notes ?? '',
     });
     setIsEditDialogOpen(true);
   };
@@ -674,7 +687,7 @@ export function UserManagementPageReal() {
                   <Users className="h-12 w-12 text-gray-300 mx-auto mb-4" />
                   <h3 className="text-lg font-medium text-gray-900 mb-2">Kullanıcı bulunamadı</h3>
                   <p className="text-gray-500 mb-4">
-                    {searchQuery || roleFilter !== 'all' || statusFilter !== 'all'
+                    {searchQuery ?? roleFilter !== 'all' || statusFilter !== 'all'
                       ? 'Arama kriterlerinize uygun kullanıcı bulunamadı'
                       : 'Henüz hiç kullanıcı eklenmemiş'}
                   </p>

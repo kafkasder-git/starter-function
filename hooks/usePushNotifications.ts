@@ -7,6 +7,12 @@ import { useCallback, useEffect, useState } from 'react';
 import type { NotificationPayload } from '../services/pushNotificationService';
 import { pushNotificationService } from '../services/pushNotificationService';
 
+import { logger } from '../lib/logging/logger';
+/**
+ * UsePushNotificationsReturn Interface
+ * 
+ * @interface UsePushNotificationsReturn
+ */
 export interface UsePushNotificationsReturn {
   isSupported: boolean;
   isSubscribed: boolean;
@@ -49,10 +55,10 @@ export const usePushNotifications = (): UsePushNotificationsReturn => {
         setIsSubscribed(pushNotificationService.isSubscribed());
         setPermission(pushNotificationService.getPermissionStatus());
 
-        console.log('Push notification service initialized:', initialized);
+        logger.info('Push notification service initialized:', initialized);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to initialize push notifications');
-        console.error('Push notification initialization error:', err);
+        logger.error('Push notification initialization error:', err);
       } finally {
         setIsLoading(false);
       }
@@ -96,7 +102,7 @@ export const usePushNotifications = (): UsePushNotificationsReturn => {
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to subscribe';
       setError(errorMessage);
-      console.error('Push notification subscription error:', err);
+      logger.error('Push notification subscription error:', err);
       return false;
     } finally {
       setIsLoading(false);
@@ -120,7 +126,7 @@ export const usePushNotifications = (): UsePushNotificationsReturn => {
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to unsubscribe';
       setError(errorMessage);
-      console.error('Push notification unsubscription error:', err);
+      logger.error('Push notification unsubscription error:', err);
       return false;
     } finally {
       setIsLoading(false);
@@ -135,7 +141,7 @@ export const usePushNotifications = (): UsePushNotificationsReturn => {
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to show notification';
       setError(errorMessage);
-      console.error('Show notification error:', err);
+      logger.error('Show notification error:', err);
       throw err;
     }
   }, []);
@@ -149,7 +155,7 @@ export const usePushNotifications = (): UsePushNotificationsReturn => {
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Failed to send notification';
         setError(errorMessage);
-        console.error('Send notification error:', err);
+        logger.error('Send notification error:', err);
         return false;
       }
     },
@@ -164,7 +170,7 @@ export const usePushNotifications = (): UsePushNotificationsReturn => {
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to broadcast notification';
       setError(errorMessage);
-      console.error('Broadcast notification error:', err);
+      logger.error('Broadcast notification error:', err);
       return false;
     }
   }, []);

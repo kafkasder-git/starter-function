@@ -1,3 +1,10 @@
+/**
+ * @fileoverview EnvironmentUtils Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import React from 'react';
 
 // Environment detection utilities
@@ -47,7 +54,7 @@ export const getEnvironmentConfig = () => ({
   showDebugInfo: isDevelopment,
   enableAnalytics: isProduction,
   enableErrorReporting: isProduction,
-  apiUrl: import.meta.env.VITE_API_URL || 'http://localhost:3000',
+  apiUrl: import.meta.env.VITE_API_URL ?? 'http://localhost:3000',
   supabaseUrl: import.meta.env.VITE_SUPABASE_URL,
   supabaseKey: import.meta.env.VITE_SUPABASE_ANON_KEY,
 });
@@ -66,7 +73,7 @@ export const DevTools = removeInProduction(() => (
     <div>Mode: {import.meta.env.MODE}</div>
     <div>Bundle: {isProduction ? 'Optimized' : 'Development'}</div>
     <div>
-      Memory: {Math.round((performance as any).memory?.usedJSHeapSize / 1024 / 1024 || 0)}MB
+      Memory: {Math.round((performance as any).memory?.usedJSHeapSize / 1024 / 1024 ?? 0)}MB
     </div>
   </div>
 ));

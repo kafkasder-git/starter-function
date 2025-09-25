@@ -1,8 +1,16 @@
+/**
+ * @fileoverview NotificationContext Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { notificationService, notify } from '../services/notificationService';
 import { useNotificationStore } from '../stores/notificationStore';
 
+import { logger } from '../lib/logging/logger';
 interface NotificationContextType {
   // Store integration
   store: ReturnType<typeof useNotificationStore>;
@@ -29,6 +37,12 @@ interface NotificationContextType {
 
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
 
+/**
+ * NotificationProvider function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function NotificationProvider({ children }: { children: React.ReactNode }) {
   const store = useNotificationStore();
   const [isRealTimeActive, setIsRealTimeActive] = useState(false);
@@ -62,9 +76,9 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
           randomNotifications[Math.floor(Math.random() * randomNotifications.length)];
         await randomNotification();
 
-        console.log('Real-time notification created');
+        logger.info('Real-time notification created');
       } catch (error) {
-        console.error('Error creating real-time notification:', error);
+        logger.error('Error creating real-time notification:', error);
       }
     }, 10000); // Every 10 seconds
 
@@ -140,7 +154,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
         toast.success('Sistem bildirimleri oluşturuldu');
       } catch (error) {
-        console.error('Error triggering system notification:', error);
+        logger.error('Error triggering system notification:', error);
         toast.error('Sistem bildirimi oluşturulurken hata oluştu');
       }
     },
@@ -244,7 +258,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
         toast.success('İş akışı simülasyonu tamamlandı');
       } catch (error) {
-        console.error('Error simulating workflow:', error);
+        logger.error('Error simulating workflow:', error);
         toast.error('İş akışı simülasyonu sırasında hata oluştu');
       }
     },
@@ -256,7 +270,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     try {
       return await notificationService.getNotificationStats();
     } catch (error) {
-      console.error('Error getting notification stats:', error);
+      logger.error('Error getting notification stats:', error);
       return null;
     }
   }, []);
@@ -275,6 +289,12 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
   return <NotificationContext.Provider value={value}>{children}</NotificationContext.Provider>;
 }
 
+/**
+ * useNotifications function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useNotifications() {
   const context = useContext(NotificationContext);
   if (context === undefined) {

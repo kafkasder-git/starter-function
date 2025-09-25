@@ -1,3 +1,10 @@
+/**
+ * @fileoverview EnhancedSearchExperience Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { Search, Clock, Star, TrendingUp, Filter, X, ArrowRight, Zap } from 'lucide-react';
 import { Input } from '../ui/input';
@@ -6,6 +13,7 @@ import { Badge } from '../ui/badge';
 import { Card, CardContent } from '../ui/card';
 import { cn } from '../ui/utils';
 
+import { logger } from '../lib/logging/logger';
 interface SearchResult {
   id: string;
   title: string;
@@ -192,6 +200,12 @@ const mockData = {
   ],
 };
 
+/**
+ * EnhancedSearchExperience function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function EnhancedSearchExperience({
   placeholder = 'Ne aramıştınız? (⌘K ile hızlı arama)',
   onSearch,
@@ -217,7 +231,7 @@ export function EnhancedSearchExperience({
         setSearchHistory(JSON.parse(saved));
       }
     } catch (error) {
-      console.warn('Error loading search history:', error);
+      logger.warn('Error loading search history:', error);
     }
   }, []);
 
@@ -235,7 +249,7 @@ export function EnhancedSearchExperience({
       try {
         localStorage.setItem('search-history', JSON.stringify(newHistory));
       } catch (error) {
-        console.warn('Error saving search history:', error);
+        logger.warn('Error saving search history:', error);
       }
     },
     [searchHistory],
@@ -286,7 +300,7 @@ export function EnhancedSearchExperience({
       const titleMatch = page.title.toLowerCase().includes(queryLower);
       const descMatch = page.description.toLowerCase().includes(queryLower);
 
-      if (titleMatch || descMatch) {
+      if (titleMatch ?? descMatch) {
         results.push({
           id: `page-${page.id}`,
           title: page.title,
@@ -301,7 +315,7 @@ export function EnhancedSearchExperience({
     });
 
     // Search in records
-    if (activeFilters.length === 0 || activeFilters.includes('records')) {
+    if (activeFilters.length === 0 ?? activeFilters.includes('records')) {
       // Search beneficiaries - gelişmiş arama
       mockData.beneficiaries.forEach((person) => {
         const fullName = `${person.name} ${person.surname}`.toLowerCase();
@@ -311,7 +325,7 @@ export function EnhancedSearchExperience({
         const categoryMatch = person.category?.toLowerCase().includes(queryLower);
         const phoneMatch = person.phone?.includes(query);
 
-        if (nameMatch || cityMatch || categoryMatch || phoneMatch) {
+        if (nameMatch ?? cityMatch || categoryMatch ?? phoneMatch) {
           const relevance = nameMatch ? 10 : cityMatch ? 8 : categoryMatch ? 7 : 6;
           results.push({
             id: `beneficiary-${person.id}`,
@@ -337,7 +351,7 @@ export function EnhancedSearchExperience({
         const categoryMatch = donation.category?.toLowerCase().includes(queryLower);
         const typeMatch = donation.type?.toLowerCase().includes(queryLower);
 
-        if (donorMatch || amountMatch || categoryMatch || typeMatch) {
+        if (donorMatch ?? amountMatch || categoryMatch ?? typeMatch) {
           const relevance = donorMatch ? 10 : amountMatch ? 9 : categoryMatch ? 8 : 7;
           results.push({
             id: `donation-${donation.id}`,
@@ -364,7 +378,7 @@ export function EnhancedSearchExperience({
         const roleMatch = member.role?.toLowerCase().includes(queryLower);
         const departmentMatch = member.department?.toLowerCase().includes(queryLower);
 
-        if (nameMatch || roleMatch || departmentMatch) {
+        if (nameMatch ?? roleMatch || departmentMatch) {
           const relevance = nameMatch ? 10 : roleMatch ? 8 : 7;
           results.push({
             id: `member-${member.id}`,
@@ -389,7 +403,7 @@ export function EnhancedSearchExperience({
         const locationMatch = event.location?.toLowerCase().includes(queryLower);
         const typeMatch = event.type?.toLowerCase().includes(queryLower);
 
-        if (titleMatch || locationMatch || typeMatch) {
+        if (titleMatch ?? locationMatch || typeMatch) {
           const relevance = titleMatch ? 9 : locationMatch ? 7 : 6;
           results.push({
             id: `event-${event.id}`,
@@ -409,7 +423,7 @@ export function EnhancedSearchExperience({
     }
 
     // Search in quick actions
-    if (activeFilters.length === 0 || activeFilters.includes('actions')) {
+    if (activeFilters.length === 0 ?? activeFilters.includes('actions')) {
       const actions = [
         {
           id: 'new-beneficiary',
@@ -613,7 +627,7 @@ export function EnhancedSearchExperience({
       </div>
 
       {/* Filters */}
-      {showFilters && (activeFilters.length > 0 || isOpen) && (
+      {showFilters && (activeFilters.length > 0 ?? isOpen) && (
         <div className="mt-2 flex flex-wrap gap-2">
           <Button
             variant="outline"
@@ -684,7 +698,7 @@ export function EnhancedSearchExperience({
                         )}
                       >
                         <div className="flex-shrink-0 w-8 h-8 rounded-md bg-muted/50 flex items-center justify-center">
-                          {result.icon || getTypeIcon(result.type)}
+                          {result.icon ?? getTypeIcon(result.type)}
                         </div>
 
                         <div className="flex-1 min-w-0">

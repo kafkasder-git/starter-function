@@ -1,3 +1,10 @@
+/**
+ * @fileoverview useKumbara Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 // 🏦 USE KUMBARA HOOK
 // Custom React hook for Kumbara (Piggy Bank) management
 
@@ -17,6 +24,11 @@ import type {
 } from '../types/kumbara';
 
 // Hook options interface
+/**
+ * UseKumbaraOptions Interface
+ * 
+ * @interface UseKumbaraOptions
+ */
 export interface UseKumbaraOptions {
   autoFetch?: boolean;
   realtime?: boolean;
@@ -26,6 +38,11 @@ export interface UseKumbaraOptions {
 }
 
 // Hook return type
+/**
+ * UseKumbaraReturn Interface
+ * 
+ * @interface UseKumbaraReturn
+ */
 export interface UseKumbaraReturn {
   // Data
   kumbaras: Kumbara[];
@@ -67,6 +84,12 @@ export interface UseKumbaraReturn {
 /**
  * Main Kumbara management hook
  */
+/**
+ * useKumbara function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useKumbara(options: UseKumbaraOptions = {}): UseKumbaraReturn {
   const { autoFetch = true, realtime = false, filters = {}, onError, onSuccess } = options;
 
@@ -91,7 +114,7 @@ export function useKumbara(options: UseKumbaraOptions = {}): UseKumbaraReturn {
   // Error handler
   const handleError = useCallback(
     (err: Error) => {
-      const errorMessage = err.message || 'Bilinmeyen bir hata oluştu';
+      const errorMessage = err.message ?? 'Bilinmeyen bir hata oluştu';
       setError(errorMessage);
 
       if (onError) {
@@ -127,7 +150,7 @@ export function useKumbara(options: UseKumbaraOptions = {}): UseKumbaraReturn {
         setLoading(true);
         setError(null);
 
-        const result = await kumbaraService.getKumbaras(customFilters || filters);
+        const result = await kumbaraService.getKumbaras(customFilters ?? filters);
         setSearchResult(result);
         setKumbaras(result.kumbaras);
       } catch (err) {
@@ -265,7 +288,7 @@ export function useKumbara(options: UseKumbaraOptions = {}): UseKumbaraReturn {
               ? {
                   ...prev,
                   totalAmount: prev.totalAmount + data.amount,
-                  lastCollection: data.collection_date || new Date().toISOString(),
+                  lastCollection: data.collection_date ?? new Date().toISOString(),
                 }
               : prev,
           );
@@ -278,7 +301,7 @@ export function useKumbara(options: UseKumbaraOptions = {}): UseKumbaraReturn {
               ? {
                   ...k,
                   totalAmount: k.totalAmount + data.amount,
-                  lastCollection: data.collection_date || new Date().toISOString(),
+                  lastCollection: data.collection_date ?? new Date().toISOString(),
                 }
               : k,
           ),
@@ -514,6 +537,12 @@ export function useKumbara(options: UseKumbaraOptions = {}): UseKumbaraReturn {
 /**
  * Hook for single kumbara management
  */
+/**
+ * useKumbaraDetail function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useKumbaraDetail(id: string) {
   const {
     kumbara,
@@ -555,6 +584,12 @@ export function useKumbaraDetail(id: string) {
 /**
  * Hook for kumbara dashboard
  */
+/**
+ * useKumbaraDashboard function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useKumbaraDashboard() {
   const {
     dashboardStats,
@@ -589,6 +624,12 @@ export function useKumbaraDashboard() {
 
 /**
  * Hook for kumbara analytics
+ */
+/**
+ * useKumbaraAnalytics function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
  */
 export function useKumbaraAnalytics(kumbaraId?: string) {
   const [analytics, setAnalytics] = useState(null);

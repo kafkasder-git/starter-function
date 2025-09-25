@@ -1,3 +1,10 @@
+/**
+ * @fileoverview LegalDocumentsPage Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import {
   Calendar,
   Download,
@@ -32,6 +39,12 @@ interface LegalDocument {
 
 // Mock data kaldırıldı - gerçek veriler API'den gelecek
 
+/**
+ * LegalDocumentsPage function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function LegalDocumentsPage() {
   const [documents, setDocuments] = useState<LegalDocument[]>([]);
   const [searchTerm, setSearchTerm] = useState('');

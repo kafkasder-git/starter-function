@@ -1,3 +1,10 @@
+/**
+ * @fileoverview FinanceReportsPage Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { BarChart3, Download, FileText } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useState } from 'react';
@@ -7,6 +14,12 @@ import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
+/**
+ * FinanceReportsPage function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function FinanceReportsPage() {
   const [reportType, setReportType] = useState('monthly');
   const [reportPeriod, setReportPeriod] = useState('thisYear');

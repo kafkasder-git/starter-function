@@ -1,3 +1,10 @@
+/**
+ * @fileoverview sentryService Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 // Minimal Sentry service stub to satisfy imports
 
 type BreadcrumbLevel = 'info' | 'warning' | 'error';

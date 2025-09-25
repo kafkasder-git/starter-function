@@ -1,3 +1,10 @@
+/**
+ * @fileoverview useMobilePerformance Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { useEffect, useState, useCallback } from 'react';
 import { useIsMobile } from './useTouchDevice';
 
@@ -20,6 +27,12 @@ interface MobilePerformanceSettings {
   lazyLoadThreshold: number;
 }
 
+/**
+ * useMobilePerformance function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useMobilePerformance() {
   const isMobile = useIsMobile();
   const [metrics, setMetrics] = useState<PerformanceMetrics>({
@@ -77,7 +90,7 @@ export function useMobilePerformance() {
       setMetrics((prev) => ({
         ...prev,
         networkSpeed: speed,
-        dataSaver: connection?.saveData || false,
+        dataSaver: connection?.saveData ?? false,
       }));
     };
 

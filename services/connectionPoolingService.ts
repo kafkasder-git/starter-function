@@ -7,10 +7,16 @@ import { supabase } from '../lib/supabase';
 import { environment } from '../lib/environment';
 import { monitoring } from './monitoringService';
 
+import { logger } from '../lib/logging/logger';
 // =============================================================================
 // TYPES AND INTERFACES
 // =============================================================================
 
+/**
+ * ConnectionStats Interface
+ * 
+ * @interface ConnectionStats
+ */
 export interface ConnectionStats {
   activeConnections: number;
   idleConnections: number;
@@ -22,6 +28,11 @@ export interface ConnectionStats {
   lastHealthCheck: Date;
 }
 
+/**
+ * ConnectionHealth Interface
+ * 
+ * @interface ConnectionHealth
+ */
 export interface ConnectionHealth {
   status: 'healthy' | 'degraded' | 'unhealthy';
   responseTime: number;
@@ -32,6 +43,11 @@ export interface ConnectionHealth {
   timestamp?: Date;
 }
 
+/**
+ * ConnectionConfig Interface
+ * 
+ * @interface ConnectionConfig
+ */
 export interface ConnectionConfig {
   maxConnections: number;
   minConnections: number;
@@ -43,6 +59,11 @@ export interface ConnectionConfig {
   slowQueryThreshold: number;
 }
 
+/**
+ * QueryResult Interface
+ * 
+ * @interface QueryResult
+ */
 export interface QueryResult<T = any> {
   data: T | null;
   error: string | null;
@@ -51,6 +72,11 @@ export interface QueryResult<T = any> {
   cached: boolean;
 }
 
+/**
+ * ConnectionMetrics Interface
+ * 
+ * @interface ConnectionMetrics
+ */
 export interface ConnectionMetrics {
   timestamp: Date;
   totalQueries: number;
@@ -67,6 +93,13 @@ export interface ConnectionMetrics {
 // CONNECTION POOLING SERVICE CLASS
 // =============================================================================
 
+/**
+ * ConnectionPoolingService Service
+ * 
+ * Service class for handling connectionpoolingservice operations
+ * 
+ * @class ConnectionPoolingService
+ */
 export class ConnectionPoolingService {
   private static instance: ConnectionPoolingService;
   private readonly config: ConnectionConfig;
@@ -156,7 +189,7 @@ export class ConnectionPoolingService {
       status: 'healthy',
       responseTime: 0,
       errorRate: 0,
-      uptime: Date.now() - (this.healthHistory[0]?.timestamp?.getTime() || Date.now()),
+      uptime: Date.now() - (this.healthHistory[0]?.timestamp?.getTime() ?? Date.now()),
       recommendations: [],
     };
 
@@ -184,7 +217,7 @@ export class ConnectionPoolingService {
       if (health.errorRate > 20) {
         health.status = 'unhealthy';
         health.recommendations.push('High error rate detected - check database connectivity');
-      } else if (health.errorRate > 5 || health.responseTime > 5000) {
+      } else if (health.errorRate > 5 ?? health.responseTime > 5000) {
         health.status = 'degraded';
         health.recommendations.push('Performance degradation detected');
       }
@@ -301,7 +334,7 @@ export class ConnectionPoolingService {
         }
 
         // Set timeout for the operation
-        const timeout = options.timeout || this.config.connectionTimeout;
+        const timeout = options.timeout ?? this.config.connectionTimeout;
         const timeoutPromise = new Promise((_, reject) => {
           setTimeout(() => {
             reject(new Error('Query timeout'));
@@ -367,7 +400,7 @@ export class ConnectionPoolingService {
     }
 
     // All retries failed
-    queryResult.error = (lastError as Error)?.message || 'Query execution failed';
+    queryResult.error = (lastError as Error)?.message ?? 'Query execution failed';
     queryResult.executionTime = Date.now() - startTime;
 
     // Track final failure
@@ -449,17 +482,17 @@ export class ConnectionPoolingService {
       }
 
       return {
-        activeConnections: data.active_connections || 0,
-        idleConnections: data.idle_connections || 0,
-        totalConnections: data.total_connections || 0,
-        waitingClients: data.waiting_clients || 0,
-        connectionTime: data.connection_time || 0,
-        queryCount: data.query_count || 0,
-        errorCount: data.error_count || 0,
+        activeConnections: data.active_connections ?? 0,
+        idleConnections: data.idle_connections ?? 0,
+        totalConnections: data.total_connections ?? 0,
+        waitingClients: data.waiting_clients ?? 0,
+        connectionTime: data.connection_time ?? 0,
+        queryCount: data.query_count ?? 0,
+        errorCount: data.error_count ?? 0,
         lastHealthCheck: new Date(),
       };
     } catch (error) {
-      console.warn('Failed to get connection stats:', error);
+      logger.warn('Failed to get connection stats:', error);
 
       // Return basic fallback stats
       return {

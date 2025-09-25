@@ -1,3 +1,10 @@
+/**
+ * @fileoverview reportingService Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 // Gelişmiş Raporlama Sistemi - Ana Servis
 
 import type {
@@ -18,6 +25,7 @@ import type {
 import { ErrorSeverity, ErrorType } from '../types/reporting';
 import { supabase } from '../lib/supabase';
 
+import { logger } from '../lib/logging/logger';
 // Extended interface for saved reports with additional metadata
 interface SavedCustomReport extends CustomReport {
   version: number;
@@ -57,6 +65,13 @@ interface ImpactRawBeneficiary {
   updated_at?: string;
 }
 
+/**
+ * ReportingService Service
+ * 
+ * Service class for handling reportingservice operations
+ * 
+ * @class ReportingService
+ */
 export class ReportingService {
   private readonly cache = new Map<
     string,
@@ -336,7 +351,7 @@ export class ReportingService {
       .eq('status', 'approved');
 
     if (donationsError) {
-      console.error('Error fetching donations:', donationsError);
+      logger.error('Error fetching donations:', donationsError);
       throw new Error(this.handleError(donationsError, 'fetchFinancialData').message);
     }
 
@@ -347,7 +362,7 @@ export class ReportingService {
       .lte('created_at', endDate);
 
     if (expensesError) {
-      console.error('Error fetching expenses:', expensesError);
+      logger.error('Error fetching expenses:', expensesError);
       throw new Error(this.handleError(expensesError, 'fetchFinancialData').message);
     }
 
@@ -439,7 +454,7 @@ export class ReportingService {
       .eq('status', 'approved');
 
     if (error) {
-      console.error('Error fetching donations:', error);
+      logger.error('Error fetching donations:', error);
       throw new Error(this.handleError(error, 'fetchDonationData').message);
     }
 
@@ -523,7 +538,7 @@ export class ReportingService {
       .lte('updated_at', endDate);
 
     if (error) {
-      console.error('Error fetching beneficiaries:', error);
+      logger.error('Error fetching beneficiaries:', error);
       throw new Error(this.handleError(error, 'fetchImpactData').message);
     }
 
@@ -642,7 +657,7 @@ export class ReportingService {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
     const errorStack = error instanceof Error ? error.stack : undefined;
 
-    console.error(`Error in ${context}:`, error);
+    logger.error(`Error in ${context}:`, error);
 
     return {
       type: ErrorType.DATA_FETCH_ERROR,

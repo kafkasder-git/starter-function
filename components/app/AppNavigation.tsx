@@ -1,3 +1,10 @@
+/**
+ * @fileoverview AppNavigation Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import React from 'react';
 
 // Lazy loaded page components with better organization
@@ -238,7 +245,7 @@ export const PartnerAssociationsPage = createLazyComponent(
 export const LegalConsultationPage = createLazyComponent(
   () =>
     import('../pages/LegalConsultationPage').then((m) => ({
-      default: m.LegalConsultationPage || m.default,
+      default: m.LegalConsultationPage ?? m.default,
     })),
   'LegalConsultationPage',
 );
@@ -246,7 +253,7 @@ export const LegalConsultationPage = createLazyComponent(
 export const LawyerAssignmentsPage = createLazyComponent(
   () =>
     import('../pages/LawyerAssignmentsPage').then((m) => ({
-      default: m.LawyerAssignmentsPage || m.default,
+      default: m.LawyerAssignmentsPage ?? m.default,
     })),
   'LawyerAssignmentsPage',
 );
@@ -254,7 +261,7 @@ export const LawyerAssignmentsPage = createLazyComponent(
 export const LawsuitTrackingPage = createLazyComponent(
   () =>
     import('../pages/LawsuitTrackingPage').then((m) => ({
-      default: m.LawsuitTrackingPage || m.default,
+      default: m.LawsuitTrackingPage ?? m.default,
     })),
   'LawsuitTrackingPage',
 );
@@ -262,7 +269,7 @@ export const LawsuitTrackingPage = createLazyComponent(
 export const LegalDocumentsPage = createLazyComponent(
   () =>
     import('../pages/LegalDocumentsPage').then((m) => ({
-      default: m.LegalDocumentsPage || m.default,
+      default: m.LegalDocumentsPage ?? m.default,
     })),
   'LegalDocumentsPage',
 );
@@ -312,6 +319,11 @@ export const EnhancedDashboard = createLazyComponent(
 
 /**
  * Navigation Configuration
+ */
+/**
+ * RouteConfig Interface
+ * 
+ * @interface RouteConfig
  */
 export interface RouteConfig {
   component: React.LazyExoticComponent<any>;
@@ -501,6 +513,12 @@ export const ROUTE_REGISTRY: Record<string, Record<string, RouteConfig>> = {
 
 /**
  * Get route configuration for current navigation state
+ */
+/**
+ * getRouteConfig function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
  */
 export function getRouteConfig(activeModule: string, currentSubPage?: string): RouteConfig {
   const moduleRoutes = ROUTE_REGISTRY[activeModule];

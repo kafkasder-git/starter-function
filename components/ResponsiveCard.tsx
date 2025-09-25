@@ -1,3 +1,10 @@
+/**
+ * @fileoverview ResponsiveCard Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { forwardRef } from 'react';
 import { cn } from './ui/utils';
 import { Card } from './ui/card';
@@ -69,6 +76,12 @@ interface ResponsiveCardGridProps {
   gap?: 'sm' | 'md' | 'lg';
 }
 
+/**
+ * ResponsiveCardGrid function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function ResponsiveCardGrid({
   children,
   className,
@@ -107,6 +120,12 @@ interface MobileInfoCardProps {
   className?: string;
 }
 
+/**
+ * MobileInfoCard function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function MobileInfoCard({
   icon,
   title,
@@ -167,6 +186,12 @@ interface TouchActionCardProps {
   className?: string;
 }
 
+/**
+ * TouchActionCard function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function TouchActionCard({
   icon,
   title,

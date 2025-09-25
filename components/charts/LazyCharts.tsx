@@ -1,3 +1,10 @@
+/**
+ * @fileoverview LazyCharts Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import React, { lazy, Suspense } from 'react';
 import { SkeletonLoader } from '../LoadingSpinner';
 

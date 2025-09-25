@@ -1,3 +1,10 @@
+/**
+ * @fileoverview BeneficiaryDocuments Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import {
   Camera,
   Download,
@@ -24,6 +31,12 @@ interface BeneficiaryDocumentsProps {
   onDocumentDelete?: (documentId: string) => void;
 }
 
+/**
+ * BeneficiaryDocuments function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function BeneficiaryDocuments({
   beneficiaryId,
   documents = [],

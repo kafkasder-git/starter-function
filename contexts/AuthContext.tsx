@@ -1,9 +1,17 @@
+/**
+ * @fileoverview AuthContext Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import type { ReactNode } from 'react';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import type { AuthContextType, AuthState, LoginCredentials, Permission, User } from '../types/auth';
 import { ROLE_PERMISSIONS, UserRole } from '../types/auth';
 
+import { logger } from '../lib/logging/logger';
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Mock users for frontend-only authentication
@@ -66,6 +74,12 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
+/**
+ * AuthProvider function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function AuthProvider({ children }: AuthProviderProps) {
   const [authState, setAuthState] = useState<AuthState>({
     user: null,
@@ -111,7 +125,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           setAuthState((prev) => ({ ...prev, isLoading: false }));
         }
       } catch (error) {
-        console.error('Auth initialization error:', error);
+        logger.error('Auth initialization error:', error);
         if (mounted) {
           localStorage.removeItem('auth_user');
           localStorage.removeItem('auth_session');
@@ -142,7 +156,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const user = MOCK_USERS.find((u) => u.email === credentials.email);
       const expectedPassword = MOCK_CREDENTIALS[credentials.email as keyof typeof MOCK_CREDENTIALS];
 
-      if (!user || credentials.password !== expectedPassword) {
+      if (!user ?? credentials.password !== expectedPassword) {
         throw new Error('Kullanıcı adı veya şifre hatalı');
       }
 
@@ -202,7 +216,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         duration: 2000,
       });
     } catch (error) {
-      console.error('Logout error:', error);
+      logger.error('Logout error:', error);
       toast.error('Çıkış yapılırken hata oluştu', {
         duration: 3000,
       });
@@ -239,7 +253,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setAuthState((prev) => ({ ...prev, user }));
       }
     } catch (error) {
-      console.error('User refresh error:', error);
+      logger.error('User refresh error:', error);
       // For mock auth, if refresh fails, just log out
       await logout();
     }
@@ -262,6 +276,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
   return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
 }
 
+/**
+ * useAuth function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useAuth(): AuthContextType {
   const context = useContext(AuthContext);
   if (context === undefined) {

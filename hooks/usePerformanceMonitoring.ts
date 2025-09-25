@@ -1,5 +1,13 @@
+/**
+ * @fileoverview usePerformanceMonitoring Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import { logger } from '../lib/logging/logger';
 interface PerformanceMetrics {
   fps: number;
   memoryUsage: number;
@@ -26,6 +34,12 @@ const PERFORMANCE_THRESHOLDS = {
   errorCount: 5,
 };
 
+/**
+ * usePerformanceMonitoring function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function usePerformanceMonitoring({
   interval = 5000,
   enableFPSMonitoring = true,
@@ -122,7 +136,7 @@ export function usePerformanceMonitoring({
         onAlert?.('network', latency, PERFORMANCE_THRESHOLDS.networkLatency);
       }
     } catch (error) {
-      console.warn('Network latency measurement failed:', error);
+      logger.warn('Network latency measurement failed:', error);
       setMetrics((prev) => ({ ...prev, networkLatency: -1 }));
     }
   }, [enableNetworkMonitoring, onAlert]);
@@ -184,7 +198,7 @@ export function usePerformanceMonitoring({
         if ('processingStart' in entry) {
           const eventEntry = entry as PerformanceEventTiming;
           const fid = eventEntry.processingStart - eventEntry.startTime;
-          console.log('First Input Delay:', fid);
+          logger.info('First Input Delay:', fid);
         }
       });
     }).observe({ entryTypes: ['first-input'] });
@@ -197,11 +211,11 @@ export function usePerformanceMonitoring({
         if (entry.entryType === 'layout-shift') {
           const layoutShiftEntry = entry as any; // Use any for layout-shift entries as the interface may not be available
           if (!layoutShiftEntry.hadRecentInput) {
-            cumulativeScore += layoutShiftEntry.value || 0;
+            cumulativeScore += layoutShiftEntry.value ?? 0;
           }
         }
       });
-      console.log('Cumulative Layout Shift:', cumulativeScore);
+      logger.info('Cumulative Layout Shift:', cumulativeScore);
     }).observe({ entryTypes: ['layout-shift'] });
   }, []);
 

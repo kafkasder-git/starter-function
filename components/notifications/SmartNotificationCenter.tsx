@@ -1,3 +1,10 @@
+/**
+ * @fileoverview SmartNotificationCenter Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
@@ -26,6 +33,11 @@ import { ScrollArea } from '../ui/scroll-area';
 import { Separator } from '../ui/separator';
 import { useAdvancedMobile } from '../../hooks/useAdvancedMobile';
 
+/**
+ * SmartNotification Interface
+ * 
+ * @interface SmartNotification
+ */
 export interface SmartNotification {
   id: string;
   title: string;
@@ -95,6 +107,12 @@ const priorityColors = {
   urgent: 'border-l-red-500',
 };
 
+/**
+ * SmartNotificationCenter function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function SmartNotificationCenter({
   notifications,
   onMarkAsRead,
@@ -301,7 +319,7 @@ export function SmartNotificationCenter({
                 {notification.actions.map((action, index) => (
                   <Button
                     key={`action-${notification.id}-${index}-${action.label}`}
-                    variant={action.variant || 'outline'}
+                    variant={action.variant ?? 'outline'}
                     size="sm"
                     onClick={(e) => {
                       e.stopPropagation();

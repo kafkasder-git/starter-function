@@ -1,3 +1,10 @@
+/**
+ * @fileoverview PartnerDonorsPage Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
@@ -25,6 +32,12 @@ const mockDonors = [
   },
 ];
 
+/**
+ * PartnerDonorsPage function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function PartnerDonorsPage() {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('tr-TR', {

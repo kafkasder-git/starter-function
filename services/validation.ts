@@ -1,3 +1,10 @@
+/**
+ * @fileoverview validation Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { z } from 'zod';
 import { ServiceError, ServiceErrorCode } from './config';
 
@@ -77,6 +84,13 @@ export const beneficiarySchemas = {
   }),
 };
 
+/**
+ * ValidationService Service
+ * 
+ * Service class for handling validationservice operations
+ * 
+ * @class ValidationService
+ */
 export class ValidationService {
   static validate<T>(schema: z.ZodSchema<T>, data: unknown): T {
     try {
@@ -123,7 +137,7 @@ export class ValidationService {
       return { isValid: true };
     } catch (error) {
       if (error instanceof z.ZodError) {
-        const message = error.issues[0]?.message || 'Invalid value';
+        const message = error.issues[0]?.message ?? 'Invalid value';
         return { isValid: false, error: `${fieldName}: ${message}` };
       }
       return { isValid: false, error: `${fieldName}: Validation failed` };
@@ -132,6 +146,12 @@ export class ValidationService {
 }
 
 // Helper functions for backward compatibility
+/**
+ * validateWithSchema function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function validateWithSchema<T>(
   schema: z.ZodSchema<T>,
   data: unknown,
@@ -148,14 +168,32 @@ export function validateWithSchema<T>(
 }
 
 // Specific validation functions
+/**
+ * isValidBeneficiary function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function isValidBeneficiary(data: unknown): boolean {
   return validateWithSchema(beneficiarySchemas.create, data).isValid;
 }
 
+/**
+ * isValidMember function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function isValidMember(data: unknown): boolean {
   return validateWithSchema(memberSchemas.create, data).isValid;
 }
 
+/**
+ * isValidDonation function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function isValidDonation(data: unknown): boolean {
   return validateWithSchema(donationSchemas.create, data).isValid;
 }

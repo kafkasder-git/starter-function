@@ -1,3 +1,10 @@
+/**
+ * @fileoverview AdvancedSearch Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import {
   Download,
   Filter,
@@ -19,6 +26,11 @@ import { Input } from '../ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
+/**
+ * SearchFilter Interface
+ * 
+ * @interface SearchFilter
+ */
 export interface SearchFilter {
   key: string;
   label: string;
@@ -27,6 +39,11 @@ export interface SearchFilter {
   placeholder?: string;
 }
 
+/**
+ * SortOption Interface
+ * 
+ * @interface SortOption
+ */
 export interface SortOption {
   key: string;
   label: string;
@@ -52,6 +69,12 @@ interface AdvancedSearchProps {
   className?: string;
 }
 
+/**
+ * AdvancedSearch function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function AdvancedSearch({
   placeholder = 'Ara...',
   filters = [],
@@ -76,7 +99,7 @@ export function AdvancedSearch({
 
   // Trigger search when query or filters change
   useEffect(() => {
-    onSearch(debouncedQuery, activeFilters, sortBy || undefined);
+    onSearch(debouncedQuery, activeFilters, sortBy ?? undefined);
   }, [debouncedQuery, activeFilters, sortBy, onSearch]);
 
   // Get active filter count
@@ -130,7 +153,7 @@ export function AdvancedSearch({
       case 'select':
         return (
           <Select
-            value={String(value || '')}
+            value={String(value ?? '')}
             onValueChange={(newValue) => {
               handleFilterChange(filter.key, newValue);
             }}
@@ -181,7 +204,7 @@ export function AdvancedSearch({
         return (
           <Input
             type="date"
-            value={String(value || '')}
+            value={String(value ?? '')}
             onChange={(e) => {
               handleFilterChange(filter.key, e.target.value);
             }}
@@ -219,7 +242,7 @@ export function AdvancedSearch({
         return (
           <Input
             type="number"
-            value={String(value || '')}
+            value={String(value ?? '')}
             onChange={(e) => {
               handleFilterChange(filter.key, e.target.value);
             }}
@@ -232,7 +255,7 @@ export function AdvancedSearch({
         return (
           <Input
             type="text"
-            value={String(value || '')}
+            value={String(value ?? '')}
             onChange={(e) => {
               handleFilterChange(filter.key, e.target.value);
             }}

@@ -1,3 +1,10 @@
+/**
+ * @fileoverview useMobileForm Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { useCallback } from 'react';
 import { useAdvancedMobile } from './useAdvancedMobile';
 
@@ -7,6 +14,12 @@ interface UseMobileFormOptions {
   optimizeKeyboard?: boolean;
 }
 
+/**
+ * useMobileForm function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useMobileForm(options: UseMobileFormOptions = {}) {
   const { deviceInfo } = useAdvancedMobile();
   const { preventZoom = true, adjustViewport = true, optimizeKeyboard = true } = options;
@@ -24,7 +37,7 @@ export function useMobileForm(options: UseMobileFormOptions = {}) {
 
       // Restore original viewport after delay
       setTimeout(() => {
-        viewport.setAttribute('content', originalContent || '');
+        viewport.setAttribute('content', originalContent ?? '');
       }, 1000);
     }
   }, [deviceInfo.isMobile, preventZoom]);

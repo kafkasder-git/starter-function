@@ -90,9 +90,9 @@ class AdvancedPerformanceService {
       this.observeComponentPerformance();
 
       this.isMonitoring = true;
-      console.log('[Performance] Advanced monitoring initialized');
+      logger.info('[Performance] Advanced monitoring initialized');
     } catch (error) {
-      console.error('[Performance] Failed to initialize monitoring:', error);
+      logger.error('[Performance] Failed to initialize monitoring:', error);
     }
   }
 
@@ -114,7 +114,7 @@ class AdvancedPerformanceService {
         lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] });
         this.observers.push(lcpObserver);
       } catch (error) {
-        console.warn('[Performance] LCP observer not supported');
+        logger.warn('[Performance] LCP observer not supported');
       }
     }
 
@@ -132,7 +132,7 @@ class AdvancedPerformanceService {
         fidObserver.observe({ entryTypes: ['first-input'] });
         this.observers.push(fidObserver);
       } catch (error) {
-        console.warn('[Performance] FID observer not supported');
+        logger.warn('[Performance] FID observer not supported');
       }
     }
 
@@ -154,7 +154,7 @@ class AdvancedPerformanceService {
         clsObserver.observe({ entryTypes: ['layout-shift'] });
         this.observers.push(clsObserver);
       } catch (error) {
-        console.warn('[Performance] CLS observer not supported');
+        logger.warn('[Performance] CLS observer not supported');
       }
     }
   }
@@ -199,7 +199,7 @@ class AdvancedPerformanceService {
         fcpObserver.observe({ entryTypes: ['paint'] });
         this.observers.push(fcpObserver);
       } catch (error) {
-        console.warn('[Performance] FCP observer not supported');
+        logger.warn('[Performance] FCP observer not supported');
       }
     }
   }
@@ -243,7 +243,7 @@ class AdvancedPerformanceService {
         networkObserver.observe({ entryTypes: ['resource'] });
         this.observers.push(networkObserver);
       } catch (error) {
-        console.warn('[Performance] Network observer not supported');
+        logger.warn('[Performance] Network observer not supported');
       }
     }
   }
@@ -256,7 +256,7 @@ class AdvancedPerformanceService {
     // Bu kısım React DevTools Profiler API'si ile entegre edilebilir
     if (typeof window !== 'undefined' && (window as any).React) {
       // React Profiler entegrasyonu burada yapılabilir
-      console.log('[Performance] React component monitoring available');
+      logger.info('[Performance] React component monitoring available');
     }
   }
 
@@ -415,7 +415,7 @@ class AdvancedPerformanceService {
   private getConnectionInfo(): string {
     if ('connection' in navigator) {
       const {connection} = (navigator as any);
-      return `${connection.effectiveType || 'unknown'} (${connection.downlink || 'unknown'} Mbps)`;
+      return `${connection.effectiveType ?? 'unknown'} (${connection.downlink ?? 'unknown'} Mbps)`;
     }
     return 'unknown';
   }
@@ -471,6 +471,7 @@ const LazyComponent = React.lazy(() => import('./LazyComponent'));
 // Tree shaking
 import { specificFunction } from 'large-library';
 
+import { logger } from '../lib/logging/logger';
 // Bundle analyzer
 npm install --save-dev webpack-bundle-analyzer
         `,
@@ -537,7 +538,7 @@ const cache = new WeakMap();
     });
     this.observers = [];
     this.isMonitoring = false;
-    console.log('[Performance] Monitoring stopped');
+    logger.info('[Performance] Monitoring stopped');
   }
 
   /**

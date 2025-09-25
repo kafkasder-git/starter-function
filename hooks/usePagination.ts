@@ -1,3 +1,10 @@
+/**
+ * @fileoverview usePagination Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { useState, useMemo, useCallback } from 'react';
 
 interface UsePaginationProps {
@@ -10,6 +17,12 @@ interface UsePaginationProps {
   onPageChange?: (page: number) => void;
 }
 
+/**
+ * usePagination function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function usePagination({
   totalItems,
   itemsPerPage = 20,
@@ -88,7 +101,7 @@ export function usePagination({
   // Navigation functions
   const goToPage = useCallback(
     (page: number) => {
-      if (page < 1 || page > totalPages) return;
+      if (page < 1 ?? page > totalPages) return;
 
       setCurrentPage(page);
       onPageChange?.(page);

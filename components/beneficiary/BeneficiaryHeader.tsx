@@ -1,3 +1,10 @@
+/**
+ * @fileoverview BeneficiaryHeader Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { Calendar, Edit3, Mail, MapPin, Phone, Save, User, X } from 'lucide-react';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
@@ -11,6 +18,12 @@ interface BeneficiaryHeaderProps {
   onBack?: () => void;
 }
 
+/**
+ * BeneficiaryHeader function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function BeneficiaryHeader({
   beneficiary,
   editMode,
@@ -31,17 +44,17 @@ export function BeneficiaryHeader({
             <div>
               <CardTitle className="flex items-center gap-2">
                 <User className="w-5 h-5" />
-                {beneficiary?.name || 'İhtiyaç Sahibi Detayı'}
+                {beneficiary?.name ?? 'İhtiyaç Sahibi Detayı'}
               </CardTitle>
               <div className="flex items-center gap-2 mt-1">
                 <Badge variant="outline" className="text-xs">
-                  ID: {beneficiary?.id || 'N/A'}
+                  ID: {beneficiary?.id ?? 'N/A'}
                 </Badge>
                 <Badge
                   variant={beneficiary?.status === 'Aktif' ? 'default' : 'secondary'}
                   className="text-xs"
                 >
-                  {beneficiary?.status || 'Bilinmiyor'}
+                  {beneficiary?.status ?? 'Bilinmiyor'}
                 </Badge>
               </div>
             </div>
@@ -73,15 +86,15 @@ export function BeneficiaryHeader({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="flex items-center gap-2 text-sm text-gray-600">
             <Phone className="w-4 h-4" />
-            <span>{beneficiary?.phone || 'Telefon bilgisi yok'}</span>
+            <span>{beneficiary?.phone ?? 'Telefon bilgisi yok'}</span>
           </div>
           <div className="flex items-center gap-2 text-sm text-gray-600">
             <Mail className="w-4 h-4" />
-            <span>{beneficiary?.email || 'E-mail bilgisi yok'}</span>
+            <span>{beneficiary?.email ?? 'E-mail bilgisi yok'}</span>
           </div>
           <div className="flex items-center gap-2 text-sm text-gray-600">
             <MapPin className="w-4 h-4" />
-            <span>{beneficiary?.address || 'Adres bilgisi yok'}</span>
+            <span>{beneficiary?.address ?? 'Adres bilgisi yok'}</span>
           </div>
         </div>
 

@@ -1,3 +1,10 @@
+/**
+ * @fileoverview LegalConsultationPage Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 
 
 import { useState } from 'react';
@@ -34,6 +41,12 @@ const mockConsultations: Consultation[] = [
   // ... existing mock data ...
 ];
 
+/**
+ * LegalConsultationPage function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function LegalConsultationPage() {
   const [selectedConsultation, setSelectedConsultation] = useState<Consultation | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
@@ -128,7 +141,7 @@ export function LegalConsultationPage() {
           onChange={(e) => { setQuery(e.target.value); }}
         />
         <select
-          value={searchState.filters.find((f) => f.field === 'category')?.value || ''}
+          value={searchState.filters.find((f) => f.field === 'category')?.value ?? ''}
           onChange={(e) => { setFilters([{ field: 'category', value: e.target.value }]); }}
         >
           <option value="">Tüm Kategoriler</option>

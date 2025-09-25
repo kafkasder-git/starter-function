@@ -1,4 +1,12 @@
+/**
+ * @fileoverview campaignsService Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { supabase, TABLES } from '../lib/supabase';
+import { logger } from '../lib/logging/logger';
 import type {
   Campaign,
   CampaignInsert,
@@ -8,6 +16,11 @@ import type {
   ApiResponse,
 } from '../types/database';
 
+/**
+ * CampaignFilters Interface
+ * 
+ * @interface CampaignFilters
+ */
 export interface CampaignFilters {
   status?: string;
   category?: string;
@@ -17,6 +30,11 @@ export interface CampaignFilters {
   featured?: boolean;
 }
 
+/**
+ * CampaignStats Interface
+ * 
+ * @interface CampaignStats
+ */
 export interface CampaignStats {
   total: number;
   active: number;
@@ -81,18 +99,18 @@ class CampaignsService {
       const { data, error, count } = await query;
 
       if (error) {
-        console.error('Error fetching campaigns:', error);
+        logger.error('Error fetching campaigns:', error);
         throw new Error(`Campaigns fetch failed: ${error.message}`);
       }
 
       // Enhance data with stats
       const enhancedData = data?.map((campaign) => this.enhanceCampaignWithStats(campaign)) || [];
 
-      const totalPages = Math.ceil((count || 0) / pageSize);
+      const totalPages = Math.ceil((count ?? 0) / pageSize);
 
       return {
         data: enhancedData,
-        count: count || 0,
+        count: count ?? 0,
         page,
         pageSize,
         totalPages,
@@ -100,7 +118,7 @@ class CampaignsService {
         hasPreviousPage: page > 1,
       };
     } catch (error) {
-      console.error('CampaignsService.getCampaigns error:', error);
+      logger.error('CampaignsService.getCampaigns error:', error);
       throw error;
     }
   }
@@ -115,14 +133,14 @@ class CampaignsService {
         .single();
 
       if (error) {
-        console.error('Error fetching campaign:', error);
+        logger.error('Error fetching campaign:', error);
         return { data: null, error: error.message };
       }
 
       const enhancedData = this.enhanceCampaignWithStats(data);
       return { data: enhancedData, error: null };
     } catch (error) {
-      console.error('CampaignsService.getCampaign error:', error);
+      logger.error('CampaignsService.getCampaign error:', error);
       return { data: null, error: 'Campaign fetch failed' };
     }
   }
@@ -138,21 +156,21 @@ class CampaignsService {
           created_at: now,
           updated_at: now,
           current_amount: 0,
-          currency: campaign.currency || 'TRY',
-          status: campaign.status || 'draft',
-          featured: campaign.featured || false,
+          currency: campaign.currency ?? 'TRY',
+          status: campaign.status ?? 'draft',
+          featured: campaign.featured ?? false,
         })
         .select()
         .single();
 
       if (error) {
-        console.error('Error creating campaign:', error);
+        logger.error('Error creating campaign:', error);
         return { data: null, error: `Kampanya oluşturulamadı: ${error.message}` };
       }
 
       return { data, error: null };
     } catch (error) {
-      console.error('CampaignsService.createCampaign error:', error);
+      logger.error('CampaignsService.createCampaign error:', error);
       return { data: null, error: 'Campaign creation failed' };
     }
   }
@@ -172,13 +190,13 @@ class CampaignsService {
         .single();
 
       if (error) {
-        console.error('Error updating campaign:', error);
+        logger.error('Error updating campaign:', error);
         return { data: null, error: `Güncelleme başarısız: ${error.message}` };
       }
 
       return { data, error: null };
     } catch (error) {
-      console.error('CampaignsService.updateCampaign error:', error);
+      logger.error('CampaignsService.updateCampaign error:', error);
       return { data: null, error: 'Campaign update failed' };
     }
   }
@@ -199,13 +217,13 @@ class CampaignsService {
         .single();
 
       if (error) {
-        console.error('Error activating campaign:', error);
+        logger.error('Error activating campaign:', error);
         return { data: null, error: `Kampanya aktivasyonu başarısız: ${error.message}` };
       }
 
       return { data, error: null };
     } catch (error) {
-      console.error('CampaignsService.activateCampaign error:', error);
+      logger.error('CampaignsService.activateCampaign error:', error);
       return { data: null, error: 'Campaign activation failed' };
     }
   }
@@ -226,13 +244,13 @@ class CampaignsService {
         .single();
 
       if (error) {
-        console.error('Error pausing campaign:', error);
+        logger.error('Error pausing campaign:', error);
         return { data: null, error: `Kampanya duraklatma başarısız: ${error.message}` };
       }
 
       return { data, error: null };
     } catch (error) {
-      console.error('CampaignsService.pauseCampaign error:', error);
+      logger.error('CampaignsService.pauseCampaign error:', error);
       return { data: null, error: 'Campaign pause failed' };
     }
   }
@@ -253,13 +271,13 @@ class CampaignsService {
         .single();
 
       if (error) {
-        console.error('Error completing campaign:', error);
+        logger.error('Error completing campaign:', error);
         return { data: null, error: `Kampanya tamamlama başarısız: ${error.message}` };
       }
 
       return { data, error: null };
     } catch (error) {
-      console.error('CampaignsService.completeCampaign error:', error);
+      logger.error('CampaignsService.completeCampaign error:', error);
       return { data: null, error: 'Campaign completion failed' };
     }
   }
@@ -273,11 +291,11 @@ class CampaignsService {
         .select('*', { count: 'exact', head: true });
 
       if (error) {
-        console.error('Error fetching campaign stats:', error);
+        logger.error('Error fetching campaign stats:', error);
         return { data: null, error: error.message };
       }
 
-      const total = count || 0;
+      const total = count ?? 0;
       const stats: CampaignStats = {
         total,
         active: Math.round(total * 0.6), // Estimate 60% active
@@ -294,7 +312,7 @@ class CampaignsService {
 
       return { data: stats, error: null };
     } catch (error) {
-      console.error('CampaignsService.getCampaignStats error:', error);
+      logger.error('CampaignsService.getCampaignStats error:', error);
       return { data: null, error: 'Stats fetch failed' };
     }
   }
@@ -312,14 +330,14 @@ class CampaignsService {
         .limit(limit);
 
       if (error) {
-        console.error('Error fetching featured campaigns:', error);
+        logger.error('Error fetching featured campaigns:', error);
         return { data: null, error: error.message };
       }
 
       const enhancedData = data?.map((campaign) => this.enhanceCampaignWithStats(campaign)) || [];
       return { data: enhancedData, error: null };
     } catch (error) {
-      console.error('CampaignsService.getFeaturedCampaigns error:', error);
+      logger.error('CampaignsService.getFeaturedCampaigns error:', error);
       return { data: null, error: 'Featured campaigns fetch failed' };
     }
   }
@@ -334,14 +352,14 @@ class CampaignsService {
         .order('created_at', { ascending: false });
 
       if (error) {
-        console.error('Error fetching active campaigns:', error);
+        logger.error('Error fetching active campaigns:', error);
         return { data: null, error: error.message };
       }
 
       const enhancedData = data?.map((campaign) => this.enhanceCampaignWithStats(campaign)) || [];
       return { data: enhancedData, error: null };
     } catch (error) {
-      console.error('CampaignsService.getActiveCampaigns error:', error);
+      logger.error('CampaignsService.getActiveCampaigns error:', error);
       return { data: null, error: 'Active campaigns fetch failed' };
     }
   }
@@ -364,13 +382,13 @@ class CampaignsService {
         .limit(limit);
 
       if (error) {
-        console.error('Error searching campaigns:', error);
+        logger.error('Error searching campaigns:', error);
         return { data: null, error: error.message };
       }
 
       return { data: data || [], error: null };
     } catch (error) {
-      console.error('CampaignsService.searchCampaigns error:', error);
+      logger.error('CampaignsService.searchCampaigns error:', error);
       return { data: null, error: 'Search failed' };
     }
   }
@@ -391,14 +409,14 @@ class CampaignsService {
         .single();
 
       if (error) {
-        console.error('Error fetching campaign with donations:', error);
+        logger.error('Error fetching campaign with donations:', error);
         return { data: null, error: error.message };
       }
 
       const enhancedData = this.enhanceCampaignWithStats(data);
       return { data: enhancedData, error: null };
     } catch (error) {
-      console.error('CampaignsService.getCampaignWithDonations error:', error);
+      logger.error('CampaignsService.getCampaignWithDonations error:', error);
       return { data: null, error: 'Campaign with donations fetch failed' };
     }
   }
@@ -415,13 +433,13 @@ class CampaignsService {
         .eq('id', id);
 
       if (error) {
-        console.error('Error deleting campaign:', error);
+        logger.error('Error deleting campaign:', error);
         return { data: null, error: `Silme işlemi başarısız: ${error.message}` };
       }
 
       return { data: true, error: null };
     } catch (error) {
-      console.error('CampaignsService.deleteCampaign error:', error);
+      logger.error('CampaignsService.deleteCampaign error:', error);
       return { data: null, error: 'Campaign deletion failed' };
     }
   }

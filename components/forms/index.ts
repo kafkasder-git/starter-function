@@ -1,3 +1,10 @@
+/**
+ * @fileoverview index Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 // Form validation and components exports
 export { FormField } from './FormField';
 export { MobileFormField, MobileFormSection, MobileFormNavigation } from './MobileFormField';

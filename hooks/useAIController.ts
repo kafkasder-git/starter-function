@@ -1,8 +1,16 @@
+/**
+ * @fileoverview useAIController Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { useEffect, useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { aiSystemController } from '../services/aiSystemController';
 
+import { logger } from '../lib/logging/logger';
 // 🎮 AI Kontrol Hook'u
 // AI'ın uygulamayı kontrol edebilmesi için gerekli event handling
 
@@ -32,6 +40,12 @@ interface UseAIControllerOptions {
   onAIAction?: (action: string, result: any) => void;
 }
 
+/**
+ * useAIController function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useAIController(options: UseAIControllerOptions = {}) {
   const navigate = useNavigate();
   const [controllerState, setControllerState] = useState<AIControllerState>({
@@ -81,7 +95,7 @@ export function useAIController(options: UseAIControllerOptions = {}) {
 
         options.onAIAction?.('navigation', { module, page, route });
       } catch (error: any) {
-        console.error('AI Navigation hatası:', error);
+        logger.error('AI Navigation hatası:', error);
         toast.error('Navigasyon hatası', {
           description: error.message,
         });
@@ -111,7 +125,7 @@ export function useAIController(options: UseAIControllerOptions = {}) {
 
         options.onAIAction?.('modal_control', { modalType, parameters });
       } catch (error: any) {
-        console.error('AI Modal Control hatası:', error);
+        logger.error('AI Modal Control hatası:', error);
         toast.error('UI kontrol hatası');
       }
     },
@@ -139,7 +153,7 @@ export function useAIController(options: UseAIControllerOptions = {}) {
 
         options.onAIAction?.('form_update', { formId, data });
       } catch (error: any) {
-        console.error('AI Form Update hatası:', error);
+        logger.error('AI Form Update hatası:', error);
         toast.error('Form güncelleme hatası');
       }
     },
@@ -165,7 +179,7 @@ export function useAIController(options: UseAIControllerOptions = {}) {
 
         options.onAIAction?.('download', { type, parameters });
       } catch (error: any) {
-        console.error('AI Download hatası:', error);
+        logger.error('AI Download hatası:', error);
         toast.error('İndirme hatası');
       }
     },
@@ -217,7 +231,7 @@ export function useAIController(options: UseAIControllerOptions = {}) {
 
         options.onAIAction?.('data_operation', result);
       } catch (error: any) {
-        console.error('AI Data Operation hatası:', error);
+        logger.error('AI Data Operation hatası:', error);
         setControllerState((prev) => ({ ...prev, isAIActive: false }));
         toast.error('Veri işlemi hatası', {
           description: error.message,
@@ -258,7 +272,7 @@ export function useAIController(options: UseAIControllerOptions = {}) {
 
         options.onAIAction?.('analytics', result);
       } catch (error: any) {
-        console.error('AI Analytics hatası:', error);
+        logger.error('AI Analytics hatası:', error);
         setControllerState((prev) => ({ ...prev, isAIActive: false }));
         toast.error('Analiz hatası', {
           description: error.message,

@@ -1,3 +1,10 @@
+/**
+ * @fileoverview index Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 // Enhanced User Experience Components
 export { SmartCommandPalette } from './SmartCommandPalette';
 export { SmartTooltip, ContextualHelp } from './ContextualTooltipSystem';

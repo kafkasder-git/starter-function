@@ -1,3 +1,10 @@
+/**
+ * @fileoverview InKindAidTransactionsPage Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { useState } from 'react';
 import { PageLayout } from '../PageLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
@@ -133,6 +140,12 @@ const mockTransactions: InKindTransaction[] = [
   },
 ];
 
+/**
+ * InKindAidTransactionsPage function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function InKindAidTransactionsPage() {
   const [transactions, setTransactions] = useState<InKindTransaction[]>(mockTransactions);
   const [searchTerm, setSearchTerm] = useState('');

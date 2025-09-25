@@ -1,8 +1,21 @@
+/**
+ * @fileoverview usePerformanceEnhanced Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 // 🚀 ENHANCED PERFORMANCE MONITORING HOOK
 // Comprehensive performance tracking and optimization
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import { logger } from '../lib/logging/logger';
+/**
+ * PerformanceMetrics Interface
+ * 
+ * @interface PerformanceMetrics
+ */
 export interface PerformanceMetrics {
   readonly renderTime: number;
   readonly memoryUsage: number;
@@ -13,6 +26,11 @@ export interface PerformanceMetrics {
   readonly peakMemoryUsage: number;
 }
 
+/**
+ * PerformanceThresholds Interface
+ * 
+ * @interface PerformanceThresholds
+ */
 export interface PerformanceThresholds {
   readonly maxRenderTime: number;
   readonly maxMemoryUsage: number;
@@ -34,6 +52,12 @@ const DEFAULT_THRESHOLDS: PerformanceThresholds = {
 /**
  * Enhanced performance monitoring hook
  * Tracks component performance metrics and provides optimization insights
+ */
+/**
+ * usePerformanceEnhanced function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
  */
 export function usePerformanceEnhanced(
   componentName: string,
@@ -61,7 +85,7 @@ export function usePerformanceEnhanced(
   const getMemoryUsage = useCallback((): number => {
     if ('memory' in performance) {
       const {memory} = (performance as any);
-      return memory.usedJSHeapSize || 0;
+      return memory.usedJSHeapSize ?? 0;
     }
     return 0;
   }, []);
@@ -112,21 +136,21 @@ export function usePerformanceEnhanced(
     // Performance warnings in development
     if (process.env.NODE_ENV === 'development') {
       if (renderTime > finalThresholds.maxRenderTime) {
-        console.warn(
+        logger.warn(
           `⚡ Performance Warning: ${componentName} render time (${renderTime.toFixed(2)}ms) ` +
             `exceeds threshold (${finalThresholds.maxRenderTime}ms)`,
         );
       }
 
       if (memoryUsage > finalThresholds.maxMemoryUsage) {
-        console.warn(
+        logger.warn(
           `🧠 Memory Warning: ${componentName} memory usage (${(memoryUsage / 1024 / 1024).toFixed(2)}MB) ` +
             `exceeds threshold (${(finalThresholds.maxMemoryUsage / 1024 / 1024).toFixed(2)}MB)`,
         );
       }
 
       if (renderCount.current > finalThresholds.maxReRenders + 1) {
-        console.warn(
+        logger.warn(
           `🔄 Re-render Warning: ${componentName} has re-rendered ${renderCount.current} times ` +
             `(threshold: ${finalThresholds.maxReRenders})`,
         );
@@ -144,7 +168,7 @@ export function usePerformanceEnhanced(
     return () => {
       // Component unmount cleanup
       if (process.env.NODE_ENV === 'development') {
-        console.log(`📊 Performance Summary for ${componentName}:`, {
+        logger.info(`📊 Performance Summary for ${componentName}:`, {
           totalRenders: renderCount.current,
           averageRenderTime: `${metrics.averageRenderTime.toFixed(2)  }ms`,
           peakMemoryUsage: `${(metrics.peakMemoryUsage / 1024 / 1024).toFixed(2)  }MB`,
@@ -231,6 +255,12 @@ export function usePerformanceEnhanced(
 /**
  * Hook for measuring specific operations
  */
+/**
+ * useOperationTimer function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useOperationTimer() {
   const [measurements, setMeasurements] = useState<Record<string, number>>({});
   const timers = useRef<Record<string, number>>({});
@@ -250,7 +280,7 @@ export function useOperationTimer() {
       delete timers.current[operationName];
 
       if (process.env.NODE_ENV === 'development') {
-        console.log(`⏱️ ${operationName}: ${duration.toFixed(2)}ms`);
+        logger.info(`⏱️ ${operationName}: ${duration.toFixed(2)}ms`);
       }
 
       return duration;
@@ -296,6 +326,12 @@ export function useOperationTimer() {
 /**
  * Hook for monitoring bundle size and chunk loading
  */
+/**
+ * useBundleMetrics function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useBundleMetrics() {
   const [bundleMetrics, setBundleMetrics] = useState({
     loadedChunks: 0,
@@ -325,7 +361,7 @@ export function useBundleMetrics() {
             },
           }));
 
-          // Chunk loading performance tracking (removed console.log)
+          // Chunk loading performance tracking (removed logger.info)
 
           return result;
         });
@@ -338,7 +374,7 @@ export function useBundleMetrics() {
         if (entry.entryType === 'resource' && entry.name.includes('.js')) {
           setBundleMetrics((prev) => ({
             ...prev,
-            totalBundleSize: prev.totalBundleSize + (entry as any).transferSize || 0,
+            totalBundleSize: prev.totalBundleSize + (entry as any).transferSize ?? 0,
           }));
         }
       }
