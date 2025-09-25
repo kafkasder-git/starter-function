@@ -1,3 +1,10 @@
+/**
+ * @fileoverview scroll-area Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 'use client';
 
 import * as React from 'react';

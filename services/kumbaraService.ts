@@ -1,3 +1,10 @@
+/**
+ * @fileoverview kumbaraService Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 // 🏦 KUMBARA SERVICE
 // Comprehensive service layer for Kumbara (Piggy Bank) management
 
@@ -14,6 +21,7 @@ import type {
   KumbaraSearchResult,
   KumbaraUpdate,
 } from '../types/kumbara';
+import { logger } from '../lib/logging/logger';
 
 /**
  * Enhanced Kumbara Service with modern TypeScript patterns
@@ -25,8 +33,8 @@ class KumbaraService {
   private readonly defaultHeaders: HeadersInit;
 
   constructor() {
-    this.baseUrl = (import.meta?.env?.VITE_API_URL) || process.env.VITE_API_URL || 'http://localhost:3000/api';
-    this.apiKey = (import.meta?.env?.VITE_API_KEY) || process.env.VITE_API_KEY || '';
+    this.baseUrl = (import.meta?.env?.VITE_API_URL) || process.env.VITE_API_URL ?? 'http://localhost:3000/api';
+    this.apiKey = (import.meta?.env?.VITE_API_KEY) || process.env.VITE_API_KEY ?? '';
     this.defaultHeaders = {
       'Content-Type': 'application/json',
       Accept: 'application/json',
@@ -40,7 +48,7 @@ class KumbaraService {
   private handleError(error: unknown, operation: string): never {
     const errorMessage = error instanceof Error ? error.message : 'Bilinmeyen bir hata oluştu';
 
-    console.error(`KumbaraService.${operation} error:`, error);
+    logger.error(`KumbaraService.${operation} error:`, error);
     throw new Error(`${operation} işlemi başarısız: ${errorMessage}`);
   }
 
@@ -113,8 +121,8 @@ class KumbaraService {
               bVal = b.totalAmount;
               break;
             case 'last_collection':
-              aVal = new Date(a.lastCollection || 0);
-              bVal = new Date(b.lastCollection || 0);
+              aVal = new Date(a.lastCollection ?? 0);
+              bVal = new Date(b.lastCollection ?? 0);
               break;
             default:
               aVal = a.created_at;
@@ -137,7 +145,7 @@ class KumbaraService {
         filters_applied: filters,
       };
     } catch (error) {
-      console.error('Error fetching kumbaras:', error);
+      logger.error('Error fetching kumbaras:', error);
       throw new Error('Kumbara listesi alınamadı');
     }
   }
@@ -157,7 +165,7 @@ class KumbaraService {
 
       return kumbara;
     } catch (error) {
-      console.error('Error fetching kumbara:', error);
+      logger.error('Error fetching kumbara:', error);
       throw new Error('Kumbara bilgileri alınamadı');
     }
   }
@@ -168,7 +176,7 @@ class KumbaraService {
   async createKumbara(data: KumbaraInsert): Promise<Kumbara> {
     try {
       // Generate unique code if not provided
-      const code = data.code || this.generateKumbaraCode();
+      const code = data.code ?? this.generateKumbaraCode();
 
       const newKumbara: Kumbara = {
         id: this.generateId(),
@@ -176,8 +184,8 @@ class KumbaraService {
         name: data.name,
         location: data.location,
         address: data.address,
-        status: data.status || 'active',
-        installDate: data.installDate || new Date().toISOString().split('T')[0],
+        status: data.status ?? 'active',
+        installDate: data.installDate ?? new Date().toISOString().split('T')[0],
         lastCollection: null,
         totalAmount: 0,
         monthlyAverage: 0,
@@ -194,7 +202,7 @@ class KumbaraService {
       // Mock API call - replace with real implementation
       return newKumbara;
     } catch (error) {
-      console.error('Error creating kumbara:', error);
+      logger.error('Error creating kumbara:', error);
       throw new Error('Kumbara oluşturulamadı');
     }
   }
@@ -215,7 +223,7 @@ class KumbaraService {
       // Mock API call - replace with real implementation
       return updatedKumbara;
     } catch (error) {
-      console.error('Error updating kumbara:', error);
+      logger.error('Error updating kumbara:', error);
       throw new Error('Kumbara güncellenemedi');
     }
   }
@@ -228,7 +236,7 @@ class KumbaraService {
       // Mock API call - replace with real implementation
       return true;
     } catch (error) {
-      console.error('Error deleting kumbara:', error);
+      logger.error('Error deleting kumbara:', error);
       throw new Error('Kumbara silinemedi');
     }
   }
@@ -245,9 +253,9 @@ class KumbaraService {
       const newCollection: KumbaraCollection = {
         id: this.generateId(),
         kumbara_id: data.kumbara_id,
-        collection_date: data.collection_date || new Date().toISOString(),
+        collection_date: data.collection_date ?? new Date().toISOString(),
         amount: data.amount,
-        currency: data.currency || 'TRY',
+        currency: data.currency ?? 'TRY',
         collector_name: data.collector_name,
         collector_id: data.collector_id,
         notes: data.notes,
@@ -255,7 +263,7 @@ class KumbaraService {
         witness_phone: data.witness_phone,
         verification_photos: data.verification_photos,
         weather_condition: data.weather_condition,
-        collection_method: data.collection_method || 'scheduled',
+        collection_method: data.collection_method ?? 'scheduled',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         created_by: data.created_by,
@@ -264,7 +272,7 @@ class KumbaraService {
       // Mock API call - replace with real implementation
       return newCollection;
     } catch (error) {
-      console.error('Error recording collection:', error);
+      logger.error('Error recording collection:', error);
       throw new Error('Toplama kaydı oluşturulamadı');
     }
   }
@@ -277,7 +285,7 @@ class KumbaraService {
       // 🔗 Gerçek API'den toplama kayıtları alınacak
       return [];
     } catch (error) {
-      console.error('Error fetching collections:', error);
+      logger.error('Error fetching collections:', error);
       throw new Error('Toplama kayıtları alınamadı');
     }
   }
@@ -318,7 +326,7 @@ class KumbaraService {
           .map((k) => ({
             kumbara_id: k.id,
             kumbara_name: k.name,
-            issue: k.notes || 'Bakım gerekli',
+            issue: k.notes ?? 'Bakım gerekli',
             priority: 'medium' as const,
           })),
         performance_trends: [
@@ -330,7 +338,7 @@ class KumbaraService {
 
       return stats;
     } catch (error) {
-      console.error('Error fetching dashboard stats:', error);
+      logger.error('Error fetching dashboard stats:', error);
       throw new Error('Dashboard istatistikleri alınamadı');
     }
   }
@@ -366,7 +374,7 @@ class KumbaraService {
 
       return analytics;
     } catch (error) {
-      console.error('Error fetching kumbara analytics:', error);
+      logger.error('Error fetching kumbara analytics:', error);
       throw new Error('Kumbara analitikleri alınamadı');
     }
   }
@@ -497,15 +505,15 @@ class KumbaraService {
   validateKumbaraData(data: KumbaraInsert): { isValid: boolean; errors: string[] } {
     const errors: string[] = [];
 
-    if (!data.name || data.name.trim().length < 3) {
+    if (!data.name ?? data.name.trim().length < 3) {
       errors.push('Kumbara adı en az 3 karakter olmalıdır');
     }
 
-    if (!data.location || data.location.trim().length < 3) {
+    if (!data.location ?? data.location.trim().length < 3) {
       errors.push('Lokasyon en az 3 karakter olmalıdır');
     }
 
-    if (!data.address || data.address.trim().length < 10) {
+    if (!data.address ?? data.address.trim().length < 10) {
       errors.push('Adres en az 10 karakter olmalıdır');
     }
 
@@ -542,7 +550,7 @@ class KumbaraService {
       // For other formats, implement accordingly
       throw new Error(`${format} formatı henüz desteklenmiyor`);
     } catch (error) {
-      console.error('Error exporting kumbaras:', error);
+      logger.error('Error exporting kumbaras:', error);
       throw new Error('Kumbara verileri dışa aktarılamadı');
     }
   }
@@ -573,12 +581,12 @@ class KumbaraService {
       k.address,
       k.status,
       k.installDate,
-      k.lastCollection || '',
+      k.lastCollection ?? '',
       k.totalAmount.toString(),
       k.monthlyAverage.toString(),
-      k.contactPerson || '',
-      k.phone || '',
-      k.notes || '',
+      k.contactPerson ?? '',
+      k.phone ?? '',
+      k.notes ?? '',
     ]);
 
     return [headers, ...rows].map((row) => row.map((cell) => `"${cell}"`).join(',')).join('\n');
@@ -612,7 +620,7 @@ class KumbaraService {
 
       return alerts;
     } catch (error) {
-      console.error('Error fetching kumbara alerts:', error);
+      logger.error('Error fetching kumbara alerts:', error);
       throw new Error('Kumbara uyarıları alınamadı');
     }
   }
@@ -625,7 +633,7 @@ class KumbaraService {
       // Mock API call - replace with real implementation
       return true;
     } catch (error) {
-      console.error('Error acknowledging alert:', error);
+      logger.error('Error acknowledging alert:', error);
       throw new Error('Uyarı onaylanamadı');
     }
   }

@@ -1,10 +1,25 @@
+/**
+ * @fileoverview security Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { rateLimit } from './rateLimit';
 import { validateCSRF } from './csrf';
 import { sanitizeInput } from '../utils/sanitization';
 
+import { logger } from '../lib/logging/logger';
 // Security middleware for API routes
+/**
+ * SecurityMiddleware Service
+ * 
+ * Service class for handling securitymiddleware operations
+ * 
+ * @class SecurityMiddleware
+ */
 export class SecurityMiddleware {
   private readonly supabase;
 
@@ -59,7 +74,7 @@ export class SecurityMiddleware {
       // 7. Add security headers
       return this.addSecurityHeaders(response);
     } catch (error) {
-      console.error('Security middleware error:', error);
+      logger.error('Security middleware error:', error);
       return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
   }
@@ -124,7 +139,7 @@ export class SecurityMiddleware {
         },
       };
     } catch (error) {
-      console.error('Authentication error:', error);
+      logger.error('Authentication error:', error);
       return {
         success: false,
         error: 'Authentication failed',
@@ -233,7 +248,7 @@ export class SecurityMiddleware {
     for (const [pattern, config] of Object.entries(permissionMap)) {
       if (path.startsWith(pattern) && config.methods.includes(method)) {
         const hasPermission = config.permissions.some(
-          (permission) => user.role === permission || user.permissions.includes(permission),
+          (permission) => user.role === permission ?? user.permissions.includes(permission),
         );
 
         if (!hasPermission) {

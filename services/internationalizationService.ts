@@ -5,10 +5,16 @@
 
 import { useState, useEffect } from 'react';
 
+import { logger } from '../lib/logging/logger';
 // Desteklenen diller
 export type SupportedLanguage = 'tr' | 'en' | 'ar' | 'ku' | 'de' | 'fr' | 'es';
 
 // Dil ayarları
+/**
+ * LanguageSettings Interface
+ * 
+ * @interface LanguageSettings
+ */
 export interface LanguageSettings {
   current: SupportedLanguage;
   fallback: SupportedLanguage;
@@ -20,6 +26,11 @@ export interface LanguageSettings {
 }
 
 // Çeviri anahtarları
+/**
+ * TranslationKeys Interface
+ * 
+ * @interface TranslationKeys
+ */
 export interface TranslationKeys {
   // Genel
   common: {
@@ -574,7 +585,7 @@ class InternationalizationService {
           this.settings = { ...this.settings, ...parsed };
           this.currentLanguage = this.settings.current;
         } catch (error) {
-          console.warn('[i18n] Failed to load language settings:', error);
+          logger.warn('[i18n] Failed to load language settings:', error);
         }
       }
     }
@@ -658,7 +669,7 @@ class InternationalizationService {
     // Parametreleri değiştir
     if (params) {
       return translation.replace(/\{(\w+)\}/g, (match, param) => {
-        return params[param] || match;
+        return params[param] ?? match;
       });
     }
 
@@ -763,9 +774,9 @@ class InternationalizationService {
   public async loadTranslations(language: SupportedLanguage): Promise<void> {
     try {
       // Gerçek uygulamada API'den çeviriler yüklenebilir
-      console.log(`[i18n] Loading translations for ${language}`);
+      logger.info(`[i18n] Loading translations for ${language}`);
     } catch (error) {
-      console.error(`[i18n] Failed to load translations for ${language}:`, error);
+      logger.error(`[i18n] Failed to load translations for ${language}:`, error);
     }
   }
 

@@ -1,3 +1,10 @@
+/**
+ * @fileoverview HospitalReferralPage Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { useState } from 'react';
 import { PageLayout } from '../PageLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
@@ -159,6 +166,12 @@ const mockReferrals: HospitalReferral[] = [
   },
 ];
 
+/**
+ * HospitalReferralPage function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function HospitalReferralPage() {
   const [referrals, setReferrals] = useState<HospitalReferral[]>(mockReferrals);
   const [searchTerm, setSearchTerm] = useState('');
@@ -220,8 +233,8 @@ export function HospitalReferralPage() {
     completed: referrals.filter((r) => r.status === 'completed').length,
     emergency: referrals.filter((r) => r.urgencyLevel === 'emergency').length,
     totalCost: referrals
-      .filter((r) => r.actualCost || r.estimatedCost)
-      .reduce((sum, r) => sum + (r.actualCost || r.estimatedCost || 0), 0),
+      .filter((r) => r.actualCost ?? r.estimatedCost)
+      .reduce((sum, r) => sum + (r.actualCost ?? r.estimatedCost ?? 0), 0),
   };
 
   return (
@@ -474,7 +487,7 @@ export function HospitalReferralPage() {
                         <div>
                           <p className="font-medium">
                             ₺
-                            {(referral.actualCost || referral.estimatedCost || 0).toLocaleString(
+                            {(referral.actualCost ?? referral.estimatedCost ?? 0).toLocaleString(
                               'tr-TR',
                             )}
                           </p>

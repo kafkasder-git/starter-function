@@ -1,3 +1,10 @@
+/**
+ * @fileoverview BulkDataImportPage Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 // 📊 BULK DATA IMPORT PAGE
 // Main page for bulk data import operations
 
@@ -75,6 +82,12 @@ const IMPORT_TYPES = [
   },
 ] as const;
 
+/**
+ * BulkDataImportPage function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function BulkDataImportPage() {
   const [selectedImportType, setSelectedImportType] = useState<string | null>(null);
   const [importStats, setImportStats] = useState<ImportStats>({

@@ -1,3 +1,10 @@
+/**
+ * @fileoverview EventsPage Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { Calendar, Clock, Filter, MapPin, Plus, Users } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useState } from 'react';
@@ -21,6 +28,12 @@ interface Event {
   status: 'upcoming' | 'ongoing' | 'completed';
 }
 
+/**
+ * EventsPage function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function EventsPage() {
   const [viewType, setViewType] = useState('list');
   const [filterType, setFilterType] = useState('all');
@@ -162,7 +175,7 @@ export function EventsPage() {
           value={`%${
             Math.round(
               (events.reduce((sum, e) => sum + e.attendees, 0) /
-                events.reduce((sum, e) => sum + (e.maxAttendees || 0), 1)) *
+                events.reduce((sum, e) => sum + (e.maxAttendees ?? 0), 1)) *
                 100,
             ) || 0
           }`}

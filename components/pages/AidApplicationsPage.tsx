@@ -1,3 +1,10 @@
+/**
+ * @fileoverview AidApplicationsPage Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import {
   AlertCircle,
   Calendar,
@@ -103,6 +110,12 @@ const mockApplications: AidApplication[] = [
   },
 ];
 
+/**
+ * AidApplicationsPage function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function AidApplicationsPage() {
   const [applications, setApplications] = useState<AidApplication[]>(mockApplications);
   const [searchTerm, setSearchTerm] = useState('');

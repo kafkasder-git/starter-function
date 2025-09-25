@@ -1,3 +1,10 @@
+/**
+ * @fileoverview MeetingsPage Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { format } from 'date-fns';
 import { tr } from 'date-fns/locale';
 import {

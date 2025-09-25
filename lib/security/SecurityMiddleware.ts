@@ -6,9 +6,17 @@ import type { Permission } from './PermissionManager';
 import { PermissionManager, AuditLogger } from './PermissionManager';
 import { InputSanitizer, CSRFProtection, RateLimiter } from './InputSanitizer';
 
+import { logger } from '../lib/logging/logger';
 // API Security Wrapper
+/**
+ * SecureAPIClient Service
+ * 
+ * Service class for handling secureapiclient operations
+ * 
+ * @class SecureAPIClient
+ */
 export class SecureAPIClient {
-  private static readonly baseURL = (import.meta?.env?.VITE_API_URL) || process.env.VITE_API_URL || '';
+  private static readonly baseURL = (import.meta?.env?.VITE_API_URL) || process.env.VITE_API_URL ?? '';
   private static readonly sessionId = crypto.getRandomValues(new Uint8Array(16)).join('');
 
   static async secureRequest(
@@ -29,7 +37,7 @@ export class SecureAPIClient {
     }
 
     // CSRF protection for state-changing operations
-    const isStateChanging = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(options.method || 'GET');
+    const isStateChanging = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(options.method ?? 'GET');
     let csrfToken = '';
 
     if (isStateChanging) {
@@ -60,7 +68,7 @@ export class SecureAPIClient {
 
     // Audit logging
     AuditLogger.log('api_request', endpoint, {
-      method: options.method || 'GET',
+      method: options.method ?? 'GET',
       hasPermission: !!requiredPermission,
       bodySize: options.body ? options.body.length : 0,
     });
@@ -86,7 +94,7 @@ export class SecureAPIClient {
       // Log error
       AuditLogger.log('api_error', endpoint, {
         error: error.message,
-        method: options.method || 'GET',
+        method: options.method ?? 'GET',
       });
 
       throw error;
@@ -138,6 +146,13 @@ export class SecureAPIClient {
 }
 
 // Security Context Provider
+/**
+ * SecurityContext Service
+ * 
+ * Service class for handling securitycontext operations
+ * 
+ * @class SecurityContext
+ */
 export class SecurityContext {
   private static instance: SecurityContext | null = null;
   private securityConfig: SecurityConfig;
@@ -166,6 +181,11 @@ export class SecurityContext {
   }
 }
 
+/**
+ * SecurityConfig Interface
+ * 
+ * @interface SecurityConfig
+ */
 export interface SecurityConfig {
   enableXSSProtection: boolean;
   enableSQLInjectionProtection: boolean;
@@ -192,6 +212,13 @@ export const DEFAULT_SECURITY_CONFIG: SecurityConfig = {
 };
 
 // Security monitoring
+/**
+ * SecurityMonitor Service
+ * 
+ * Service class for handling securitymonitor operations
+ * 
+ * @class SecurityMonitor
+ */
 export class SecurityMonitor {
   private static threats: SecurityThreat[] = [];
 
@@ -204,7 +231,7 @@ export class SecurityMonitor {
 
     // Alert if critical
     if (threat.severity === 'critical') {
-      console.error('CRITICAL SECURITY THREAT:', threat);
+      logger.error('CRITICAL SECURITY THREAT:', threat);
 
       // In production, send to security service
       if ((typeof import.meta !== 'undefined' && import.meta.env?.PROD) || process.env.NODE_ENV === 'production') {
@@ -226,7 +253,7 @@ export class SecurityMonitor {
         body: JSON.stringify(threat),
       });
     } catch (error) {
-      console.error('Failed to send threat alert:', error);
+      logger.error('Failed to send threat alert:', error);
     }
   }
 
@@ -243,6 +270,11 @@ export class SecurityMonitor {
   }
 }
 
+/**
+ * SecurityThreat Interface
+ * 
+ * @interface SecurityThreat
+ */
 export interface SecurityThreat {
   id?: string;
   type:
@@ -276,7 +308,7 @@ export const useSecurityValidation = (initialData: Record<string, any> = {}) => 
       const sanitizedValue = InputSanitizer.sanitizeUserInput(value, type);
 
       // Check for security threats
-      const originalValue = String(value || '');
+      const originalValue = String(value ?? '');
       if (originalValue !== sanitizedValue) {
         SecurityMonitor.reportThreat({
           type: 'suspicious_input',

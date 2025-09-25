@@ -1,3 +1,10 @@
+/**
+ * @fileoverview BeneficiaryForm Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Building, CreditCard, Heart, MapPin, Phone, Save, User, X } from 'lucide-react';
 import { useState } from 'react';
@@ -67,6 +74,12 @@ interface BeneficiaryFormProps {
   mode?: 'create' | 'edit';
 }
 
+/**
+ * BeneficiaryForm function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function BeneficiaryForm({
   initialData,
   onSubmit,
@@ -457,12 +470,12 @@ export function BeneficiaryForm({
           type="button"
           variant="outline"
           onClick={onCancel}
-          disabled={isSubmitting || isLoading}
+          disabled={isSubmitting ?? isLoading}
         >
           <X className="w-4 h-4 mr-2" />
           İptal
         </Button>
-        <Button type="submit" disabled={isSubmitting || isLoading} className="min-w-[120px]">
+        <Button type="submit" disabled={isSubmitting ?? isLoading} className="min-w-[120px]">
           {isSubmitting ? (
             <>
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />

@@ -1,3 +1,10 @@
+/**
+ * @fileoverview BeneficiaryHealthInfo Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { Activity, AlertTriangle, Heart, Plus } from 'lucide-react';
 import { useState } from 'react';
 import { Badge } from '../ui/badge';
@@ -30,6 +37,12 @@ const healthConditions = [
   'Yüksek Tansiyon',
 ];
 
+/**
+ * BeneficiaryHealthInfo function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function BeneficiaryHealthInfo({
   beneficiary,
   editMode,
@@ -125,14 +138,14 @@ export function BeneficiaryHealthInfo({
             {editMode ? (
               <Input
                 id="bloodType"
-                value={beneficiary?.bloodType || ''}
+                value={beneficiary?.bloodType ?? ''}
                 onChange={(e) => {
                   onUpdate('bloodType', e.target.value);
                 }}
                 placeholder="Kan grubu (A+, B-, vb.)"
               />
             ) : (
-              <p className="p-2 text-sm">{beneficiary?.bloodType || '-'}</p>
+              <p className="p-2 text-sm">{beneficiary?.bloodType ?? '-'}</p>
             )}
           </div>
 
@@ -141,14 +154,14 @@ export function BeneficiaryHealthInfo({
             {editMode ? (
               <Input
                 id="emergencyContact"
-                value={beneficiary?.emergencyContact || ''}
+                value={beneficiary?.emergencyContact ?? ''}
                 onChange={(e) => {
                   onUpdate('emergencyContact', e.target.value);
                 }}
                 placeholder="Acil durum iletişim bilgisi"
               />
             ) : (
-              <p className="p-2 text-sm">{beneficiary?.emergencyContact || '-'}</p>
+              <p className="p-2 text-sm">{beneficiary?.emergencyContact ?? '-'}</p>
             )}
           </div>
         </CardContent>
@@ -171,7 +184,7 @@ export function BeneficiaryHealthInfo({
                   <div key={condition} className="flex items-center space-x-2">
                     <Checkbox
                       id={condition}
-                      checked={healthConditionsState[condition] || false}
+                      checked={healthConditionsState[condition] ?? false}
                       onCheckedChange={(checked: boolean) => {
                         handleConditionChange(condition, checked);
                       }}
@@ -226,7 +239,7 @@ export function BeneficiaryHealthInfo({
             {editMode ? (
               <Textarea
                 id="healthNotes"
-                value={beneficiary?.healthNotes || ''}
+                value={beneficiary?.healthNotes ?? ''}
                 onChange={(e) => {
                   onUpdate('healthNotes', e.target.value);
                 }}
@@ -234,7 +247,7 @@ export function BeneficiaryHealthInfo({
                 rows={3}
               />
             ) : (
-              <p className="p-2 text-sm">{beneficiary?.healthNotes || 'Sağlık notu bulunmuyor'}</p>
+              <p className="p-2 text-sm">{beneficiary?.healthNotes ?? 'Sağlık notu bulunmuyor'}</p>
             )}
           </div>
         </CardContent>

@@ -1,3 +1,10 @@
+/**
+ * @fileoverview DocumentManagementPage Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import {
   Award,
   DollarSign,
@@ -166,6 +173,12 @@ const mockSponsors: SponsorOrganization[] = [
   },
 ];
 
+/**
+ * PartnerSponsorsPage function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export default function PartnerSponsorsPage() {
   const [sponsors] = useState<SponsorOrganization[]>(mockSponsors);
   const [filteredSponsors, setFilteredSponsors] = useState<SponsorOrganization[]>(mockSponsors);

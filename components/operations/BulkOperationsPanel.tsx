@@ -1,3 +1,10 @@
+/**
+ * @fileoverview BulkOperationsPanel Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
@@ -21,6 +28,7 @@ import { Input } from '../ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { useAdvancedMobile } from '../../hooks/useAdvancedMobile';
 
+import { logger } from '../lib/logging/logger';
 interface BulkAction {
   id: string;
   label: string;
@@ -94,6 +102,12 @@ const defaultActions: BulkAction[] = [
   },
 ];
 
+/**
+ * BulkOperationsPanel function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function BulkOperationsPanel({
   selectedItems,
   totalItems,
@@ -153,7 +167,7 @@ export function BulkOperationsPanel({
         triggerHapticFeedback('success');
       }
     } catch (error) {
-      console.error('Bulk action failed:', error);
+      logger.error('Bulk action failed:', error);
       if (deviceInfo.isMobile) {
         triggerHapticFeedback('error');
       }
@@ -168,7 +182,7 @@ export function BulkOperationsPanel({
       variant={action.color}
       size="sm"
       onClick={() => handleAction(action.id)}
-      disabled={selectedItems.length === 0 || isExecuting}
+      disabled={selectedItems.length === 0 ?? isExecuting}
       className="gap-2 min-w-0 flex-shrink-0"
     >
       {action.icon}
@@ -354,7 +368,7 @@ export function BulkOperationsPanel({
                             variant="ghost"
                             size="sm"
                             onClick={() => handleAction(action.id)}
-                            disabled={selectedItems.length === 0 || isExecuting}
+                            disabled={selectedItems.length === 0 ?? isExecuting}
                             className="w-full justify-start gap-2"
                           >
                             {action.icon}

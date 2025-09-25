@@ -1,5 +1,13 @@
+/**
+ * @fileoverview SafeWrapper Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import React from 'react';
 
+import { logger } from '../lib/logging/logger';
 interface SafeWrapperProps {
   children: React.ReactNode;
   fallback?: React.ReactNode;
@@ -11,6 +19,13 @@ interface SafeWrapperState {
   error?: Error;
 }
 
+/**
+ * SafeWrapper Service
+ * 
+ * Service class for handling safewrapper operations
+ * 
+ * @class SafeWrapper
+ */
 export class SafeWrapper extends React.Component<SafeWrapperProps, SafeWrapperState> {
   constructor(props: SafeWrapperProps) {
     super(props);
@@ -22,8 +37,8 @@ export class SafeWrapper extends React.Component<SafeWrapperProps, SafeWrapperSt
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error(
-      `SafeWrapper caught error in ${this.props.componentName || 'Unknown Component'}:`,
+    logger.error(
+      `SafeWrapper caught error in ${this.props.componentName ?? 'Unknown Component'}:`,
       error,
       errorInfo,
     );
@@ -56,24 +71,36 @@ export class SafeWrapper extends React.Component<SafeWrapperProps, SafeWrapperSt
 }
 
 // Higher-order component for safer component rendering
+/**
+ * withSafeWrapper function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function withSafeWrapper<P extends Record<string, any> = {}>(
   Component: React.ComponentType<P>,
   componentName?: string,
 ) {
   const WrappedComponent = React.forwardRef<React.ComponentRef<typeof Component>, P>(
     (props, ref) => (
-      <SafeWrapper componentName={componentName || Component.name}>
+      <SafeWrapper componentName={componentName ?? Component.name}>
         <Component {...(props as any)} ref={ref} />
       </SafeWrapper>
     ),
   );
 
-  WrappedComponent.displayName = `withSafeWrapper(${Component.name || 'Component'})`;
+  WrappedComponent.displayName = `withSafeWrapper(${Component.name ?? 'Component'})`;
 
   return WrappedComponent;
 }
 
 // Hook for safe component rendering
+/**
+ * useSafeRender function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useSafeRender() {
   return {
     renderSafely: (component: React.ReactNode, fallback?: React.ReactNode) => (

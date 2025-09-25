@@ -1,8 +1,21 @@
+/**
+ * @fileoverview SupabaseConnectionStatus Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import React from 'react';
 import { useSupabaseConnection, isSupabaseConfigured } from '../hooks/useSupabaseConnection';
 import { Alert, AlertDescription } from './ui/alert';
 import { CheckCircle, XCircle, AlertTriangle, Loader2 } from 'lucide-react';
 
+/**
+ * SupabaseConnectionStatus function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function SupabaseConnectionStatus() {
   const { isConnected, isLoading, error, projectUrl } = useSupabaseConnection();
   const isConfigured = isSupabaseConfigured();

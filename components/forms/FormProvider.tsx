@@ -1,3 +1,10 @@
+/**
+ * @fileoverview FormProvider Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import type { ReactNode } from 'react';
 import { createContext, useContext } from 'react';
 import type { FormState, FormValidationSchema, ValidationError } from '../../types/validation';
@@ -38,6 +45,12 @@ interface FormProviderProps {
   onSubmitCapture?: (e: React.FormEvent) => void;
 }
 
+/**
+ * FormProvider function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function FormProvider({
   children,
   schema,
@@ -98,6 +111,12 @@ export function FormProvider({
   );
 }
 
+/**
+ * useForm function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useForm(): FormContextType {
   const context = useContext(FormContext);
   if (context === undefined) {
@@ -112,6 +131,12 @@ interface FieldProps {
   children: (props: any) => ReactNode;
 }
 
+/**
+ * Field function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function Field({ name, children }: FieldProps) {
   const { getFieldProps } = useForm();
   const fieldProps = getFieldProps(name);
@@ -125,10 +150,16 @@ interface FormErrorSummaryProps {
   showWarnings?: boolean;
 }
 
+/**
+ * FormErrorSummary function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function FormErrorSummary({ className, showWarnings = false }: FormErrorSummaryProps) {
   const { errors, formState } = useForm();
 
-  if (errors.length === 0 && (!showWarnings || formState.warnings.length === 0)) {
+  if (errors.length === 0 && (!showWarnings ?? formState.warnings.length === 0)) {
     return null;
   }
 
@@ -175,6 +206,12 @@ interface FormSubmitButtonProps {
   loadingText?: string;
 }
 
+/**
+ * FormSubmitButton function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function FormSubmitButton({
   children,
   className,
@@ -189,7 +226,7 @@ export function FormSubmitButton({
   return (
     <button
       type="submit"
-      disabled={disabled || isSubmitting || !isValid}
+      disabled={disabled ?? isSubmitting || !isValid}
       className={className}
       {...props}
     >

@@ -1,3 +1,10 @@
+/**
+ * @fileoverview useBulkOperations Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { useCallback, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import type { BulkError, BulkOperation } from '../types/data';
@@ -8,6 +15,12 @@ interface UseBulkOperationsProps {
   onError?: (operation: BulkOperation, error: string) => void;
 }
 
+/**
+ * useBulkOperations function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useBulkOperations({
   onProgress,
   onComplete,
@@ -103,14 +116,14 @@ export function useBulkOperations({
                 const validationError = validate(item);
                 if (validationError) {
                   const error: BulkError = {
-                    itemId: item.id || itemIndex,
+                    itemId: item.id ?? itemIndex,
                     message: validationError,
                     code: 'VALIDATION_ERROR',
                     data: item,
                   };
 
                   updateOperation(operation.id, {
-                    errorItems: (activeOperations.get(operation.id)?.errorItems || 0) + 1,
+                    errorItems: (activeOperations.get(operation.id)?.errorItems ?? 0) + 1,
                     errors: [...(activeOperations.get(operation.id)?.errors || []), error],
                   });
                   return;
@@ -126,21 +139,21 @@ export function useBulkOperations({
               onItemUpdate?.(item, updatedItem);
 
               updateOperation(operation.id, {
-                processedItems: (activeOperations.get(operation.id)?.processedItems || 0) + 1,
-                successItems: (activeOperations.get(operation.id)?.successItems || 0) + 1,
+                processedItems: (activeOperations.get(operation.id)?.processedItems ?? 0) + 1,
+                successItems: (activeOperations.get(operation.id)?.successItems ?? 0) + 1,
                 progress: Math.round(((itemIndex + 1) / items.length) * 100),
               });
             } catch (error) {
               const bulkError: BulkError = {
-                itemId: item.id || itemIndex,
+                itemId: item.id ?? itemIndex,
                 message: error instanceof Error ? error.message : 'Bilinmeyen hata',
                 code: 'UPDATE_ERROR',
                 data: item,
               };
 
               updateOperation(operation.id, {
-                processedItems: (activeOperations.get(operation.id)?.processedItems || 0) + 1,
-                errorItems: (activeOperations.get(operation.id)?.errorItems || 0) + 1,
+                processedItems: (activeOperations.get(operation.id)?.processedItems ?? 0) + 1,
+                errorItems: (activeOperations.get(operation.id)?.errorItems ?? 0) + 1,
                 errors: [...(activeOperations.get(operation.id)?.errors || []), bulkError],
               });
             }
@@ -161,8 +174,8 @@ export function useBulkOperations({
         });
 
         const currentOperation = activeOperations.get(operation.id);
-        const successCount = currentOperation?.successItems || 0;
-        const errorCount = currentOperation?.errorItems || 0;
+        const successCount = currentOperation?.successItems ?? 0;
+        const errorCount = currentOperation?.errorItems ?? 0;
 
         if (errorCount === 0) {
           toast.success(`${successCount} kayıt başarıyla güncellendi`);
@@ -231,7 +244,7 @@ export function useBulkOperations({
               // Confirm deletion if required
               if (confirmDelete && !confirmDelete(item)) {
                 updateOperation(operation.id, {
-                  processedItems: (activeOperations.get(operation.id)?.processedItems || 0) + 1,
+                  processedItems: (activeOperations.get(operation.id)?.processedItems ?? 0) + 1,
                 });
                 return;
               }
@@ -249,21 +262,21 @@ export function useBulkOperations({
               }
 
               updateOperation(operation.id, {
-                processedItems: (activeOperations.get(operation.id)?.processedItems || 0) + 1,
-                successItems: (activeOperations.get(operation.id)?.successItems || 0) + 1,
+                processedItems: (activeOperations.get(operation.id)?.processedItems ?? 0) + 1,
+                successItems: (activeOperations.get(operation.id)?.successItems ?? 0) + 1,
                 progress: Math.round(((itemIndex + 1) / items.length) * 100),
               });
             } catch (error) {
               const bulkError: BulkError = {
-                itemId: item.id || itemIndex,
+                itemId: item.id ?? itemIndex,
                 message: error instanceof Error ? error.message : 'Silme hatası',
                 code: 'DELETE_ERROR',
                 data: item,
               };
 
               updateOperation(operation.id, {
-                processedItems: (activeOperations.get(operation.id)?.processedItems || 0) + 1,
-                errorItems: (activeOperations.get(operation.id)?.errorItems || 0) + 1,
+                processedItems: (activeOperations.get(operation.id)?.processedItems ?? 0) + 1,
+                errorItems: (activeOperations.get(operation.id)?.errorItems ?? 0) + 1,
                 errors: [...(activeOperations.get(operation.id)?.errors || []), bulkError],
               });
             }
@@ -283,7 +296,7 @@ export function useBulkOperations({
         });
 
         const currentOperation = activeOperations.get(operation.id);
-        const successCount = currentOperation?.successItems || 0;
+        const successCount = currentOperation?.successItems ?? 0;
 
         toast.success(`${successCount} kayıt başarıyla silindi`);
       } catch (error) {

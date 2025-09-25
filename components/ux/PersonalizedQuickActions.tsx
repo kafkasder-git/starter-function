@@ -1,3 +1,10 @@
+/**
+ * @fileoverview PersonalizedQuickActions Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import React, { useState, useEffect, useMemo } from 'react';
 import {
   Plus,
@@ -18,6 +25,7 @@ import { Badge } from '../ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../ui/dialog';
 import { cn } from '../ui/utils';
 
+import { logger } from '../lib/logging/logger';
 interface QuickAction {
   id: string;
   title: string;
@@ -42,6 +50,12 @@ interface PersonalizedQuickActionsProps {
   className?: string;
 }
 
+/**
+ * PersonalizedQuickActions function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function PersonalizedQuickActions({
   currentModule = 'genel',
   currentContext,
@@ -61,7 +75,7 @@ export function PersonalizedQuickActions({
         setUserPreferences(JSON.parse(saved));
       }
     } catch (error) {
-      console.warn('Error loading quick actions preferences:', error);
+      logger.warn('Error loading quick actions preferences:', error);
     }
   }, []);
 
@@ -72,7 +86,7 @@ export function PersonalizedQuickActions({
     try {
       localStorage.setItem('quick-actions-preferences', JSON.stringify(newPrefs));
     } catch (error) {
-      console.warn('Error saving quick actions preferences:', error);
+      logger.warn('Error saving quick actions preferences:', error);
     }
   };
 
@@ -83,7 +97,7 @@ export function PersonalizedQuickActions({
       usage: {
         ...usage,
         [actionId]: {
-          count: (usage[actionId]?.count || 0) + 1,
+          count: (usage[actionId]?.count ?? 0) + 1,
           lastUsed: new Date().toISOString(),
         },
       },
@@ -101,7 +115,7 @@ export function PersonalizedQuickActions({
         icon: <Users className="w-4 h-4" />,
         category: 'frequent',
         priority: 10,
-        usage_count: userPreferences.usage?.['new-beneficiary']?.count || 0,
+        usage_count: userPreferences.usage?.['new-beneficiary']?.count ?? 0,
         last_used: userPreferences.usage?.['new-beneficiary']?.lastUsed
           ? new Date(userPreferences.usage['new-beneficiary'].lastUsed)
           : undefined,
@@ -119,7 +133,7 @@ export function PersonalizedQuickActions({
         icon: <FileText className="w-4 h-4" />,
         category: 'recent',
         priority: 9,
-        usage_count: userPreferences.usage?.['approve-applications']?.count || 0,
+        usage_count: userPreferences.usage?.['approve-applications']?.count ?? 0,
         onExecute: () => {
           trackAction('approve-applications');
           onNavigate?.('yardim', '/yardim/basvurular');
@@ -134,7 +148,7 @@ export function PersonalizedQuickActions({
         icon: <Heart className="w-4 h-4" />,
         category: 'frequent',
         priority: 9,
-        usage_count: userPreferences.usage?.['record-donation']?.count || 0,
+        usage_count: userPreferences.usage?.['record-donation']?.count ?? 0,
         estimated_time: '2-3 dk',
         shortcuts: '⌘+D',
         onExecute: () => {
@@ -149,10 +163,10 @@ export function PersonalizedQuickActions({
         icon: <FileText className="w-4 h-4" />,
         category: 'frequent',
         priority: 8,
-        usage_count: userPreferences.usage?.['donation-receipt']?.count || 0,
+        usage_count: userPreferences.usage?.['donation-receipt']?.count ?? 0,
         onExecute: () => {
           trackAction('donation-receipt');
-          console.log('Generate receipt');
+          logger.info('Generate receipt');
         },
       },
 
@@ -164,7 +178,7 @@ export function PersonalizedQuickActions({
         icon: <Users className="w-4 h-4" />,
         category: 'frequent',
         priority: 8,
-        usage_count: userPreferences.usage?.['new-member']?.count || 0,
+        usage_count: userPreferences.usage?.['new-member']?.count ?? 0,
         estimated_time: '5-7 dk',
         onExecute: () => {
           trackAction('new-member');
@@ -178,7 +192,7 @@ export function PersonalizedQuickActions({
         icon: <DollarSign className="w-4 h-4" />,
         category: 'suggested',
         priority: 7,
-        usage_count: userPreferences.usage?.['member-dues']?.count || 0,
+        usage_count: userPreferences.usage?.['member-dues']?.count ?? 0,
         onExecute: () => {
           trackAction('member-dues');
           onNavigate?.('uye', '/uye/aidat');
@@ -193,7 +207,7 @@ export function PersonalizedQuickActions({
         icon: <DollarSign className="w-4 h-4" />,
         category: 'frequent',
         priority: 7,
-        usage_count: userPreferences.usage?.['expense-entry']?.count || 0,
+        usage_count: userPreferences.usage?.['expense-entry']?.count ?? 0,
         estimated_time: '2-4 dk',
         onExecute: () => {
           trackAction('expense-entry');
@@ -207,7 +221,7 @@ export function PersonalizedQuickActions({
         icon: <TrendingUp className="w-4 h-4" />,
         category: 'suggested',
         priority: 6,
-        usage_count: userPreferences.usage?.['financial-report']?.count || 0,
+        usage_count: userPreferences.usage?.['financial-report']?.count ?? 0,
         onExecute: () => {
           trackAction('financial-report');
           onNavigate?.('fon', '/fon/raporlar');
@@ -222,7 +236,7 @@ export function PersonalizedQuickActions({
         icon: <Calendar className="w-4 h-4" />,
         category: 'recent',
         priority: 6,
-        usage_count: userPreferences.usage?.['new-event']?.count || 0,
+        usage_count: userPreferences.usage?.['new-event']?.count ?? 0,
         estimated_time: '10-15 dk',
         onExecute: () => {
           trackAction('new-event');
@@ -238,10 +252,10 @@ export function PersonalizedQuickActions({
         icon: <Settings className="w-4 h-4" />,
         category: 'suggested',
         priority: 5,
-        usage_count: userPreferences.usage?.['backup-data']?.count || 0,
+        usage_count: userPreferences.usage?.['backup-data']?.count ?? 0,
         onExecute: () => {
           trackAction('backup-data');
-          console.log('Start backup process');
+          logger.info('Start backup process');
         },
       },
     ],
@@ -270,13 +284,13 @@ export function PersonalizedQuickActions({
 
     // Sort by usage and priority
     filtered.sort((a, b) => {
-      const aUsage = userPreferences.usage?.[a.id]?.count || 0;
-      const bUsage = userPreferences.usage?.[b.id]?.count || 0;
+      const aUsage = userPreferences.usage?.[a.id]?.count ?? 0;
+      const bUsage = userPreferences.usage?.[b.id]?.count ?? 0;
 
       // Recently used items get priority
       if (aUsage > 0 && bUsage > 0) {
-        const aLastUsed = new Date(userPreferences.usage[a.id]?.lastUsed || 0);
-        const bLastUsed = new Date(userPreferences.usage[b.id]?.lastUsed || 0);
+        const aLastUsed = new Date(userPreferences.usage[a.id]?.lastUsed ?? 0);
+        const bLastUsed = new Date(userPreferences.usage[b.id]?.lastUsed ?? 0);
 
         if (Math.abs(aLastUsed.getTime() - bLastUsed.getTime()) < 24 * 60 * 60 * 1000) {
           return bUsage - aUsage; // Sort by usage if recently used
@@ -450,7 +464,7 @@ export function PersonalizedQuickActions({
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">Tahmini süre:</span>
-              <Badge variant="outline">{selectedAction?.estimated_time || '1-2 dk'}</Badge>
+              <Badge variant="outline">{selectedAction?.estimated_time ?? '1-2 dk'}</Badge>
             </div>
 
             <div className="flex justify-end gap-2">

@@ -7,10 +7,16 @@ import { supabase } from '../lib/supabase';
 import { environment } from '../lib/environment';
 import { monitoring } from './monitoringService';
 
+import { logger } from '../lib/logging/logger';
 // =============================================================================
 // TYPES AND INTERFACES
 // =============================================================================
 
+/**
+ * FileMetadata Interface
+ * 
+ * @interface FileMetadata
+ */
 export interface FileMetadata {
   id: string;
   name: string;
@@ -32,6 +38,11 @@ export interface FileMetadata {
   metadata?: Record<string, any>;
 }
 
+/**
+ * FileUploadOptions Interface
+ * 
+ * @interface FileUploadOptions
+ */
 export interface FileUploadOptions {
   bucket?: string;
   folder?: string;
@@ -46,6 +57,11 @@ export interface FileUploadOptions {
   compress?: boolean;
 }
 
+/**
+ * FileUploadResult Interface
+ * 
+ * @interface FileUploadResult
+ */
 export interface FileUploadResult {
   success: boolean;
   file?: FileMetadata;
@@ -54,6 +70,11 @@ export interface FileUploadResult {
   path?: string;
 }
 
+/**
+ * FileListOptions Interface
+ * 
+ * @interface FileListOptions
+ */
 export interface FileListOptions {
   bucket?: string;
   folder?: string;
@@ -67,6 +88,11 @@ export interface FileListOptions {
   uploadedBy?: string;
 }
 
+/**
+ * FileListResult Interface
+ * 
+ * @interface FileListResult
+ */
 export interface FileListResult {
   files: FileMetadata[];
   total: number;
@@ -74,12 +100,22 @@ export interface FileListResult {
   nextOffset?: number;
 }
 
+/**
+ * FileDownloadOptions Interface
+ * 
+ * @interface FileDownloadOptions
+ */
 export interface FileDownloadOptions {
   download?: boolean;
   filename?: string;
   disposition?: 'inline' | 'attachment';
 }
 
+/**
+ * StorageConfig Interface
+ * 
+ * @interface StorageConfig
+ */
 export interface StorageConfig {
   buckets: Record<
     string,
@@ -193,10 +229,10 @@ const STORAGE_CONFIG: StorageConfig = {
     ],
   },
   security: {
-    enableVirusScan: environment.features.security?.virusScan || false,
-    enableContentModeration: environment.features.security?.contentModeration || false,
-    enableWatermarking: environment.features.security?.watermarking || false,
-    enableEncryption: environment.features.security?.encryption || false,
+    enableVirusScan: environment.features.security?.virusScan ?? false,
+    enableContentModeration: environment.features.security?.contentModeration ?? false,
+    enableWatermarking: environment.features.security?.watermarking ?? false,
+    enableEncryption: environment.features.security?.encryption ?? false,
   },
 };
 
@@ -204,6 +240,13 @@ const STORAGE_CONFIG: StorageConfig = {
 // FILE STORAGE SERVICE CLASS
 // =============================================================================
 
+/**
+ * FileStorageService Service
+ * 
+ * Service class for handling filestorageservice operations
+ * 
+ * @class FileStorageService
+ */
 export class FileStorageService {
   private static instance: FileStorageService;
   private readonly config: StorageConfig;
@@ -228,7 +271,7 @@ export class FileStorageService {
       const { data: buckets, error } = await supabase.storage.listBuckets();
 
       if (error) {
-        console.error('Failed to list buckets:', error);
+        logger.error('Failed to list buckets:', error);
         return;
       }
 
@@ -243,9 +286,9 @@ export class FileStorageService {
           });
 
           if (createError) {
-            console.error(`Failed to create bucket ${config.name}:`, createError);
+            logger.error(`Failed to create bucket ${config.name}:`, createError);
           } else {
-            console.log(`✅ Created bucket: ${config.name}`);
+            logger.info(`✅ Created bucket: ${config.name}`);
           }
         }
       }
@@ -260,7 +303,7 @@ export class FileStorageService {
         },
       });
     } catch (error) {
-      console.error('Failed to initialize buckets:', error);
+      logger.error('Failed to initialize buckets:', error);
     }
   }
 
@@ -282,8 +325,8 @@ export class FileStorageService {
       }
 
       // Determine bucket and path
-      const bucket = options.bucket || this.config.defaultBucket;
-      const folder = options.folder || '';
+      const bucket = options.bucket ?? this.config.defaultBucket;
+      const folder = options.folder ?? '';
       const fileName = this.generateUniqueFileName(file.name, options.overwrite);
       const filePath = folder ? `${folder}/${fileName}` : fileName;
 
@@ -310,12 +353,12 @@ export class FileStorageService {
       // Upload to Supabase Storage
       const { data, error } = await supabase.storage.from(bucket).upload(filePath, processedFile, {
         cacheControl: '3600',
-        upsert: options.overwrite || false,
+        upsert: options.overwrite ?? false,
         contentType: file.type,
         metadata: {
           originalName: file.name,
           uploadedBy: 'system', // In real app, get from auth context
-          description: options.description || '',
+          description: options.description ?? '',
           tags: JSON.stringify(options.tags || []),
           ...options.metadata,
         },
@@ -330,7 +373,7 @@ export class FileStorageService {
         .from(bucket)
         .list(folder, { search: fileName });
 
-      if (!fileInfo || fileInfo.length === 0) {
+      if (!fileInfo ?? fileInfo.length === 0) {
         throw new Error('Failed to get uploaded file info');
       }
 
@@ -339,7 +382,7 @@ export class FileStorageService {
 
       // Create file metadata
       const fileMetadata: FileMetadata = {
-        id: data?.path || filePath,
+        id: data?.path ?? filePath,
         name: file.name,
         size: file.size,
         type: file.type,
@@ -349,7 +392,7 @@ export class FileStorageService {
         createdAt: new Date(),
         updatedAt: new Date(),
         uploadedBy: 'system',
-        isPublic: options.isPublic || false,
+        isPublic: options.isPublic ?? false,
         downloadCount: 0,
         tags: options.tags,
         description: options.description,
@@ -372,7 +415,7 @@ export class FileStorageService {
         bucket,
         fileSize: file.size,
         fileType: file.type,
-        compressed: options.compress || false,
+        compressed: options.compress ?? false,
       });
 
       return result;
@@ -433,17 +476,17 @@ export class FileStorageService {
     const startTime = Date.now();
 
     try {
-      const bucket = options.bucket || this.config.defaultBucket;
-      const folder = options.folder || '';
-      const limit = options.limit || 50;
-      const offset = options.offset || 0;
+      const bucket = options.bucket ?? this.config.defaultBucket;
+      const folder = options.folder ?? '';
+      const limit = options.limit ?? 50;
+      const offset = options.offset ?? 0;
 
       const query = supabase.storage.from(bucket).list(folder, {
         limit,
         offset,
         sortBy: {
-          column: options.sortBy || 'name',
-          order: options.sortOrder || 'asc',
+          column: options.sortBy ?? 'name',
+          order: options.sortOrder ?? 'asc',
         },
       });
 
@@ -462,27 +505,27 @@ export class FileStorageService {
       // Get total count (simplified - in real app, use metadata table)
       const { data: allFiles } = await supabase.storage.from(bucket).list(folder, { limit: 1000 });
 
-      const total = allFiles?.length || 0;
+      const total = allFiles?.length ?? 0;
       const hasMore = offset + limit < total;
 
       // Convert to FileMetadata objects
       const files: FileMetadata[] = (data || []).map((file) => ({
-        id: file.id || file.name,
+        id: file.id ?? file.name,
         name: file.name,
-        size: file.metadata?.size || 0,
-        type: file.metadata?.mimetype || 'application/octet-stream',
+        size: file.metadata?.size ?? 0,
+        type: file.metadata?.mimetype ?? 'application/octet-stream',
         bucket,
         path: folder ? `${folder}/${file.name}` : file.name,
         url: supabase.storage
           .from(bucket)
           .getPublicUrl(folder ? `${folder}/${file.name}` : file.name).data.publicUrl,
-        createdAt: new Date(file.created_at || ''),
-        updatedAt: new Date(file.updated_at || ''),
-        uploadedBy: file.metadata?.uploadedBy || 'system',
-        isPublic: this.config.buckets[bucket]?.isPublic || false,
+        createdAt: new Date(file.created_at ?? ''),
+        updatedAt: new Date(file.updated_at ?? ''),
+        uploadedBy: file.metadata?.uploadedBy ?? 'system',
+        isPublic: this.config.buckets[bucket]?.isPublic ?? false,
         downloadCount: 0,
         tags: file.metadata?.tags ? JSON.parse(file.metadata.tags) : [],
-        description: file.metadata?.description || '',
+        description: file.metadata?.description ?? '',
         metadata: file.metadata || {},
       }));
 
@@ -513,7 +556,7 @@ export class FileStorageService {
 
       // Track error
       monitoring.trackApiCall('file_storage/list', 'GET', processingTime, 500, {
-        bucket: options.bucket || this.config.defaultBucket,
+        bucket: options.bucket ?? this.config.defaultBucket,
         error: (error as Error).message,
       });
 
@@ -542,20 +585,20 @@ export class FileStorageService {
       const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(filePath);
 
       const fileInfo: FileMetadata = {
-        id: file.id || file.name,
+        id: file.id ?? file.name,
         name: file.name,
-        size: file.metadata?.size || 0,
-        type: file.metadata?.mimetype || 'application/octet-stream',
+        size: file.metadata?.size ?? 0,
+        type: file.metadata?.mimetype ?? 'application/octet-stream',
         bucket,
         path: filePath,
         url: urlData.publicUrl,
-        createdAt: new Date(file.created_at || ''),
-        updatedAt: new Date(file.updated_at || ''),
-        uploadedBy: file.metadata?.uploadedBy || 'system',
-        isPublic: this.config.buckets[bucket]?.isPublic || false,
+        createdAt: new Date(file.created_at ?? ''),
+        updatedAt: new Date(file.updated_at ?? ''),
+        uploadedBy: file.metadata?.uploadedBy ?? 'system',
+        isPublic: this.config.buckets[bucket]?.isPublic ?? false,
         downloadCount: 0,
         tags: file.metadata?.tags ? JSON.parse(file.metadata.tags) : [],
-        description: file.metadata?.description || '',
+        description: file.metadata?.description ?? '',
         metadata: file.metadata || {},
       };
 
@@ -785,19 +828,19 @@ export class FileStorageService {
    */
   private validateFile(file: File, options: FileUploadOptions): { valid: boolean; error?: string } {
     // Check file size
-    const maxSize = options.maxSize || this.config.uploadLimits.maxFileSize;
+    const maxSize = options.maxSize ?? this.config.uploadLimits.maxFileSize;
     if (file.size > maxSize) {
       return { valid: false, error: `File size exceeds limit: ${maxSize} bytes` };
     }
 
     // Check file type
-    const allowedTypes = options.allowedTypes || this.config.uploadLimits.allowedMimeTypes;
+    const allowedTypes = options.allowedTypes ?? this.config.uploadLimits.allowedMimeTypes;
     if (!allowedTypes.includes('*/*') && !allowedTypes.includes(file.type)) {
       return { valid: false, error: `File type not allowed: ${file.type}` };
     }
 
     // Check bucket-specific limits
-    const bucket = options.bucket || this.config.defaultBucket;
+    const bucket = options.bucket ?? this.config.defaultBucket;
     const bucketConfig = this.config.buckets[bucket];
     if (bucketConfig) {
       if (file.size > bucketConfig.maxSize) {
@@ -846,7 +889,7 @@ export class FileStorageService {
    */
   private async saveFileMetadata(metadata: FileMetadata): Promise<void> {
     // In real app, save to database
-    console.log('Saving file metadata:', metadata);
+    logger.info('Saving file metadata:', metadata);
   }
 
   /**
@@ -854,7 +897,7 @@ export class FileStorageService {
    */
   private async deleteFileMetadata(bucket: string, filePath: string): Promise<void> {
     // In real app, delete from database
-    console.log('Deleting file metadata:', { bucket, filePath });
+    logger.info('Deleting file metadata:', { bucket, filePath });
   }
 
   /**
@@ -862,7 +905,7 @@ export class FileStorageService {
    */
   private async incrementDownloadCount(bucket: string, filePath: string): Promise<void> {
     // In real app, update download count in database
-    console.log('Incrementing download count:', { bucket, filePath });
+    logger.info('Incrementing download count:', { bucket, filePath });
   }
 
   /**
@@ -887,7 +930,7 @@ export class FileStorageService {
         const { data: files } = await supabase.storage.from(config.name).list('', { limit: 1000 });
 
         const bucketFiles = files || [];
-        const bucketSize = bucketFiles.reduce((sum, file) => sum + (file.metadata?.size || 0), 0);
+        const bucketSize = bucketFiles.reduce((sum, file) => sum + (file.metadata?.size ?? 0), 0);
 
         stats.bucketStats[config.name] = {
           files: bucketFiles.length,
@@ -897,7 +940,7 @@ export class FileStorageService {
         stats.totalFiles += bucketFiles.length;
         stats.totalSize += bucketSize;
       } catch (error) {
-        console.error(`Failed to get stats for bucket ${config.name}:`, error);
+        logger.error(`Failed to get stats for bucket ${config.name}:`, error);
       }
     }
 

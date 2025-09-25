@@ -1,7 +1,15 @@
+/**
+ * @fileoverview useTokenRefresh Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { useEffect, useRef, useCallback } from 'react';
 import { useAuthStore } from '../stores/authStore';
 import { toast } from 'sonner';
 
+import { logger } from '../lib/logging/logger';
 // Token refresh hook for automatic session management
 export const useTokenRefresh = () => {
   const { session, isAuthenticated, refreshSession, checkSessionExpiry, logout } = useAuthStore();
@@ -36,9 +44,9 @@ export const useTokenRefresh = () => {
 
       try {
         await refreshSession();
-        console.log('Token refreshed successfully');
+        logger.info('Token refreshed successfully');
       } catch (error) {
-        console.error('Token refresh failed:', error);
+        logger.error('Token refresh failed:', error);
 
         // Retry up to 3 times with exponential backoff
         if (retryCount < 3) {
@@ -85,7 +93,7 @@ export const useTokenRefresh = () => {
         refreshWithRetry();
       }, timeUntilRefresh);
 
-      console.log(`Token refresh scheduled in ${Math.round(timeUntilRefresh / 1000 / 60)} minutes`);
+      logger.info(`Token refresh scheduled in ${Math.round(timeUntilRefresh / 1000 / 60)} minutes`);
     }
   }, [isAuthenticated, session, getTimeUntilRefresh, getTimeUntilExpiry, refreshWithRetry]);
 

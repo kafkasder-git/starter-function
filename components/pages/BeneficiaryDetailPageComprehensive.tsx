@@ -1,3 +1,10 @@
+/**
+ * @fileoverview BeneficiaryDetailPageComprehensive Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import {
   AlertTriangle,
   Calendar,
@@ -41,6 +48,7 @@ import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Textarea } from '../ui/textarea';
 
+import { logger } from '../lib/logging/logger';
 // Health conditions data
 const healthConditions = [
   'Akdeniz Anemisi',
@@ -116,6 +124,12 @@ interface BeneficiaryDetailPageComprehensiveProps {
   onBack?: () => void;
 }
 
+/**
+ * BeneficiaryDetailPageComprehensive function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function BeneficiaryDetailPageComprehensive({
   beneficiaryId,
   onBack,
@@ -436,7 +450,7 @@ export function BeneficiaryDetailPageComprehensive({
 
         if (result.data) {
           // ad_soyad'ı ad ve soyad olarak ayır
-          const fullName = result.data.ad_soyad || '';
+          const fullName = result.data.ad_soyad ?? '';
           const nameParts = fullName.trim().split(' ');
           const firstName = nameParts[0] || '';
           const lastName = nameParts.slice(1).join(' ') || '';
@@ -446,27 +460,27 @@ export function BeneficiaryDetailPageComprehensive({
             name: firstName,
             surname: lastName,
             full_name: fullName,
-            id_number: result.data.kimlik_no || result.data.Kimlik_No || '',
-            phone: result.data.telefon_no || result.data.Telefon_No || '',
-            city: result.data.sehri || '',
-            address: result.data.adres || result.data.Adres || '',
-            nationality: result.data.uyruk || result.data.Uyruk || '',
-            country: result.data.ulkesi || 'Türkiye',
-            settlement: result.data.yerlesimi || result.data.Yerlesimi || '',
-            neighborhood: result.data.mahalle || result.data.Mahalle || '',
-            category: result.data.kategori || result.data.Kategori || '',
-            aid_type: result.data.tur || result.data.Tur || '',
-            iban: result.data.iban || '',
+            id_number: result.data.kimlik_no ?? result.data.Kimlik_No ?? '',
+            phone: result.data.telefon_no ?? result.data.Telefon_No ?? '',
+            city: result.data.sehri ?? '',
+            address: result.data.adres ?? result.data.Adres ?? '',
+            nationality: result.data.uyruk ?? result.data.Uyruk ?? '',
+            country: result.data.ulkesi ?? 'Türkiye',
+            settlement: result.data.yerlesimi ?? result.data.Yerlesimi ?? '',
+            neighborhood: result.data.mahalle ?? result.data.Mahalle ?? '',
+            category: result.data.kategori ?? result.data.Kategori ?? '',
+            aid_type: result.data.tur ?? result.data.Tur ?? '',
+            iban: result.data.iban ?? '',
           };
 
           setBeneficiaryData(transformedData);
           setEditableData(transformedData);
         } else {
-          console.warn('⚠️ Beneficiary not found:', beneficiaryId);
+          logger.warn('⚠️ Beneficiary not found:', beneficiaryId);
           toast.error('İhtiyaç sahibi bulunamadı');
         }
       } catch (error) {
-        console.error('❌ Error loading beneficiary:', error);
+        logger.error('❌ Error loading beneficiary:', error);
         toast.error('Veri yüklenirken hata oluştu');
       } finally {
         setLoading(false);
@@ -484,7 +498,7 @@ export function BeneficiaryDetailPageComprehensive({
 
     try {
       // Ad ve soyadı birleştir
-      const fullName = `${editableData.name || ''} ${editableData.surname || ''}`.trim();
+      const fullName = `${editableData.name ?? ''} ${editableData.surname ?? ''}`.trim();
 
       const updateData = {
         ad_soyad: fullName,
@@ -516,7 +530,7 @@ export function BeneficiaryDetailPageComprehensive({
       toast.success('İhtiyaç sahibi bilgileri başarıyla güncellendi');
       setEditMode(false);
     } catch (error: any) {
-      console.error('❌ Error updating beneficiary:', error);
+      logger.error('❌ Error updating beneficiary:', error);
       toast.error('Güncelleme sırasında beklenmeyen hata oluştu');
     }
   }, [editableData, beneficiaryId]);
@@ -552,7 +566,7 @@ export function BeneficiaryDetailPageComprehensive({
 
           // Add new photos
           const newPhotos = Array.from(files).map((file, index) => ({
-            id: (photos?.length || 0) + index + 1,
+            id: (photos?.length ?? 0) + index + 1,
             name: file.name,
             url: URL.createObjectURL(file),
             size: `${(file.size / (1024 * 1024)).toFixed(1)} MB`,
@@ -720,7 +734,7 @@ export function BeneficiaryDetailPageComprehensive({
     try {
       // IBAN'ı ihtiyac_sahipleri tablosuna kaydet
       const result = await ihtiyacSahipleriService.updateIhtiyacSahibi(
-        parseInt(beneficiaryId || '0'),
+        parseInt(beneficiaryId ?? '0'),
         { iban: iban.trim() },
       );
 
@@ -736,7 +750,7 @@ export function BeneficiaryDetailPageComprehensive({
       toast.success('Banka hesabı bilgileri başarıyla kaydedildi');
       handleCloseBankAccountModal();
     } catch (error: any) {
-      console.error('❌ Error saving IBAN:', error);
+      logger.error('❌ Error saving IBAN:', error);
       toast.error('IBAN kaydedilirken beklenmeyen hata oluştu');
     }
   };
@@ -803,14 +817,14 @@ export function BeneficiaryDetailPageComprehensive({
       for (const policy of policies) {
         try {
           await supabaseAdmin.rpc('exec_sql', { sql: policy.sql });
-          console.log('✅ Policy created:', policy.name);
+          logger.info('✅ Policy created:', policy.name);
         } catch (error: any) {
           // Policy zaten varsa hata verebilir, bu normal
-          console.log('ℹ️ Policy might already exist:', policy.name);
+          logger.info('ℹ️ Policy might already exist:', policy.name);
         }
       }
     } catch (error: any) {
-      console.warn('⚠️ Could not create policies (might already exist):', error.message);
+      logger.warn('⚠️ Could not create policies (might already exist):', error.message);
     }
   };
 
@@ -822,12 +836,12 @@ export function BeneficiaryDetailPageComprehensive({
     }
 
     try {
-      console.log('🔄 Loading connected dependents for beneficiary:', beneficiaryId);
+      logger.info('🔄 Loading connected dependents for beneficiary:', beneficiaryId);
 
       // Integer ID'yi UUID'ye çevir ve family_relationships tablosundan çek
       const primaryUuid = `00000000-0000-0000-0000-${beneficiaryId.toString().padStart(12, '0')}`;
 
-      console.log('🔄 Searching relationships for UUID:', primaryUuid);
+      logger.info('🔄 Searching relationships for UUID:', primaryUuid);
 
       const { data: relationships, error } = await supabaseAdmin
         .from('family_relationships')
@@ -835,7 +849,7 @@ export function BeneficiaryDetailPageComprehensive({
         .eq('primary_beneficiary_id', primaryUuid);
 
       if (error) {
-        console.error('❌ Error loading relationships:', error);
+        logger.error('❌ Error loading relationships:', error);
         setConnectedDependents([]);
         return;
       }
@@ -863,38 +877,38 @@ export function BeneficiaryDetailPageComprehensive({
 
             connectedData.push({
               id: personResult.data.id.toString(),
-              name: personResult.data.ad_soyad || '',
+              name: personResult.data.ad_soyad ?? '',
               relationship:
-                relationshipMap[rel.relationship_type] || rel.relationship_type || 'Belirtilmemiş',
-              phone: personResult.data.telefon_no || personResult.data.Telefon_No || undefined,
-              ad_soyad: personResult.data.ad_soyad || '',
-              tur: personResult.data.tur || personResult.data.Tur || undefined,
+                relationshipMap[rel.relationship_type] || rel.relationship_type ?? 'Belirtilmemiş',
+              phone: personResult.data.telefon_no ?? personResult.data.Telefon_No ?? undefined,
+              ad_soyad: personResult.data.ad_soyad ?? '',
+              tur: personResult.data.tur ?? personResult.data.Tur ?? undefined,
               yakinlik:
-                relationshipMap[rel.relationship_type] || rel.relationship_type || 'Belirtilmemiş',
-              kimlik_no: personResult.data.kimlik_no || personResult.data.Kimlik_No || undefined,
-              telefon_no: personResult.data.telefon_no || personResult.data.Telefon_No || undefined,
+                relationshipMap[rel.relationship_type] || rel.relationship_type ?? 'Belirtilmemiş',
+              kimlik_no: personResult.data.kimlik_no ?? personResult.data.Kimlik_No ?? undefined,
+              telefon_no: personResult.data.telefon_no ?? personResult.data.Telefon_No ?? undefined,
               baglanti_tarihi: rel.created_at?.split('T')[0] || '2024-01-01',
-              relationship_id: rel.id || '',
-              sehri: personResult.data.sehri || undefined,
-              uyruk: personResult.data.uyruk || personResult.data.Uyruk || undefined,
-              Uyruk: personResult.data.Uyruk || undefined,
-              kategori: personResult.data.kategori || personResult.data.Kategori || undefined,
-              Kategori: personResult.data.Kategori || undefined,
-              Kimlik_No: personResult.data.Kimlik_No || undefined,
-              Telefon_No: personResult.data.Telefon_No || undefined,
-              Tur: personResult.data.Tur || undefined,
+              relationship_id: rel.id ?? '',
+              sehri: personResult.data.sehri ?? undefined,
+              uyruk: personResult.data.uyruk ?? personResult.data.Uyruk ?? undefined,
+              Uyruk: personResult.data.Uyruk ?? undefined,
+              kategori: personResult.data.kategori ?? personResult.data.Kategori ?? undefined,
+              Kategori: personResult.data.Kategori ?? undefined,
+              Kimlik_No: personResult.data.Kimlik_No ?? undefined,
+              Telefon_No: personResult.data.Telefon_No ?? undefined,
+              Tur: personResult.data.Tur ?? undefined,
             });
           }
         }
 
-        console.log('✅ Found connected dependents:', connectedData);
+        logger.info('✅ Found connected dependents:', connectedData);
         setConnectedDependents(connectedData);
       } else {
-        console.log('ℹ️ No connected dependents found');
+        logger.info('ℹ️ No connected dependents found');
         setConnectedDependents([]);
       }
     } catch (error: any) {
-      console.error('❌ Unexpected error loading connected dependents:', error);
+      logger.error('❌ Unexpected error loading connected dependents:', error);
       setConnectedDependents([]);
     }
   };
@@ -911,7 +925,7 @@ export function BeneficiaryDetailPageComprehensive({
       );
 
       if (result.data) {
-        console.log('✅ Loaded existing dependents:', result.data);
+        logger.info('✅ Loaded existing dependents:', result.data);
         setExistingDependents(
           result.data.map((person: any) => ({
             ...person,
@@ -920,12 +934,12 @@ export function BeneficiaryDetailPageComprehensive({
           })),
         );
       } else if (result.error) {
-        console.error('❌ Error loading dependents:', result.error);
+        logger.error('❌ Error loading dependents:', result.error);
         toast.error(`Bağlı kişiler yüklenirken hata: ${  result.error}`);
         setExistingDependents([]);
       }
     } catch (error: any) {
-      console.error('❌ Unexpected error loading dependents:', error);
+      logger.error('❌ Unexpected error loading dependents:', error);
       toast.error('Bağlı kişiler yüklenirken beklenmeyen hata oluştu');
       setExistingDependents([]);
     } finally {
@@ -1003,7 +1017,7 @@ export function BeneficiaryDetailPageComprehensive({
       toast.success('Bakmakla yükümlü kişi başarıyla kaydedildi');
       handleCloseDependentPersonModal();
     } catch (error) {
-      console.error('Error saving dependent person:', error);
+      logger.error('Error saving dependent person:', error);
       toast.error('Kayıt sırasında hata oluştu');
     } finally {
       setIsSavingDependent(false);
@@ -1033,7 +1047,7 @@ export function BeneficiaryDetailPageComprehensive({
       setIsSavingDependent(true);
 
       const selectedPerson = existingDependents.find((p) => p.id === selectedDependentId);
-      console.log(
+      logger.info(
         '🔄 Linking person:',
         selectedPerson?.ad_soyad,
         'to beneficiary:',
@@ -1048,7 +1062,7 @@ export function BeneficiaryDetailPageComprehensive({
         .toString()
         .padStart(12, '0')}`;
 
-      console.log('🔄 Converting IDs:', {
+      logger.info('🔄 Converting IDs:', {
         beneficiaryId,
         selectedDependentId,
         primaryUuid,
@@ -1067,12 +1081,12 @@ export function BeneficiaryDetailPageComprehensive({
         .single();
 
       if (error) {
-        console.error('❌ Error creating relationship:', error);
+        logger.error('❌ Error creating relationship:', error);
         toast.error(`Bağlantı kaydedilirken hata: ${  error.message}`);
         return;
       }
 
-      console.log('✅ Relationship created:', data);
+      logger.info('✅ Relationship created:', data);
       toast.success(`${selectedPerson?.ad_soyad} başarıyla bağlandı`);
 
       // Bağlı kişiler listesini yenile
@@ -1082,7 +1096,7 @@ export function BeneficiaryDetailPageComprehensive({
       setModalMode('list');
       setSelectedDependentId(null);
     } catch (error: any) {
-      console.error('❌ Unexpected error linking person:', error);
+      logger.error('❌ Unexpected error linking person:', error);
       toast.error('Bağlantı sırasında beklenmeyen hata oluştu');
     } finally {
       setIsSavingDependent(false);
@@ -1092,7 +1106,7 @@ export function BeneficiaryDetailPageComprehensive({
   // Bağlantıyı kaldır - localStorage'dan
   const handleRemoveConnection = async (relationshipId: string, personName: string) => {
     try {
-      console.log('🔄 Removing relationship:', relationshipId);
+      logger.info('🔄 Removing relationship:', relationshipId);
 
       const { error } = await supabaseAdmin
         .from('family_relationships')
@@ -1100,18 +1114,18 @@ export function BeneficiaryDetailPageComprehensive({
         .eq('id', relationshipId);
 
       if (error) {
-        console.error('❌ Error removing relationship:', error);
+        logger.error('❌ Error removing relationship:', error);
         toast.error(`Bağlantı kaldırılırken hata: ${  error.message}`);
         return;
       }
 
-      console.log('✅ Relationship removed:', relationshipId);
+      logger.info('✅ Relationship removed:', relationshipId);
       toast.success(`${personName} ile bağlantı kaldırıldı`);
 
       // Bağlı kişiler listesini yenile
       await loadConnectedDependents();
     } catch (error: any) {
-      console.error('❌ Unexpected error removing relationship:', error);
+      logger.error('❌ Unexpected error removing relationship:', error);
       toast.error('Bağlantı kaldırılırken beklenmeyen hata oluştu');
     }
   };
@@ -2287,7 +2301,7 @@ export function BeneficiaryDetailPageComprehensive({
                       <div key={condition} className="flex items-center space-x-2">
                         <Checkbox
                           id={`health-${condition}`}
-                          checked={healthConditionsState[condition] || false}
+                          checked={healthConditionsState[condition] ?? false}
                           onCheckedChange={(checked: boolean) => {
                             handleHealthConditionChange(condition, checked);
                           }}
@@ -2792,7 +2806,7 @@ export function BeneficiaryDetailPageComprehensive({
 
             {/* File Statistics */}
             <div className="flex items-center justify-between text-sm text-gray-600 pt-4 border-t">
-              <span>Toplam {uploadedFiles?.length || 0} dosya</span>
+              <span>Toplam {uploadedFiles?.length ?? 0} dosya</span>
               <span>
                 Toplam boyut:{' '}
                 {(uploadedFiles || [])
@@ -3048,8 +3062,8 @@ export function BeneficiaryDetailPageComprehensive({
                               className="text-red-600 hover:text-red-700"
                               onClick={() =>
                                 handleRemoveConnection(
-                                  person.relationship_id || '',
-                                  person.ad_soyad || '',
+                                  person.relationship_id ?? '',
+                                  person.ad_soyad ?? '',
                                 )
                               }
                             >
@@ -3289,7 +3303,7 @@ export function BeneficiaryDetailPageComprehensive({
                                         : 'bg-blue-100 text-blue-800'
                                     }
                                   >
-                                    {person.tur || person.Tur || 'İhtiyaç Sahibi'}
+                                    {person.tur ?? person.Tur ?? 'İhtiyaç Sahibi'}
                                   </Badge>
                                 </div>
                               </div>
@@ -3299,29 +3313,29 @@ export function BeneficiaryDetailPageComprehensive({
                               <div>
                                 <p className="text-gray-500">TC Kimlik No</p>
                                 <p className="font-medium text-xs">
-                                  {person.kimlik_no || person.Kimlik_No || '—'}
+                                  {person.kimlik_no ?? person.Kimlik_No ?? '—'}
                                 </p>
                               </div>
                               <div>
                                 <p className="text-gray-500">Telefon</p>
                                 <p className="font-medium text-xs">
-                                  {person.telefon_no || person.Telefon_No || '—'}
+                                  {person.telefon_no ?? person.Telefon_No ?? '—'}
                                 </p>
                               </div>
                               <div>
                                 <p className="text-gray-500">Şehir</p>
-                                <p className="font-medium text-xs">{person.sehri || '—'}</p>
+                                <p className="font-medium text-xs">{person.sehri ?? '—'}</p>
                               </div>
                               <div>
                                 <p className="text-gray-500">Uyruk</p>
                                 <p className="font-medium text-xs">
-                                  {person.uyruk || person.Uyruk || '—'}
+                                  {person.uyruk ?? person.Uyruk ?? '—'}
                                 </p>
                               </div>
                               <div>
                                 <p className="text-gray-500">Kategori</p>
                                 <p className="font-medium text-xs">
-                                  {person.kategori || person.Kategori || '—'}
+                                  {person.kategori ?? person.Kategori ?? '—'}
                                 </p>
                               </div>
                               <div>
@@ -3402,7 +3416,7 @@ export function BeneficiaryDetailPageComprehensive({
             ) : (
               <Button
                 onClick={handleLinkExistingPerson}
-                disabled={!selectedDependentId || !selectedRelationshipType || isSavingDependent}
+                disabled={!selectedDependentId || !selectedRelationshipType ?? isSavingDependent}
                 className="px-6 bg-green-600 hover:bg-green-700"
               >
                 {isSavingDependent ? 'Bağlanıyor...' : 'Kişiyi Bağla'}
@@ -3466,7 +3480,7 @@ export function BeneficiaryDetailPageComprehensive({
             {/* Photos Grid */}
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-medium">Fotoğraflar ({photos?.length || 0})</h3>
+                <h3 className="text-lg font-medium">Fotoğraflar ({photos?.length ?? 0})</h3>
                 <div className="flex items-center gap-2">
                   <Button variant="outline" size="sm">
                     <Grid className="w-4 h-4 mr-2" />

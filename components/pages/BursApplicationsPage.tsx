@@ -1,3 +1,10 @@
+/**
+ * @fileoverview BursApplicationsPage Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { AlertCircle, Check, Clock, Download, Eye, FileText, Plus, Search, X } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useMemo, useState } from 'react';
@@ -41,6 +48,12 @@ interface ApplicationStats {
   interview: number;
 }
 
+/**
+ * BursApplicationsPage function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function BursApplicationsPage() {
   const isMobile = useIsMobile();
   const [searchQuery, setSearchQuery] = useState('');
@@ -209,7 +222,7 @@ export function BursApplicationsPage() {
       },
     };
 
-    return statusConfig[status] || statusConfig.pending;
+    return statusConfig[status] ?? statusConfig.pending;
   };
 
   const getPriorityBadge = (priority: Application['priority']) => {
@@ -219,7 +232,7 @@ export function BursApplicationsPage() {
       low: { label: 'Düşük', color: 'text-green-600', bg: 'bg-green-100' },
     };
 
-    return priorityConfig[priority] || priorityConfig.medium;
+    return priorityConfig[priority] ?? priorityConfig.medium;
   };
 
   const getDocumentProgress = (documents: Application['documents']) => {

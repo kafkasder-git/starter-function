@@ -1,8 +1,21 @@
 /**
+ * @fileoverview backgroundSyncService Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
+import { logger } from '../lib/logging/logger';
+/**
  * Background Sync Service
  * Handles offline data synchronization for PWA
  */
 
+/**
+ * SyncTask Interface
+ * 
+ * @interface SyncTask
+ */
 export interface SyncTask {
   id: string;
   type: 'CREATE' | 'UPDATE' | 'DELETE';
@@ -14,6 +27,11 @@ export interface SyncTask {
   status: 'pending' | 'syncing' | 'completed' | 'failed';
 }
 
+/**
+ * SyncOptions Interface
+ * 
+ * @interface SyncOptions
+ */
 export interface SyncOptions {
   maxRetries?: number;
   retryDelay?: number;
@@ -21,6 +39,11 @@ export interface SyncOptions {
   priority?: 'low' | 'normal' | 'high';
 }
 
+/**
+ * SyncResult Interface
+ * 
+ * @interface SyncResult
+ */
 export interface SyncResult {
   success: boolean;
   syncedTasks: SyncTask[];
@@ -53,9 +76,9 @@ class BackgroundSyncService {
       // Get service worker registration for background sync
       if ('serviceWorker' in navigator && 'sync' in window.ServiceWorkerRegistration.prototype) {
         this.registration = await navigator.serviceWorker.ready;
-        console.log('Background sync service initialized');
+        logger.info('Background sync service initialized');
       } else {
-        console.warn('Background sync not supported');
+        logger.warn('Background sync not supported');
       }
 
       // Initial sync if online
@@ -63,7 +86,7 @@ class BackgroundSyncService {
         await this.syncPendingTasks();
       }
     } catch (error) {
-      console.error('Failed to initialize background sync service:', error);
+      logger.error('Failed to initialize background sync service:', error);
     }
   }
 
@@ -85,14 +108,14 @@ class BackgroundSyncService {
       data,
       timestamp: Date.now(),
       retryCount: 0,
-      maxRetries: options.maxRetries || 3,
+      maxRetries: options.maxRetries ?? 3,
       status: 'pending',
     };
 
     this.syncTasks.set(taskId, task);
     this.saveSyncTasks();
 
-    console.log(`Sync task added: ${taskId}`, task);
+    logger.info(`Sync task added: ${taskId}`, task);
 
     // Try immediate sync if online
     if (this.isOnline && !this.syncInProgress) {
@@ -102,7 +125,7 @@ class BackgroundSyncService {
       try {
         await this.registration.sync.register('background-sync');
       } catch (error) {
-        console.error('Failed to register background sync:', error);
+        logger.error('Failed to register background sync:', error);
       }
     }
 
@@ -186,7 +209,7 @@ class BackgroundSyncService {
    * Sync pending tasks
    */
   async syncPendingTasks(): Promise<SyncResult> {
-    if (!this.isOnline || this.syncInProgress) {
+    if (!this.isOnline ?? this.syncInProgress) {
       return {
         success: false,
         syncedTasks: [],
@@ -202,7 +225,7 @@ class BackgroundSyncService {
 
     try {
       const pendingTasks = this.getPendingSyncTasks();
-      console.log(`Starting sync of ${pendingTasks.length} tasks`);
+      logger.info(`Starting sync of ${pendingTasks.length} tasks`);
 
       // Group tasks by entity for batch processing
       const tasksByEntity = this.groupTasksByEntity(pendingTasks);
@@ -216,7 +239,7 @@ class BackgroundSyncService {
         } catch (error) {
           const errorMessage = `Failed to sync ${entity}: ${error instanceof Error ? error.message : 'Unknown error'}`;
           errors.push(errorMessage);
-          console.error(errorMessage);
+          logger.error(errorMessage);
 
           // Mark all tasks as failed
           tasks.forEach((task) => {
@@ -241,12 +264,12 @@ class BackgroundSyncService {
         errors,
       };
 
-      console.log('Sync completed:', result);
+      logger.info('Sync completed:', result);
       return result;
     } catch (error) {
       const errorMessage = `Sync process failed: ${error instanceof Error ? error.message : 'Unknown error'}`;
       errors.push(errorMessage);
-      console.error(errorMessage);
+      logger.error(errorMessage);
 
       return {
         success: false,
@@ -303,7 +326,7 @@ class BackgroundSyncService {
         if (success) {
           task.status = 'completed';
           synced.push(task);
-          console.log(`Task synced successfully: ${task.id}`);
+          logger.info(`Task synced successfully: ${task.id}`);
         } else {
           throw new Error('Sync operation returned false');
         }
@@ -315,12 +338,12 @@ class BackgroundSyncService {
           failed.push(task);
           const errorMessage = `Task failed after ${task.maxRetries} retries: ${task.id}`;
           errors.push(errorMessage);
-          console.error(errorMessage);
+          logger.error(errorMessage);
         } else {
           task.status = 'pending';
           const errorMessage = `Task retry ${task.retryCount}/${task.maxRetries}: ${task.id}`;
           errors.push(errorMessage);
-          console.warn(errorMessage);
+          logger.warn(errorMessage);
         }
       }
     }
@@ -346,7 +369,7 @@ class BackgroundSyncService {
       case 'activities':
         return this.syncActivity(task);
       default:
-        console.warn(`Unknown entity type for sync: ${task.entity}`);
+        logger.warn(`Unknown entity type for sync: ${task.entity}`);
         return false;
     }
   }
@@ -355,7 +378,7 @@ class BackgroundSyncService {
    * Sync beneficiary data (mock implementation)
    */
   private async syncBeneficiary(task: SyncTask): Promise<boolean> {
-    console.log(`Syncing beneficiary ${task.type}:`, task.data);
+    logger.info(`Syncing beneficiary ${task.type}:`, task.data);
 
     // Mock success/failure (90% success rate)
     return Math.random() > 0.1;
@@ -365,7 +388,7 @@ class BackgroundSyncService {
    * Sync donation data (mock implementation)
    */
   private async syncDonation(task: SyncTask): Promise<boolean> {
-    console.log(`Syncing donation ${task.type}:`, task.data);
+    logger.info(`Syncing donation ${task.type}:`, task.data);
 
     // Mock success/failure (95% success rate)
     return Math.random() > 0.05;
@@ -375,7 +398,7 @@ class BackgroundSyncService {
    * Sync member data (mock implementation)
    */
   private async syncMember(task: SyncTask): Promise<boolean> {
-    console.log(`Syncing member ${task.type}:`, task.data);
+    logger.info(`Syncing member ${task.type}:`, task.data);
 
     // Mock success/failure (85% success rate)
     return Math.random() > 0.15;
@@ -385,7 +408,7 @@ class BackgroundSyncService {
    * Sync activity data (mock implementation)
    */
   private async syncActivity(task: SyncTask): Promise<boolean> {
-    console.log(`Syncing activity ${task.type}:`, task.data);
+    logger.info(`Syncing activity ${task.type}:`, task.data);
 
     // Mock success/failure (98% success rate)
     return Math.random() > 0.02;
@@ -395,7 +418,7 @@ class BackgroundSyncService {
    * Handle online event
    */
   private async handleOnline(): Promise<void> {
-    console.log('Device came online - starting sync');
+    logger.info('Device came online - starting sync');
     this.isOnline = true;
 
     // Start syncing pending tasks
@@ -406,7 +429,7 @@ class BackgroundSyncService {
    * Handle offline event
    */
   private handleOffline(): void {
-    console.log('Device went offline');
+    logger.info('Device went offline');
     this.isOnline = false;
   }
 
@@ -418,7 +441,7 @@ class BackgroundSyncService {
       const tasks = Array.from(this.syncTasks.values());
       localStorage.setItem('backgroundSyncTasks', JSON.stringify(tasks));
     } catch (error) {
-      console.error('Failed to save sync tasks:', error);
+      logger.error('Failed to save sync tasks:', error);
     }
   }
 
@@ -440,10 +463,10 @@ class BackgroundSyncService {
           this.syncTasks.set(task.id, task);
         });
 
-        console.log(`Loaded ${tasks.length} sync tasks from storage`);
+        logger.info(`Loaded ${tasks.length} sync tasks from storage`);
       }
     } catch (error) {
-      console.error('Failed to load sync tasks:', error);
+      logger.error('Failed to load sync tasks:', error);
     }
   }
 

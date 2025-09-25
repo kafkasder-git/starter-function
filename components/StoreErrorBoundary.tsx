@@ -1,6 +1,14 @@
+/**
+ * @fileoverview StoreErrorBoundary Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import type { ReactNode } from 'react';
 import React, { Component } from 'react';
 
+import { logger } from '../lib/logging/logger';
 interface Props {
   children: ReactNode;
   fallback?: ReactNode;
@@ -11,6 +19,13 @@ interface State {
   error?: Error;
 }
 
+/**
+ * StoreErrorBoundary Service
+ * 
+ * Service class for handling storeerrorboundary operations
+ * 
+ * @class StoreErrorBoundary
+ */
 export class StoreErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
@@ -22,7 +37,7 @@ export class StoreErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('Store initialization error:', error, errorInfo);
+    logger.error('Store initialization error:', error, errorInfo);
   }
 
   render() {

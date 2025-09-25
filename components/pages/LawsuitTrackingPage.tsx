@@ -1,3 +1,10 @@
+/**
+ * @fileoverview LawsuitTrackingPage Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import {
   AlertTriangle,
   Building2,
@@ -49,6 +56,12 @@ interface Lawsuit {
 
 // Mock data kaldırıldı - gerçek veriler API'den gelecek
 
+/**
+ * LawsuitTrackingPage function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function LawsuitTrackingPage() {
   const [lawsuits, setLawsuits] = useState<Lawsuit[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -123,7 +136,7 @@ export function LawsuitTrackingPage() {
       aile: 'Aile',
       icra: 'İcra',
     };
-    return types[type] || type;
+    return types[type] ?? type;
   };
 
   const getPriorityIcon = (priority: Lawsuit['priority']) => {
@@ -148,7 +161,7 @@ export function LawsuitTrackingPage() {
   const activeCases = lawsuits.filter((l) => l.status === 'devam').length;
   const wonCases = lawsuits.filter((l) => l.status === 'kazanildi').length;
   const totalCosts = lawsuits.reduce((sum, l) => sum + l.costs, 0);
-  const totalAmount = lawsuits.reduce((sum, l) => sum + (l.amount || 0), 0);
+  const totalAmount = lawsuits.reduce((sum, l) => sum + (l.amount ?? 0), 0);
 
   return (
     <div className="flex-1 space-y-4 p-4 sm:space-y-6 sm:p-6">

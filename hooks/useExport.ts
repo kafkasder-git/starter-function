@@ -1,3 +1,10 @@
+/**
+ * @fileoverview useExport Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 // Gelişmiş Raporlama Sistemi - Export Hook
 
 import { useState, useCallback } from 'react';
@@ -78,7 +85,7 @@ export const useExport = (options: UseExportOptions = {}): UseExportReturn => {
         if (result.success) {
           options.onSuccess?.(result);
         } else {
-          const errorMessage = result.error || 'Export failed';
+          const errorMessage = result.error ?? 'Export failed';
           setError(errorMessage);
           options.onError?.(errorMessage);
         }

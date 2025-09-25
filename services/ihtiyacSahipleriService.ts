@@ -1,3 +1,10 @@
+/**
+ * @fileoverview ihtiyacSahipleriService Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { supabase } from '../lib/supabase';
 import { logger } from '../lib/logging/logger';
 import type { IhtiyacSahibi, IhtiyacSahibiInsert, IhtiyacSahibiUpdate, IhtiyacSahibiStats } from '../types/ihtiyacSahipleri';

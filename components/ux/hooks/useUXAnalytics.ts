@@ -1,5 +1,13 @@
+/**
+ * @fileoverview useUXAnalytics Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { useState, useEffect, useCallback } from 'react';
 
+import { logger } from '../lib/logging/logger';
 interface UXEvent {
   id: string;
   type: 'click' | 'navigation' | 'search' | 'feature_use' | 'error';
@@ -29,6 +37,12 @@ interface UXAnalytics {
   };
 }
 
+/**
+ * useUXAnalytics function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useUXAnalytics() {
   const [analytics, setAnalytics] = useState<UXAnalytics>({
     totalEvents: 0,
@@ -68,7 +82,7 @@ export function useUXAnalytics() {
         // Update analytics summary
         updateAnalytics(updatedEvents);
       } catch (error) {
-        console.warn('Error tracking UX event:', error);
+        logger.warn('Error tracking UX event:', error);
       }
     },
     [],
@@ -81,8 +95,8 @@ export function useUXAnalytics() {
 
     events.forEach((event) => {
       // Count device types
-      const isMobile = /Mobile|Android|iPhone|iPad/.test(event.userAgent || '');
-      const isTablet = /iPad|Tablet/.test(event.userAgent || '');
+      const isMobile = /Mobile|Android|iPhone|iPad/.test(event.userAgent ?? '');
+      const isTablet = /iPad|Tablet/.test(event.userAgent ?? '');
 
       if (isTablet) {
         deviceInfo.tablet++;
@@ -94,7 +108,7 @@ export function useUXAnalytics() {
 
       // Count feature usage
       const feature = `${event.component}.${event.action}`;
-      featureCounts[feature] = (featureCounts[feature] || 0) + 1;
+      featureCounts[feature] = (featureCounts[feature] ?? 0) + 1;
     });
 
     const topFeatures = Object.entries(featureCounts)
@@ -125,7 +139,7 @@ export function useUXAnalytics() {
         updateAnalytics(events);
       }
     } catch (error) {
-      console.warn('Error loading UX analytics:', error);
+      logger.warn('Error loading UX analytics:', error);
     }
   }, [updateAnalytics]);
 
@@ -211,7 +225,7 @@ export function useUXAnalytics() {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     } catch (error) {
-      console.error('Error exporting analytics:', error);
+      logger.error('Error exporting analytics:', error);
     }
   }, [analytics]);
 
@@ -227,7 +241,7 @@ export function useUXAnalytics() {
         deviceInfo: { mobile: 0, desktop: 0, tablet: 0 },
       });
     } catch (error) {
-      console.error('Error clearing analytics:', error);
+      logger.error('Error clearing analytics:', error);
     }
   }, []);
 

@@ -1,3 +1,10 @@
+/**
+ * @fileoverview useMembers Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { useCallback, useMemo } from 'react';
 import { toast } from 'sonner';
 import { TABLES } from '../lib/supabase';
@@ -5,6 +12,12 @@ import type { Member, MemberInsert, MemberUpdate, MemberWithDonations } from '..
 import { useSupabaseData, useSupabasePagination, useSupabaseSearch } from './useSupabaseData';
 
 // Basic members hook
+/**
+ * useMembers function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useMembers(
   options: {
     includeDeleted?: boolean;
@@ -186,6 +199,12 @@ export function useMembers(
 }
 
 // Paginated members hook
+/**
+ * useMembersPaginated function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useMembersPaginated(
   options: {
     pageSize?: number;
@@ -224,6 +243,12 @@ export function useMembersPaginated(
 }
 
 // Member search hook
+/**
+ * useMemberSearch function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useMemberSearch(
   options: {
     maxResults?: number;
@@ -242,6 +267,12 @@ export function useMemberSearch(
 }
 
 // Member with donations hook
+/**
+ * useMemberWithDonations function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useMemberWithDonations(memberId: string) {
   const {
     data: members,
@@ -264,8 +295,8 @@ export function useMemberWithDonations(memberId: string) {
   });
 
   const member = members[0];
-  const loading = memberLoading || donationsLoading;
-  const error = memberError || donationsError;
+  const loading = memberLoading ?? donationsLoading;
+  const error = memberError ?? donationsError;
 
   const memberWithDonations: MemberWithDonations | null = useMemo(() => {
     if (!member) return null;
@@ -292,20 +323,26 @@ export function useMemberWithDonations(memberId: string) {
 }
 
 // Member export data formatter
+/**
+ * useMemberExportData function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useMemberExportData() {
   const formatMemberForExport = useCallback((member: Member) => {
     return {
       id: member.id,
       name: member.name,
       email: member.email,
-      phone: member.phone || '-',
-      city: member.city || '-',
+      phone: member.phone ?? '-',
+      city: member.city ?? '-',
       membershipType: member.membership_type,
       status: member.status,
       joinDate: member.join_date,
-      birthDate: member.birth_date || '-',
-      gender: member.gender || '-',
-      occupation: member.occupation || '-',
+      birthDate: member.birth_date ?? '-',
+      gender: member.gender ?? '-',
+      occupation: member.occupation ?? '-',
       createdAt: member.created_at,
     };
   }, []);

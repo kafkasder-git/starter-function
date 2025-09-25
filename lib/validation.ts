@@ -1,9 +1,26 @@
+/**
+ * @fileoverview validation Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 // Comprehensive validation utilities for forms and data
+/**
+ * ValidationResult Interface
+ * 
+ * @interface ValidationResult
+ */
 export interface ValidationResult {
   isValid: boolean;
   errors: string[];
 }
 
+/**
+ * FieldValidationResult Interface
+ * 
+ * @interface FieldValidationResult
+ */
 export interface FieldValidationResult {
   isValid: boolean;
   error?: string;
@@ -154,21 +171,21 @@ export const validateField = {
     if (isNaN(numValue)) {
       return {
         isValid: false,
-        error: `${fieldName || 'Değer'} geçerli bir sayı olmalıdır`,
+        error: `${fieldName ?? 'Değer'} geçerli bir sayı olmalıdır`,
       };
     }
 
     if (min !== undefined && numValue < min) {
       return {
         isValid: false,
-        error: `${fieldName || 'Değer'} en az ${min} olmalıdır`,
+        error: `${fieldName ?? 'Değer'} en az ${min} olmalıdır`,
       };
     }
 
     if (max !== undefined && numValue > max) {
       return {
         isValid: false,
-        error: `${fieldName || 'Değer'} en fazla ${max} olabilir`,
+        error: `${fieldName ?? 'Değer'} en fazla ${max} olabilir`,
       };
     }
 
@@ -181,7 +198,7 @@ export const validateField = {
     if (isNaN(numValue) || numValue <= 0) {
       return {
         isValid: false,
-        error: `${fieldName || 'Değer'} pozitif bir sayı olmalıdır`,
+        error: `${fieldName ?? 'Değer'} pozitif bir sayı olmalıdır`,
       };
     }
 
@@ -193,7 +210,7 @@ export const validateField = {
     if (isNaN(date.getTime())) {
       return {
         isValid: false,
-        error: `${fieldName || 'Tarih'} geçerli bir tarih olmalıdır`,
+        error: `${fieldName ?? 'Tarih'} geçerli bir tarih olmalıdır`,
       };
     }
     return { isValid: true };
@@ -206,14 +223,14 @@ export const validateField = {
     if (isNaN(date.getTime())) {
       return {
         isValid: false,
-        error: `${fieldName || 'Tarih'} geçerli bir tarih olmalıdır`,
+        error: `${fieldName ?? 'Tarih'} geçerli bir tarih olmalıdır`,
       };
     }
 
     if (date <= now) {
       return {
         isValid: false,
-        error: `${fieldName || 'Tarih'} gelecek bir tarih olmalıdır`,
+        error: `${fieldName ?? 'Tarih'} gelecek bir tarih olmalıdır`,
       };
     }
 
@@ -227,14 +244,14 @@ export const validateField = {
     if (isNaN(date.getTime())) {
       return {
         isValid: false,
-        error: `${fieldName || 'Tarih'} geçerli bir tarih olmalıdır`,
+        error: `${fieldName ?? 'Tarih'} geçerli bir tarih olmalıdır`,
       };
     }
 
     if (date >= now) {
       return {
         isValid: false,
-        error: `${fieldName || 'Tarih'} geçmiş bir tarih olmalıdır`,
+        error: `${fieldName ?? 'Tarih'} geçmiş bir tarih olmalıdır`,
       };
     }
 
@@ -255,7 +272,7 @@ export const validateField = {
     if (!options.includes(value)) {
       return {
         isValid: false,
-        error: `${fieldName || 'Değer'} geçerli seçeneklerden biri olmalıdır`,
+        error: `${fieldName ?? 'Değer'} geçerli seçeneklerden biri olmalıdır`,
       };
     }
     return { isValid: true };
@@ -430,6 +447,13 @@ export const VALIDATION_SCHEMAS = {
 };
 
 // Rate limiting for API calls
+/**
+ * RateLimiter Service
+ * 
+ * Service class for handling ratelimiter operations
+ * 
+ * @class RateLimiter
+ */
 export class RateLimiter {
   private readonly requests = new Map<string, number[]>();
   private readonly windowMs: number;

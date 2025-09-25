@@ -1,8 +1,16 @@
+/**
+ * @fileoverview useUserManagement Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 // 👥 USER MANAGEMENT HOOK
 // Real-time user management with Supabase integration
 
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
+import { logger } from '../lib/logging/logger';
 import {
   userManagementService,
   type ManagedUser,
@@ -46,6 +54,12 @@ interface UseUserManagementReturn {
   readonly isUserSelected: (id: string) => boolean;
 }
 
+/**
+ * useUserManagement function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useUserManagement(): UseUserManagementReturn {
   const [users, setUsers] = useState<ManagedUser[]>([]);
   const [activities, setActivities] = useState<UserActivity[]>([]);
@@ -168,7 +182,7 @@ export function useUserManagement(): UseUserManagementReturn {
         // Remove from local state
         setUsers((prev) => prev.filter((user) => user.id !== id));
 
-        toast.success(`Kullanıcı ${userToDelete?.name || 'bilinmeyen'} başarıyla silindi`);
+        toast.success(`Kullanıcı ${userToDelete?.name ?? 'bilinmeyen'} başarıyla silindi`);
 
         // Refresh stats
         await loadStats();
@@ -197,7 +211,7 @@ export function useUserManagement(): UseUserManagementReturn {
 
         await userManagementService.resetUserPassword(id, newPassword);
 
-        toast.success(`${user?.name || 'Kullanıcı'} şifresi sıfırlandı`);
+        toast.success(`${user?.name ?? 'Kullanıcı'} şifresi sıfırlandı`);
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Şifre sıfırlanamadı';
         setError(errorMessage);
@@ -219,7 +233,7 @@ export function useUserManagement(): UseUserManagementReturn {
       setActivities([...userActivities]);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Aktiviteler yüklenemedi';
-      console.error('Failed to load activities:', errorMessage);
+      logger.error('Failed to load activities:', errorMessage);
       // Don't show toast for activities as it's not critical
     }
   }, []);
@@ -238,7 +252,7 @@ export function useUserManagement(): UseUserManagementReturn {
         suspended: userStats.suspended,
       });
     } catch (err) {
-      console.error('Failed to load user stats:', err);
+      logger.error('Failed to load user stats:', err);
       // Don't show toast for stats as it's not critical
     }
   }, []);

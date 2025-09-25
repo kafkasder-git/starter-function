@@ -1,3 +1,10 @@
+/**
+ * @fileoverview LoginPage Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Eye, EyeOff, Lock, Mail, Shield, AlertCircle } from 'lucide-react';
@@ -13,6 +20,12 @@ interface LoginPageProps {
   onLoginSuccess?: () => void;
 }
 
+/**
+ * LoginPage function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function LoginPage({ onLoginSuccess }: LoginPageProps) {
   const { signIn, isLoading, error, clearError } = useSupabaseAuth();
   const [credentials, setCredentials] = useState({

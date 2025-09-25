@@ -1,35 +1,88 @@
+/**
+ * @fileoverview baseService Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import type { ApiResponse, PaginatedResponse } from './config';
 import { SERVICE_CONFIG } from './config';
 
+/**
+ * Base entity interface that all database entities should extend
+ * @interface BaseEntity
+ */
+/**
+ * BaseEntity Interface
+ * 
+ * @interface BaseEntity
+ */
 export interface BaseEntity {
+  /** Unique identifier for the entity */
   id: number;
+  /** ISO timestamp when the entity was created */
   created_at: string;
+  /** ISO timestamp when the entity was last updated */
   updated_at: string;
+  /** ID of the user who created this entity */
   created_by?: string;
+  /** ID of the user who last updated this entity */
   updated_by?: string;
 }
 
+/**
+ * Base filters interface for search and filtering operations
+ * @interface BaseFilters
+ */
+/**
+ * BaseFilters Interface
+ * 
+ * @interface BaseFilters
+ */
 export interface BaseFilters {
+  /** Search term for text-based filtering */
   searchTerm?: string;
+  /** Start date for date range filtering (ISO format) */
   dateFrom?: string;
+  /** End date for date range filtering (ISO format) */
   dateTo?: string;
+  /** Additional filter properties */
   [key: string]: unknown;
 }
 
+/**
+ * Abstract base service class providing common CRUD operations and utilities
+ * @template T - The entity type that extends BaseEntity
+ * @template TInsert - The type for creating new entities
+ * @template TUpdate - The type for updating existing entities
+ * @template TFilters - The type for filtering entities (defaults to BaseFilters)
+ */
 export abstract class BaseService<
   T extends BaseEntity,
   TInsert,
   TUpdate,
   TFilters extends BaseFilters = BaseFilters,
 > {
+  /** Next available ID for entity creation */
   protected nextId = 1;
 
-  // Simulate network delay
+  /**
+   * Simulates network delay for realistic API behavior
+   * @param ms - Delay in milliseconds (defaults to SERVICE_CONFIG.DEFAULT_DELAY_MS)
+   * @returns Promise that resolves after the specified delay
+   */
   protected delay(ms: number = SERVICE_CONFIG.DEFAULT_DELAY_MS): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
-  // Generic pagination
+  /**
+   * Generic pagination utility for slicing data arrays
+   * @template TData - The type of data being paginated
+   * @param data - Array of data to paginate
+   * @param page - Current page number (1-based)
+   * @param pageSize - Number of items per page
+   * @returns Paginated response with data, metadata, and navigation info
+   */
   protected paginateResults<TData>(
     data: TData[],
     page: number,
@@ -63,7 +116,12 @@ export abstract class BaseService<
     );
   }
 
-  // Get unique values for a field (to be implemented by subclasses if needed)
+  /**
+   * Extracts unique values for a specific field from an array of entities
+   * @param field - The field to extract unique values from
+   * @param data - Array of entities to process
+   * @returns Sorted array of unique values (strings or numbers)
+   */
   protected getUniqueValues(field: keyof T, data: T[]): (string | number)[] {
     const values: (string | number)[] = [];
 
@@ -82,7 +140,14 @@ export abstract class BaseService<
     return Array.from(new Set(values)).sort();
   }
 
-  // Generic date range filter
+  /**
+   * Applies date range filtering to an array of entities
+   * @param data - Array of entities to filter
+   * @param dateFrom - Start date for filtering (ISO format)
+   * @param dateTo - End date for filtering (ISO format)
+   * @param dateField - Field to use for date comparison (defaults to 'created_at')
+   * @returns Filtered array of entities within the date range
+   */
   protected applyDateRangeFilter(
     data: T[],
     dateFrom?: string,
@@ -106,15 +171,47 @@ export abstract class BaseService<
     return filteredData;
   }
 
-  // Abstract methods that must be implemented by subclasses
+  /**
+   * Retrieves all entities with pagination and filtering
+   * @param page - Page number (1-based)
+   * @param pageSize - Number of items per page
+   * @param filters - Filtering criteria
+   * @returns Promise resolving to paginated response
+   */
   abstract getAll(
     page?: number,
     pageSize?: number,
     filters?: TFilters,
   ): Promise<PaginatedResponse<T>>;
+
+  /**
+   * Retrieves a single entity by its ID
+   * @param id - Unique identifier of the entity
+   * @returns Promise resolving to API response with entity data
+   */
   abstract getById(id: string): Promise<ApiResponse<T>>;
+
+  /**
+   * Creates a new entity
+   * @param data - Data for creating the new entity
+   * @returns Promise resolving to API response with created entity
+   */
   abstract create(data: TInsert): Promise<ApiResponse<T>>;
+
+  /**
+   * Updates an existing entity
+   * @param id - Unique identifier of the entity to update
+   * @param data - Data for updating the entity
+   * @returns Promise resolving to API response with updated entity
+   */
   abstract update(id: string, data: TUpdate): Promise<ApiResponse<T>>;
+
+  /**
+   * Deletes an entity by its ID
+   * @param id - Unique identifier of the entity to delete
+   * @param deletedBy - ID of the user performing the deletion
+   * @returns Promise resolving to API response indicating success
+   */
   abstract delete(id: string, deletedBy: string): Promise<ApiResponse<boolean>>;
 
   // Abstract filter method that subclasses must implement

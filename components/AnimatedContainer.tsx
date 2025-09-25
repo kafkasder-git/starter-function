@@ -1,6 +1,14 @@
+/**
+ * @fileoverview AnimatedContainer Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { motion } from 'motion/react';
 import type { ReactNode } from 'react';
 
+import { logger } from '../lib/logging/logger';
 interface AnimatedContainerProps {
   children: ReactNode;
   variant?: 'fadeIn' | 'slideUp' | 'slideDown' | 'slideLeft' | 'slideRight' | 'scale' | 'stagger';
@@ -10,6 +18,12 @@ interface AnimatedContainerProps {
   staggerChildren?: number;
 }
 
+/**
+ * AnimatedContainer function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function AnimatedContainer({
   children,
   variant = 'fadeIn',
@@ -92,7 +106,7 @@ export function AnimatedContainer({
     );
   } catch (error) {
     // Fallback to regular div if motion fails
-    console.warn('Motion animation failed, falling back to static content:', error);
+    logger.warn('Motion animation failed, falling back to static content:', error);
     return <div className={className}>{children}</div>;
   }
 }

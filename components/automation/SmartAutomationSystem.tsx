@@ -1,3 +1,10 @@
+/**
+ * @fileoverview SmartAutomationSystem Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
@@ -38,6 +45,11 @@ export type AutomationStatus = 'active' | 'paused' | 'draft' | 'error' | 'comple
 
 export type TriggerType = 'time' | 'event' | 'condition' | 'manual' | 'api';
 
+/**
+ * AutomationRule Interface
+ * 
+ * @interface AutomationRule
+ */
 export interface AutomationRule {
   id: string;
   name: string;
@@ -246,6 +258,12 @@ interface SmartAutomationSystemProps {
   onAutomationRun?: (automationId: string) => void;
 }
 
+/**
+ * SmartAutomationSystem function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function SmartAutomationSystem({
   className = '',
   onAutomationToggle,
@@ -679,7 +697,7 @@ export function SmartAutomationSystem({
                     <Zap className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                     <h3 className="text-lg font-medium text-gray-900 mb-2">Otomasyon Bulunamadı</h3>
                     <p className="text-gray-500">
-                      {searchQuery || filterType !== 'all' || filterStatus !== 'all'
+                      {searchQuery ?? filterType !== 'all' || filterStatus !== 'all'
                         ? 'Arama kriterlerinize uygun otomasyon bulunamadı'
                         : 'Henüz otomasyon bulunmuyor'}
                     </p>

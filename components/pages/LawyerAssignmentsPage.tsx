@@ -1,3 +1,10 @@
+/**
+ * @fileoverview LawyerAssignmentsPage Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 
 
 import { useState } from 'react';
@@ -89,6 +96,12 @@ const mockLawyers: Lawyer[] = [
   },
 ];
 
+/**
+ * LawyerAssignmentsPage function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function LawyerAssignmentsPage() {
   const [selectedLawyer, setSelectedLawyer] = useState<Lawyer | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
@@ -176,7 +189,7 @@ export function LawyerAssignmentsPage() {
           onChange={(e) => { setQuery(e.target.value); }}
         />
         <select
-          value={searchState.filters.find((f) => f.field === 'specialization')?.value || ''}
+          value={searchState.filters.find((f) => f.field === 'specialization')?.value ?? ''}
           onChange={(e) => { setFilters([{ field: 'specialization', value: e.target.value }]); }}
         >
           <option value="">Tüm Uzmanlıklar</option>

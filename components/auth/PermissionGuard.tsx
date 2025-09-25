@@ -1,3 +1,10 @@
+/**
+ * @fileoverview PermissionGuard Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import type { ReactNode } from 'react';
 import { Permission, UserRole } from '../../types/auth';
 import { usePermissions } from '../../hooks/usePermissions';
@@ -16,6 +23,12 @@ interface PermissionGuardProps {
   showAlert?: boolean; // Show inline alert instead of full page
 }
 
+/**
+ * PermissionGuard function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function PermissionGuard({
   children,
   permission,
@@ -185,7 +198,7 @@ function getPermissionLabel(permission: Permission): string {
     [Permission.EXPORT_REPORTS]: 'Rapor Dışa Aktarma',
   };
 
-  return labels[permission] || permission;
+  return labels[permission] ?? permission;
 }
 
 function getRoleLabel(role: UserRole): string {
@@ -196,10 +209,16 @@ function getRoleLabel(role: UserRole): string {
     [UserRole.VIEWER]: 'Görüntüleyici',
   };
 
-  return labels[role] || role;
+  return labels[role] ?? role;
 }
 
 // Convenience components
+/**
+ * AdminOnly function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function AdminOnly({
   children,
   fallback,
@@ -216,6 +235,12 @@ export function AdminOnly({
   );
 }
 
+/**
+ * ManagerOnly function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function ManagerOnly({
   children,
   fallback,
@@ -237,6 +262,12 @@ export function ManagerOnly({
   );
 }
 
+/**
+ * OperatorOnly function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function OperatorOnly({
   children,
   fallback,

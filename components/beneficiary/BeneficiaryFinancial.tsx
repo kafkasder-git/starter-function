@@ -1,3 +1,10 @@
+/**
+ * @fileoverview BeneficiaryFinancial Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { CreditCard, DollarSign, PiggyBank, TrendingDown, TrendingUp, Wallet } from 'lucide-react';
 import { Badge } from '../ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
@@ -11,15 +18,21 @@ interface BeneficiaryFinancialProps {
   onUpdate: (field: string, value: any) => void;
 }
 
+/**
+ * BeneficiaryFinancial function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function BeneficiaryFinancial({
   beneficiary,
   editMode,
   onUpdate,
 }: BeneficiaryFinancialProps) {
-  const monthlyIncome = beneficiary?.monthlyIncome || 0;
-  const monthlyExpenses = beneficiary?.monthlyExpenses || 0;
-  const savings = beneficiary?.savings || 0;
-  const debts = beneficiary?.debts || 0;
+  const monthlyIncome = beneficiary?.monthlyIncome ?? 0;
+  const monthlyExpenses = beneficiary?.monthlyExpenses ?? 0;
+  const savings = beneficiary?.savings ?? 0;
+  const debts = beneficiary?.debts ?? 0;
 
   const netIncome = monthlyIncome - monthlyExpenses;
   const financialHealth = netIncome > 0 ? 'positive' : netIncome === 0 ? 'neutral' : 'negative';
@@ -130,14 +143,14 @@ export function BeneficiaryFinancial({
             {editMode ? (
               <Input
                 id="incomeSource"
-                value={beneficiary?.incomeSource || ''}
+                value={beneficiary?.incomeSource ?? ''}
                 onChange={(e) => {
                   onUpdate('incomeSource', e.target.value);
                 }}
                 placeholder="Gelir kaynağı (maaş, emekli maaşı, vb.)"
               />
             ) : (
-              <p className="p-2 text-sm">{beneficiary?.incomeSource || '-'}</p>
+              <p className="p-2 text-sm">{beneficiary?.incomeSource ?? '-'}</p>
             )}
           </div>
 

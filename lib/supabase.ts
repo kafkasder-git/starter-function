@@ -1,6 +1,14 @@
+/**
+ * @fileoverview supabase Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { createClient } from '@supabase/supabase-js';
 import { environment } from './environment';
 
+import { logger } from '../lib/logging/logger';
 // Shared table name constants for hooks/services
 export const TABLES = {
   DONATIONS: 'donations',
@@ -15,10 +23,10 @@ const supabaseUrl = environment.supabase.url;
 const supabaseAnonKey = environment.supabase.anonKey;
 
 // Debug environment variables
-console.log('Supabase Configuration Debug:', {
+logger.info('Supabase Configuration Debug:', {
   supabaseUrl,
   hasAnonKey: !!supabaseAnonKey,
-  anonKeyLength: supabaseAnonKey?.length || 0,
+  anonKeyLength: supabaseAnonKey?.length ?? 0,
   supabaseUrlValid: supabaseUrl && supabaseUrl.startsWith('http'),
   importMetaEnv: {
     VITE_SUPABASE_URL: (import.meta?.env?.VITE_SUPABASE_URL) || process.env.VITE_SUPABASE_URL,
@@ -37,17 +45,17 @@ console.log('Supabase Configuration Debug:', {
 
 // Validate Supabase configuration
 if (!supabaseUrl?.startsWith('http')) {
-  console.warn('Invalid or missing VITE_SUPABASE_URL. Supabase features will be disabled.');
+  logger.warn('Invalid or missing VITE_SUPABASE_URL. Supabase features will be disabled.');
 }
 
 if (!supabaseAnonKey) {
-  console.warn('Missing VITE_SUPABASE_ANON_KEY. Supabase features will be disabled.');
+  logger.warn('Missing VITE_SUPABASE_ANON_KEY. Supabase features will be disabled.');
 }
 
 // Create a safe Supabase client - use dummy values if environment is not configured
 const safeSupabaseUrl =
   supabaseUrl && supabaseUrl.startsWith('http') ? supabaseUrl : 'https://placeholder.supabase.co';
-const safeSupabaseKey = supabaseAnonKey || 'placeholder-key';
+const safeSupabaseKey = supabaseAnonKey ?? 'placeholder-key';
 
 // Supabase client instance oluştur
 export const supabase = createClient(safeSupabaseUrl, safeSupabaseKey, {
@@ -67,7 +75,7 @@ export const supabase = createClient(safeSupabaseUrl, safeSupabaseKey, {
 // Admin client (service role key ile) - RLS bypass için
 export const supabaseAdmin = createClient(
   safeSupabaseUrl,
-  environment.supabase.serviceRoleKey || safeSupabaseKey,
+  environment.supabase.serviceRoleKey ?? safeSupabaseKey,
   {
     auth: {
       autoRefreshToken: false,
@@ -77,6 +85,11 @@ export const supabaseAdmin = createClient(
 );
 
 // Type definitions for TypeScript
+/**
+ * Database Interface
+ * 
+ * @interface Database
+ */
 export interface Database {
   public: {
     Tables: {

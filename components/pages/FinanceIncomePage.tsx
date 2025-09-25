@@ -1,3 +1,10 @@
+/**
+ * @fileoverview FinanceIncomePage Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import {
   Banknote,
   BarChart3,
@@ -38,6 +45,12 @@ interface MonthlyData {
   balance: number;
 }
 
+/**
+ * FinanceIncomePage function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function FinanceIncomePage() {
   const isMobile = useIsMobile();
   const [selectedPeriod, setSelectedPeriod] = useState('thisMonth');
@@ -133,7 +146,7 @@ export function FinanceIncomePage() {
       cancelled: { label: 'İptal', variant: 'destructive' as const },
     };
 
-    return statusConfig[status] || statusConfig.completed;
+    return statusConfig[status] ?? statusConfig.completed;
   };
 
   return (

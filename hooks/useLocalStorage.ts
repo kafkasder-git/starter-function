@@ -1,5 +1,13 @@
+/**
+ * @fileoverview useLocalStorage Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { useState } from 'react';
 
+import { logger } from '../lib/logging/logger';
 function useLocalStorage<T>(key: string, initialValue: T) {
   // State to store our value
   const [storedValue, setStoredValue] = useState<T>(() => {
@@ -9,7 +17,7 @@ function useLocalStorage<T>(key: string, initialValue: T) {
       // Parse stored json or if none return initialValue
       return item ? JSON.parse(item) : initialValue;
     } catch (error) {
-      console.warn(`Error reading localStorage key "${key}":`, error);
+      logger.warn(`Error reading localStorage key "${key}":`, error);
       return initialValue;
     }
   });
@@ -26,7 +34,7 @@ function useLocalStorage<T>(key: string, initialValue: T) {
       // Save to local storage
       window.localStorage.setItem(key, JSON.stringify(valueToStore));
     } catch (error) {
-      console.warn(`Error setting localStorage key "${key}":`, error);
+      logger.warn(`Error setting localStorage key "${key}":`, error);
     }
   };
 
@@ -34,6 +42,12 @@ function useLocalStorage<T>(key: string, initialValue: T) {
 }
 
 // Hook for managing user preferences
+/**
+ * useUserPreferences function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useUserPreferences() {
   const [preferences, setPreferences] = useLocalStorage('userPreferences', {
     theme: 'light',
@@ -80,6 +94,12 @@ export function useUserPreferences() {
 }
 
 // Hook for managing form drafts
+/**
+ * useFormDraft function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useFormDraft<T extends Record<string, unknown>>(formId: string, initialData: T) {
   const [draft, setDraft] = useLocalStorage(`formDraft_${formId}`, initialData);
 

@@ -1,3 +1,10 @@
+/**
+ * @fileoverview BulkMessagePage Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { FileText, Mail, MessageSquare, Phone, Send, Users } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useState } from 'react';
@@ -9,6 +16,12 @@ import { Input } from '../ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Textarea } from '../ui/textarea';
 
+/**
+ * BulkMessagePage function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function BulkMessagePage() {
   const [messageType, setMessageType] = useState('sms');
   const [recipientType, setRecipientType] = useState('all');

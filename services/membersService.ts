@@ -1,6 +1,19 @@
+/**
+ * @fileoverview membersService Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { supabase } from '../lib/supabase';
+import { logger } from '../lib/logging/logger';
 
 // Member types - Updated to match database schema
+/**
+ * Member Interface
+ * 
+ * @interface Member
+ */
 export interface Member {
   id: number;
   name: string;
@@ -62,6 +75,11 @@ export interface Member {
 }
 
 // API response type
+/**
+ * MembersApiResponse Interface
+ * 
+ * @interface MembersApiResponse
+ */
 export interface MembersApiResponse<T> {
   data?: T;
   error?: string;
@@ -70,6 +88,11 @@ export interface MembersApiResponse<T> {
 }
 
 // Filters interface
+/**
+ * MembersFilters Interface
+ * 
+ * @interface MembersFilters
+ */
 export interface MembersFilters {
   searchTerm?: string;
   membershipStatus?: string;
@@ -83,6 +106,11 @@ export interface MembersFilters {
 }
 
 // Member statistics interface
+/**
+ * MemberStats Interface
+ * 
+ * @interface MemberStats
+ */
 export interface MemberStats {
   total: number;
   active: number;
@@ -100,6 +128,13 @@ export interface MemberStats {
   feePaidPercentage: number;
 }
 
+/**
+ * MembersService Service
+ * 
+ * Service class for handling membersservice operations
+ * 
+ * @class MembersService
+ */
 export class MembersService {
   // Get all members with pagination and filters
   async getMembers(
@@ -108,7 +143,7 @@ export class MembersService {
     filters: MembersFilters = {},
   ): Promise<MembersApiResponse<Member[]>> {
     try {
-      console.log('🔄 Fetching members with filters:', filters);
+      logger.info('🔄 Fetching members with filters:', filters);
 
       let query = supabase.from('members').select('*', { count: 'exact' });
 
@@ -168,47 +203,47 @@ export class MembersService {
       const { data, error, count } = await query;
 
       if (error) {
-        console.error('❌ Error fetching members:', error);
+        logger.error('❌ Error fetching members:', error);
         return { error: error.message };
       }
 
-      console.log('✅ Successfully fetched', data?.length || 0, 'members');
+      logger.info('✅ Successfully fetched', data?.length ?? 0, 'members');
 
       return {
         data: data || [],
-        count: count || 0,
-        totalPages: Math.ceil((count || 0) / pageSize),
+        count: count ?? 0,
+        totalPages: Math.ceil((count ?? 0) / pageSize),
       };
     } catch (error: any) {
-      console.error('❌ Unexpected error in getMembers:', error);
-      return { error: error.message || 'Beklenmeyen hata oluştu' };
+      logger.error('❌ Unexpected error in getMembers:', error);
+      return { error: error.message ?? 'Beklenmeyen hata oluştu' };
     }
   }
 
   // Get single member
   async getMember(id: number): Promise<MembersApiResponse<Member>> {
     try {
-      console.log('🔄 Fetching single member with id:', id);
+      logger.info('🔄 Fetching single member with id:', id);
 
       const { data, error } = await supabase.from('members').select('*').eq('id', id).single();
 
       if (error) {
-        console.error('❌ Error fetching single member:', error);
+        logger.error('❌ Error fetching single member:', error);
         return { error: error.message };
       }
 
-      console.log('✅ Successfully fetched member:', data?.name);
+      logger.info('✅ Successfully fetched member:', data?.name);
       return { data };
     } catch (error: any) {
-      console.error('❌ Unexpected error in getMember:', error);
-      return { error: error.message || 'Üye bulunamadı' };
+      logger.error('❌ Unexpected error in getMember:', error);
+      return { error: error.message ?? 'Üye bulunamadı' };
     }
   }
 
   // Get member statistics
   async getMemberStats(): Promise<MembersApiResponse<MemberStats>> {
     try {
-      console.log('🔄 Fetching member statistics');
+      logger.info('🔄 Fetching member statistics');
 
       // Get all member data
       const { data: membersData, error } = await supabase
@@ -218,7 +253,7 @@ export class MembersService {
         );
 
       if (error) {
-        console.error('❌ Error fetching member stats:', error);
+        logger.error('❌ Error fetching member stats:', error);
         return { error: error.message };
       }
 
@@ -271,10 +306,10 @@ export class MembersService {
           : 0;
 
       // Total volunteer hours
-      const totalVolunteerHours = members.reduce((sum, m) => sum + (m.volunteer_hours || 0), 0);
+      const totalVolunteerHours = members.reduce((sum, m) => sum + (m.volunteer_hours ?? 0), 0);
 
       // Total contributions
-      const totalContributions = members.reduce((sum, m) => sum + (m.contribution_amount || 0), 0);
+      const totalContributions = members.reduce((sum, m) => sum + (m.contribution_amount ?? 0), 0);
 
       // Fee paid percentage
       const feePaidPercentage =
@@ -282,11 +317,11 @@ export class MembersService {
 
       const stats: MemberStats = {
         total,
-        active: statusCounts.active || 0,
-        inactive: statusCounts.inactive || 0,
-        suspended: statusCounts.suspended || 0,
-        expired: statusCounts.expired || 0,
-        pending: statusCounts.pending || 0,
+        active: statusCounts.active ?? 0,
+        inactive: statusCounts.inactive ?? 0,
+        suspended: statusCounts.suspended ?? 0,
+        expired: statusCounts.expired ?? 0,
+        pending: statusCounts.pending ?? 0,
         byMembershipType: membershipTypeCounts,
         byCity: cityCounts,
         byProfession: professionCounts,
@@ -297,7 +332,7 @@ export class MembersService {
         feePaidPercentage: Math.round(feePaidPercentage),
       };
 
-      console.log('✅ Successfully calculated member statistics:', {
+      logger.info('✅ Successfully calculated member statistics:', {
         total: stats.total,
         active: stats.active,
         averageAge: stats.averageAge,
@@ -305,8 +340,8 @@ export class MembersService {
 
       return { data: stats };
     } catch (error: any) {
-      console.error('❌ Error calculating member statistics:', error);
-      return { error: error.message || 'İstatistikler hesaplanamadı' };
+      logger.error('❌ Error calculating member statistics:', error);
+      return { error: error.message ?? 'İstatistikler hesaplanamadı' };
     }
   }
 
@@ -322,7 +357,7 @@ export class MembersService {
       const cities = [...new Set(data.map((item) => item.city))].filter(Boolean).sort();
       return { data: cities };
     } catch (error: any) {
-      return { error: error.message || 'Şehirler getirilemedi' };
+      return { error: error.message ?? 'Şehirler getirilemedi' };
     }
   }
 
@@ -341,7 +376,7 @@ export class MembersService {
       const membershipTypes = [...new Set(data.map((item) => item.membership_type))].sort();
       return { data: membershipTypes };
     } catch (error: any) {
-      return { error: error.message || 'Üyelik türleri getirilemedi' };
+      return { error: error.message ?? 'Üyelik türleri getirilemedi' };
     }
   }
 
@@ -360,14 +395,14 @@ export class MembersService {
       const professions = [...new Set(data.map((item) => item.profession))].filter(Boolean).sort();
       return { data: professions };
     } catch (error: any) {
-      return { error: error.message || 'Meslekler getirilemedi' };
+      return { error: error.message ?? 'Meslekler getirilemedi' };
     }
   }
 
   // Create new member
   async createMember(memberData: Partial<Member>): Promise<MembersApiResponse<Member>> {
     try {
-      console.log('🔄 Creating new member:', memberData);
+      logger.info('🔄 Creating new member:', memberData);
 
       // Generate membership number if not provided
       const membershipNumber =
@@ -385,19 +420,19 @@ export class MembersService {
             city: memberData.city,
             district: memberData.district,
             postal_code: memberData.postal_code,
-            country: memberData.country || 'Türkiye',
+            country: memberData.country ?? 'Türkiye',
             birth_date: memberData.birth_date,
             gender: memberData.gender,
             marital_status: memberData.marital_status,
             occupation: memberData.occupation,
             employer: memberData.employer,
-            membership_type: memberData.membership_type || 'standard',
+            membership_type: memberData.membership_type ?? 'standard',
             membership_number: membershipNumber,
-            join_date: memberData.join_date || new Date().toISOString().split('T')[0],
-            membership_status: memberData.membership_status || 'pending',
+            join_date: memberData.join_date ?? new Date().toISOString().split('T')[0],
+            membership_status: memberData.membership_status ?? 'pending',
             expiry_date: memberData.expiry_date,
             annual_fee: memberData.annual_fee,
-            fee_paid: memberData.fee_paid || false,
+            fee_paid: memberData.fee_paid ?? false,
             payment_method: memberData.payment_method,
             profession: memberData.profession,
             specialization: memberData.specialization,
@@ -408,7 +443,7 @@ export class MembersService {
             preferred_contact_method: memberData.preferred_contact_method,
             newsletter_subscription: memberData.newsletter_subscription !== false,
             event_notifications: memberData.event_notifications !== false,
-            marketing_consent: memberData.marketing_consent || false,
+            marketing_consent: memberData.marketing_consent ?? false,
             emergency_contact_name: memberData.emergency_contact_name,
             emergency_contact_phone: memberData.emergency_contact_phone,
             emergency_contact_relation: memberData.emergency_contact_relation,
@@ -416,9 +451,9 @@ export class MembersService {
             volunteer_interests: memberData.volunteer_interests,
             leadership_positions: memberData.leadership_positions,
             skills_and_expertise: memberData.skills_and_expertise,
-            event_attendance_count: memberData.event_attendance_count || 0,
-            volunteer_hours: memberData.volunteer_hours || 0,
-            contribution_amount: memberData.contribution_amount || 0,
+            event_attendance_count: memberData.event_attendance_count ?? 0,
+            volunteer_hours: memberData.volunteer_hours ?? 0,
+            contribution_amount: memberData.contribution_amount ?? 0,
             notes: memberData.notes,
             special_requirements: memberData.special_requirements,
             dietary_restrictions: memberData.dietary_restrictions,
@@ -431,22 +466,22 @@ export class MembersService {
         .single();
 
       if (error) {
-        console.error('❌ Error creating member:', error);
+        logger.error('❌ Error creating member:', error);
         return { error: error.message };
       }
 
-      console.log('✅ Successfully created member:', newMember?.name);
+      logger.info('✅ Successfully created member:', newMember?.name);
       return { data: newMember };
     } catch (error: any) {
-      console.error('❌ Unexpected error in createMember:', error);
-      return { error: error.message || 'Üye oluşturulamadı' };
+      logger.error('❌ Unexpected error in createMember:', error);
+      return { error: error.message ?? 'Üye oluşturulamadı' };
     }
   }
 
   // Update member
   async updateMember(id: number, updates: Partial<Member>): Promise<MembersApiResponse<Member>> {
     try {
-      console.log('🔄 Updating member:', id, updates);
+      logger.info('🔄 Updating member:', id, updates);
 
       const { data, error } = await supabase
         .from('members')
@@ -459,35 +494,35 @@ export class MembersService {
         .single();
 
       if (error) {
-        console.error('❌ Error updating member:', error);
+        logger.error('❌ Error updating member:', error);
         return { error: error.message };
       }
 
-      console.log('✅ Successfully updated member:', data?.name);
+      logger.info('✅ Successfully updated member:', data?.name);
       return { data };
     } catch (error: any) {
-      console.error('❌ Unexpected error in updateMember:', error);
-      return { error: error.message || 'Üye güncellenemedi' };
+      logger.error('❌ Unexpected error in updateMember:', error);
+      return { error: error.message ?? 'Üye güncellenemedi' };
     }
   }
 
   // Delete member
   async deleteMember(id: number): Promise<MembersApiResponse<boolean>> {
     try {
-      console.log('🔄 Deleting member:', id);
+      logger.info('🔄 Deleting member:', id);
 
       const { error } = await supabase.from('members').delete().eq('id', id);
 
       if (error) {
-        console.error('❌ Error deleting member:', error);
+        logger.error('❌ Error deleting member:', error);
         return { error: error.message };
       }
 
-      console.log('✅ Successfully deleted member:', id);
+      logger.info('✅ Successfully deleted member:', id);
       return { data: true };
     } catch (error: any) {
-      console.error('❌ Unexpected error in deleteMember:', error);
-      return { error: error.message || 'Üye silinemedi' };
+      logger.error('❌ Unexpected error in deleteMember:', error);
+      return { error: error.message ?? 'Üye silinemedi' };
     }
   }
 
@@ -501,7 +536,7 @@ export class MembersService {
         .limit(1);
 
       if (error) {
-        console.error('❌ Error generating membership number:', error);
+        logger.error('❌ Error generating membership number:', error);
         return `UYE-${Date.now()}`;
       }
 
@@ -516,7 +551,7 @@ export class MembersService {
 
       return 'UYE-0001';
     } catch (error) {
-      console.error('❌ Error in generateMembershipNumber:', error);
+      logger.error('❌ Error in generateMembershipNumber:', error);
       return `UYE-${Date.now()}`;
     }
   }
@@ -524,7 +559,7 @@ export class MembersService {
   // Bulk update membership status
   async bulkUpdateStatus(ids: number[], status: string): Promise<MembersApiResponse<boolean>> {
     try {
-      console.log('🔄 Bulk updating member status:', ids, status);
+      logger.info('🔄 Bulk updating member status:', ids, status);
 
       const { error } = await supabase
         .from('members')
@@ -535,22 +570,22 @@ export class MembersService {
         .in('id', ids);
 
       if (error) {
-        console.error('❌ Error bulk updating member status:', error);
+        logger.error('❌ Error bulk updating member status:', error);
         return { error: error.message };
       }
 
-      console.log('✅ Successfully bulk updated', ids.length, 'members');
+      logger.info('✅ Successfully bulk updated', ids.length, 'members');
       return { data: true };
     } catch (error: any) {
-      console.error('❌ Unexpected error in bulkUpdateStatus:', error);
-      return { error: error.message || 'Toplu güncelleme başarısız' };
+      logger.error('❌ Unexpected error in bulkUpdateStatus:', error);
+      return { error: error.message ?? 'Toplu güncelleme başarısız' };
     }
   }
 
   // Export members to CSV
   async exportMembers(filters: MembersFilters = {}): Promise<MembersApiResponse<Member[]>> {
     try {
-      console.log('🔄 Exporting members with filters:', filters);
+      logger.info('🔄 Exporting members with filters:', filters);
 
       let query = supabase.from('members').select('*');
 
@@ -590,15 +625,15 @@ export class MembersService {
       const { data, error } = await query;
 
       if (error) {
-        console.error('❌ Error exporting members:', error);
+        logger.error('❌ Error exporting members:', error);
         return { error: error.message };
       }
 
-      console.log('✅ Successfully exported', data?.length || 0, 'members');
+      logger.info('✅ Successfully exported', data?.length ?? 0, 'members');
       return { data: data || [] };
     } catch (error: any) {
-      console.error('❌ Unexpected error in exportMembers:', error);
-      return { error: error.message || 'Dışa aktarma başarısız' };
+      logger.error('❌ Unexpected error in exportMembers:', error);
+      return { error: error.message ?? 'Dışa aktarma başarısız' };
     }
   }
 
@@ -620,7 +655,7 @@ export class MembersService {
 
       return { data: (data || []) as Member[] };
     } catch (error: any) {
-      return { error: error.message || 'Arama başarısız' };
+      return { error: error.message ?? 'Arama başarısız' };
     }
   }
 }

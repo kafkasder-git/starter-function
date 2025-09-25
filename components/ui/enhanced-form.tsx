@@ -1,3 +1,10 @@
+/**
+ * @fileoverview enhanced-form Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
@@ -41,6 +48,7 @@ import { Calendar as CalendarComponent } from './calendar';
 import { format } from 'date-fns';
 import { tr } from 'date-fns/locale';
 
+import { logger } from '../lib/logging/logger';
 // Enhanced Form Context
 interface EnhancedFormContextValue {
   formId: string;
@@ -70,6 +78,12 @@ interface EnhancedFormProviderProps<T extends FieldValues = FieldValues> {
   actions?: React.ReactNode;
 }
 
+/**
+ * EnhancedFormProvider function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function EnhancedFormProvider<T extends FieldValues = FieldValues>({
   form,
   onSubmit,
@@ -106,7 +120,7 @@ export function EnhancedFormProvider<T extends FieldValues = FieldValues>({
           setLastSaved(new Date());
         }
       } catch (error) {
-        console.error('Auto-save failed:', error);
+        logger.error('Auto-save failed:', error);
       }
     }, autoSaveDelay);
 
@@ -121,7 +135,7 @@ export function EnhancedFormProvider<T extends FieldValues = FieldValues>({
       await onSubmit(data);
       setLastSaved(new Date());
     } catch (error) {
-      console.error('Form submission failed:', error);
+      logger.error('Form submission failed:', error);
       throw error;
     } finally {
       setIsSubmitting(false);
@@ -142,7 +156,7 @@ export function EnhancedFormProvider<T extends FieldValues = FieldValues>({
     <EnhancedFormContext.Provider value={contextValue}>
       <ReactHookFormProvider {...form}>
         <Card className={cn('w-full shadow-lg border-0 bg-white/80 backdrop-blur-sm', className)}>
-          {(title || description || autoSave) && (
+          {(title ?? description || autoSave) && (
             <CardHeader className={cn('pb-4', compactMode && 'pb-2')}>
               <div className="flex items-center justify-between">
                 <div>
@@ -219,6 +233,11 @@ export type FieldType =
   | 'search'
   | 'custom';
 
+/**
+ * SelectOption Interface
+ * 
+ * @interface SelectOption
+ */
 export interface SelectOption {
   label: string;
   value: string | number;
@@ -227,6 +246,11 @@ export interface SelectOption {
   icon?: React.ReactNode;
 }
 
+/**
+ * EnhancedFieldProps Interface
+ * 
+ * @interface EnhancedFieldProps
+ */
 export interface EnhancedFieldProps {
   name: string;
   type: FieldType;
@@ -257,6 +281,12 @@ export interface EnhancedFieldProps {
 }
 
 // Enhanced Form Field Component
+/**
+ * EnhancedField function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function EnhancedField({
   name,
   type,
@@ -375,8 +405,8 @@ export function EnhancedField({
         error && 'border-red-500 focus:border-red-500',
         !error && isDirty && 'border-green-500',
         icon && 'pl-10',
-        (prefix || getValidationIcon()) && 'pl-8',
-        (suffix || type === 'password') && 'pr-10',
+        (prefix ?? getValidationIcon()) && 'pl-8',
+        (suffix ?? type === 'password') && 'pr-10',
       ),
       onFocus: handleFocus,
       onBlur: handleBlur,
@@ -657,6 +687,12 @@ interface FormSectionProps {
   className?: string;
 }
 
+/**
+ * FormSection function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function FormSection({
   title,
   description,
@@ -718,6 +754,12 @@ interface FormActionsProps {
   className?: string;
 }
 
+/**
+ * FormActions function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function FormActions({
   loading = false,
   submitLabel = 'Kaydet',
@@ -733,10 +775,10 @@ export function FormActions({
   const submitButton = (
     <Button
       type="submit"
-      disabled={loading || enhancedForm.isSubmitting}
+      disabled={loading ?? enhancedForm.isSubmitting}
       className="gap-2 min-w-24"
     >
-      {loading || enhancedForm.isSubmitting ? (
+      {loading ?? enhancedForm.isSubmitting ? (
         <Loader2 className="w-4 h-4 animate-spin" />
       ) : (
         <Save className="w-4 h-4" />
@@ -750,7 +792,7 @@ export function FormActions({
       type="button"
       variant="outline"
       onClick={onCancel}
-      disabled={loading || enhancedForm.isSubmitting}
+      disabled={loading ?? enhancedForm.isSubmitting}
     >
       <X className="w-4 h-4 mr-2" />
       {cancelLabel}

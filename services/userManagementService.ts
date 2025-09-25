@@ -1,4 +1,16 @@
+/**
+ * @fileoverview userManagementService Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 // User management types
+/**
+ * ManagedUser Interface
+ * 
+ * @interface ManagedUser
+ */
 export interface ManagedUser {
   id: string;
   email: string;
@@ -14,6 +26,11 @@ export interface ManagedUser {
   isActive: boolean;
 }
 
+/**
+ * CreateUserRequest Interface
+ * 
+ * @interface CreateUserRequest
+ */
 export interface CreateUserRequest {
   email: string;
   name: string;
@@ -24,6 +41,11 @@ export interface CreateUserRequest {
   sendInvitation: boolean;
 }
 
+/**
+ * UpdateUserRequest Interface
+ * 
+ * @interface UpdateUserRequest
+ */
 export interface UpdateUserRequest {
   email?: string;
   name?: string;
@@ -34,6 +56,11 @@ export interface UpdateUserRequest {
   isActive?: boolean;
 }
 
+/**
+ * UserFilters Interface
+ * 
+ * @interface UserFilters
+ */
 export interface UserFilters {
   search?: string;
   role?: string;
@@ -43,6 +70,11 @@ export interface UserFilters {
   limit?: number;
 }
 
+/**
+ * UserListResponse Interface
+ * 
+ * @interface UserListResponse
+ */
 export interface UserListResponse {
   users: ManagedUser[];
   total: number;
@@ -51,6 +83,11 @@ export interface UserListResponse {
   totalPages: number;
 }
 
+/**
+ * UserActivity Interface
+ * 
+ * @interface UserActivity
+ */
 export interface UserActivity {
   id: string;
   userId: string;

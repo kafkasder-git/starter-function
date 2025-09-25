@@ -1,3 +1,10 @@
+/**
+ * @fileoverview EnhancedSearchInput Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import type { KeyboardEvent } from 'react';
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -24,6 +31,12 @@ interface EnhancedSearchInputProps {
   variant?: 'default' | 'compact' | 'full';
 }
 
+/**
+ * EnhancedSearchInput function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function EnhancedSearchInput({
   placeholder = 'Arama yapın...',
   className,
@@ -50,7 +63,7 @@ export function EnhancedSearchInput({
 
   // Recent searches from localStorage
   const addToHistory = (query: string) => {
-    if (!query.trim() || searchHistory.includes(query)) return;
+    if (!query.trim() ?? searchHistory.includes(query)) return;
 
     const newHistory = [query, ...searchHistory.slice(0, 9)]; // Keep last 10
     setSearchHistory(newHistory);
@@ -70,7 +83,7 @@ export function EnhancedSearchInput({
   // Handle input change
   const handleInputChange = (value: string) => {
     setQuery(value);
-    setShowSuggestions(value.length > 0 || searchHistory.length > 0);
+    setShowSuggestions(value.length > 0 ?? searchHistory.length > 0);
   };
 
   // Handle suggestion click
@@ -263,7 +276,7 @@ export function EnhancedSearchInput({
 
       {/* Search suggestions dropdown */}
       <AnimatePresence>
-        {showSuggestions && (isFocused || searchState.query) && (
+        {showSuggestions && (isFocused ?? searchState.query) && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}

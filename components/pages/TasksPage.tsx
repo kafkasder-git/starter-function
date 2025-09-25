@@ -1,3 +1,10 @@
+/**
+ * @fileoverview TasksPage Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import {
   CheckCircle,
   DollarSign,
@@ -61,6 +68,12 @@ interface Supplier {
 
 // Mock data kaldırıldı - gerçek veriler API'den gelecek
 
+/**
+ * PartnerSuppliersPage function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export default function PartnerSuppliersPage() {
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [filteredSuppliers, setFilteredSuppliers] = useState<Supplier[]>([]);

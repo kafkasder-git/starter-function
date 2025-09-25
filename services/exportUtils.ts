@@ -1,15 +1,33 @@
+/**
+ * @fileoverview exportUtils Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 // Gelişmiş Raporlama Sistemi - Export Utility Fonksiyonları
 
 import type { ChartConfig, AnalyticsData } from '../types/reporting';
 import { ExportFormat } from '../types/reporting';
 
+import { logger } from '../lib/logging/logger';
 // Chart data interfaces
+/**
+ * ChartDataPoint Interface
+ * 
+ * @interface ChartDataPoint
+ */
 export interface ChartDataPoint {
   value: number;
   label?: string;
   [key: string]: unknown;
 }
 
+/**
+ * ChartDataset Interface
+ * 
+ * @interface ChartDataset
+ */
 export interface ChartDataset<T extends ChartDataPoint = ChartDataPoint> {
   data: T[];
   label?: string;
@@ -19,6 +37,11 @@ export interface ChartDataset<T extends ChartDataPoint = ChartDataPoint> {
 }
 
 // Chart export utilities
+/**
+ * ChartExportOptions Interface
+ * 
+ * @interface ChartExportOptions
+ */
 export interface ChartExportOptions {
   width?: number;
   height?: number;
@@ -27,6 +50,11 @@ export interface ChartExportOptions {
   format: 'png' | 'svg' | 'pdf';
 }
 
+/**
+ * ExportDataOptions Interface
+ * 
+ * @interface ExportDataOptions
+ */
 export interface ExportDataOptions {
   includeHeaders?: boolean;
   dateFormat?: string;
@@ -36,6 +64,11 @@ export interface ExportDataOptions {
   encoding?: string;
 }
 
+/**
+ * OptimizationOptions Interface
+ * 
+ * @interface OptimizationOptions
+ */
 export interface OptimizationOptions {
   chunkSize?: number;
   maxMemoryUsage?: number;
@@ -45,6 +78,13 @@ export interface OptimizationOptions {
 
 /**
  * Chart export utilities for converting charts to various formats
+ */
+/**
+ * ChartExportUtils Service
+ * 
+ * Service class for handling chartexportutils operations
+ * 
+ * @class ChartExportUtils
  */
 export class ChartExportUtils {
   /**
@@ -138,8 +178,8 @@ export class ChartExportUtils {
     const pngData = await this.chartToPNG(chartElement, {
       ...options,
       quality: 1.0,
-      width: options.width || 1200,
-      height: options.height || 900,
+      width: options.width ?? 1200,
+      height: options.height ?? 900,
     });
 
     return pngData;
@@ -331,6 +371,13 @@ export class ChartExportUtils {
 /**
  * Data formatting utilities for export
  */
+/**
+ * DataFormattingUtils Service
+ * 
+ * Service class for handling dataformattingutils operations
+ * 
+ * @class DataFormattingUtils
+ */
 export class DataFormattingUtils {
   /**
    * Format data for CSV export
@@ -443,7 +490,7 @@ export class DataFormattingUtils {
   // Private helper methods
   private static escapeCSVField(field: string | number | boolean | Date | null | undefined): string {
     // Handle null/undefined values
-    if (field === null || field === undefined) {
+    if (field === null ?? field === undefined) {
       return '';
     }
 
@@ -470,7 +517,7 @@ export class DataFormattingUtils {
     value: string | number | boolean | Date | null | undefined,
     options: { dateFormat?: string; numberFormat?: string },
   ): string {
-    if (value === null || value === undefined) {
+    if (value === null ?? value === undefined) {
       return '';
     }
 
@@ -489,7 +536,7 @@ export class DataFormattingUtils {
     value: string | number | boolean | Date | null | undefined,
     options: { dateFormat?: string; numberFormat?: string; currencySymbol?: string },
   ): string | number | Date {
-    if (value === null || value === undefined) {
+    if (value === null ?? value === undefined) {
       return '';
     }
 
@@ -526,6 +573,13 @@ export class DataFormattingUtils {
 
 /**
  * Large dataset optimization utilities
+ */
+/**
+ * OptimizationUtils Service
+ * 
+ * Service class for handling optimizationutils operations
+ * 
+ * @class OptimizationUtils
  */
 export class OptimizationUtils {
   /**
@@ -631,11 +685,11 @@ export class OptimizationUtils {
     }
     
     if (typeof performance !== 'undefined' && (performance as PerformanceWithMemory).memory) {
-      return (performance as PerformanceWithMemory).memory!.usedJSHeapSize || 0;
+      return (performance as PerformanceWithMemory).memory!.usedJSHeapSize ?? 0;
     }
 
     // Last resort fallback
-    console.warn('Memory usage API not available, returning 0');
+    logger.warn('Memory usage API not available, returning 0');
     return 0;
   }
 
@@ -702,6 +756,13 @@ export class OptimizationUtils {
 
 /**
  * Export template system
+ */
+/**
+ * ExportTemplateUtils Service
+ * 
+ * Service class for handling exporttemplateutils operations
+ * 
+ * @class ExportTemplateUtils
  */
 export class ExportTemplateUtils {
   private static readonly templates = new Map<string, ExportTemplate>();

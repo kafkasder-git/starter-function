@@ -1,9 +1,17 @@
+/**
+ * @fileoverview SupabaseAuthContext Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import type { Session, User } from '@supabase/supabase-js';
 import type { ReactNode } from 'react';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
 
+import { logger } from '../lib/logging/logger';
 // Supabase Auth Context Types
 interface SupabaseAuthContextType {
   user: User | null;
@@ -24,6 +32,12 @@ interface SupabaseAuthProviderProps {
   children: ReactNode;
 }
 
+/**
+ * SupabaseAuthProvider function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
@@ -45,14 +59,14 @@ export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
         } = await supabase.auth.getSession();
 
         if (error) {
-          console.error('Error getting session:', error);
+          logger.error('Error getting session:', error);
           setError(error.message);
         } else if (mounted) {
           setSession(session);
           setUser(session?.user ?? null);
         }
       } catch (error) {
-        console.error('Auth initialization error:', error);
+        logger.error('Auth initialization error:', error);
         if (mounted) {
           setError('Kimlik doğrulama başlatılamadı');
         }
@@ -70,7 +84,7 @@ export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state change:', event, session?.user?.email);
+      logger.info('Auth state change:', event, session?.user?.email);
 
       if (mounted) {
         setSession(session);
@@ -86,10 +100,10 @@ export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
             toast.success('Başarıyla çıkış yaptınız');
             break;
           case 'TOKEN_REFRESHED':
-            console.log('Token refreshed');
+            logger.info('Token refreshed');
             break;
           case 'USER_UPDATED':
-            console.log('User updated');
+            logger.info('User updated');
             break;
         }
       }
@@ -111,7 +125,7 @@ export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
     // Check if Supabase is properly configured
     if (!isSupabaseConfigured()) {
       // Mock authentication for development
-      console.log('Using mock authentication - Supabase not configured');
+      logger.info('Using mock authentication - Supabase not configured');
 
       // Simulate a delay
       await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -185,7 +199,7 @@ export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
           errorMessage = 'Çok fazla deneme. Lütfen bekleyin';
           break;
         default:
-          errorMessage = error.message || 'Giriş yapılamadı';
+          errorMessage = error.message ?? 'Giriş yapılamadı';
       }
 
       setError(errorMessage);
@@ -237,7 +251,7 @@ export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
           errorMessage = 'Şifre en az 6 karakter olmalı';
           break;
         default:
-          errorMessage = error.message || 'Kayıt olunamadı';
+          errorMessage = error.message ?? 'Kayıt olunamadı';
       }
 
       setError(errorMessage);
@@ -272,7 +286,7 @@ export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
 
       // Success is handled by onAuthStateChange
     } catch (error: any) {
-      const errorMessage = error.message || 'Çıkış yapılırken hata oluştu';
+      const errorMessage = error.message ?? 'Çıkış yapılırken hata oluştu';
       setError(errorMessage);
       toast.error(errorMessage, { duration: 3000 });
       throw new Error(errorMessage);
@@ -305,7 +319,7 @@ export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
 
       toast.success('Şifre sıfırlama bağlantısı email adresinize gönderildi', { duration: 5000 });
     } catch (error: any) {
-      const errorMessage = error.message || 'Şifre sıfırlama başarısız';
+      const errorMessage = error.message ?? 'Şifre sıfırlama başarısız';
       setError(errorMessage);
       toast.error(errorMessage, { duration: 4000 });
       throw new Error(errorMessage);
@@ -336,6 +350,12 @@ export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
   );
 }
 
+/**
+ * useSupabaseAuth function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useSupabaseAuth(): SupabaseAuthContextType {
   const context = useContext(SupabaseAuthContext);
   if (context === undefined) {

@@ -1,7 +1,15 @@
+/**
+ * @fileoverview queryOptimizationService Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 // Query Optimization Service - Advanced Database Query Management
 
 import { supabase } from '../lib/supabase';
 
+import { logger } from '../lib/logging/logger';
 // Types for query optimization
 interface QueryMetrics {
   queryId: string;
@@ -38,6 +46,13 @@ interface QueryOptimizationConfig {
   enableQueryAnalysis: boolean;
 }
 
+/**
+ * QueryOptimizationService Service
+ * 
+ * Service class for handling queryoptimizationservice operations
+ * 
+ * @class QueryOptimizationService
+ */
 export class QueryOptimizationService {
   private readonly config: QueryOptimizationConfig;
   private readonly queryHistory: QueryMetrics[] = [];
@@ -135,7 +150,7 @@ export class QueryOptimizationService {
 
       // Log query if requested
       if (options.logQuery) {
-        console.log(`Prepared statement ${name} executed in ${executionTime}ms`);
+        logger.info(`Prepared statement ${name} executed in ${executionTime}ms`);
       }
 
       // Analyze query if requested
@@ -145,7 +160,7 @@ export class QueryOptimizationService {
 
       return data;
     } catch (error: unknown) {
-      console.error(`Error executing prepared statement ${name}:`, error);
+      logger.error(`Error executing prepared statement ${name}:`, error);
       throw error;
     }
   }
@@ -244,7 +259,7 @@ export class QueryOptimizationService {
 
       return result;
     } catch (error: unknown) {
-      console.error(`Error executing optimized query:`, error);
+      logger.error(`Error executing optimized query:`, error);
       throw error;
     }
   }
@@ -291,7 +306,7 @@ export class QueryOptimizationService {
 
       this.queryAnalysis.set(queryId, analysis);
     } catch (error: unknown) {
-      console.warn('Query analysis failed:', error);
+      logger.warn('Query analysis failed:', error);
     }
   }
 
@@ -378,7 +393,7 @@ export class QueryOptimizationService {
 
       return parsed;
     } catch (error: unknown) {
-      console.warn('Cache read error:', error);
+      logger.warn('Cache read error:', error);
       return null;
     }
   }
@@ -402,7 +417,7 @@ export class QueryOptimizationService {
 
       localStorage.setItem(`query_cache_${cacheKey}`, JSON.stringify(cacheData));
     } catch (error: unknown) {
-      console.warn('Cache write error:', error);
+      logger.warn('Cache write error:', error);
     }
   }
 
@@ -462,7 +477,7 @@ export class QueryOptimizationService {
 
     // Log slow queries
     if (metrics.executionTime > 1000) {
-      console.warn(`Slow query detected: ${metrics.sql} (${metrics.executionTime}ms)`);
+      logger.warn(`Slow query detected: ${metrics.sql} (${metrics.executionTime}ms)`);
     }
   }
 

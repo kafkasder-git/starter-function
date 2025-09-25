@@ -1,3 +1,10 @@
+/**
+ * @fileoverview LoadingSpinner Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { Heart, Loader2 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { cn } from './ui/utils';
@@ -7,6 +14,12 @@ interface LoadingSpinnerProps {
   size?: 'sm' | 'md' | 'lg';
 }
 
+/**
+ * LoadingSpinner function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function LoadingSpinner({ className, size = 'md' }: LoadingSpinnerProps) {
   const sizeClasses = {
     sm: 'w-4 h-4',
@@ -17,6 +30,12 @@ export function LoadingSpinner({ className, size = 'md' }: LoadingSpinnerProps) 
   return <Loader2 className={cn('animate-spin text-blue-600', sizeClasses[size], className)} />;
 }
 
+/**
+ * PageLoading function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function PageLoading() {
   return (
     <div className="flex items-center justify-center min-h-[400px] bg-gradient-to-br from-slate-50/50 to-blue-50/30">

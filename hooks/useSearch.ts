@@ -1,3 +1,10 @@
+/**
+ * @fileoverview useSearch Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { useDebounce } from './useDebounce';
 import type {
@@ -9,6 +16,7 @@ import type {
 } from '../types/search';
 import { TURKISH_CHAR_MAP } from '../types/search';
 
+import { logger } from '../lib/logging/logger';
 interface UseSearchProps<T = unknown> {
   config: SearchConfig;
   data?: T[];
@@ -41,6 +49,12 @@ const filterOperators = new Map<string, (value: any, filterValue: any) => boolea
   }],
 ]);
 
+/**
+ * useSearch function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useSearch<T = unknown>({
   config,
   data = [],
@@ -52,11 +66,11 @@ export function useSearch<T = unknown>({
   const [searchState, setSearchState] = useState<SearchState>({
     query: initialQuery,
     filters: initialFilters,
-    sort: initialSort || config.defaultSort || { field: 'id', direction: 'desc' },
+    sort: initialSort ?? config.defaultSort || { field: 'id', direction: 'desc' },
     currentPage: 1,
     totalPages: 1,
     totalItems: 0,
-    itemsPerPage: config.itemsPerPage || 20,
+    itemsPerPage: config.itemsPerPage ?? 20,
     isLoading: false,
     results: [],
     hasMore: false,
@@ -67,7 +81,7 @@ export function useSearch<T = unknown>({
   const abortControllerRef = useRef<AbortController>();
 
   // Debounced search query
-  const debouncedQuery = useDebounce(searchState.query, config.debounceMs || 300);
+  const debouncedQuery = useDebounce(searchState.query, config.debounceMs ?? 300);
 
   // Turkish character normalization
   const normalizeText = useCallback(
@@ -75,7 +89,7 @@ export function useSearch<T = unknown>({
       if (!config.enableTurkishSearch) return text.toLowerCase().trim();
       return text
         .toLowerCase()
-        .replace(/[çğıöşüÇĞIÖŞÜ]/g, (char) => TURKISH_CHAR_MAP[char] || char)
+        .replace(/[çğıöşüÇĞIÖŞÜ]/g, (char) => TURKISH_CHAR_MAP[char] ?? char)
         .trim();
     },
     [config.enableTurkishSearch],
@@ -123,7 +137,7 @@ export function useSearch<T = unknown>({
       const aValue = getNestedValue(a, sort.field);
       const bValue = getNestedValue(b, sort.field);
 
-      if (aValue == null || bValue == null) {
+      if (aValue == null ?? bValue == null) {
         return (aValue == null ? 1 : 0) - (bValue == null ? 1 : 0);
       }
 
@@ -222,7 +236,7 @@ export function useSearch<T = unknown>({
         return result;
       } catch (error) {
         if (error instanceof Error && error.name !== 'AbortError') {
-          console.error('Search error:', error);
+          logger.error('Search error:', error);
           setSearchState((prev) => ({
             ...prev,
             isLoading: false,
@@ -274,7 +288,7 @@ export function useSearch<T = unknown>({
   }, []);
 
   const loadMore = useCallback(() => {
-    if (!searchState.hasMore || searchState.isLoading) return;
+    if (!searchState.hasMore ?? searchState.isLoading) return;
     executeSearch(
       searchState.query,
       searchState.filters,
@@ -318,7 +332,7 @@ export function useSearch<T = unknown>({
     () => ({
       hasActiveFilters: searchState.filters.length > 0,
       hasResults: searchState.results.length > 0,
-      isEmpty: Boolean(!searchState.isLoading && searchState.results.length === 0 && (searchState.query || searchState.filters.length > 0)),
+      isEmpty: Boolean(!searchState.isLoading && searchState.results.length === 0 && (searchState.query ?? searchState.filters.length > 0)),
     }),
     [searchState.filters.length, searchState.results.length, searchState.isLoading, searchState.query],
   );

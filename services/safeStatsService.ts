@@ -1,6 +1,14 @@
+/**
+ * @fileoverview safeStatsService Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { supabase } from '../lib/supabase';
 import type { ApiResponse } from '../types/database';
 
+import { logger } from '../lib/logging/logger';
 // Table names constants
 const TABLES = {
   BENEFICIARIES: 'beneficiaries',
@@ -11,6 +19,11 @@ const TABLES = {
 };
 
 // Safe stats that only check table existence and provide mock data
+/**
+ * SafeStats Interface
+ * 
+ * @interface SafeStats
+ */
 export interface SafeStats {
   beneficiaries: {
     total: number;
@@ -87,7 +100,7 @@ class SafeStatsService {
           (error as any).code === '42P17' ||
           (error as any).message?.includes('policy')
         ) {
-          console.log(
+          logger.info(
             `RLS policy error detected for ${tableName ?? ''}, returning 0:`,
             (error as any).message,
           );
@@ -100,12 +113,12 @@ class SafeStatsService {
           (error as any).message?.includes('auth') ||
           (error as any).code === 'PGRST301'
         ) {
-          console.log(`Auth error for ${tableName ?? ''}, returning 0:`, (error as any).message);
+          logger.info(`Auth error for ${tableName ?? ''}, returning 0:`, (error as any).message);
           return 0;
         }
 
         // For other errors (like table not exists), silently return 0
-        console.log(
+        logger.info(
           `Table ${tableName ?? ''} query failed, returning 0:`,
           (error as any).message,
         );
@@ -115,7 +128,7 @@ class SafeStatsService {
       return count ?? 0;
     } catch (error: unknown) {
       // Silent handling - expected in development when tables don't exist yet or auth issues
-      console.log(`Exception getting count for ${tableName ?? ''}:`, (error as any).message);
+      logger.info(`Exception getting count for ${tableName ?? ''}:`, (error as any).message);
       return 0;
     }
   }
@@ -210,7 +223,7 @@ class SafeStatsService {
 
       return { data: stats, error: null };
     } catch (error: unknown) {
-      console.error('SafeStatsService.getAllStats error:', error);
+      logger.error('SafeStatsService.getAllStats error:', error);
 
       // Return empty stats if everything fails
       const emptyStats: SafeStats = {

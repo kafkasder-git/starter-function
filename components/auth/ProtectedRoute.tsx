@@ -1,3 +1,10 @@
+/**
+ * @fileoverview ProtectedRoute Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import type { ReactNode } from 'react';
 import { useSupabaseAuth } from '../../contexts/SupabaseAuthContext';
 import type { Permission } from '../../types/auth';
@@ -14,6 +21,12 @@ interface ProtectedRouteProps {
   fallback?: ReactNode;
 }
 
+/**
+ * ProtectedRoute function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function ProtectedRoute({
   children,
   requireAuth = true,
@@ -58,14 +71,32 @@ export function ProtectedRoute({
 }
 
 // Convenience components for common protection patterns
+/**
+ * AdminRoute function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function AdminRoute({ children }: { children: ReactNode }) {
   return <ProtectedRoute requiredRole={UserRole.ADMIN}>{children}</ProtectedRoute>;
 }
 
+/**
+ * ManagerRoute function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function ManagerRoute({ children }: { children: ReactNode }) {
   return <ProtectedRoute requiredRole={UserRole.MANAGER}>{children}</ProtectedRoute>;
 }
 
+/**
+ * PermissionGuard function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function PermissionGuard({
   children,
   permission,
@@ -78,7 +109,7 @@ export function PermissionGuard({
   const { isAuthenticated } = useSupabaseAuth();
 
   if (!isAuthenticated) {
-    return fallback || null;
+    return fallback ?? null;
   }
 
   return <>{children}</>;

@@ -1,3 +1,10 @@
+/**
+ * @fileoverview BarAssociationsPage Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { useState } from 'react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -95,6 +102,12 @@ const mockBarAssociations: BarAssociation[] = [
   },
 ];
 
+/**
+ * BarAssociationsPage function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export default function BarAssociationsPage() {
   const [barAssociations, setBarAssociations] = useState<BarAssociation[]>(mockBarAssociations);
   const [searchTerm, setSearchTerm] = useState('');

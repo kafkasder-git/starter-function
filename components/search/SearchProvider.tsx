@@ -1,3 +1,10 @@
+/**
+ * @fileoverview SearchProvider Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import type { ReactNode } from 'react';
 import { createContext, useContext } from 'react';
 import { useSearch } from '../../hooks/useSearch';
@@ -37,6 +44,12 @@ interface SearchProviderProps {
   initialSort?: SortConfig;
 }
 
+/**
+ * SearchProvider function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function SearchProvider({
   children,
   config,
@@ -58,6 +71,12 @@ export function SearchProvider({
   return <SearchContext.Provider value={searchMethods}>{children}</SearchContext.Provider>;
 }
 
+/**
+ * useSearchContext function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useSearchContext(): SearchContextType {
   const context = useContext(SearchContext);
   if (context === undefined) {
@@ -67,6 +86,12 @@ export function useSearchContext(): SearchContextType {
 }
 
 // Helper hook for quick search setup
+/**
+ * useQuickSearch function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useQuickSearch(
   moduleName: keyof import('../../types/search').SEARCH_SUGGESTIONS,
 ) {

@@ -1,3 +1,10 @@
+/**
+ * @fileoverview InteractiveChart Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import React, { useState, useMemo } from 'react';
 import { motion } from 'motion/react';
 // Optimized selective imports from recharts
@@ -27,6 +34,11 @@ import {
   Maximize2,
 } from 'lucide-react';
 
+/**
+ * ChartDataPoint Interface
+ * 
+ * @interface ChartDataPoint
+ */
 export interface ChartDataPoint {
   name: string;
   value: number;
@@ -82,6 +94,12 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   return null;
 };
 
+/**
+ * InteractiveChart function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function InteractiveChart({
   title,
   description,
@@ -105,7 +123,7 @@ export function InteractiveChart({
   ];
 
   const processedData = useMemo(() => {
-    if (!data || data.length === 0) return [];
+    if (!data ?? data.length === 0) return [];
 
     return data.map((item) => ({
       ...item,

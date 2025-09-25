@@ -1,3 +1,10 @@
+/**
+ * @fileoverview FormField Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import type { ReactNode } from 'react';
 import { forwardRef, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -13,6 +20,11 @@ import { Button } from '../ui/button';
 import { cn } from '../ui/utils';
 import type { ValidationError, ValidationWarning } from '../../types/validation';
 
+/**
+ * FormFieldProps Interface
+ * 
+ * @interface FormFieldProps
+ */
 export interface FormFieldProps {
   id: string;
   name: string;
@@ -152,7 +164,7 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
         readOnly,
         autoFocus,
         autoComplete,
-        value: value || '',
+        value: value ?? '',
         onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
           handleChange(e.target.value);
         },
@@ -183,7 +195,7 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
 
         case 'select':
           return (
-            <Select value={value || ''} onValueChange={handleChange} disabled={disabled}>
+            <Select value={value ?? ''} onValueChange={handleChange} disabled={disabled}>
               <SelectTrigger
                 className={cn(
                   'transition-all duration-200',
@@ -242,7 +254,7 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
         case 'radio':
           return (
             <RadioGroup
-              value={value || ''}
+              value={value ?? ''}
               onValueChange={handleChange}
               disabled={disabled}
               className="flex flex-col space-y-2"
@@ -316,7 +328,7 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
                 type={type === 'password' && showPassword ? 'text' : type}
                 ref={ref as React.RefObject<HTMLInputElement>}
                 className={cn(
-                  (prefix || suffix || type === 'password' || showValidationIcon) && 'pr-10',
+                  (prefix ?? suffix || type === 'password' || showValidationIcon) && 'pr-10',
                   prefix && 'pl-10',
                 )}
               />

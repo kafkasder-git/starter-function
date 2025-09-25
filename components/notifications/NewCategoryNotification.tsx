@@ -1,3 +1,10 @@
+/**
+ * @fileoverview NewCategoryNotification Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { AlertCircle, CheckCircle, Users, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
@@ -9,6 +16,12 @@ interface NewCategoryNotificationProps {
   onDismiss?: () => void;
 }
 
+/**
+ * NewCategoryNotification function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function NewCategoryNotification({ onDismiss }: NewCategoryNotificationProps) {
   const [dismissed, setDismissed] = useState(() => {
     return localStorage.getItem('newCategoryNotificationDismissed') === 'true';

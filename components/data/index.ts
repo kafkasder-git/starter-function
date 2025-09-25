@@ -1,3 +1,10 @@
+/**
+ * @fileoverview index Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 // Data management exports
 export { ExportModal } from './ExportModal';
 export { BulkOperationPanel } from './BulkOperationPanel';

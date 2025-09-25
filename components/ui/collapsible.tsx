@@ -1,3 +1,10 @@
+/**
+ * @fileoverview collapsible Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 'use client';
 
 import * as CollapsiblePrimitive from '@radix-ui/react-collapsible';

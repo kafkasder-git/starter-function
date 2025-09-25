@@ -1,7 +1,15 @@
+/**
+ * @fileoverview freeAIService Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { ihtiyacSahipleriService } from './ihtiyacSahipleriService';
 import { donationsService } from './donationsService';
 import { membersService } from './membersService';
 
+import { logger } from '../lib/logging/logger';
 // 🆓 Ücretsiz AI Servisi
 // Hugging Face, Ollama ve diğer ücretsiz AI provider'ları
 
@@ -32,7 +40,7 @@ class FreeAIService {
       provider: 'openrouter',
       model: 'microsoft/phi-3-mini-128k-instruct:free',
       apiEndpoint: 'https://openrouter.ai/api/v1',
-      apiKey: (import.meta?.env?.VITE_OPENROUTER_API_KEY) || process.env.VITE_OPENROUTER_API_KEY || '',
+      apiKey: (import.meta?.env?.VITE_OPENROUTER_API_KEY) || process.env.VITE_OPENROUTER_API_KEY ?? '',
       maxTokens: 1000,
       temperature: 0.7,
     };
@@ -103,7 +111,7 @@ Kullanıcı isteklerini analiz et ve uygun yanıtlar ver.`;
         provider: this.config.provider,
       };
     } catch (error: any) {
-      console.error('Ücretsiz AI işleme hatası:', error);
+      logger.error('Ücretsiz AI işleme hatası:', error);
 
       // Fallback yanıt
       const fallbackResponse = this.generateFallbackResponse(userInput);
@@ -234,21 +242,21 @@ Kullanıcı isteklerini analiz et ve uygun yanıtlar ver.`;
       case 'beneficiaries':
         const beneficiaries = await ihtiyacSahipleriService.getIhtiyacSahipleri(1, 10, {});
         return {
-          message: `✅ ${beneficiaries.data?.length || 0} ihtiyaç sahibi listelendi.\n\n${this.formatBeneficiariesList(beneficiaries.data || [])}`,
+          message: `✅ ${beneficiaries.data?.length ?? 0} ihtiyaç sahibi listelendi.\n\n${this.formatBeneficiariesList(beneficiaries.data || [])}`,
           data: beneficiaries.data,
         };
 
       case 'donations':
         const donations = await donationsService.getDonations(1, 10, {});
         return {
-          message: `✅ ${donations.data?.length || 0} bağış kaydı listelendi.\n\n${this.formatDonationsList(donations.data || [])}`,
+          message: `✅ ${donations.data?.length ?? 0} bağış kaydı listelendi.\n\n${this.formatDonationsList(donations.data || [])}`,
           data: donations.data,
         };
 
       case 'members':
         const members = await membersService.getMembers(1, 10, {});
         return {
-          message: `✅ ${members.data?.length || 0} üye listelendi.\n\n${this.formatMembersList(members.data || [])}`,
+          message: `✅ ${members.data?.length ?? 0} üye listelendi.\n\n${this.formatMembersList(members.data || [])}`,
           data: members.data,
         };
 
@@ -330,9 +338,9 @@ Kullanıcı isteklerini analiz et ve uygun yanıtlar ver.`;
         message: `🔍 Sistem Durumu:
 
 📊 **Genel İstatistikler:**
-• İhtiyaç Sahipleri: ${beneficiaries.total || 0}
-• Toplam Bağış: ${donations.total || 0}
-• Aktif Üyeler: ${members.total || 0}
+• İhtiyaç Sahipleri: ${beneficiaries.total ?? 0}
+• Toplam Bağış: ${donations.total ?? 0}
+• Aktif Üyeler: ${members.total ?? 0}
 
 ✅ **Sistem Sağlığı:**
 • Veritabanı: Çalışıyor
@@ -418,9 +426,9 @@ Kullanıcı isteklerini analiz et ve uygun yanıtlar ver.`;
       }
 
       const data = await response.json();
-      return data.choices[0]?.message?.content || this.generateSmartResponse(input);
+      return data.choices[0]?.message?.content ?? this.generateSmartResponse(input);
     } catch (error) {
-      console.error('OpenRouter hatası:', error);
+      logger.error('OpenRouter hatası:', error);
       return this.generateSmartResponse(input);
     }
   }
@@ -452,9 +460,9 @@ Kullanıcı isteklerini analiz et ve uygun yanıtlar ver.`;
       }
 
       const data = await response.json();
-      return data[0]?.generated_text || this.generateSmartResponse(input);
+      return data[0]?.generated_text ?? this.generateSmartResponse(input);
     } catch (error) {
-      console.error('Hugging Face hatası:', error);
+      logger.error('Hugging Face hatası:', error);
       return this.generateSmartResponse(input);
     }
   }
@@ -479,9 +487,9 @@ Kullanıcı isteklerini analiz et ve uygun yanıtlar ver.`;
       }
 
       const data = await response.json();
-      return data.response || this.generateSmartResponse(input);
+      return data.response ?? this.generateSmartResponse(input);
     } catch (error) {
-      console.error('Ollama hatası:', error);
+      logger.error('Ollama hatası:', error);
       return this.generateSmartResponse(input);
     }
   }
@@ -512,9 +520,9 @@ Kullanıcı isteklerini analiz et ve uygun yanıtlar ver.`;
       });
 
       const data = await response.json();
-      return data.choices[0]?.message?.content || this.generateSmartResponse(input);
+      return data.choices[0]?.message?.content ?? this.generateSmartResponse(input);
     } catch (error) {
-      console.error('Groq hatası:', error);
+      logger.error('Groq hatası:', error);
       return this.generateSmartResponse(input);
     }
   }
@@ -580,7 +588,7 @@ Ben yine de buradayım! 😊`;
         .slice(0, 5)
         .map(
           (item, index) =>
-            `${index + 1}. **${item.ad_soyad || 'İsim yok'}** - ${item.sehri || 'Şehir yok'} (${item.status || item.durum || 'Durum yok'})`,
+            `${index + 1}. **${item.ad_soyad ?? 'İsim yok'}** - ${item.sehri ?? 'Şehir yok'} (${item.status ?? item.durum ?? 'Durum yok'})`,
         )
         .join('\n') + (data.length > 5 ? `\n\n... ve ${data.length - 5} kayıt daha` : '')
     );
@@ -594,7 +602,7 @@ Ben yine de buradayım! 😊`;
         .slice(0, 5)
         .map(
           (item, index) =>
-            `${index + 1}. **${item.bagisci_adi || 'Bağışçı yok'}** - ${(item.miktar || 0).toLocaleString('tr-TR')} ₺`,
+            `${index + 1}. **${item.bagisci_adi ?? 'Bağışçı yok'}** - ${(item.miktar ?? 0).toLocaleString('tr-TR')} ₺`,
         )
         .join('\n') + (data.length > 5 ? `\n\n... ve ${data.length - 5} kayıt daha` : '')
     );
@@ -608,7 +616,7 @@ Ben yine de buradayım! 😊`;
         .slice(0, 5)
         .map(
           (item, index) =>
-            `${index + 1}. **${item.ad_soyad || item.name || 'İsim yok'}** - ${item.status || item.durum || 'Aktif'}`,
+            `${index + 1}. **${item.ad_soyad ?? item.name ?? 'İsim yok'}** - ${item.status ?? item.durum ?? 'Aktif'}`,
         )
         .join('\n') + (data.length > 5 ? `\n\n... ve ${data.length - 5} kayıt daha` : '')
     );
@@ -617,7 +625,7 @@ Ben yine de buradayım! 😊`;
   private analyzeDonations(data: any[]): string {
     if (data.length === 0) return 'Analiz için yeterli veri yok.';
 
-    const totalAmount = data.reduce((sum, item) => sum + (item.miktar || item.amount || 0), 0);
+    const totalAmount = data.reduce((sum, item) => sum + (item.miktar ?? item.amount ?? 0), 0);
     const avgAmount = totalAmount / data.length;
 
     return `💰 **Toplam Bağış:** ${totalAmount.toLocaleString('tr-TR')} ₺

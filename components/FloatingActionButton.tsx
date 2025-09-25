@@ -1,3 +1,10 @@
+/**
+ * @fileoverview FloatingActionButton Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { useState } from 'react';
 import { Plus, X, UserPlus, Heart, CreditCard, FileText } from 'lucide-react';
 import { Button } from './ui/button';
@@ -18,6 +25,12 @@ interface FloatingActionButtonProps {
   onQuickAction?: (actionId: string) => void;
 }
 
+/**
+ * FloatingActionButton function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function FloatingActionButton({
   activeModule = 'genel',
   onQuickAction,

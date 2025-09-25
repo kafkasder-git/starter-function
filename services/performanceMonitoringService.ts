@@ -1,3 +1,10 @@
+/**
+ * @fileoverview performanceMonitoringService Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 // Minimal performance monitoring service stub
 
 export const performanceMonitoringService = {

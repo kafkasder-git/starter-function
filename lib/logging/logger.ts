@@ -1,4 +1,12 @@
 /**
+ * @fileoverview logger Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
+import { logger } from '../lib/logging/logger';
+/**
  * Centralized logging utility for the application
  * Provides different log levels and environment-specific behavior
  */
@@ -11,6 +19,11 @@ export enum LogLevel {
   SILENT = 4,
 }
 
+/**
+ * LoggerConfig Interface
+ * 
+ * @interface LoggerConfig
+ */
 export interface LoggerConfig {
   level: LogLevel;
   prefix: string;
@@ -43,12 +56,12 @@ class Logger {
     if (typeof window === 'undefined') return LogLevel.INFO;
     
     // Production'da sadece error ve üstü
-    if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PROD || process.env.NODE_ENV === 'production') {
+    if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PROD ?? process.env.NODE_ENV === 'production') {
       return LogLevel.ERROR;
     }
     
     // Development'da debug ve üstü
-    if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.DEV || process.env.NODE_ENV === 'development') {
+    if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.DEV ?? process.env.NODE_ENV === 'development') {
       return LogLevel.DEBUG;
     }
     
@@ -62,7 +75,7 @@ class Logger {
 
   private shouldEnableConsole(): boolean {
     // Production'da console'u tamamen devre dışı bırak
-    if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PROD || process.env.NODE_ENV === 'production') {
+    if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PROD ?? process.env.NODE_ENV === 'production') {
       return false;
     }
     
@@ -90,16 +103,16 @@ class Logger {
     if (this.config.enableConsole) {
       switch (level) {
         case LogLevel.DEBUG:
-          console.debug(formattedMessage, ...args);
+          logger.debug(formattedMessage, ...args);
           break;
         case LogLevel.INFO:
           console.info(formattedMessage, ...args);
           break;
         case LogLevel.WARN:
-          console.warn(formattedMessage, ...args);
+          logger.warn(formattedMessage, ...args);
           break;
         case LogLevel.ERROR:
-          console.error(formattedMessage, ...args);
+          logger.error(formattedMessage, ...args);
           break;
       }
     }

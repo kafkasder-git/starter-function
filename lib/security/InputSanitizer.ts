@@ -38,6 +38,13 @@ const SQL_INJECTION_PATTERNS = new RegExp([
 ].map(r => r.source).join('|'), 'i');
 
 // XSS Protection
+/**
+ * XSSProtection Service
+ * 
+ * Service class for handling xssprotection operations
+ * 
+ * @class XSSProtection
+ */
 export class XSSProtection {
   private static readonly ALLOWED_TAGS = new Set([
     'b', 'i', 'u', 'strong', 'em', 'p', 'br', 'span', 'div'
@@ -100,6 +107,13 @@ export class XSSProtection {
 }
 
 // SQL Injection Protection
+/**
+ * SQLInjectionProtection Service
+ * 
+ * Service class for handling sqlinjectionprotection operations
+ * 
+ * @class SQLInjectionProtection
+ */
 export class SQLInjectionProtection {
   static validate(input: string): boolean {
     if (!input) return true;
@@ -109,7 +123,7 @@ export class SQLInjectionProtection {
     const hasSQLComments = /(--|\/\*|\*\/)/.test(input);
     const hasSQLQuotes = /['";\\]/.test(input);
     
-    return !(hasSQLKeywords || hasSQLOperators || hasSQLComments || hasSQLQuotes);
+    return !(hasSQLKeywords ?? hasSQLOperators || hasSQLComments ?? hasSQLQuotes);
   }
 
   static sanitize(input: string): string {
@@ -128,6 +142,13 @@ export class SQLInjectionProtection {
 }
 
 // CSRF Protection
+/**
+ * CSRFProtection Service
+ * 
+ * Service class for handling csrfprotection operations
+ * 
+ * @class CSRFProtection
+ */
 export class CSRFProtection {
   private static tokens = new Map<string, { token: string; expires: number }>();
   private static readonly TOKEN_LENGTH = 32;
@@ -167,6 +188,13 @@ export class CSRFProtection {
 }
 
 // Rate Limiter
+/**
+ * RateLimiter Service
+ * 
+ * Service class for handling ratelimiter operations
+ * 
+ * @class RateLimiter
+ */
 export class RateLimiter {
   private static attempts = new Map<string, { count: number; resetTime: number }>();
   private static readonly MAX_ATTEMPTS = 5;
@@ -176,7 +204,7 @@ export class RateLimiter {
     const now = Date.now();
     const attempt = this.attempts.get(identifier);
     
-    if (!attempt || now > attempt.resetTime) {
+    if (!attempt ?? now > attempt.resetTime) {
       this.attempts.set(identifier, { count: 1, resetTime: now + this.WINDOW_MS });
       return true;
     }
@@ -193,7 +221,7 @@ export class RateLimiter {
     const now = Date.now();
     const attempt = this.attempts.get(identifier);
     
-    if (!attempt || now > attempt.resetTime) {
+    if (!attempt ?? now > attempt.resetTime) {
       this.attempts.set(identifier, { count: 1, resetTime: now + windowMs });
       return true;
     }
@@ -219,9 +247,16 @@ export class RateLimiter {
 }
 
 // Input Sanitizer
+/**
+ * InputSanitizer Service
+ * 
+ * Service class for handling inputsanitizer operations
+ * 
+ * @class InputSanitizer
+ */
 export class InputSanitizer {
   static sanitize(input: unknown, type: 'text' | 'html' | 'sql' | 'email' | 'phone' | 'url' | 'filepath' = 'text'): string {
-    if (input === null || input === undefined) return '';
+    if (input === null ?? input === undefined) return '';
     
     const stringInput = typeof input === 'string' ? input : String(input);
     
@@ -299,7 +334,7 @@ export class InputSanitizer {
     const result: Record<string, string> = {};
 
     for (const [key, value] of Object.entries(formData)) {
-      if (value === null || value === undefined) {
+      if (value === null ?? value === undefined) {
         result[key] = '';
       } else if (typeof value === 'string') {
         // Determine field type based on key name

@@ -1,3 +1,10 @@
+/**
+ * @fileoverview useKeyboard Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { useEffect, useCallback } from 'react';
 
 interface KeyboardShortcut {
@@ -10,6 +17,12 @@ interface KeyboardShortcut {
   description?: string;
 }
 
+/**
+ * useKeyboardShortcuts function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useKeyboardShortcuts(shortcuts: KeyboardShortcut[]) {
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
@@ -21,17 +34,17 @@ export function useKeyboardShortcuts(shortcuts: KeyboardShortcut[]) {
         target.contentEditable === 'true'
       ) {
         // Exception: Allow Ctrl+K for search even in input fields
-        if (!(event.key === 'k' && (event.ctrlKey || event.metaKey))) {
+        if (!(event.key === 'k' && (event.ctrlKey ?? event.metaKey))) {
           return;
         }
       }
 
       for (const shortcut of shortcuts) {
         const keyMatches = shortcut.key.toLowerCase() === event.key.toLowerCase();
-        const metaMatches = !shortcut.metaKey || event.metaKey;
-        const ctrlMatches = !shortcut.ctrlKey || event.ctrlKey;
-        const shiftMatches = !shortcut.shiftKey || event.shiftKey;
-        const altMatches = !shortcut.altKey || event.altKey;
+        const metaMatches = !shortcut.metaKey ?? event.metaKey;
+        const ctrlMatches = !shortcut.ctrlKey ?? event.ctrlKey;
+        const shiftMatches = !shortcut.shiftKey ?? event.shiftKey;
+        const altMatches = !shortcut.altKey ?? event.altKey;
 
         // Ensure exact modifier match
         const exactMetaMatch = shortcut.metaKey ? event.metaKey : !event.metaKey;
@@ -58,6 +71,12 @@ export function useKeyboardShortcuts(shortcuts: KeyboardShortcut[]) {
 }
 
 // Global keyboard shortcuts
+/**
+ * useGlobalShortcuts function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useGlobalShortcuts({
   onSearch,
   onNewItem,
@@ -122,6 +141,12 @@ export function useGlobalShortcuts({
 }
 
 // Navigation shortcuts
+/**
+ * useNavigationShortcuts function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useNavigationShortcuts({
   onGoHome,
   onGoBack,
@@ -154,6 +179,12 @@ export function useNavigationShortcuts({
 }
 
 // Table shortcuts
+/**
+ * useTableShortcuts function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useTableShortcuts({
   onSelectAll,
   onDelete,

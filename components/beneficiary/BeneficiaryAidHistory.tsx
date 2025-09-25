@@ -1,3 +1,10 @@
+/**
+ * @fileoverview BeneficiaryAidHistory Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { Calendar, DollarSign, FileText, Gift, HandHeart, Heart, Package } from 'lucide-react';
 import { useState } from 'react';
 import { Badge } from '../ui/badge';
@@ -21,6 +28,12 @@ interface BeneficiaryAidHistoryProps {
   aidHistory?: AidRecord[];
 }
 
+/**
+ * BeneficiaryAidHistory function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function BeneficiaryAidHistory({
   beneficiaryId,
   aidHistory = [],
@@ -75,7 +88,7 @@ export function BeneficiaryAidHistory({
 
   const totalCashAid = records
     .filter((record) => record.type === 'Nakdi' && record.amount)
-    .reduce((total, record) => total + (record.amount || 0), 0);
+    .reduce((total, record) => total + (record.amount ?? 0), 0);
 
   const getTypeIcon = (type: string) => {
     switch (type) {

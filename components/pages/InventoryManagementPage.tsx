@@ -1,3 +1,10 @@
+/**
+ * @fileoverview InventoryManagementPage Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import {
   Award,
   Building2,
@@ -228,6 +235,12 @@ const mockAssociations: AssociationPartner[] = [
   },
 ];
 
+/**
+ * PartnerAssociationsPage function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export default function PartnerAssociationsPage() {
   const [associations, setAssociations] = useState<AssociationPartner[]>(mockAssociations);
   const [filteredAssociations, setFilteredAssociations] =
@@ -363,7 +376,7 @@ export default function PartnerAssociationsPage() {
   }, []);
 
   const activeAssociations = associations.filter((a) => a.status === 'aktif').length;
-  const totalMembers = associations.reduce((sum, a) => sum + (a.memberCount || 0), 0);
+  const totalMembers = associations.reduce((sum, a) => sum + (a.memberCount ?? 0), 0);
   const collaborativeAssociations = associations.filter((a) => a.sharedProjects.length > 0).length;
   const largeAssociations = associations.filter(
     (a) => a.memberCount && a.memberCount >= 100,

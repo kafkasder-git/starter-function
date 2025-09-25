@@ -1,3 +1,10 @@
+/**
+ * @fileoverview PageRenderer Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import React, { lazy, Suspense, useMemo } from 'react';
 import { PageTransition } from '../AnimatedContainer';
 import { SkeletonLoader } from '../LoadingSpinner';
@@ -23,6 +30,12 @@ interface PageRendererProps {
   onQuickAction?: (actionId: string) => void;
 }
 
+/**
+ * PageRenderer function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function PageRenderer({ onQuickAction }: PageRendererProps) {
   const {
     activeModule,
@@ -107,7 +120,7 @@ export function PageRenderer({ onQuickAction }: PageRendererProps) {
     return renderPageWithTransition(
       routeConfig.component,
       componentProps,
-      routeConfig.skeletonVariant || 'detail',
+      routeConfig.skeletonVariant ?? 'detail',
     );
   }, [
     currentPage,

@@ -1,3 +1,10 @@
+/**
+ * @fileoverview BeneficiaryPersonalInfo Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { Phone, User } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Input } from '../ui/input';
@@ -11,6 +18,12 @@ interface BeneficiaryPersonalInfoProps {
   onUpdate: (field: string, value: any) => void;
 }
 
+/**
+ * BeneficiaryPersonalInfo function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function BeneficiaryPersonalInfo({
   beneficiary,
   editMode,
@@ -46,14 +59,14 @@ export function BeneficiaryPersonalInfo({
               {editMode ? (
                 <Input
                   id="name"
-                  value={beneficiary?.name || ''}
+                  value={beneficiary?.name ?? ''}
                   onChange={(e) => {
                     onUpdate('name', e.target.value);
                   }}
                   placeholder="Ad soyad giriniz"
                 />
               ) : (
-                <p className="p-2 text-sm">{beneficiary?.name || '-'}</p>
+                <p className="p-2 text-sm">{beneficiary?.name ?? '-'}</p>
               )}
             </div>
 
@@ -62,7 +75,7 @@ export function BeneficiaryPersonalInfo({
               {editMode ? (
                 <Input
                   id="tcNo"
-                  value={beneficiary?.tcNo || ''}
+                  value={beneficiary?.tcNo ?? ''}
                   onChange={(e) => {
                     onUpdate('tcNo', e.target.value);
                   }}
@@ -70,7 +83,7 @@ export function BeneficiaryPersonalInfo({
                   maxLength={11}
                 />
               ) : (
-                <p className="p-2 text-sm">{beneficiary?.tcNo || '-'}</p>
+                <p className="p-2 text-sm">{beneficiary?.tcNo ?? '-'}</p>
               )}
             </div>
           </div>
@@ -82,7 +95,7 @@ export function BeneficiaryPersonalInfo({
                 <Input
                   id="birthDate"
                   type="date"
-                  value={beneficiary?.birthDate || ''}
+                  value={beneficiary?.birthDate ?? ''}
                   onChange={(e) => {
                     onUpdate('birthDate', e.target.value);
                   }}
@@ -100,7 +113,7 @@ export function BeneficiaryPersonalInfo({
               <Label htmlFor="gender">Cinsiyet</Label>
               {editMode ? (
                 <Select
-                  value={beneficiary?.gender || ''}
+                  value={beneficiary?.gender ?? ''}
                   onValueChange={(value: string) => {
                     onUpdate('gender', value);
                   }}
@@ -114,7 +127,7 @@ export function BeneficiaryPersonalInfo({
                   </SelectContent>
                 </Select>
               ) : (
-                <p className="p-2 text-sm">{beneficiary?.gender || '-'}</p>
+                <p className="p-2 text-sm">{beneficiary?.gender ?? '-'}</p>
               )}
             </div>
           </div>
@@ -124,7 +137,7 @@ export function BeneficiaryPersonalInfo({
               <Label htmlFor="maritalStatus">Medeni Durum</Label>
               {editMode ? (
                 <Select
-                  value={beneficiary?.maritalStatus || ''}
+                  value={beneficiary?.maritalStatus ?? ''}
                   onValueChange={(value: string) => {
                     onUpdate('maritalStatus', value);
                   }}
@@ -141,7 +154,7 @@ export function BeneficiaryPersonalInfo({
                   </SelectContent>
                 </Select>
               ) : (
-                <p className="p-2 text-sm">{beneficiary?.maritalStatus || '-'}</p>
+                <p className="p-2 text-sm">{beneficiary?.maritalStatus ?? '-'}</p>
               )}
             </div>
 
@@ -149,7 +162,7 @@ export function BeneficiaryPersonalInfo({
               <Label htmlFor="education">Eğitim Durumu</Label>
               {editMode ? (
                 <Select
-                  value={beneficiary?.education || ''}
+                  value={beneficiary?.education ?? ''}
                   onValueChange={(value: string) => {
                     onUpdate('education', value);
                   }}
@@ -166,7 +179,7 @@ export function BeneficiaryPersonalInfo({
                   </SelectContent>
                 </Select>
               ) : (
-                <p className="p-2 text-sm">{beneficiary?.education || '-'}</p>
+                <p className="p-2 text-sm">{beneficiary?.education ?? '-'}</p>
               )}
             </div>
           </div>
@@ -175,7 +188,7 @@ export function BeneficiaryPersonalInfo({
             <Label htmlFor="occupation">Meslek</Label>
             {editMode ? (
               <Select
-                value={beneficiary?.occupation || ''}
+                value={beneficiary?.occupation ?? ''}
                 onValueChange={(value: string) => {
                   onUpdate('occupation', value);
                 }}
@@ -192,7 +205,7 @@ export function BeneficiaryPersonalInfo({
                 </SelectContent>
               </Select>
             ) : (
-              <p className="p-2 text-sm">{beneficiary?.occupation || '-'}</p>
+              <p className="p-2 text-sm">{beneficiary?.occupation ?? '-'}</p>
             )}
           </div>
         </CardContent>
@@ -213,14 +226,14 @@ export function BeneficiaryPersonalInfo({
             {editMode ? (
               <Input
                 id="phone"
-                value={beneficiary?.phone || ''}
+                value={beneficiary?.phone ?? ''}
                 onChange={(e) => {
                   onUpdate('phone', e.target.value);
                 }}
                 placeholder="Telefon numarası"
               />
             ) : (
-              <p className="p-2 text-sm">{beneficiary?.phone || '-'}</p>
+              <p className="p-2 text-sm">{beneficiary?.phone ?? '-'}</p>
             )}
           </div>
 
@@ -230,14 +243,14 @@ export function BeneficiaryPersonalInfo({
               <Input
                 id="email"
                 type="email"
-                value={beneficiary?.email || ''}
+                value={beneficiary?.email ?? ''}
                 onChange={(e) => {
                   onUpdate('email', e.target.value);
                 }}
                 placeholder="E-mail adresi"
               />
             ) : (
-              <p className="p-2 text-sm">{beneficiary?.email || '-'}</p>
+              <p className="p-2 text-sm">{beneficiary?.email ?? '-'}</p>
             )}
           </div>
 
@@ -246,7 +259,7 @@ export function BeneficiaryPersonalInfo({
             {editMode ? (
               <Textarea
                 id="address"
-                value={beneficiary?.address || ''}
+                value={beneficiary?.address ?? ''}
                 onChange={(e) => {
                   onUpdate('address', e.target.value);
                 }}
@@ -254,7 +267,7 @@ export function BeneficiaryPersonalInfo({
                 rows={3}
               />
             ) : (
-              <p className="p-2 text-sm">{beneficiary?.address || '-'}</p>
+              <p className="p-2 text-sm">{beneficiary?.address ?? '-'}</p>
             )}
           </div>
 
@@ -264,14 +277,14 @@ export function BeneficiaryPersonalInfo({
               {editMode ? (
                 <Input
                   id="city"
-                  value={beneficiary?.city || ''}
+                  value={beneficiary?.city ?? ''}
                   onChange={(e) => {
                     onUpdate('city', e.target.value);
                   }}
                   placeholder="İl"
                 />
               ) : (
-                <p className="p-2 text-sm">{beneficiary?.city || '-'}</p>
+                <p className="p-2 text-sm">{beneficiary?.city ?? '-'}</p>
               )}
             </div>
 
@@ -280,14 +293,14 @@ export function BeneficiaryPersonalInfo({
               {editMode ? (
                 <Input
                   id="district"
-                  value={beneficiary?.district || ''}
+                  value={beneficiary?.district ?? ''}
                   onChange={(e) => {
                     onUpdate('district', e.target.value);
                   }}
                   placeholder="İlçe"
                 />
               ) : (
-                <p className="p-2 text-sm">{beneficiary?.district || '-'}</p>
+                <p className="p-2 text-sm">{beneficiary?.district ?? '-'}</p>
               )}
             </div>
           </div>

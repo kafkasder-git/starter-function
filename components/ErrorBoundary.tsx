@@ -1,9 +1,17 @@
+/**
+ * @fileoverview ErrorBoundary Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { AlertTriangle, Home, RefreshCw } from 'lucide-react';
 import type { ErrorInfo, ReactNode } from 'react';
 import React, { Component } from 'react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 
+import { logger } from '../lib/logging/logger';
 interface Props {
   children: ReactNode;
   fallback?: ReactNode;
@@ -15,6 +23,13 @@ interface State {
   errorInfo?: ErrorInfo;
 }
 
+/**
+ * ErrorBoundary Service
+ * 
+ * Service class for handling errorboundary operations
+ * 
+ * @class ErrorBoundary
+ */
 export class ErrorBoundary extends Component<Props, State> {
   public state: State = {
     hasError: false,
@@ -25,7 +40,7 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('Uncaught error:', error, errorInfo);
+    logger.error('Uncaught error:', error, errorInfo);
     this.setState({ errorInfo });
   }
 
@@ -87,6 +102,12 @@ export class ErrorBoundary extends Component<Props, State> {
 }
 
 // Hook based error boundary for functional components
+/**
+ * withErrorBoundary function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function withErrorBoundary<P extends object>(
   Component: React.ComponentType<P>,
   fallback?: ReactNode,

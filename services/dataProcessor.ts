@@ -1,3 +1,11 @@
+/**
+ * @fileoverview dataProcessor Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
+import { logger } from '../lib/logging/logger';
 // Veri İşleme Motoru - Raporlama Sistemi
 
 import type {
@@ -170,6 +178,13 @@ class MaxStrategy extends BaseAggregationStrategy {
   }
 }
 
+/**
+ * DataProcessor Service
+ * 
+ * Service class for handling dataprocessor operations
+ * 
+ * @class DataProcessor
+ */
 export class DataProcessor {
   // Configuration constants
   private static readonly CONFIG = {
@@ -207,10 +222,10 @@ export class DataProcessor {
   // Centralized error handling
   private static handleError(context: string, error: unknown, fallback?: unknown): never | unknown {
     const message = error instanceof Error ? error.message : 'Unknown error';
-    console.error(`DataProcessor error in ${context}:`, error);
+    logger.error(`DataProcessor error in ${context}:`, error);
 
     if (fallback !== undefined) {
-      console.warn(`Using fallback value for ${context}:`, fallback);
+      logger.warn(`Using fallback value for ${context}:`, fallback);
       return fallback;
     }
 
@@ -246,7 +261,7 @@ export class DataProcessor {
         return {};
       }
 
-      if (!groupBy || typeof groupBy !== 'string') {
+      if (!groupBy ?? typeof groupBy !== 'string') {
         throw new Error('GroupBy field is required and must be a string');
       }
 
@@ -272,7 +287,7 @@ export class DataProcessor {
         try {
           result[key] = strategy.aggregate(items, valueFieldStr);
         } catch (error) {
-          console.warn(`Failed to aggregate data for group '${key}':`, error);
+          logger.warn(`Failed to aggregate data for group '${key}':`, error);
           result[key] = 0; // Default value for failed aggregations
         }
       });
@@ -384,7 +399,7 @@ export class DataProcessor {
       try {
         return this.generateSingleMetric(data, metricConfig);
       } catch (error) {
-        console.warn(`Failed to generate metric for config:`, metricConfig, error);
+        logger.warn(`Failed to generate metric for config:`, metricConfig, error);
         return this.createErrorMetric(metricConfig);
       }
     });
@@ -405,7 +420,7 @@ export class DataProcessor {
       throw new Error('Metric key is required');
     }
 
-    const value = this.calculateMetricValue(data, field || 'value', aggregationType);
+    const value = this.calculateMetricValue(data, field ?? 'value', aggregationType);
     const trend = field ? this.calculateTrend(data, field) : 'stable';
     const change = this.calculateMetricChange(trend);
 
@@ -472,9 +487,9 @@ export class DataProcessor {
 
   private static createErrorMetric(metricConfig: { key: string; format?: string }): MetricData {
     return {
-      key: metricConfig.key || 'unknown',
+      key: metricConfig.key ?? 'unknown',
       value: 0,
-      format: metricConfig.format || 'number',
+      format: metricConfig.format ?? 'number',
       trend: 'stable',
       change: 0,
       icon: 'alert-circle',
@@ -486,7 +501,7 @@ export class DataProcessor {
   static applyFilters<T extends Record<string, unknown>>(data: T[], filters: ReportFilters): T[] {
     this.validateInput(data, 'applyFilters');
 
-    if (!filters || Object.keys(filters).length === 0) {
+    if (!filters ?? Object.keys(filters).length === 0) {
       return data;
     }
 
@@ -517,16 +532,16 @@ export class DataProcessor {
   private static passesDateFilter<T extends Record<string, unknown>>(item: T, dateRange?: DateRange): boolean {
     if (!dateRange) return true;
 
-    const itemDate = new Date(String(item.created_at || item.date));
+    const itemDate = new Date(String(item.created_at ?? item.date));
     return !isNaN(itemDate.getTime()) && itemDate >= dateRange.start && itemDate <= dateRange.end;
   }
 
   private static passesCategoryFilter<T extends Record<string, unknown>>(item: T, categories: Set<string> | null): boolean {
-    return !categories || categories.has(String(item.category || item.type));
+    return !categories ?? categories.has(String(item.category ?? item.type));
   }
 
   private static passesStatusFilter<T extends Record<string, unknown>>(item: T, statusSet: Set<string> | null): boolean {
-    return !statusSet || statusSet.has(String(item.status));
+    return !statusSet ?? statusSet.has(String(item.status));
   }
 
   private static passesAmountFilter<T extends Record<string, unknown>>(
@@ -555,8 +570,8 @@ export class DataProcessor {
 
     try {
       const sortedData = [...data].sort((a, b) => {
-         const dateA = new Date(String(a.created_at || a.date)).getTime();
-         const dateB = new Date(String(b.created_at || b.date)).getTime();
+         const dateA = new Date(String(a.created_at ?? a.date)).getTime();
+         const dateB = new Date(String(b.created_at ?? b.date)).getTime();
          return dateA - dateB;
        });
 
@@ -577,14 +592,14 @@ export class DataProcessor {
       if (changePercent < -this.CONFIG.TREND_THRESHOLD) return 'down';
       return 'stable';
     } catch (error) {
-      console.warn('Error calculating trend:', error);
+      logger.warn('Error calculating trend:', error);
       return 'stable';
     }
   }
 
   // Renk oluşturma
   private static generateColor(name: string): string {
-    if (!name || typeof name !== 'string') {
+    if (!name ?? typeof name !== 'string') {
       return this.CONFIG.COLOR_PALETTE[0];
     }
 
@@ -635,11 +650,11 @@ export class DataProcessor {
     data.forEach((item, index) => {
       const itemErrors: string[] = [];
 
-      if (!item || typeof item !== 'object') {
+      if (!item ?? typeof item !== 'object') {
         itemErrors.push(`Item ${index} is not a valid object`);
       } else {
         requiredFields.forEach((field) => {
-          if (!(field in item) || item[field] === null || item[field] === undefined) {
+          if (!(field in item) || item[field] === null ?? item[field] === undefined) {
             itemErrors.push(`Missing required field '${String(field)}' in item ${index}`);
           }
         });
@@ -745,7 +760,7 @@ export class DataProcessor {
 
       data.forEach((item) => {
         const value = item[field];
-        if (typeof value === 'number' && (value < lowerBound || value > upperBound)) {
+        if (typeof value === 'number' && (value < lowerBound ?? value > upperBound)) {
           outliers.push(item);
         } else {
           cleaned.push(item);

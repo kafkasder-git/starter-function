@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/
 import { AlertTriangle, CheckCircle, Info, Bug } from 'lucide-react';
 import { testSentryLogging, testSentryException } from '../lib/sentryInit';
 
+import { logger } from '../lib/logging/logger';
 interface SentryTestProps {
   className?: string;
 }
@@ -43,9 +44,9 @@ export const SentryTest: React.FC<SentryTestProps> = ({ className }) => {
   };
 
   const handleTestConsoleLog = () => {
-    console.log('🧪 This is a test console.log message');
-    console.warn('⚠️ This is a test console.warn message');
-    console.error('❌ This is a test console.error message');
+    logger.info('🧪 This is a test logger.info message');
+    logger.warn('⚠️ This is a test logger.warn message');
+    logger.error('❌ This is a test logger.error message');
     alert('📝 Test console messages sent! Check your Sentry dashboard for captured logs.');
   };
 

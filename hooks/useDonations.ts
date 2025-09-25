@@ -1,3 +1,10 @@
+/**
+ * @fileoverview useDonations Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { useCallback, useMemo } from 'react';
 import { toast } from 'sonner';
 import { TABLES } from '../lib/supabase';
@@ -10,6 +17,12 @@ import type {
 import { useSupabaseData, useSupabasePagination } from './useSupabaseData';
 
 // Basic donations hook
+/**
+ * useDonations function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useDonations(
   options: {
     includeDeleted?: boolean;
@@ -126,7 +139,7 @@ export function useDonations(
     async (id: string, processedBy?: string) => {
       return updateDonation(id, {
         status: 'completed',
-        processed_by: processedBy || 'current-user-id',
+        processed_by: processedBy ?? 'current-user-id',
       });
     },
     [updateDonation],
@@ -266,6 +279,12 @@ export function useDonations(
 }
 
 // Paginated donations hook
+/**
+ * useDonationsPaginated function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useDonationsPaginated(
   options: {
     pageSize?: number;
@@ -304,6 +323,12 @@ export function useDonationsPaginated(
 }
 
 // Donations with member info hook
+/**
+ * useDonationsWithMembers function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useDonationsWithMembers(
   options: {
     limit?: number;
@@ -348,8 +373,8 @@ export function useDonationsWithMembers(
     filters: { deleted_at: 'is.null' },
   });
 
-  const loading = donationsLoading || membersLoading;
-  const error = donationsError || membersError;
+  const loading = donationsLoading ?? membersLoading;
+  const error = donationsError ?? membersError;
 
   const donationsWithMembers: DonationWithMember[] = useMemo(() => {
     return donations.map((donation: Donation) => {
@@ -372,25 +397,31 @@ export function useDonationsWithMembers(
 }
 
 // Donation export data formatter
+/**
+ * useDonationExportData function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useDonationExportData() {
   const formatDonationForExport = useCallback((donation: Donation) => {
     return {
       id: donation.id,
       donorName: donation.donor_name,
-      donorEmail: donation.donor_email || '-',
-      donorPhone: donation.donor_phone || '-',
+      donorEmail: donation.donor_email ?? '-',
+      donorPhone: donation.donor_phone ?? '-',
       amount: donation.amount,
       currency: donation.currency,
       donationType: donation.donation_type,
       category: donation.category,
       paymentMethod: donation.payment_method,
       status: donation.status,
-      referenceNumber: donation.reference_number || '-',
+      referenceNumber: donation.reference_number ?? '-',
       isAnonymous: donation.is_anonymous ? 'Evet' : 'Hayır',
       taxDeductible: donation.tax_deductible ? 'Evet' : 'Hayır',
-      notes: donation.notes || '-',
+      notes: donation.notes ?? '-',
       createdAt: donation.created_at,
-      processedBy: donation.processed_by || '-',
+      processedBy: donation.processed_by ?? '-',
     };
   }, []);
 

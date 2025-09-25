@@ -1,8 +1,20 @@
+/**
+ * @fileoverview NavigationManager Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useUserPreferences } from '../../hooks/useLocalStorage';
 import { useUXAnalytics } from '../../components/ux/hooks/useUXAnalytics';
 import monitoringService from '../../services/monitoringService';
 
+/**
+ * NavigationState Interface
+ * 
+ * @interface NavigationState
+ */
 export interface NavigationState {
   activeModule: string;
   currentPage: string;
@@ -11,6 +23,11 @@ export interface NavigationState {
   selectedBeneficiaryId: string | null;
 }
 
+/**
+ * NavigationActions Interface
+ * 
+ * @interface NavigationActions
+ */
 export interface NavigationActions {
   setActiveModule: (moduleId: string) => void;
   setCurrentPage: (page: string) => void;
@@ -32,6 +49,12 @@ interface NavigationContextType extends NavigationState, NavigationActions { }
 
 const NavigationContext = createContext<NavigationContextType | undefined>(undefined);
 
+/**
+ * useNavigation function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useNavigation() {
   const context = useContext(NavigationContext);
   if (!context) {
@@ -47,6 +70,12 @@ interface NavigationProviderProps {
   initialSubPage?: string;
 }
 
+/**
+ * NavigationProvider function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function NavigationProvider({
   children,
   initialModule = 'genel',

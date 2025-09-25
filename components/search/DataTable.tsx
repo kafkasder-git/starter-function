@@ -1,3 +1,10 @@
+/**
+ * @fileoverview DataTable Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import type { ReactNode } from 'react';
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -25,6 +32,11 @@ import { usePagination } from '../../hooks/usePagination';
 import { useIsMobile } from '../../hooks/useTouchDevice';
 import { cn } from '../ui/utils';
 
+/**
+ * ColumnDef Interface
+ * 
+ * @interface ColumnDef
+ */
 export interface ColumnDef<T = any> {
   id: string;
   header: string;
@@ -61,6 +73,12 @@ interface DataTableProps<T = any> {
   compact?: boolean;
 }
 
+/**
+ * DataTable function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function DataTable<T = any>({
   columns,
   data = [],
@@ -230,7 +248,7 @@ export function DataTable<T = any>({
   return (
     <div className={cn('space-y-4', className)}>
       {/* Search and filters */}
-      {(showSearch || showFilters) && (
+      {(showSearch ?? showFilters) && (
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
           {showSearch && (
             <div className="relative flex-1">
@@ -425,7 +443,7 @@ export function DataTable<T = any>({
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
                               {actions
-                                .filter((action) => !action.show || action.show(row))
+                                .filter((action) => !action.show ?? action.show(row))
                                 .map((action, actionIndex) => (
                                   <DropdownMenuItem
                                     key={actionIndex}

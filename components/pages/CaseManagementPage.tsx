@@ -1,3 +1,10 @@
+/**
+ * @fileoverview CaseManagementPage Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import {
   Building2,
   Calendar,
@@ -51,6 +58,12 @@ interface DonorInstitution {
 
 // Mock data kaldırıldı - gerçek veriler API'den gelecek
 
+/**
+ * PartnerDonorsPage function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export default function PartnerDonorsPage() {
   const [donors, setDonors] = useState<DonorInstitution[]>([]);
   const [filteredDonors, setFilteredDonors] = useState<DonorInstitution[]>([]);

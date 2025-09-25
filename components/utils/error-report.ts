@@ -1,9 +1,27 @@
+/**
+ * @fileoverview error-report Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import type { ErrorInfo } from 'react';
 
+import { logger } from '../lib/logging/logger';
+/**
+ * StorageLike Interface
+ * 
+ * @interface StorageLike
+ */
 export interface StorageLike {
   getItem: (key: string) => string | null;
 }
 
+/**
+ * EnvironmentSource Interface
+ * 
+ * @interface EnvironmentSource
+ */
 export interface EnvironmentSource {
   navigator?: Pick<Navigator, 'userAgent'> | { userAgent?: string };
   location?: Pick<Location, 'href'> | { href?: string };
@@ -11,12 +29,22 @@ export interface EnvironmentSource {
   dateFactory?: () => Date;
 }
 
+/**
+ * ErrorEnvironment Interface
+ * 
+ * @interface ErrorEnvironment
+ */
 export interface ErrorEnvironment {
   userAgent: string;
   url: string;
   userId: string;
 }
 
+/**
+ * ErrorReport Interface
+ * 
+ * @interface ErrorReport
+ */
 export interface ErrorReport {
   errorId?: string;
   message: string;
@@ -66,7 +94,7 @@ export const getEnvironmentInfo = (source?: EnvironmentSource): ErrorEnvironment
         userId = storedId;
       }
     } catch (error) {
-      console.warn('[EnhancedErrorBoundary] Unable to access user_id from storage:', error);
+      logger.warn('[EnhancedErrorBoundary] Unable to access user_id from storage:', error);
     }
   }
 

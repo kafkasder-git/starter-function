@@ -1,4 +1,20 @@
-// Supabase integration enabled - deployment blocker removed
+/**
+ * @fileoverview Main Application Component
+ * 
+ * This is the root component of the Dernek Yönetim Sistemi (Association Management System).
+ * It provides the main application structure with authentication, navigation, and core functionality.
+ * 
+ * Key Features:
+ * - Supabase authentication integration
+ * - Enhanced AI system integration
+ * - Performance optimizations with React.memo and useMemo
+ * - Global keyboard shortcuts
+ * - UX analytics tracking
+ * - Responsive design with mobile support
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
 
 import { useCallback, useEffect, useState, memo, useMemo } from 'react';
 
@@ -31,10 +47,18 @@ import { useGlobalShortcuts } from './hooks/useKeyboard';
 import { useUserPreferences } from './hooks/useLocalStorage';
 
 /**
- * DERNEK YÖNETİM SİSTEMİ - Main Application Content
- *
- * Frontend Application - Desktop-only design
- * Modern, responsive corporate admin panel
+ * Main Application Content Component
+ * 
+ * This is the core application component that renders the main UI structure.
+ * It handles authentication state, navigation, theme management, and user interactions.
+ * 
+ * @component
+ * @returns {JSX.Element} The main application content with sidebar, header, and page renderer
+ * 
+ * @example
+ * ```tsx
+ * <AppContent />
+ * ```
  */
 const AppContent = memo(() => {
   const { trackAIUsage: trackUsage } = useAI();
@@ -279,7 +303,14 @@ const AppWithNavigation = memo(({
 });
 
 /**
- * Error Handler Component
+ * Application with Error Handling Wrapper
+ * 
+ * This component wraps the main application with error boundary and context providers.
+ * It provides a centralized error handling mechanism and manages the application's
+ * core context providers including authentication, notifications, and AI services.
+ * 
+ * @component
+ * @returns {JSX.Element} The application wrapped with error handling and context providers
  */
 function AppWithErrorHandling() {
   // AI-integrated navigation handler
@@ -302,7 +333,20 @@ function AppWithErrorHandling() {
 }
 
 /**
- * Main App Component
+ * Main Application Component
+ * 
+ * This is the root component that initializes the entire application.
+ * It serves as the entry point for the Dernek Yönetim Sistemi.
+ * 
+ * @component
+ * @returns {JSX.Element} The complete application with all providers and error handling
+ * 
+ * @example
+ * ```tsx
+ * import App from './App';
+ * 
+ * ReactDOM.render(<App />, document.getElementById('root'));
+ * ```
  */
 function App() {
   return <AppWithErrorHandling />;

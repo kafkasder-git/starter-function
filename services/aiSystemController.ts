@@ -1,9 +1,17 @@
+/**
+ * @fileoverview aiSystemController Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { supabaseAdmin } from '../lib/supabase';
 import { ihtiyacSahipleriService } from './ihtiyacSahipleriService';
 import { donationsService } from './donationsService';
 import { membersService } from './membersService';
 import { toast } from 'sonner';
 
+import { logger } from '../lib/logging/logger';
 // 🎮 AI Sistem Kontrolcüsü
 // AI'ın uygulamanın tüm özelliklerini kontrol edebilmesi için
 
@@ -185,13 +193,13 @@ class AISystemController {
 
     // Risk seviyesi kontrolü
     if (action.riskLevel === 'high') {
-      console.warn(`⚠️ Yüksek riskli işlem çalıştırılıyor: ${actionId}`);
+      logger.warn(`⚠️ Yüksek riskli işlem çalıştırılıyor: ${actionId}`);
     }
 
     try {
       const result = await action.implementation(parameters);
 
-      console.log(`✅ AI Action executed: ${actionId}`, { parameters, result });
+      logger.info(`✅ AI Action executed: ${actionId}`, { parameters, result });
 
       return {
         success: true,
@@ -200,7 +208,7 @@ class AISystemController {
         timestamp: new Date().toISOString(),
       };
     } catch (error: unknown) {
-      console.error(`❌ AI Action failed: ${actionId}`, error);
+      logger.error(`❌ AI Action failed: ${actionId}`, error);
       throw new Error(`İşlem başarısız: ${error.message}`);
     }
   }
@@ -274,7 +282,7 @@ class AISystemController {
           return { success: true, message: `${target} modalı kapatıldı` };
 
         case 'show_notification':
-          this.sendNotification('info', target, parameters?.message || '');
+          this.sendNotification('info', target, parameters?.message ?? '');
           return { success: true, message: 'Bildirim gösterildi' };
 
         case 'update_form':
@@ -330,8 +338,8 @@ class AISystemController {
         const donations = await donationsService.getDonations(1, 20, {});
 
         return {
-          beneficiariesReviewed: beneficiaries.data?.length || 0,
-          donationsProcessed: donations.data?.length || 0,
+          beneficiariesReviewed: beneficiaries.data?.length ?? 0,
+          donationsProcessed: donations.data?.length ?? 0,
           message: 'Günlük inceleme tamamlandı',
         };
       },
@@ -343,7 +351,7 @@ class AISystemController {
         });
 
         return {
-          urgentCasesFound: urgentCases.data?.length || 0,
+          urgentCasesFound: urgentCases.data?.length ?? 0,
           message: 'Acil durumlar tespit edildi ve önceliklendirildi',
         };
       },
@@ -442,11 +450,11 @@ class AISystemController {
       const cityCounts: Record<string, number> = {};
 
       data.forEach((item) => {
-        const status = item.status || item.durum || 'Belirtilmemiş';
-        const city = item.sehri || 'Belirtilmemiş';
+        const status = item.status ?? item.durum ?? 'Belirtilmemiş';
+        const city = item.sehri ?? 'Belirtilmemiş';
 
-        statusCounts[status] = (statusCounts[status] || 0) + 1;
-        cityCounts[city] = (cityCounts[city] || 0) + 1;
+        statusCounts[status] = (statusCounts[status] ?? 0) + 1;
+        cityCounts[city] = (cityCounts[city] ?? 0) + 1;
       });
 
       report.summary = {
@@ -459,15 +467,15 @@ class AISystemController {
     }
 
     if (module === 'bagis') {
-      const totalAmount = data.reduce((sum, item) => sum + (item.miktar || item.amount || 0), 0);
+      const totalAmount = data.reduce((sum, item) => sum + (item.miktar ?? item.amount ?? 0), 0);
       const avgAmount = totalAmount / data.length;
 
       const monthlyData: Record<string, number> = {};
       data.forEach((item) => {
-        const date = item.tarih || item.created_at;
+        const date = item.tarih ?? item.created_at;
         if (date) {
           const month = new Date(date).toISOString().slice(0, 7);
-          monthlyData[month] = (monthlyData[month] || 0) + (item.miktar || item.amount || 0);
+          monthlyData[month] = (monthlyData[month] ?? 0) + (item.miktar ?? item.amount ?? 0);
         }
       });
 
@@ -637,10 +645,10 @@ class AISystemController {
 
       // Her modül için istatistikler
       const beneficiariesResult = await ihtiyacSahipleriService.getIhtiyacSahipleri(1, 1000, {});
-      stats.beneficiaries = beneficiariesResult.data?.length || 0;
+      stats.beneficiaries = beneficiariesResult.data?.length ?? 0;
 
       const donationsResult = await donationsService.getDonations(1, 1000, {});
-      stats.donations = donationsResult.data?.length || 0;
+      stats.donations = donationsResult.data?.length ?? 0;
       stats.totalDonationAmount =
         donationsResult.data?.reduce(
           (sum: number, item: Record<string, unknown>) => sum + ((item.miktar as number) ?? (item.amount as number) ?? 0),
@@ -648,7 +656,7 @@ class AISystemController {
         ) || 0;
 
       const membersResult = await membersService.getMembers(1, 1000, {});
-      stats.members = membersResult.data?.length || 0;
+      stats.members = membersResult.data?.length ?? 0;
 
       return stats;
     } catch (error: unknown) {

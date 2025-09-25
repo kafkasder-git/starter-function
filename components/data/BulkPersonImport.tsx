@@ -1,3 +1,10 @@
+/**
+ * @fileoverview BulkPersonImport Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 // 👥 BULK PERSON IMPORT COMPONENT
 // High-performance bulk import for 1000+ person records
 
@@ -167,6 +174,12 @@ const mockImportPersons = async (batch: PersonData[]): Promise<PersonData[]> => 
   })) as PersonData[];
 };
 
+/**
+ * BulkPersonImport function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function BulkPersonImport({
   onImportComplete,
   onClose,
@@ -846,7 +859,7 @@ export function BulkPersonImport({
                             {paginatedData.map((person, index) => (
                               <tr key={index} className="hover:bg-green-50 transition-colors">
                                 <td className="px-3 py-3 text-sm text-gray-900 font-medium">
-                                  {person.id || '—'}
+                                  {person.id ?? '—'}
                                 </td>
                                 <td className="px-3 py-3 text-sm text-gray-900">
                                   <div
@@ -857,34 +870,34 @@ export function BulkPersonImport({
                                   </div>
                                 </td>
                                 <td className="px-3 py-3 text-sm text-gray-600 font-mono">
-                                  {person.nationalId || '—'}
+                                  {person.nationalId ?? '—'}
                                 </td>
                                 <td className="px-3 py-3 text-sm text-gray-600">
-                                  {person.nationality || '—'}
+                                  {person.nationality ?? '—'}
                                 </td>
                                 <td className="px-3 py-3 text-sm text-gray-600">
-                                  {person.country || '—'}
+                                  {person.country ?? '—'}
                                 </td>
                                 <td className="px-3 py-3 text-sm text-gray-600">
-                                  {person.city || '—'}
+                                  {person.city ?? '—'}
                                 </td>
                                 <td className="px-3 py-3 text-sm text-gray-600">
-                                  {person.settlement || '—'}
+                                  {person.settlement ?? '—'}
                                 </td>
                                 <td className="px-3 py-3 text-sm text-gray-600">
-                                  {person.neighborhood || '—'}
+                                  {person.neighborhood ?? '—'}
                                 </td>
                                 <td className="px-3 py-3 text-sm text-gray-600">
-                                  {person.phone || '—'}
+                                  {person.phone ?? '—'}
                                 </td>
                                 <td className="px-3 py-3 text-sm text-gray-600 text-center">
-                                  {person.familyMemberCount || '—'}
+                                  {person.familyMemberCount ?? '—'}
                                 </td>
                                 <td
                                   className="px-3 py-3 text-sm text-gray-600 max-w-[100px] truncate"
                                   title={person.linkedOrphan}
                                 >
-                                  {person.linkedOrphan || '—'}
+                                  {person.linkedOrphan ?? '—'}
                                 </td>
                                 <td className="px-3 py-3 text-sm text-gray-600 font-mono">
                                   {person.totalAmount
@@ -1018,7 +1031,7 @@ export function BulkPersonImport({
                                 </Badge>
                               </td>
                               <td className="px-4 py-3 text-sm text-gray-600 font-medium">
-                                {error.field || '—'}
+                                {error.field ?? '—'}
                               </td>
                               <td className="px-4 py-3 text-sm text-red-600 max-w-xs">
                                 <div className="truncate" title={error.error}>
@@ -1059,7 +1072,7 @@ export function BulkPersonImport({
             </Card>
           </div>
 
-          {(hasData || hasErrors) && (
+          {(hasData ?? hasErrors) && (
             <div className="flex justify-center gap-2">
               <Button variant="outline" onClick={clearResults}>
                 <RotateCcw className="h-4 w-4 mr-2" />

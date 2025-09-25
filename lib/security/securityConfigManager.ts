@@ -1,3 +1,10 @@
+/**
+ * @fileoverview securityConfigManager Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { z } from 'zod';
 import { ServiceError, ServiceErrorCode } from '../../services/config';
 import {
@@ -144,6 +151,13 @@ export const SECURITY_PRESETS = {
 };
 
 // Security configuration manager
+/**
+ * SecurityConfigManager Service
+ * 
+ * Service class for handling securityconfigmanager operations
+ * 
+ * @class SecurityConfigManager
+ */
 export class SecurityConfigManager {
   private currentConfig: APISecurityConfig;
   private configHistory: { timestamp: number; config: APISecurityConfig; reason: string }[] = [];

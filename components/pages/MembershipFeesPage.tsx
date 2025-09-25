@@ -1,3 +1,10 @@
+/**
+ * @fileoverview MembershipFeesPage Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { AlertTriangle, CheckCircle, CreditCard, Plus, Search } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useState } from 'react';
@@ -22,6 +29,12 @@ interface Member {
   monthsOwed: number;
 }
 
+/**
+ * MembershipFeesPage function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function MembershipFeesPage() {
   const isMobile = useIsMobile();
   const [searchQuery, setSearchQuery] = useState('');

@@ -1,3 +1,10 @@
+/**
+ * @fileoverview Header Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import {
   Bot,
   Building2,
@@ -34,6 +41,7 @@ import { SmartCommandPalette } from './ux/SmartCommandPalette';
 import { useCommandPalette } from './ux/hooks/useCommandPalette';
 import { useUXAnalytics } from './ux/hooks/useUXAnalytics';
 
+import { logger } from '../lib/logging/logger';
 // AI functions are now defined inline in App.tsx
 const useBasicAI = () => ({
   toggleAssistant: () => {},
@@ -51,6 +59,12 @@ interface HeaderProps {
   onMobileMenuToggle?: () => void; // Mobile menu toggle
 }
 
+/**
+ * Header function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function Header({
   onNavigateToProfile,
   onNavigateToSettings,
@@ -426,9 +440,9 @@ export function Header({
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-semibold text-slate-900 truncate">
-                        {user?.user_metadata?.name || user?.email?.split('@')[0] || 'Kullanıcı'}
+                        {user?.user_metadata?.name ?? user?.email?.split('@')[0] || 'Kullanıcı'}
                       </p>
-                      <p className="text-sm text-slate-600 truncate">{user?.email || ''}</p>
+                      <p className="text-sm text-slate-600 truncate">{user?.email ?? ''}</p>
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
@@ -496,7 +510,7 @@ export function Header({
                     try {
                       await signOut();
                     } catch (error) {
-                      console.error('Logout error:', error);
+                      logger.error('Logout error:', error);
                     }
                   }}
                   className="w-full justify-start gap-2 text-red-600 hover:bg-red-50 hover:text-red-700 min-h-[44px]"

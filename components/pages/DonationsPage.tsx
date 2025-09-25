@@ -1,3 +1,10 @@
+/**
+ * @fileoverview DonationsPage Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import {
   CheckCircle,
   Clock,
@@ -39,6 +46,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { Textarea } from '../ui/textarea';
 
+import { logger } from '../lib/logging/logger';
 interface DonationFormData {
   donor_name: string;
   donor_phone: string;
@@ -50,6 +58,12 @@ interface DonationFormData {
   description: string;
 }
 
+/**
+ * DonationsPage function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function DonationsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -93,7 +107,7 @@ export function DonationsPage() {
       setLoading(true);
 
       const filters: DonationsFilters = {
-        searchTerm: searchTerm.trim() || undefined,
+        searchTerm: searchTerm.trim() ?? undefined,
         status: statusFilter !== 'all' ? statusFilter : undefined,
         donationType: donationTypeFilter !== 'all' ? donationTypeFilter : undefined,
         paymentMethod: paymentMethodFilter !== 'all' ? paymentMethodFilter : undefined,
@@ -102,7 +116,7 @@ export function DonationsPage() {
       const result = await donationsService.getDonations(currentPage, pageSize, filters);
 
       if (result.error) {
-        console.error('❌ Error loading donations:', result.error);
+        logger.error('❌ Error loading donations:', result.error);
         setDonations([]);
         toast.error('Bağışlar yüklenirken hata oluştu');
         return;
@@ -110,7 +124,7 @@ export function DonationsPage() {
 
       setDonations(result.data || []);
     } catch (error) {
-      console.error('Error loading donations:', error);
+      logger.error('Error loading donations:', error);
       setDonations([]);
       toast.error('Bağışlar yüklenirken hata oluştu');
     } finally {
@@ -134,7 +148,7 @@ export function DonationsPage() {
         });
       }
     } catch (error) {
-      console.error('Error loading donation stats:', error);
+      logger.error('Error loading donation stats:', error);
     }
   }, []);
 
@@ -171,25 +185,25 @@ export function DonationsPage() {
       },
     };
 
-    const statusInfo = statusMapping[status] || statusMapping.pending;
+    const statusInfo = statusMapping[status] ?? statusMapping.pending;
 
     return <Badge className={statusInfo.className}>{statusInfo.label}</Badge>;
   };
 
   const handleCreateDonation = async (values?: DonationFormData) => {
-    const donationData = values || donationForm.values;
+    const donationData = values ?? donationForm.values;
 
     try {
       setSaving(true);
 
       const result = await donationsService.createDonation({
         donor_name: donationData.donor_name.trim(),
-        donor_email: donationData.donor_email?.trim() || undefined,
-        donor_phone: donationData.donor_phone?.trim() || undefined,
+        donor_email: donationData.donor_email?.trim() ?? undefined,
+        donor_phone: donationData.donor_phone?.trim() ?? undefined,
         amount: donationData.amount,
         donation_type: donationData.donation_type as 'cash' | 'in_kind' | 'services' | 'other',
-        category: donationData.category?.trim() || undefined,
-        description: donationData.description?.trim() || undefined,
+        category: donationData.category?.trim() ?? undefined,
+        description: donationData.description?.trim() ?? undefined,
         payment_method: donationData.payment_method as
           | 'bank_transfer'
           | 'credit_card'
@@ -214,7 +228,7 @@ export function DonationsPage() {
       await loadDonations();
       await loadStats();
     } catch (error) {
-      console.error('Error creating donation:', error);
+      logger.error('Error creating donation:', error);
       toast.error(error instanceof Error ? error.message : 'Bağış kaydedilemedi');
     } finally {
       setSaving(false);
@@ -233,7 +247,7 @@ export function DonationsPage() {
       await loadDonations();
       await loadStats();
     } catch (error) {
-      console.error('Error updating donation status:', error);
+      logger.error('Error updating donation status:', error);
       toast.error('Durum güncellenemedi');
     }
   };
@@ -254,7 +268,7 @@ export function DonationsPage() {
       await loadDonations();
       await loadStats();
     } catch (error) {
-      console.error('Error deleting donation:', error);
+      logger.error('Error deleting donation:', error);
       toast.error('Bağış silinemedi');
     }
   };
@@ -534,7 +548,7 @@ export function DonationsPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <div className="text-xl sm:text-2xl text-green-600">
-                    ₺{(stats.totalAmount || 0).toLocaleString()}
+                    ₺{(stats.totalAmount ?? 0).toLocaleString()}
                   </div>
                   <p className="text-xs sm:text-sm text-gray-600">Toplam Bağış</p>
                 </div>
@@ -547,7 +561,7 @@ export function DonationsPage() {
             <CardContent className="p-3 sm:p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-xl sm:text-2xl text-blue-600">{stats.total || 0}</div>
+                  <div className="text-xl sm:text-2xl text-blue-600">{stats.total ?? 0}</div>
                   <p className="text-xs sm:text-sm text-gray-600">Toplam İşlem</p>
                 </div>
                 <TrendingUp className="h-8 w-8 text-blue-500 opacity-80" />
@@ -559,7 +573,7 @@ export function DonationsPage() {
             <CardContent className="p-3 sm:p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-xl sm:text-2xl text-yellow-600">{stats.pending || 0}</div>
+                  <div className="text-xl sm:text-2xl text-yellow-600">{stats.pending ?? 0}</div>
                   <p className="text-xs sm:text-sm text-gray-600">Bekleyen</p>
                 </div>
                 <Clock className="h-8 w-8 text-yellow-500 opacity-80" />
@@ -572,7 +586,7 @@ export function DonationsPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <div className="text-xl sm:text-2xl text-emerald-600">
-                    ₺{(stats.averageAmount || 0).toLocaleString()}
+                    ₺{(stats.averageAmount ?? 0).toLocaleString()}
                   </div>
                   <p className="text-xs sm:text-sm text-gray-600">Ortalama</p>
                 </div>
@@ -665,7 +679,7 @@ export function DonationsPage() {
                           <div className="flex-1">
                             <h3 className="font-medium text-gray-900">{donation.donor_name}</h3>
                             <p className="text-sm text-gray-600">
-                              {donation.category || donation.donation_type}
+                              {donation.category ?? donation.donation_type}
                             </p>
                           </div>
                           <div className="text-right">

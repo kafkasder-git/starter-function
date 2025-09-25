@@ -1,3 +1,10 @@
+/**
+ * @fileoverview MobileFormField Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import type { ReactNode } from 'react';
 import { forwardRef, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -221,6 +228,12 @@ interface MobileFormSectionProps {
   defaultExpanded?: boolean;
 }
 
+/**
+ * MobileFormSection function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function MobileFormSection({
   title,
   description,
@@ -294,6 +307,12 @@ interface MobileFormNavigationProps {
   className?: string;
 }
 
+/**
+ * MobileFormNavigation function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function MobileFormNavigation({
   currentStep,
   totalSteps,
@@ -369,7 +388,7 @@ export function MobileFormNavigation({
           <Button
             type="button"
             onClick={onNext}
-            disabled={isNextDisabled || isLoading}
+            disabled={isNextDisabled ?? isLoading}
             size="sm"
             className="min-w-[80px]"
           >

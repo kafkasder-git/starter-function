@@ -1,3 +1,10 @@
+/**
+ * @fileoverview sonner Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 'use client';
 
 import { useTheme } from 'next-themes';

@@ -1,6 +1,19 @@
+/**
+ * @fileoverview usePermissions Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { useAuth } from '../contexts/AuthContext';
 import { Permission, UserRole } from '../types/auth';
 
+/**
+ * usePermissions function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function usePermissions() {
   const { user, checkPermission, hasRole } = useAuth();
 
@@ -49,7 +62,7 @@ export function usePermissions() {
   };
 
   const getUserDisplayName = (): string => {
-    return user?.name || 'Kullanıcı';
+    return user?.name ?? 'Kullanıcı';
   };
 
   const getUserRole = (): string => {

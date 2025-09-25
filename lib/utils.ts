@@ -1,7 +1,20 @@
+/**
+ * @fileoverview utils Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 // Frontend Utilities
 
 /**
  * Generate a unique ID
+ */
+/**
+ * generateId function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
  */
 export function generateId(): string {
   return Math.random().toString(36).substring(2, 11);
@@ -9,6 +22,12 @@ export function generateId(): string {
 
 /**
  * Format date for display
+ */
+/**
+ * formatDate function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
  */
 export function formatDate(date: string | Date): string {
   return new Intl.DateTimeFormat('tr-TR', {
@@ -21,6 +40,12 @@ export function formatDate(date: string | Date): string {
 /**
  * Format currency for display
  */
+/**
+ * formatCurrency function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function formatCurrency(amount: number): string {
   return new Intl.NumberFormat('tr-TR', {
     style: 'currency',
@@ -31,12 +56,24 @@ export function formatCurrency(amount: number): string {
 /**
  * Simulate network delay
  */
+/**
+ * delay function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 /**
  * Get Turkish month name
+ */
+/**
+ * getTurkishMonthName function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
  */
 export function getTurkishMonthName(month: number): string {
   const months = [
@@ -59,6 +96,12 @@ export function getTurkishMonthName(month: number): string {
 /**
  * Validate Turkish National ID
  */
+/**
+ * validateTurkishNationalId function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function validateTurkishNationalId(id: string): boolean {
   if (!/^\d{11}$/.test(id)) return false;
 
@@ -74,6 +117,12 @@ export function validateTurkishNationalId(id: string): boolean {
 /**
  * Generate receipt number
  */
+/**
+ * generateReceiptNumber function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function generateReceiptNumber(prefix = 'REC'): string {
   const year = new Date().getFullYear();
   const random = Math.floor(Math.random() * 999999)
@@ -85,6 +134,12 @@ export function generateReceiptNumber(prefix = 'REC'): string {
 /**
  * Safe JSON parse with fallback
  */
+/**
+ * safeJsonParse function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function safeJsonParse<T>(json: string, fallback: T): T {
   try {
     return JSON.parse(json);
@@ -95,6 +150,12 @@ export function safeJsonParse<T>(json: string, fallback: T): T {
 
 /**
  * Debounce function for search inputs
+ */
+/**
+ * debounce function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
  */
 export function debounce<T extends (...args: unknown[]) => unknown>(
   func: T,
@@ -109,6 +170,12 @@ export function debounce<T extends (...args: unknown[]) => unknown>(
 
 /**
  * Check if string contains search term (case insensitive, Turkish chars)
+ */
+/**
+ * searchIncludes function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
  */
 export function searchIncludes(text: string, searchTerm: string): boolean {
   const normalizeText = (str: string) =>

@@ -1,3 +1,10 @@
+/**
+ * @fileoverview ProfilePage Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import {
   Bell,
   Calendar,
@@ -54,6 +61,12 @@ interface ValidationErrors {
   phone?: string;
 }
 
+/**
+ * ProfilePage function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function ProfilePage() {
   const { user, isAuthenticated } = useSupabaseAuth();
   const [editMode, setEditMode] = useState(false);

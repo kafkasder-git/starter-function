@@ -1,3 +1,10 @@
+/**
+ * @fileoverview UnauthorizedPage Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { motion } from 'motion/react';
 import { ShieldX, ArrowLeft, Home, AlertTriangle } from 'lucide-react';
 import { Button } from '../ui/button';
@@ -55,6 +62,12 @@ const PERMISSION_LABELS: Record<Permission, string> = {
   [Permission.EXPORT_REPORTS]: 'Rapor Dışa Aktarma',
 };
 
+/**
+ * UnauthorizedPage function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function UnauthorizedPage({
   requiredRole,
   requiredPermission,

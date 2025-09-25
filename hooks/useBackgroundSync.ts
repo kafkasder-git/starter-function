@@ -7,6 +7,11 @@ import { useCallback, useEffect, useState } from 'react';
 import type { SyncOptions, SyncResult, SyncTask } from '../services/backgroundSyncService';
 import { backgroundSyncService } from '../services/backgroundSyncService';
 
+/**
+ * UseBackgroundSyncReturn Interface
+ * 
+ * @interface UseBackgroundSyncReturn
+ */
 export interface UseBackgroundSyncReturn {
   isOnline: boolean;
   isSyncAvailable: boolean;

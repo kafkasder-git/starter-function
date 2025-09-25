@@ -1,3 +1,10 @@
+/**
+ * @fileoverview BursStudentsPage Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import {
   Award,
   BookOpen,
@@ -43,6 +50,12 @@ interface StudentStats {
   totalAmount: number;
 }
 
+/**
+ * BursStudentsPage function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function BursStudentsPage() {
   const isMobile = useIsMobile();
   const [searchQuery, setSearchQuery] = useState('');
@@ -156,7 +169,7 @@ export function BursStudentsPage() {
       suspended: { label: 'Askıda', variant: 'outline' as const, color: 'bg-yellow-500' },
     };
 
-    return statusConfig[status] || statusConfig.active;
+    return statusConfig[status] ?? statusConfig.active;
   };
 
   const handleViewStudent = (studentId: number) => {

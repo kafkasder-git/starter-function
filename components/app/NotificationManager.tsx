@@ -1,7 +1,20 @@
+/**
+ * @fileoverview NotificationManager Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import type { ReactNode } from 'react';
 import React, { createContext, useContext, useState, useCallback } from 'react';
 
+import { logger } from '../lib/logging/logger';
 // Notification types
+/**
+ * Notification Interface
+ * 
+ * @interface Notification
+ */
 export interface Notification {
   id: string;
   title: string;
@@ -15,12 +28,22 @@ export interface Notification {
 }
 
 // Notification state
+/**
+ * NotificationState Interface
+ * 
+ * @interface NotificationState
+ */
 export interface NotificationState {
   notifications: Notification[];
   unreadCount: number;
 }
 
 // Notification actions
+/**
+ * NotificationActions Interface
+ * 
+ * @interface NotificationActions
+ */
 export interface NotificationActions {
   addNotification: (notification: Omit<Notification, 'id' | 'timestamp' | 'read' | 'archived'>) => void;
   markAsRead: (id: string) => void;
@@ -98,7 +121,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     const notification = notifications.find(n => n.id === id);
     if (notification?.actionUrl) {
       // Handle navigation or action
-      console.log('Navigating to:', notification.actionUrl);
+      logger.info('Navigating to:', notification.actionUrl);
       markAsRead(id);
     }
   }, [notifications, markAsRead]);

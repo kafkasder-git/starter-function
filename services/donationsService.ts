@@ -1,6 +1,19 @@
+/**
+ * @fileoverview donationsService Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { supabase } from '../lib/supabase';
+import { logger } from '../lib/logging/logger';
 
 // Donation interface
+/**
+ * Donation Interface
+ * 
+ * @interface Donation
+ */
 export interface Donation {
   id: number;
   donor_name: string;
@@ -48,6 +61,11 @@ export interface Donation {
 }
 
 // API response type
+/**
+ * DonationsApiResponse Interface
+ * 
+ * @interface DonationsApiResponse
+ */
 export interface DonationsApiResponse<T> {
   data?: T;
   error?: string;
@@ -56,6 +74,11 @@ export interface DonationsApiResponse<T> {
 }
 
 // Filters interface
+/**
+ * DonationsFilters Interface
+ * 
+ * @interface DonationsFilters
+ */
 export interface DonationsFilters {
   searchTerm?: string;
   status?: string;
@@ -69,6 +92,11 @@ export interface DonationsFilters {
 }
 
 // Donation statistics interface
+/**
+ * DonationStats Interface
+ * 
+ * @interface DonationStats
+ */
 export interface DonationStats {
   total: number;
   totalAmount: number;
@@ -82,6 +110,13 @@ export interface DonationStats {
   paymentMethods: Record<string, number>;
 }
 
+/**
+ * DonationsService Service
+ * 
+ * Service class for handling donationsservice operations
+ * 
+ * @class DonationsService
+ */
 export class DonationsService {
   // Get all donations with pagination and filters
   async getDonations(
@@ -90,7 +125,7 @@ export class DonationsService {
     filters: DonationsFilters = {},
   ): Promise<DonationsApiResponse<Donation[]>> {
     try {
-      console.log('🔄 Fetching donations with filters:', filters);
+      logger.info('🔄 Fetching donations with filters:', filters);
 
       let query = supabase.from('donations').select('*', { count: 'exact' });
 
@@ -148,47 +183,47 @@ export class DonationsService {
       const { data, error, count } = await query;
 
       if (error) {
-        console.error('❌ Error fetching donations:', error);
+        logger.error('❌ Error fetching donations:', error);
         return { error: error.message };
       }
 
-      console.log('✅ Successfully fetched', data?.length || 0, 'donations');
+      logger.info('✅ Successfully fetched', data?.length ?? 0, 'donations');
 
       return {
         data: data || [],
-        count: count || 0,
-        totalPages: Math.ceil((count || 0) / pageSize),
+        count: count ?? 0,
+        totalPages: Math.ceil((count ?? 0) / pageSize),
       };
     } catch (error: any) {
-      console.error('❌ Unexpected error in getDonations:', error);
-      return { error: error.message || 'Beklenmeyen hata oluştu' };
+      logger.error('❌ Unexpected error in getDonations:', error);
+      return { error: error.message ?? 'Beklenmeyen hata oluştu' };
     }
   }
 
   // Get single donation
   async getDonation(id: number): Promise<DonationsApiResponse<Donation>> {
     try {
-      console.log('🔄 Fetching single donation with id:', id);
+      logger.info('🔄 Fetching single donation with id:', id);
 
       const { data, error } = await supabase.from('donations').select('*').eq('id', id).single();
 
       if (error) {
-        console.error('❌ Error fetching single donation:', error);
+        logger.error('❌ Error fetching single donation:', error);
         return { error: error.message };
       }
 
-      console.log('✅ Successfully fetched donation:', data?.donor_name);
+      logger.info('✅ Successfully fetched donation:', data?.donor_name);
       return { data };
     } catch (error: any) {
-      console.error('❌ Unexpected error in getDonation:', error);
-      return { error: error.message || 'Bağış bulunamadı' };
+      logger.error('❌ Unexpected error in getDonation:', error);
+      return { error: error.message ?? 'Bağış bulunamadı' };
     }
   }
 
   // Get donation statistics
   async getDonationStats(): Promise<DonationsApiResponse<DonationStats>> {
     try {
-      console.log('🔄 Fetching donation statistics');
+      logger.info('🔄 Fetching donation statistics');
 
       // Get total count and amount
       const { data: totalData, error: totalError } = await supabase
@@ -196,7 +231,7 @@ export class DonationsService {
         .select('amount, status, donor_type, donation_type, payment_method, created_at');
 
       if (totalError) {
-        console.error('❌ Error fetching donation stats:', totalError);
+        logger.error('❌ Error fetching donation stats:', totalError);
         return { error: totalError.message };
       }
 
@@ -204,7 +239,7 @@ export class DonationsService {
 
       // Calculate statistics
       const total = donations.length;
-      const totalAmount = donations.reduce((sum, d) => sum + (d.amount || 0), 0);
+      const totalAmount = donations.reduce((sum, d) => sum + (d.amount ?? 0), 0);
       const averageAmount = total > 0 ? totalAmount / total : 0;
 
       // Status breakdown
@@ -227,7 +262,7 @@ export class DonationsService {
           const date = new Date(d.created_at);
           const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
           if (monthlyTrend[monthKey] !== undefined) {
-            monthlyTrend[monthKey] += d.amount || 0;
+            monthlyTrend[monthKey] += d.amount ?? 0;
           }
         }
       });
@@ -253,9 +288,9 @@ export class DonationsService {
       const stats: DonationStats = {
         total,
         totalAmount,
-        pending: statusCounts.pending || 0,
-        approved: statusCounts.approved || 0,
-        rejected: statusCounts.rejected || 0,
+        pending: statusCounts.pending ?? 0,
+        approved: statusCounts.approved ?? 0,
+        rejected: statusCounts.rejected ?? 0,
         averageAmount,
         monthlyTrend,
         donorTypes,
@@ -263,7 +298,7 @@ export class DonationsService {
         paymentMethods,
       };
 
-      console.log('✅ Successfully calculated donation statistics:', {
+      logger.info('✅ Successfully calculated donation statistics:', {
         total: stats.total,
         totalAmount: stats.totalAmount,
         averageAmount: stats.averageAmount,
@@ -271,15 +306,15 @@ export class DonationsService {
 
       return { data: stats };
     } catch (error: any) {
-      console.error('❌ Error calculating donation statistics:', error);
-      return { error: error.message || 'İstatistikler hesaplanamadı' };
+      logger.error('❌ Error calculating donation statistics:', error);
+      return { error: error.message ?? 'İstatistikler hesaplanamadı' };
     }
   }
 
   // Create new donation
   async createDonation(donationData: Partial<Donation>): Promise<DonationsApiResponse<Donation>> {
     try {
-      console.log('🔄 Creating new donation:', donationData);
+      logger.info('🔄 Creating new donation:', donationData);
 
       const { data: newDonation, error } = await supabase
         .from('donations')
@@ -288,27 +323,27 @@ export class DonationsService {
             donor_name: donationData.donor_name!,
             donor_email: donationData.donor_email,
             donor_phone: donationData.donor_phone,
-            donor_type: donationData.donor_type || 'individual',
+            donor_type: donationData.donor_type ?? 'individual',
             amount: donationData.amount!,
-            currency: donationData.currency || 'TRY',
-            donation_type: donationData.donation_type || 'cash',
+            currency: donationData.currency ?? 'TRY',
+            donation_type: donationData.donation_type ?? 'cash',
             category: donationData.category,
             description: donationData.description,
-            payment_method: donationData.payment_method || 'bank_transfer',
+            payment_method: donationData.payment_method ?? 'bank_transfer',
             payment_reference: donationData.payment_reference,
             bank_account: donationData.bank_account,
             transaction_id: donationData.transaction_id,
-            status: donationData.status || 'pending',
+            status: donationData.status ?? 'pending',
             allocated_to: donationData.allocated_to,
             beneficiary_id: donationData.beneficiary_id,
-            allocation_percentage: donationData.allocation_percentage || 100.0,
-            receipt_issued: donationData.receipt_issued || false,
-            tax_deductible: donationData.tax_deductible || false,
+            allocation_percentage: donationData.allocation_percentage ?? 100.0,
+            receipt_issued: donationData.receipt_issued ?? false,
+            tax_deductible: donationData.tax_deductible ?? false,
             campaign_id: donationData.campaign_id,
             source: donationData.source,
             referral_code: donationData.referral_code,
             communication_preference: donationData.communication_preference,
-            is_recurring: donationData.is_recurring || false,
+            is_recurring: donationData.is_recurring ?? false,
             recurring_frequency: donationData.recurring_frequency,
             recurring_end_date: donationData.recurring_end_date,
             recurring_amount: donationData.recurring_amount,
@@ -319,15 +354,15 @@ export class DonationsService {
         .single();
 
       if (error) {
-        console.error('❌ Error creating donation:', error);
+        logger.error('❌ Error creating donation:', error);
         return { error: error.message };
       }
 
-      console.log('✅ Successfully created donation:', newDonation?.donor_name);
+      logger.info('✅ Successfully created donation:', newDonation?.donor_name);
       return { data: newDonation };
     } catch (error: any) {
-      console.error('❌ Unexpected error in createDonation:', error);
-      return { error: error.message || 'Bağış oluşturulamadı' };
+      logger.error('❌ Unexpected error in createDonation:', error);
+      return { error: error.message ?? 'Bağış oluşturulamadı' };
     }
   }
 
@@ -337,7 +372,7 @@ export class DonationsService {
     updates: Partial<Donation>,
   ): Promise<DonationsApiResponse<Donation>> {
     try {
-      console.log('🔄 Updating donation:', id, updates);
+      logger.info('🔄 Updating donation:', id, updates);
 
       const { data, error } = await supabase
         .from('donations')
@@ -350,35 +385,35 @@ export class DonationsService {
         .single();
 
       if (error) {
-        console.error('❌ Error updating donation:', error);
+        logger.error('❌ Error updating donation:', error);
         return { error: error.message };
       }
 
-      console.log('✅ Successfully updated donation:', data?.donor_name);
+      logger.info('✅ Successfully updated donation:', data?.donor_name);
       return { data };
     } catch (error: any) {
-      console.error('❌ Unexpected error in updateDonation:', error);
-      return { error: error.message || 'Bağış güncellenemedi' };
+      logger.error('❌ Unexpected error in updateDonation:', error);
+      return { error: error.message ?? 'Bağış güncellenemedi' };
     }
   }
 
   // Delete donation
   async deleteDonation(id: number): Promise<DonationsApiResponse<boolean>> {
     try {
-      console.log('🔄 Deleting donation:', id);
+      logger.info('🔄 Deleting donation:', id);
 
       const { error } = await supabase.from('donations').delete().eq('id', id);
 
       if (error) {
-        console.error('❌ Error deleting donation:', error);
+        logger.error('❌ Error deleting donation:', error);
         return { error: error.message };
       }
 
-      console.log('✅ Successfully deleted donation:', id);
+      logger.info('✅ Successfully deleted donation:', id);
       return { data: true };
     } catch (error: any) {
-      console.error('❌ Unexpected error in deleteDonation:', error);
-      return { error: error.message || 'Bağış silinemedi' };
+      logger.error('❌ Unexpected error in deleteDonation:', error);
+      return { error: error.message ?? 'Bağış silinemedi' };
     }
   }
 
@@ -397,7 +432,7 @@ export class DonationsService {
       const donorTypes = [...new Set(data.map((item) => item.donor_type))].sort();
       return { data: donorTypes };
     } catch (error: any) {
-      return { error: error.message || 'Bağışçı türleri getirilemedi' };
+      return { error: error.message ?? 'Bağışçı türleri getirilemedi' };
     }
   }
 
@@ -416,7 +451,7 @@ export class DonationsService {
       const donationTypes = [...new Set(data.map((item) => item.donation_type))].sort();
       return { data: donationTypes };
     } catch (error: any) {
-      return { error: error.message || 'Bağış türleri getirilemedi' };
+      return { error: error.message ?? 'Bağış türleri getirilemedi' };
     }
   }
 
@@ -435,14 +470,14 @@ export class DonationsService {
       const paymentMethods = [...new Set(data.map((item) => item.payment_method))].sort();
       return { data: paymentMethods };
     } catch (error: any) {
-      return { error: error.message || 'Ödeme yöntemleri getirilemedi' };
+      return { error: error.message ?? 'Ödeme yöntemleri getirilemedi' };
     }
   }
 
   // Bulk approve donations
   async bulkApproveDonations(ids: number[]): Promise<DonationsApiResponse<boolean>> {
     try {
-      console.log('🔄 Bulk approving donations:', ids);
+      logger.info('🔄 Bulk approving donations:', ids);
 
       const { error } = await supabase
         .from('donations')
@@ -454,22 +489,22 @@ export class DonationsService {
         .in('id', ids);
 
       if (error) {
-        console.error('❌ Error bulk approving donations:', error);
+        logger.error('❌ Error bulk approving donations:', error);
         return { error: error.message };
       }
 
-      console.log('✅ Successfully bulk approved', ids.length, 'donations');
+      logger.info('✅ Successfully bulk approved', ids.length, 'donations');
       return { data: true };
     } catch (error: any) {
-      console.error('❌ Unexpected error in bulkApproveDonations:', error);
-      return { error: error.message || 'Toplu onay işlemi başarısız' };
+      logger.error('❌ Unexpected error in bulkApproveDonations:', error);
+      return { error: error.message ?? 'Toplu onay işlemi başarısız' };
     }
   }
 
   // Export donations to CSV
   async exportDonations(filters: DonationsFilters = {}): Promise<DonationsApiResponse<Donation[]>> {
     try {
-      console.log('🔄 Exporting donations with filters:', filters);
+      logger.info('🔄 Exporting donations with filters:', filters);
 
       let query = supabase.from('donations').select('*');
 
@@ -509,15 +544,15 @@ export class DonationsService {
       const { data, error } = await query;
 
       if (error) {
-        console.error('❌ Error exporting donations:', error);
+        logger.error('❌ Error exporting donations:', error);
         return { error: error.message };
       }
 
-      console.log('✅ Successfully exported', data?.length || 0, 'donations');
+      logger.info('✅ Successfully exported', data?.length ?? 0, 'donations');
       return { data: data || [] };
     } catch (error: any) {
-      console.error('❌ Unexpected error in exportDonations:', error);
-      return { error: error.message || 'Dışa aktarma başarısız' };
+      logger.error('❌ Unexpected error in exportDonations:', error);
+      return { error: error.message ?? 'Dışa aktarma başarısız' };
     }
   }
 }

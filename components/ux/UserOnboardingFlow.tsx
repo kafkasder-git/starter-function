@@ -1,3 +1,10 @@
+/**
+ * @fileoverview UserOnboardingFlow Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import React, { useState, useEffect } from 'react';
 import {
   ChevronLeft,
@@ -17,6 +24,7 @@ import { Progress } from '../ui/progress';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '../ui/dialog';
 import { cn } from '../ui/utils';
 
+import { logger } from '../lib/logging/logger';
 interface OnboardingStep {
   id: string;
   title: string;
@@ -362,6 +370,12 @@ const onboardingSteps: Record<string, OnboardingStep[]> = {
   ],
 };
 
+/**
+ * UserOnboardingFlow function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function UserOnboardingFlow({
   isOpen,
   onClose,
@@ -373,7 +387,7 @@ export function UserOnboardingFlow({
   const [currentStep, setCurrentStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
 
-  const steps = onboardingSteps[variant] || onboardingSteps.welcome;
+  const steps = onboardingSteps[variant] ?? onboardingSteps.welcome;
   const totalSteps = steps.length;
   const progress = ((currentStep + 1) / totalSteps) * 100;
 
@@ -428,7 +442,7 @@ export function UserOnboardingFlow({
         }),
       );
     } catch (error) {
-      console.warn('Error saving onboarding completion:', error);
+      logger.warn('Error saving onboarding completion:', error);
     }
 
     onComplete();

@@ -1,3 +1,10 @@
+/**
+ * @fileoverview KumbaraPage Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import {
   Calendar,
   DollarSign,
@@ -43,6 +50,12 @@ interface Kumbara {
 
 // Mock data kaldırıldı - gerçek veriler API'den gelecek
 
+/**
+ * KumbaraPage function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function KumbaraPage() {
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');

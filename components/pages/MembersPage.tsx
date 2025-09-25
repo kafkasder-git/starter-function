@@ -1,3 +1,10 @@
+/**
+ * @fileoverview MembersPage Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import {
   Clock,
   Download,
@@ -24,6 +31,7 @@ import { DesktopActionButtons, DesktopFilters, DesktopStatsCard } from '../ui/de
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 
+import { logger } from '../lib/logging/logger';
 // Status and membership type mappings for Turkish display
 const statusMapping = {
   active: 'Aktif',
@@ -39,6 +47,12 @@ const membershipTypeMapping = {
   senior: 'Emekli',
 } as const;
 
+/**
+ * MembersPage function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function MembersPage() {
   // User authentication handled by AuthContext
   const [loading, setLoading] = useState(true);
@@ -64,13 +78,13 @@ export function MembersPage() {
       const filters = {
         membershipStatus: statusFilter !== 'all' ? statusFilter : undefined,
         membershipType: typeFilter !== 'all' ? typeFilter : undefined,
-        searchTerm: searchTerm.trim() || undefined,
+        searchTerm: searchTerm.trim() ?? undefined,
       };
 
       const result = await membersService.getMembers(currentPage, pageSize, filters);
 
       if (result.error) {
-        console.error('❌ Error loading members:', result.error);
+        logger.error('❌ Error loading members:', result.error);
         setMembers([]);
         setTotalCount(0);
         toast.error('Üyeler yüklenirken hata oluştu');
@@ -78,9 +92,9 @@ export function MembersPage() {
       }
 
       setMembers(result.data || []);
-      setTotalCount(result.count || 0);
+      setTotalCount(result.count ?? 0);
     } catch (error) {
-      console.error('Error loading members:', error);
+      logger.error('Error loading members:', error);
       toast.error('Üyeler yüklenirken hata oluştu');
     } finally {
       setLoading(false);
@@ -100,7 +114,7 @@ export function MembersPage() {
         });
       }
     } catch (error) {
-      console.error('Error loading stats:', error);
+      logger.error('Error loading stats:', error);
     }
   }, []);
 
@@ -320,7 +334,7 @@ export function MembersPage() {
                               <h3 className="font-medium text-gray-900 truncate">{member.name}</h3>
                               <p className="text-sm text-gray-600 truncate">{member.email}</p>
                               <p className="text-xs text-gray-500">
-                                {member.phone || 'Telefon yok'}
+                                {member.phone ?? 'Telefon yok'}
                               </p>
                             </div>
                           </div>
@@ -331,7 +345,7 @@ export function MembersPage() {
                         </div>
 
                         <div className="flex justify-between items-center text-sm text-gray-500 mb-3">
-                          <span>{member.city || 'Şehir belirtilmemiş'}</span>
+                          <span>{member.city ?? 'Şehir belirtilmemiş'}</span>
                           <span>{new Date(member.join_date).toLocaleDateString('tr-TR')}</span>
                         </div>
 
@@ -426,21 +440,21 @@ export function MembersPage() {
                         <TableCell className="p-4">
                           <div className="flex items-center gap-3">
                             <Avatar className="h-10 w-10">
-                              <AvatarImage src={member.avatar_url || ''} />
+                              <AvatarImage src={member.avatar_url ?? ''} />
                               <AvatarFallback className="bg-blue-100 text-blue-600">
-                                {(member.name || 'U').charAt(0)}
-                                {(member.name || '').split(' ')[1]?.charAt(0) || 'N'}
+                                {(member.name ?? 'U').charAt(0)}
+                                {(member.name ?? '').split(' ')[1]?.charAt(0) || 'N'}
                               </AvatarFallback>
                             </Avatar>
                             <div className="min-w-0 flex-1">
                               <div className="font-medium truncate">
-                                {member.name || 'Bilinmeyen Üye'}
+                                {member.name ?? 'Bilinmeyen Üye'}
                               </div>
                             </div>
                           </div>
                         </TableCell>
-                        <TableCell className="p-4 text-sm">{member.email || '-'}</TableCell>
-                        <TableCell className="p-4 text-sm">{member.phone || '-'}</TableCell>
+                        <TableCell className="p-4 text-sm">{member.email ?? '-'}</TableCell>
+                        <TableCell className="p-4 text-sm">{member.phone ?? '-'}</TableCell>
                         <TableCell className="p-4">
                           {getTypeBadge(member.membership_type)}
                         </TableCell>
@@ -479,7 +493,7 @@ export function MembersPage() {
                       <TableCell colSpan={7} className="p-8 text-center">
                         <UserPlus className="w-12 h-12 mx-auto mb-4 text-gray-300" />
                         <p className="text-gray-600 mb-2">
-                          {searchTerm || statusFilter !== 'all' || typeFilter !== 'all'
+                          {searchTerm ?? statusFilter !== 'all' || typeFilter !== 'all'
                             ? 'Arama kriterlerinize uygun üye bulunamadı.'
                             : 'Henüz hiç üye kaydı yok.'}
                         </p>
@@ -512,7 +526,7 @@ export function MembersPage() {
                     onClick={() => {
                       setCurrentPage((prev) => Math.max(1, prev - 1));
                     }}
-                    disabled={currentPage === 1 || loading}
+                    disabled={currentPage === 1 ?? loading}
                     className="px-4"
                   >
                     Önceki

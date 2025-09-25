@@ -5,6 +5,11 @@
 
 import { logger } from '../lib/logging/logger';
 
+/**
+ * CameraOptions Interface
+ * 
+ * @interface CameraOptions
+ */
 export interface CameraOptions {
   facingMode?: 'user' | 'environment';
   width?: number;
@@ -12,18 +17,33 @@ export interface CameraOptions {
   quality?: number;
 }
 
+/**
+ * GeolocationOptions Interface
+ * 
+ * @interface GeolocationOptions
+ */
 export interface GeolocationOptions {
   enableHighAccuracy?: boolean;
   timeout?: number;
   maximumAge?: number;
 }
 
+/**
+ * ContactInfo Interface
+ * 
+ * @interface ContactInfo
+ */
 export interface ContactInfo {
   name?: string;
   phone?: string;
   email?: string;
 }
 
+/**
+ * DeviceCapabilities Interface
+ * 
+ * @interface DeviceCapabilities
+ */
 export interface DeviceCapabilities {
   camera: boolean;
   geolocation: boolean;
@@ -436,8 +456,7 @@ class NativeFeaturesService {
   isStandalone(): boolean {
     return (
       window.matchMedia('(display-mode: standalone)').matches ||
-      (window.navigator as any).standalone ||
-      document.referrer.includes('android-app://')
+      (window.navigator as any).standalone ?? document.referrer.includes('android-app://')
     );
   }
 

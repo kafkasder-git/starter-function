@@ -1,7 +1,15 @@
+/**
+ * @fileoverview AppInitializer Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { usePerformanceOptimization } from '../../hooks/usePerformanceOptimization';
 import { PageLoading } from '../LoadingSpinner';
 
+import { logger } from '../lib/logging/logger';
 interface AppInitializerProps {
   children: React.ReactNode;
   onInitialized?: () => void;
@@ -9,6 +17,12 @@ interface AppInitializerProps {
 
 /**
  * App Initializer - Handles application startup and initialization
+ */
+/**
+ * AppInitializer function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
  */
 export function AppInitializer({ children, onInitialized }: AppInitializerProps) {
   const { requestFrame } = usePerformanceOptimization();
@@ -42,7 +56,7 @@ export function AppInitializer({ children, onInitialized }: AppInitializerProps)
 
       setInitializationComplete(true);
     } catch (error) {
-      console.error('Initialization failed:', error);
+      logger.error('Initialization failed:', error);
       setInitializationError(error instanceof Error ? error : new Error('Initialization failed'));
     }
   }, []);

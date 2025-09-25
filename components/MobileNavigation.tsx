@@ -1,3 +1,10 @@
+/**
+ * @fileoverview MobileNavigation Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { useState, useEffect } from 'react';
 import {
   Home,
@@ -172,6 +179,12 @@ interface MobileNavigationProps {
   onSubPageChange?: (href: string) => void;
 }
 
+/**
+ * MobileNavigation function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function MobileNavigation({
   activeModule = 'genel',
   onModuleChange,

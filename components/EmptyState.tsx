@@ -1,3 +1,10 @@
+/**
+ * @fileoverview EmptyState Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import type { ReactNode } from 'react';
 import { Search, Users, Heart, Package, FileX, Database, Inbox, Calendar } from 'lucide-react';
 import { Button } from './ui/button';
@@ -15,6 +22,12 @@ interface EmptyStateProps {
   className?: string;
 }
 
+/**
+ * EmptyState function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function EmptyState({
   icon,
   title,

@@ -1,8 +1,22 @@
+/**
+ * @fileoverview usePerformanceOptimization Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
+import { logger } from '../lib/logging/logger';
 /**
  * Performance optimization hook for the NGO management system
  * Handles memory management, debouncing, and efficient re-renders
+ */
+/**
+ * usePerformanceOptimization function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
  */
 export function usePerformanceOptimization() {
   const rafId = useRef<number | null>(null);
@@ -52,7 +66,7 @@ export function usePerformanceOptimization() {
 
   // Low memory mode optimizations
   const shouldReduceAnimations =
-    isLowMemory || window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    isLowMemory ?? window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   return {
     isLowMemory,
@@ -64,6 +78,12 @@ export function usePerformanceOptimization() {
 
 /**
  * Optimized state management hook with debouncing
+ */
+/**
+ * useOptimizedState function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
  */
 export function useOptimizedState<T>(
   initialValue: T,
@@ -101,6 +121,12 @@ export function useOptimizedState<T>(
 
 /**
  * Component visibility optimization hook
+ */
+/**
+ * useVisibilityOptimization function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
  */
 export function useVisibilityOptimization(elementRef: React.RefObject<HTMLElement>) {
   const [isVisible, setIsVisible] = useState(true);
@@ -150,7 +176,7 @@ export const createLazyComponent = <T extends React.ComponentType<any>>(
         default: 'default' in module ? module.default : module,
       };
     } catch (error) {
-      console.warn('Component lazy loading failed:', error);
+      logger.warn('Component lazy loading failed:', error);
       return {
         default:
           fallback || ((() => React.createElement('div', { children: 'Yükleme hatası' })) as T),

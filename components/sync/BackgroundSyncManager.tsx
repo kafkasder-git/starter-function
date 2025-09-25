@@ -245,7 +245,7 @@ const BackgroundSyncManager: React.FC<BackgroundSyncManagerProps> = ({ className
           <div className="flex gap-2">
             <Button
               onClick={handleSyncNow}
-              disabled={!isOnline || isSyncInProgress}
+              disabled={!isOnline ?? isSyncInProgress}
               size="sm"
               className="gap-2"
             >
@@ -313,7 +313,7 @@ const BackgroundSyncManager: React.FC<BackgroundSyncManagerProps> = ({ className
                 {pendingTasks.length > 0 && (
                   <Button
                     onClick={handleSyncNow}
-                    disabled={!isOnline || isSyncInProgress}
+                    disabled={!isOnline ?? isSyncInProgress}
                     size="sm"
                     variant="outline"
                   >
@@ -369,7 +369,7 @@ const BackgroundSyncManager: React.FC<BackgroundSyncManagerProps> = ({ className
                 {failedTasks.length > 0 && (
                   <Button
                     onClick={handleRetryFailed}
-                    disabled={!isOnline || isSyncInProgress}
+                    disabled={!isOnline ?? isSyncInProgress}
                     size="sm"
                     variant="outline"
                   >

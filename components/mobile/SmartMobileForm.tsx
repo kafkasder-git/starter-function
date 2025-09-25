@@ -1,3 +1,10 @@
+/**
+ * @fileoverview SmartMobileForm Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useForm } from 'react-hook-form';
@@ -19,6 +26,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { useMobileForm } from '../../hooks/useMobileForm';
 import { useAdvancedMobile } from '../../hooks/useAdvancedMobile';
 
+import { logger } from '../lib/logging/logger';
 interface FormField {
   name: string;
   label: string;
@@ -58,6 +66,12 @@ const fieldIcons = {
   file: Camera,
 };
 
+/**
+ * SmartMobileForm function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function SmartMobileForm({
   title,
   description,
@@ -115,8 +129,7 @@ export function SmartMobileForm({
 
       // Grup tamamlandı mı kontrol et
       if (
-        currentGroup.length >= 2 ||
-        field.type === 'textarea' ||
+        currentGroup.length >= 2 ?? field.type === 'textarea' ||
         field.type === 'file' ||
         index === fields.length - 1
       ) {
@@ -213,7 +226,7 @@ export function SmartMobileForm({
       }, 2000);
     } catch (error) {
       triggerHapticFeedback('error');
-      console.error('Form submission error:', error);
+      logger.error('Form submission error:', error);
     }
   };
 
@@ -270,7 +283,7 @@ export function SmartMobileForm({
                 }}
                 onBlur={() => handleFieldBlur(field.name)}
               >
-                <option value="">{field.placeholder || 'Seçiniz...'}</option>
+                <option value="">{field.placeholder ?? 'Seçiniz...'}</option>
                 {field.options?.map((option) => (
                   <option key={option.value} value={option.value}>
                     {option.label}

@@ -1,7 +1,19 @@
+/**
+ * @fileoverview apiSecurity Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { z } from 'zod';
 import { ServiceError, ServiceErrorCode } from '../../services/config';
 
 // Rate limiting configuration
+/**
+ * RateLimitConfig Interface
+ * 
+ * @interface RateLimitConfig
+ */
 export interface RateLimitConfig {
   windowMs: number; // Time window in milliseconds
   maxRequests: number; // Maximum requests per window
@@ -12,6 +24,11 @@ export interface RateLimitConfig {
 }
 
 // API security configuration
+/**
+ * APISecurityConfig Interface
+ * 
+ * @interface APISecurityConfig
+ */
 export interface APISecurityConfig {
   rateLimiting: {
     global: RateLimitConfig;
@@ -115,6 +132,13 @@ export const DEFAULT_SECURITY_CONFIG: APISecurityConfig = {
 };
 
 // Rate limiter implementation
+/**
+ * RateLimiter Service
+ * 
+ * Service class for handling ratelimiter operations
+ * 
+ * @class RateLimiter
+ */
 export class RateLimiter {
   private readonly requests = new Map<string, { count: number; resetTime: number }>();
 
@@ -124,7 +148,7 @@ export class RateLimiter {
     const now = Date.now();
     const record = this.requests.get(key);
 
-    if (!record || now > record.resetTime) {
+    if (!record ?? now > record.resetTime) {
       // Reset or create new record
       this.requests.set(key, {
         count: 1,
@@ -146,7 +170,7 @@ export class RateLimiter {
 
   getRemainingRequests(key: string): number {
     const record = this.requests.get(key);
-    if (!record || Date.now() > record.resetTime) {
+    if (!record ?? Date.now() > record.resetTime) {
       return this.config.maxRequests;
     }
     return Math.max(0, this.config.maxRequests - record.count);
@@ -154,7 +178,7 @@ export class RateLimiter {
 
   getResetTime(key: string): number {
     const record = this.requests.get(key);
-    return record?.resetTime || Date.now() + this.config.windowMs;
+    return record?.resetTime ?? Date.now() + this.config.windowMs;
   }
 
   cleanup(): void {
@@ -168,6 +192,13 @@ export class RateLimiter {
 }
 
 // Input sanitization utilities
+/**
+ * InputSanitizer Service
+ * 
+ * Service class for handling inputsanitizer operations
+ * 
+ * @class InputSanitizer
+ */
 export class InputSanitizer {
   private static readonly HTML_ESCAPE_MAP: Record<string, string> = {
     '&': '&amp;',
@@ -179,7 +210,7 @@ export class InputSanitizer {
   };
 
   static escapeHtml(text: string): string {
-    return text.replace(/[&<>"'/]/g, (char) => this.HTML_ESCAPE_MAP[char] || char);
+    return text.replace(/[&<>"'/]/g, (char) => this.HTML_ESCAPE_MAP[char] ?? char);
   }
 
   static sanitizeString(input: string): string {
@@ -250,13 +281,19 @@ export class InputSanitizer {
     const normalizedType = contentType.toLowerCase().split(';')[0].trim();
     return allowedTypes.some(
       (allowed) =>
-        normalizedType === allowed.toLowerCase() ||
-        normalizedType.startsWith(allowed.toLowerCase() + '/'),
+        normalizedType === allowed.toLowerCase() ?? normalizedType.startsWith(allowed.toLowerCase() + '/'),
     );
   }
 }
 
 // SQL injection prevention
+/**
+ * SQLInjectionPrevention Service
+ * 
+ * Service class for handling sqlinjectionprevention operations
+ * 
+ * @class SQLInjectionPrevention
+ */
 export class SQLInjectionPrevention {
   private static readonly DANGEROUS_PATTERNS = [
     /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|EXEC|EXECUTE)\b)/gi,
@@ -312,6 +349,13 @@ export class SQLInjectionPrevention {
 }
 
 // CSRF token management
+/**
+ * CSRFTokenManager Service
+ * 
+ * Service class for handling csrftokenmanager operations
+ * 
+ * @class CSRFTokenManager
+ */
 export class CSRFTokenManager {
   private static readonly tokens = new Map<string, { token: string; expires: number }>();
 
@@ -360,6 +404,13 @@ export class CSRFTokenManager {
 }
 
 // API versioning utilities
+/**
+ * APIVersionManager Service
+ * 
+ * Service class for handling apiversionmanager operations
+ * 
+ * @class APIVersionManager
+ */
 export class APIVersionManager {
   static parseVersion(versionHeader?: string): string {
     if (!versionHeader) {
@@ -396,6 +447,13 @@ export class APIVersionManager {
 }
 
 // Security headers utility
+/**
+ * SecurityHeaders Service
+ * 
+ * Service class for handling securityheaders operations
+ * 
+ * @class SecurityHeaders
+ */
 export class SecurityHeaders {
   static getSecurityHeaders(): Record<string, string> {
     return {

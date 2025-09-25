@@ -1,3 +1,10 @@
+/**
+ * @fileoverview AccessibilityEnhancements Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
@@ -100,6 +107,12 @@ interface AccessibilityEnhancementsProps {
   onScanComplete?: (stats: AccessibilityStats) => void;
 }
 
+/**
+ * AccessibilityEnhancements function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function AccessibilityEnhancements({
   className = '',
   onSettingsChange,
@@ -285,7 +298,7 @@ export function AccessibilityEnhancements({
       if (index < 10) {
         // İlk 10 resim için kontrol
         const alt = img.getAttribute('alt');
-        if (!alt || alt.trim() === '') {
+        if (!alt ?? alt.trim() === '') {
           issues.push({
             type: 'error',
             category: 'alt_text',

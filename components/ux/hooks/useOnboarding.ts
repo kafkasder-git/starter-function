@@ -1,5 +1,13 @@
+/**
+ * @fileoverview useOnboarding Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { useState, useEffect, useCallback } from 'react';
 
+import { logger } from '../lib/logging/logger';
 interface OnboardingData {
   variant: string;
   completedAt: string;
@@ -15,6 +23,12 @@ interface UseOnboardingOptions {
   version?: string;
 }
 
+/**
+ * useOnboarding function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useOnboarding({
   variant = 'welcome',
   userRole = 'user',
@@ -56,7 +70,7 @@ export function useOnboarding({
         };
       }
     } catch (error) {
-      console.warn('Error loading onboarding status:', error);
+      logger.warn('Error loading onboarding status:', error);
     }
   }, [variant, userRole, version, autoStart, isCompleted]);
 
@@ -77,7 +91,7 @@ export function useOnboarding({
       setCompletionData(completionData);
       setIsCompleted(true);
     } catch (error) {
-      console.warn('Error saving onboarding completion:', error);
+      logger.warn('Error saving onboarding completion:', error);
     }
   }, [variant, userRole, version]);
 
@@ -95,7 +109,7 @@ export function useOnboarding({
       setCompletionData(skipData);
       setIsCompleted(true);
     } catch (error) {
-      console.warn('Error saving onboarding skip:', error);
+      logger.warn('Error saving onboarding skip:', error);
     }
   }, [variant, userRole, version]);
 
@@ -105,7 +119,7 @@ export function useOnboarding({
       setCompletionData(null);
       setIsCompleted(false);
     } catch (error) {
-      console.warn('Error resetting onboarding:', error);
+      logger.warn('Error resetting onboarding:', error);
     }
   }, []);
 

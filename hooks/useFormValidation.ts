@@ -1,4 +1,12 @@
+/**
+ * @fileoverview useFormValidation Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { useCallback, useState } from 'react';
+import { logger } from '../lib/logging/logger';
 import {
   validateField,
   validateForm,
@@ -6,6 +14,11 @@ import {
   type ValidationSchema,
 } from '../lib/validation';
 
+/**
+ * UseFormValidationOptions Interface
+ * 
+ * @interface UseFormValidationOptions
+ */
 export interface UseFormValidationOptions<T> {
   schema: ValidationSchema;
   initialValues: T;
@@ -14,6 +27,11 @@ export interface UseFormValidationOptions<T> {
   validateOnBlur?: boolean;
 }
 
+/**
+ * FormValidationState Interface
+ * 
+ * @interface FormValidationState
+ */
 export interface FormValidationState<T> {
   values: T;
   errors: Record<keyof T, string>;
@@ -23,6 +41,11 @@ export interface FormValidationState<T> {
   submitCount: number;
 }
 
+/**
+ * FormValidationActions Interface
+ * 
+ * @interface FormValidationActions
+ */
 export interface FormValidationActions<T> {
   setValue: (field: keyof T, value: string | number | boolean) => void;
   setValues: (values: Partial<T>) => void;
@@ -37,6 +60,12 @@ export interface FormValidationActions<T> {
   handleChange: (field: keyof T, value: string | number | boolean) => void;
 }
 
+/**
+ * useFormValidation function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function useFormValidation<T extends Record<string, string | number | boolean>>({
   schema,
   initialValues,
@@ -96,7 +125,7 @@ export function useFormValidation<T extends Record<string, string | number | boo
   }, []);
 
   const setFieldError = useCallback((field: keyof T, error?: string) => {
-    setErrors((prev) => ({ ...prev, [field]: error || '' }));
+    setErrors((prev) => ({ ...prev, [field]: error ?? '' }));
   }, []);
 
   const validateSingleField = useCallback(
@@ -248,7 +277,7 @@ export function useFormValidation<T extends Record<string, string | number | boo
           await onSubmit(sanitizedValues);
         }
       } catch (error) {
-        console.error('Form submission error:', error);
+        logger.error('Form submission error:', error);
       } finally {
         setIsSubmitting(false);
       }

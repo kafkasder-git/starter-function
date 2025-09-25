@@ -5,10 +5,16 @@
 
 import { monitoring } from './monitoringService';
 
+import { logger } from '../lib/logging/logger';
 // =============================================================================
 // TYPES AND INTERFACES
 // =============================================================================
 
+/**
+ * CacheEntry Interface
+ * 
+ * @interface CacheEntry
+ */
 export interface CacheEntry<T = any> {
   data: T;
   timestamp: number;
@@ -20,6 +26,11 @@ export interface CacheEntry<T = any> {
   metadata?: Record<string, any>;
 }
 
+/**
+ * CacheConfig Interface
+ * 
+ * @interface CacheConfig
+ */
 export interface CacheConfig {
   defaultTTL: number;
   maxSize: number; // Maximum cache size in bytes
@@ -30,6 +41,11 @@ export interface CacheConfig {
   syncEnabled: boolean;
 }
 
+/**
+ * CacheStats Interface
+ * 
+ * @interface CacheStats
+ */
 export interface CacheStats {
   totalEntries: number;
   totalSize: number;
@@ -43,6 +59,11 @@ export interface CacheStats {
   newestEntry: number;
 }
 
+/**
+ * CacheStrategy Interface
+ * 
+ * @interface CacheStrategy
+ */
 export interface CacheStrategy {
   name: string;
   description: string;
@@ -56,6 +77,11 @@ export interface CacheStrategy {
   };
 }
 
+/**
+ * ReactQueryConfig Interface
+ * 
+ * @interface ReactQueryConfig
+ */
 export interface ReactQueryConfig {
   defaultOptions: {
     queries: {
@@ -79,6 +105,13 @@ export interface ReactQueryConfig {
 // CACHING SERVICE CLASS
 // =============================================================================
 
+/**
+ * CachingService Service
+ * 
+ * Service class for handling cachingservice operations
+ * 
+ * @class CachingService
+ */
 export class CachingService {
   private static instance: CachingService;
   private readonly memoryCache = new Map<string, CacheEntry>();
@@ -154,8 +187,8 @@ export class CachingService {
     } = {},
   ): void {
     const strategy = options.strategy ? this.strategies.get(options.strategy) : null;
-    const ttl = options.ttl || strategy?.ttl || this.config.defaultTTL;
-    const tags = options.tags || strategy?.tags || [];
+    const ttl = options.ttl ?? strategy?.ttl ?? this.config.defaultTTL;
+    const tags = options.tags ?? strategy?.tags || [];
 
     const entry: CacheEntry<T> = {
       data,
@@ -477,12 +510,12 @@ export class CachingService {
   getQueryOptions(strategyName: string, overrides: any = {}) {
     const strategy = this.strategies.get(strategyName);
     if (!strategy) {
-      console.warn(`Cache strategy '${strategyName}' not found, using default`);
+      logger.warn(`Cache strategy '${strategyName}' not found, using default`);
     }
 
     const baseOptions = {
-      staleTime: strategy?.ttl || this.config.defaultTTL,
-      gcTime: (strategy?.ttl || this.config.defaultTTL) * 2,
+      staleTime: strategy?.ttl ?? this.config.defaultTTL,
+      gcTime: (strategy?.ttl ?? this.config.defaultTTL) * 2,
       retry: 2,
       retryDelay: (attemptIndex: number) => Math.min(1000 * 2 ** attemptIndex, 30000),
       refetchOnWindowFocus: strategy?.priority === 'high',
@@ -566,7 +599,7 @@ export class CachingService {
         },
       });
     } catch (error) {
-      console.warn('Failed to load persistent cache:', error);
+      logger.warn('Failed to load persistent cache:', error);
     }
   }
 
@@ -579,7 +612,7 @@ export class CachingService {
     try {
       localStorage.setItem(`cache_${key}`, JSON.stringify(entry));
     } catch (error) {
-      console.warn('Failed to persist cache entry:', error);
+      logger.warn('Failed to persist cache entry:', error);
     }
   }
 
@@ -592,7 +625,7 @@ export class CachingService {
     try {
       localStorage.removeItem(`cache_${key}`);
     } catch (error) {
-      console.warn('Failed to remove persistent cache entry:', error);
+      logger.warn('Failed to remove persistent cache entry:', error);
     }
   }
 

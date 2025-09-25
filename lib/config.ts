@@ -1,3 +1,10 @@
+/**
+ * @fileoverview config Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 // Application Configuration with Supabase
 export const APP_CONFIG = {
   name: 'Dernek Yönetim Sistemi',

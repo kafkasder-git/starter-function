@@ -1,3 +1,10 @@
+/**
+ * @fileoverview SystemSettingsPage Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import {
   Activity,
   CheckCircle,
@@ -30,6 +37,12 @@ import { Switch } from '../ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { Textarea } from '../ui/textarea';
 
+/**
+ * SystemSettingsPage function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function SystemSettingsPage() {
   const [systemConfig, setSystemConfig] = useState({
     organizationName: 'Dernek Yönetim Sistemi',

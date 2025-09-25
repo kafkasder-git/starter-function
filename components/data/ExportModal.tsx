@@ -1,3 +1,10 @@
+/**
+ * @fileoverview ExportModal Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
@@ -38,6 +45,12 @@ interface ExportModalProps {
   defaultConfig?: Partial<ExportConfig>;
 }
 
+/**
+ * ExportModal function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function ExportModal({
   isOpen,
   onClose,
@@ -271,9 +284,9 @@ export function ExportModal({
             <PopoverContent className="w-auto p-0" align="start">
               <CalendarComponent
                 mode="single"
-                selected={dateRange.start || undefined}
+                selected={dateRange.start ?? undefined}
                 onSelect={(date) => {
-                  handleDateRangeChange(date || null, dateRange.end);
+                  handleDateRangeChange(date ?? null, dateRange.end);
                 }}
                 initialFocus
               />
@@ -290,9 +303,9 @@ export function ExportModal({
             <PopoverContent className="w-auto p-0" align="start">
               <CalendarComponent
                 mode="single"
-                selected={dateRange.end || undefined}
+                selected={dateRange.end ?? undefined}
                 onSelect={(date) => {
-                  handleDateRangeChange(dateRange.start, date || null);
+                  handleDateRangeChange(dateRange.start, date ?? null);
                 }}
                 initialFocus
               />
@@ -388,7 +401,7 @@ export function ExportModal({
   const renderPreview = () => {
     const filteredData = config.dateRange
       ? data.filter((item) => {
-          const itemDate = new Date(item.date || item.createdAt || item.timestamp);
+          const itemDate = new Date(item.date ?? item.createdAt ?? item.timestamp);
           return itemDate >= config.dateRange!.start && itemDate <= config.dateRange!.end;
         })
       : data;
@@ -408,7 +421,7 @@ export function ExportModal({
               • Kayıt sayısı: <strong>{filteredData.length}</strong>
             </p>
             <p>
-              • Alan sayısı: <strong>{config.fields?.length || 0}</strong>
+              • Alan sayısı: <strong>{config.fields?.length ?? 0}</strong>
             </p>
             <p>
               • Dosya adı:{' '}
@@ -514,7 +527,7 @@ export function ExportModal({
           {result?.success ? 'Dışa aktarma tamamlandı!' : 'Dışa aktarma başarısız'}
         </h3>
 
-        <p className="text-gray-600">{result?.message || result?.error}</p>
+        <p className="text-gray-600">{result?.message ?? result?.error}</p>
       </div>
 
       {result?.success && (

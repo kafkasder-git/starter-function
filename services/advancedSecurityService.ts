@@ -6,6 +6,7 @@
 import React from 'react';
 import { monitoring } from './monitoringService';
 
+import { logger } from '../lib/logging/logger';
 // Güvenlik olay türleri
 export type SecurityEventType =
   | 'authentication_failure'
@@ -25,6 +26,11 @@ export type SecurityEventType =
 export type SecurityLevel = 'low' | 'medium' | 'high' | 'critical';
 
 // Güvenlik olayı
+/**
+ * SecurityEvent Interface
+ * 
+ * @interface SecurityEvent
+ */
 export interface SecurityEvent {
   id: string;
   type: SecurityEventType;
@@ -59,6 +65,11 @@ export interface SecurityEvent {
 }
 
 // Güvenlik kuralı
+/**
+ * SecurityRule Interface
+ * 
+ * @interface SecurityRule
+ */
 export interface SecurityRule {
   id: string;
   name: string;
@@ -80,6 +91,11 @@ export interface SecurityRule {
 }
 
 // Güvenlik istatistikleri
+/**
+ * SecurityStats Interface
+ * 
+ * @interface SecurityStats
+ */
 export interface SecurityStats {
   totalEvents: number;
   eventsByType: Record<SecurityEventType, number>;
@@ -270,7 +286,7 @@ class AdvancedSecurityService {
     this.monitorUserBehavior();
 
     this.isMonitoring = true;
-    console.log('[Security] Advanced security monitoring initialized');
+    logger.info('[Security] Advanced security monitoring initialized');
   }
 
   /**
@@ -433,7 +449,7 @@ class AdvancedSecurityService {
           sessionId: this.getSessionId(),
         },
         details: {
-          description: reason || 'Suspicious request detected',
+          description: reason ?? 'Suspicious request detected',
           endpoint: request.url,
           method: request.method,
           payload: request.body,
@@ -441,7 +457,7 @@ class AdvancedSecurityService {
         },
         response: {
           action: blocked ? 'blocked' : 'monitored',
-          reason: reason || 'Risk score threshold exceeded',
+          reason: reason ?? 'Risk score threshold exceeded',
         },
         metadata: {
           riskScore,
@@ -459,7 +475,7 @@ class AdvancedSecurityService {
    * Hata analizi
    */
   private analyzeError(error: any, context: any): void {
-    const errorMessage = error?.message || error?.toString() || 'Unknown error';
+    const errorMessage = error?.message ?? error?.toString() || 'Unknown error';
 
     // Güvenlik açığı gösterebilecek hatalar
     if (this.containsSuspiciousPattern(errorMessage)) {
@@ -681,7 +697,7 @@ class AdvancedSecurityService {
       await this.handleCriticalEvent(event);
     }
 
-    console.log('[Security] Event recorded:', event);
+    logger.info('[Security] Event recorded:', event);
   }
 
   /**
@@ -706,7 +722,7 @@ class AdvancedSecurityService {
    */
   private async sendSecurityAlert(event: SecurityEvent): Promise<void> {
     // Bu kısım gerçek uygulamada e-posta, SMS, Slack vb. entegrasyonları içerebilir
-    console.log('[Security] Critical security alert:', event);
+    logger.info('[Security] Critical security alert:', event);
   }
 
   /**
@@ -715,7 +731,7 @@ class AdvancedSecurityService {
   private async lockUserAccount(userId?: string): Promise<void> {
     if (userId) {
       // Kullanıcı hesabını kilitleme işlemi
-      console.log('[Security] User account locked:', userId);
+      logger.info('[Security] User account locked:', userId);
     }
   }
 
@@ -892,7 +908,7 @@ class AdvancedSecurityService {
 
   public stopMonitoring(): void {
     this.isMonitoring = false;
-    console.log('[Security] Security monitoring stopped');
+    logger.info('[Security] Security monitoring stopped');
   }
 
   public isMonitoringActive(): boolean {

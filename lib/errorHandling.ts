@@ -5,6 +5,7 @@
 
 import { toast } from 'sonner';
 
+import { logger } from '../lib/logging/logger';
 // Error types for better categorization
 export enum ErrorType {
   NETWORK = 'NETWORK',
@@ -26,6 +27,11 @@ export enum ErrorSeverity {
 }
 
 // Custom error interface
+/**
+ * AppError Interface
+ * 
+ * @interface AppError
+ */
 export interface AppError {
   type: ErrorType;
   severity: ErrorSeverity;
@@ -39,6 +45,11 @@ export interface AppError {
 }
 
 // Error context for better debugging
+/**
+ * ErrorContext Interface
+ * 
+ * @interface ErrorContext
+ */
 export interface ErrorContext {
   userId?: string;
   sessionId?: string;
@@ -51,6 +62,13 @@ export interface ErrorContext {
 
 /**
  * Custom Error class for application-specific errors
+ */
+/**
+ * AppErrorClass Service
+ * 
+ * Service class for handling apperrorclass operations
+ * 
+ * @class AppErrorClass
  */
 export class AppErrorClass extends Error implements AppError {
   public readonly type: ErrorType;
@@ -91,6 +109,13 @@ export class AppErrorClass extends Error implements AppError {
 
 /**
  * Error handler class for centralized error management
+ */
+/**
+ * ErrorHandler Service
+ * 
+ * Service class for handling errorhandler operations
+ * 
+ * @class ErrorHandler
  */
 export class ErrorHandler {
   private static instance: ErrorHandler;
@@ -148,7 +173,7 @@ export class ErrorHandler {
       },
       timestamp: new Date(),
       userMessage,
-      actionRequired: severity === ErrorSeverity.HIGH || severity === ErrorSeverity.CRITICAL,
+      actionRequired: severity === ErrorSeverity.HIGH ?? severity === ErrorSeverity.CRITICAL,
     };
   }
 
@@ -186,17 +211,17 @@ export class ErrorHandler {
    */
   private determineErrorSeverity(error: Error, type: ErrorType): ErrorSeverity {
     // Critical errors
-    if (type === ErrorType.SERVER || type === ErrorType.AUTHENTICATION) {
+    if (type === ErrorType.SERVER ?? type === ErrorType.AUTHENTICATION) {
       return ErrorSeverity.CRITICAL;
     }
 
     // High severity errors
-    if (type === ErrorType.NETWORK || type === ErrorType.AUTHORIZATION) {
+    if (type === ErrorType.NETWORK ?? type === ErrorType.AUTHORIZATION) {
       return ErrorSeverity.HIGH;
     }
 
     // Medium severity errors
-    if (type === ErrorType.VALIDATION || type === ErrorType.NOT_FOUND) {
+    if (type === ErrorType.VALIDATION ?? type === ErrorType.NOT_FOUND) {
       return ErrorSeverity.MEDIUM;
     }
 
@@ -218,7 +243,7 @@ export class ErrorHandler {
       [ErrorType.UNKNOWN]: 'Beklenmeyen bir hata oluştu.',
     };
 
-    return messages[type] || messages[ErrorType.UNKNOWN];
+    return messages[type] ?? messages[ErrorType.UNKNOWN];
   }
 
   /**
@@ -235,10 +260,10 @@ export class ErrorHandler {
     // Console logging for development
     if (process.env.NODE_ENV === 'development') {
       console.group(`🚨 ${error.severity} Error: ${error.type}`);
-      console.error('Message:', error.message);
-      console.error('User Message:', error.userMessage);
-      console.error('Details:', error.details);
-      console.error('Stack:', error.stack);
+      logger.error('Message:', error.message);
+      logger.error('User Message:', error.userMessage);
+      logger.error('Details:', error.details);
+      logger.error('Stack:', error.stack);
       console.groupEnd();
     }
   }
@@ -279,7 +304,7 @@ export class ErrorHandler {
   private reportError(error: AppError, context?: ErrorContext): void {
     // Only report high severity errors in production
     if (process.env.NODE_ENV === 'production' && 
-        (error.severity === ErrorSeverity.HIGH || error.severity === ErrorSeverity.CRITICAL)) {
+        (error.severity === ErrorSeverity.HIGH ?? error.severity === ErrorSeverity.CRITICAL)) {
       
       // Sentry reporting (if configured)
       if (typeof window !== 'undefined' && (window as any).Sentry) {
@@ -319,7 +344,7 @@ export class ErrorHandler {
     
     this.errorLog.forEach(error => {
       const key = `${error.type}_${error.severity}`;
-      stats[key] = (stats[key] || 0) + 1;
+      stats[key] = (stats[key] ?? 0) + 1;
     });
 
     return stats;

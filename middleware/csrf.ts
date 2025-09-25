@@ -1,5 +1,13 @@
+/**
+ * @fileoverview csrf Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import crypto from 'crypto';
 
+import { logger } from '../lib/logging/logger';
 // CSRF token store (in production, use Redis or database)
 interface CSRFTokenEntry {
   token: string;
@@ -77,13 +85,19 @@ function getUserIdFromToken(authHeader: string): string | null {
 
     const token = authHeader.substring(7);
     const payload = JSON.parse(atob(token.split('.')[1]));
-    return payload.sub || null;
+    return payload.sub ?? null;
   } catch (error) {
     return null;
   }
 }
 
 // Generate CSRF token for a user
+/**
+ * generateCSRFToken function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function generateCSRFToken(userId: string): string {
   const token = generateToken();
   const now = Date.now();
@@ -101,6 +115,12 @@ export function generateCSRFToken(userId: string): string {
 }
 
 // Validate CSRF token
+/**
+ * validateCSRF function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export async function validateCSRF(request: Request): Promise<boolean> {
   try {
     // Skip CSRF validation for safe methods
@@ -122,51 +142,57 @@ export async function validateCSRF(request: Request): Promise<boolean> {
     }
 
     if (!csrfToken) {
-      console.warn('CSRF token missing from request');
+      logger.warn('CSRF token missing from request');
       return false;
     }
 
     // Get user ID from auth header
     const authHeader = request.headers.get('authorization');
     if (!authHeader) {
-      console.warn('Authorization header missing for CSRF validation');
+      logger.warn('Authorization header missing for CSRF validation');
       return false;
     }
 
     const userId = getUserIdFromToken(authHeader);
     if (!userId) {
-      console.warn('Invalid auth token for CSRF validation');
+      logger.warn('Invalid auth token for CSRF validation');
       return false;
     }
 
     // Validate token
     const tokenEntry = tokenStore.get(csrfToken);
     if (!tokenEntry) {
-      console.warn('CSRF token not found in store');
+      logger.warn('CSRF token not found in store');
       return false;
     }
 
     // Check if token is expired
     if (Date.now() > tokenEntry.expiresAt) {
       tokenStore.delete(csrfToken);
-      console.warn('CSRF token expired');
+      logger.warn('CSRF token expired');
       return false;
     }
 
     // Check if token belongs to the user
     if (tokenEntry.userId !== userId) {
-      console.warn('CSRF token does not belong to user');
+      logger.warn('CSRF token does not belong to user');
       return false;
     }
 
     return true;
   } catch (error) {
-    console.error('CSRF validation error:', error);
+    logger.error('CSRF validation error:', error);
     return false;
   }
 }
 
 // Validate CSRF token with additional security checks
+/**
+ * validateCSRFStrict function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export async function validateCSRFStrict(request: Request): Promise<boolean> {
   const isValid = await validateCSRF(request);
 
@@ -183,7 +209,7 @@ export async function validateCSRFStrict(request: Request): Promise<boolean> {
   if (origin && host) {
     const originUrl = new URL(origin);
     if (originUrl.host !== host) {
-      console.warn('Origin header does not match host');
+      logger.warn('Origin header does not match host');
       return false;
     }
   }
@@ -193,7 +219,7 @@ export async function validateCSRFStrict(request: Request): Promise<boolean> {
   if (referer && host) {
     const refererUrl = new URL(referer);
     if (refererUrl.host !== host) {
-      console.warn('Referer header does not match host');
+      logger.warn('Referer header does not match host');
       return false;
     }
   }
@@ -202,6 +228,12 @@ export async function validateCSRFStrict(request: Request): Promise<boolean> {
 }
 
 // Refresh CSRF token (extend expiry)
+/**
+ * refreshCSRFToken function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function refreshCSRFToken(token: string): boolean {
   const entry = tokenStore.get(token);
   if (!entry) {
@@ -222,16 +254,34 @@ export function refreshCSRFToken(token: string): boolean {
 }
 
 // Revoke CSRF token
+/**
+ * revokeCSRFToken function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function revokeCSRFToken(token: string): void {
   tokenStore.delete(token);
 }
 
 // Revoke all CSRF tokens for a user
+/**
+ * revokeUserCSRFTokens function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function revokeUserCSRFTokens(userId: string): void {
   tokenStore.revokeUserTokens(userId);
 }
 
 // Get CSRF token info
+/**
+ * getCSRFTokenInfo function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function getCSRFTokenInfo(token: string): CSRFTokenEntry | null {
   const entry = tokenStore.get(token);
   if (!entry) {
@@ -248,6 +298,13 @@ export function getCSRFTokenInfo(token: string): CSRFTokenEntry | null {
 }
 
 // CSRF Protection class for testing
+/**
+ * CSRFProtection Service
+ * 
+ * Service class for handling csrfprotection operations
+ * 
+ * @class CSRFProtection
+ */
 export class CSRFProtection {
   private static tokens = new Map<string, { token: string; userId: string; expiresAt: number }>();
 
@@ -286,6 +343,12 @@ export class CSRFProtection {
 }
 
 // CSRF middleware for API routes
+/**
+ * withCSRF function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function withCSRF(handler: (request: Request, ...args: unknown[]) => Promise<Response>) {
   return async (request: Request, ...args: unknown[]) => {
     const isValid = await validateCSRF(request);
@@ -302,6 +365,12 @@ export function withCSRF(handler: (request: Request, ...args: unknown[]) => Prom
 }
 
 // CSRF middleware with strict validation
+/**
+ * withCSRFStrict function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function withCSRFStrict(
   handler: (request: Request, ...args: unknown[]) => Promise<Response>,
 ) {
@@ -460,6 +529,12 @@ interface RateLimitResult {
 }
 // Main rate limiting function
 
+/**
+ * rateLimit function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export async function rateLimit(request: Request): Promise<RateLimitResult> {
   const url = new URL(request.url);
   const path = url.pathname;
@@ -474,7 +549,7 @@ export async function rateLimit(request: Request): Promise<RateLimitResult> {
   let entry = store.get(key);
 
   // Initialize or reset if window has passed
-  if (!entry || now > entry.resetTime) {
+  if (!entry ?? now > entry.resetTime) {
     entry = {
       count: 0,
       resetTime: now + config.windowMs,
@@ -512,6 +587,12 @@ export async function rateLimit(request: Request): Promise<RateLimitResult> {
 }
 // Rate limit middleware for specific endpoints
 
+/**
+ * createRateLimit function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function createRateLimit(config: RateLimitConfig) {
   return async (request: Request): Promise<RateLimitResult> => {
     const clientId = config.keyGenerator ? config.keyGenerator(request) : getClientId(request);
@@ -521,7 +602,7 @@ export function createRateLimit(config: RateLimitConfig) {
     const now = Date.now();
     let entry = store.get(key);
 
-    if (!entry || now > entry.resetTime) {
+    if (!entry ?? now > entry.resetTime) {
       entry = {
         count: 0,
         resetTime: now + config.windowMs,
@@ -558,11 +639,24 @@ export function createRateLimit(config: RateLimitConfig) {
 }
 // Cleanup function for graceful shutdown
 
+/**
+ * cleanup function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function cleanup(): void {
   store.destroy();
 }
 // Rate Limiter class for testing
 
+/**
+ * RateLimiter Service
+ * 
+ * Service class for handling ratelimiter operations
+ * 
+ * @class RateLimiter
+ */
 export class RateLimiter {
   private static attempts = new Map<string, { count: number; resetTime: number; }>();
 
@@ -571,7 +665,7 @@ export class RateLimiter {
     const now = Date.now();
 
     let entry = this.attempts.get(key);
-    if (!entry || now > entry.resetTime) {
+    if (!entry ?? now > entry.resetTime) {
       entry = { count: 0, resetTime: now + windowMs };
     }
 

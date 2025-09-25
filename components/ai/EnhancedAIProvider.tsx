@@ -8,10 +8,16 @@ import React, { createContext, useContext, useCallback, useState, useEffect } fr
 import { environment } from '../../lib/environment';
 import { monitoring } from '../../services/monitoringService';
 
+import { logger } from '../lib/logging/logger';
 // =============================================================================
 // TYPES AND INTERFACES
 // =============================================================================
 
+/**
+ * AIConfig Interface
+ * 
+ * @interface AIConfig
+ */
 export interface AIConfig {
   provider: 'openrouter' | 'freeai' | 'openai' | 'anthropic';
   model: string;
@@ -28,6 +34,11 @@ export interface AIConfig {
   responseFormat?: 'text' | 'json' | 'markdown';
 }
 
+/**
+ * AIResponse Interface
+ * 
+ * @interface AIResponse
+ */
 export interface AIResponse {
   content: string;
   usage?: {
@@ -55,12 +66,22 @@ export interface AIResponse {
   category?: 'question' | 'request' | 'complaint' | 'suggestion';
 }
 
+/**
+ * AIError Interface
+ * 
+ * @interface AIError
+ */
 export interface AIError {
   code: string;
   message: string;
   details?: any;
 }
 
+/**
+ * AIContextType Interface
+ * 
+ * @interface AIContextType
+ */
 export interface AIContextType {
   // State
   isLoading: boolean;
@@ -113,6 +134,11 @@ export interface AIContextType {
   retry: () => Promise<void>;
 }
 
+/**
+ * AIProviderProps Interface
+ * 
+ * @interface AIProviderProps
+ */
 export interface AIProviderProps {
   children: ReactNode;
   config?: Partial<AIConfig>;
@@ -163,7 +189,7 @@ class AIService {
    * Validate prompt
    */
   validatePrompt(prompt: string): boolean {
-    if (!prompt || prompt.trim().length === 0) {
+    if (!prompt ?? prompt.trim().length === 0) {
       return false;
     }
 
@@ -217,14 +243,14 @@ class AIService {
       monitoring.trackApiCall('ai/generate-text', 'POST', processingTime, 200, {
         provider: config.provider,
         model: config.model,
-        tokens: response.usage?.totalTokens || 0,
+        tokens: response.usage?.totalTokens ?? 0,
       });
 
       return {
         ...response,
         metadata: {
-          model: response.metadata?.model || 'unknown',
-          provider: response.metadata?.provider || 'unknown',
+          model: response.metadata?.model ?? 'unknown',
+          provider: response.metadata?.provider ?? 'unknown',
           processingTime,
           timestamp: new Date(),
         },
@@ -280,7 +306,7 @@ class AIService {
         promptTokens: data.usage.prompt_tokens,
         completionTokens: data.usage.completion_tokens,
         totalTokens: data.usage.total_tokens,
-        cost: data.usage.cost || 0,
+        cost: data.usage.cost ?? 0,
       },
       metadata: {
         model: config.model,
@@ -479,7 +505,7 @@ export const EnhancedAIProvider: React.FC<AIProviderProps> = ({
           details: err,
         };
         setError(aiError);
-        console.error('AI initialization failed:', err);
+        logger.error('AI initialization failed:', err);
       } finally {
         setIsLoading(false);
       }
@@ -511,7 +537,7 @@ export const EnhancedAIProvider: React.FC<AIProviderProps> = ({
 
     // Core AI Functions
     trackAIUsage: useCallback((action: string, data?: any) => {
-      console.log('AI Usage tracked:', { action, data, timestamp: new Date() });
+      logger.info('AI Usage tracked:', { action, data, timestamp: new Date() });
     }, []),
     generateText: useCallback(
       async (prompt: string, options?: Partial<AIConfig>) => {

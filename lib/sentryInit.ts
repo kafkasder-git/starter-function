@@ -6,21 +6,22 @@
 import { sentryService } from '../services/sentryService';
 import { environment } from './environment';
 
+import { logger } from '../lib/logging/logger';
 // Initialize Sentry when the module is imported
 export const initializeSentry = () => {
-  console.log('🔧 Initializing Sentry error tracking...');
+  logger.info('🔧 Initializing Sentry error tracking...');
 
   // Sentry is automatically initialized in the service
   // This function can be used for additional setup if needed
 
   if (sentryService.isEnabled()) {
-    console.log('✅ Sentry is enabled and ready');
+    logger.info('✅ Sentry is enabled and ready');
 
     // Set initial context
     sentryService.setContext('app', {
       name: 'Dernek Yönetim Sistemi',
       version: '1.0.0',
-      environment: (typeof import.meta !== 'undefined' && import.meta.env?.MODE) || process.env.NODE_ENV || 'development',
+      environment: (typeof import.meta !== 'undefined' && import.meta.env?.MODE) || process.env.NODE_ENV ?? 'development',
     });
 
     // Add initial breadcrumb
@@ -28,11 +29,11 @@ export const initializeSentry = () => {
 
     // Test Sentry logging functionality
     sentryService.captureMessage('User triggered test log', 'info', { action: 'test_log' });
-    console.log('🧪 Sentry test log sent successfully');
+    logger.info('🧪 Sentry test log sent successfully');
 
     return true;
   } 
-    console.log('⚠️ Sentry is disabled');
+    logger.info('⚠️ Sentry is disabled');
     return false;
   
 };
@@ -40,13 +41,13 @@ export const initializeSentry = () => {
 // Test function for manual Sentry testing
 export const testSentryLogging = () => {
   if (!sentryService.isEnabled()) {
-    console.log('❌ Cannot test Sentry - it is disabled');
+    logger.info('❌ Cannot test Sentry - it is disabled');
     return false;
   }
 
   try {
     // Test different types of Sentry logging
-    console.log('🧪 Testing Sentry logging functionality...');
+    logger.info('🧪 Testing Sentry logging functionality...');
 
     // Test info message
     sentryService.captureMessage('User triggered test log', 'info', {
@@ -74,12 +75,12 @@ export const testSentryLogging = () => {
       success: true,
     });
 
-    console.log('✅ Sentry test logs sent successfully');
-    console.log('📊 Check your Sentry dashboard for the test events');
+    logger.info('✅ Sentry test logs sent successfully');
+    logger.info('📊 Check your Sentry dashboard for the test events');
 
     return true;
   } catch (error) {
-    console.error('❌ Error testing Sentry:', error);
+    logger.error('❌ Error testing Sentry:', error);
     return false;
   }
 };
@@ -87,12 +88,12 @@ export const testSentryLogging = () => {
 // Test function for exception tracking
 export const testSentryException = () => {
   if (!sentryService.isEnabled()) {
-    console.log('❌ Cannot test Sentry - it is disabled');
+    logger.info('❌ Cannot test Sentry - it is disabled');
     return false;
   }
 
   try {
-    console.log('🧪 Testing Sentry exception tracking...');
+    logger.info('🧪 Testing Sentry exception tracking...');
 
     // Create a test error
     const testError = new Error('This is a test error for Sentry');
@@ -102,7 +103,7 @@ export const testSentryException = () => {
     sentryService.setContext('test', {
       testType: 'exception_test',
       timestamp: new Date().toISOString(),
-      environment: (typeof import.meta !== 'undefined' && import.meta.env?.MODE) || process.env.NODE_ENV || 'development',
+      environment: (typeof import.meta !== 'undefined' && import.meta.env?.MODE) || process.env.NODE_ENV ?? 'development',
     });
 
     // Capture the exception
@@ -112,12 +113,12 @@ export const testSentryException = () => {
       severity: 'test',
     });
 
-    console.log(`✅ Test exception sent to Sentry with ID: ${eventId}`);
-    console.log('📊 Check your Sentry dashboard for the test exception');
+    logger.info(`✅ Test exception sent to Sentry with ID: ${eventId}`);
+    logger.info('📊 Check your Sentry dashboard for the test exception');
 
     return true;
   } catch (error) {
-    console.error('❌ Error testing Sentry exception:', error);
+    logger.error('❌ Error testing Sentry exception:', error);
     return false;
   }
 };
@@ -125,7 +126,7 @@ export const testSentryException = () => {
 // MCP Server initialization function
 export const initializeMCPServer = async () => {
   if (!sentryService.isEnabled()) {
-    console.log('⚠️ Cannot initialize MCP server - Sentry is disabled');
+    logger.info('⚠️ Cannot initialize MCP server - Sentry is disabled');
     return null;
   }
 
@@ -136,7 +137,7 @@ export const initializeMCPServer = async () => {
     // Start the default MCP server with Sentry monitoring
     // const mcpServer = await startDefaultMCPServer(); // Commented out until file exists
 
-    console.log('✅ MCP Server initialized with Sentry monitoring');
+    logger.info('✅ MCP Server initialized with Sentry monitoring');
 
     // Set context for MCP server
     sentryService.setContext('mcp-server', {
@@ -154,7 +155,7 @@ export const initializeMCPServer = async () => {
 
     return mcpServer;
   } catch (error) {
-    console.error('❌ Failed to initialize MCP server:', error);
+    logger.error('❌ Failed to initialize MCP server:', error);
     sentryService.captureException(error as Error, {
       context: 'mcp-server-initialization',
     });

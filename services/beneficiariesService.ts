@@ -1,3 +1,10 @@
+/**
+ * @fileoverview beneficiariesService Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import type {
   Beneficiary,
   BeneficiaryFilters,
@@ -7,8 +14,14 @@ import type {
 } from '../types/beneficiary';
 import type { ApiResponse, PaginatedResponse } from './config';
 import { supabase } from '../lib/supabase';
+import { logger } from '../lib/logging/logger';
 
 // Service-specific types
+/**
+ * BeneficiarySearchFilters Interface
+ * 
+ * @interface BeneficiarySearchFilters
+ */
 export interface BeneficiarySearchFilters extends BeneficiaryFilters {
   page?: number;
   page_size?: number;
@@ -26,7 +39,7 @@ class BeneficiariesService {
     filters: BeneficiarySearchFilters = {},
   ): Promise<PaginatedResponse<Beneficiary>> {
     try {
-      console.log('Fetching beneficiaries from Supabase:', { page, pageSize, filters });
+      logger.info('Fetching beneficiaries from Supabase:', { page, pageSize, filters });
       
       // Calculate offset for pagination
       const offset = (page - 1) * pageSize;
@@ -54,7 +67,7 @@ class BeneficiariesService {
       }
       
       // Apply sorting
-      const sortBy = filters.sort_by || 'created_at';
+      const sortBy = filters.sort_by ?? 'created_at';
       const sortOrder = filters.sort_order === 'asc' ? { ascending: true } : { ascending: false };
       
       // Execute query with pagination
@@ -63,17 +76,17 @@ class BeneficiariesService {
         .range(offset, offset + pageSize - 1);
       
       if (error) {
-        console.error('Error fetching beneficiaries:', error);
+        logger.error('Error fetching beneficiaries:', error);
         throw error;
       }
       
-      const totalPages = Math.ceil((count || 0) / pageSize);
+      const totalPages = Math.ceil((count ?? 0) / pageSize);
       
-      console.log(`✅ Successfully fetched ${data?.length || 0} beneficiaries`);
+      logger.info(`✅ Successfully fetched ${data?.length ?? 0} beneficiaries`);
       
       return {
         data: data || [],
-        count: count || 0,
+        count: count ?? 0,
         page,
         pageSize,
         totalPages,
@@ -81,7 +94,7 @@ class BeneficiariesService {
         hasPreviousPage: page > 1,
       };
     } catch (error) {
-      console.error('Error fetching beneficiaries:', error);
+      logger.error('Error fetching beneficiaries:', error);
       throw error;
     }
   }
@@ -115,7 +128,7 @@ class BeneficiariesService {
 
       return await this.create(insertData);
     } catch (error) {
-      console.error('Error creating beneficiary from form:', error);
+      logger.error('Error creating beneficiary from form:', error);
       return { data: null, error: 'Beneficiary oluşturulamadı' };
     }
   }
@@ -130,13 +143,13 @@ class BeneficiariesService {
         .single();
 
       if (error) {
-        console.error('Error fetching beneficiary:', error);
+        logger.error('Error fetching beneficiary:', error);
         return { data: null, error: error.message };
       }
 
       return { data, error: null };
     } catch (error) {
-      console.error('Error fetching beneficiary:', error);
+      logger.error('Error fetching beneficiary:', error);
       return { data: null, error: 'Beneficiary bulunamadı' };
     }
   }
@@ -150,13 +163,13 @@ class BeneficiariesService {
         .single();
 
       if (error) {
-        console.error('Error creating beneficiary:', error);
+        logger.error('Error creating beneficiary:', error);
         return { data: null, error: error.message };
       }
 
       return { data: result, error: null };
     } catch (error) {
-      console.error('Error creating beneficiary:', error);
+      logger.error('Error creating beneficiary:', error);
       return { data: null, error: 'Beneficiary oluşturulamadı' };
     }
   }
@@ -171,13 +184,13 @@ class BeneficiariesService {
         .single();
 
       if (error) {
-        console.error('Error updating beneficiary:', error);
+        logger.error('Error updating beneficiary:', error);
         return { data: null, error: error.message };
       }
 
       return { data: result, error: null };
     } catch (error) {
-      console.error('Error updating beneficiary:', error);
+      logger.error('Error updating beneficiary:', error);
       return { data: null, error: 'Beneficiary güncellenemedi' };
     }
   }
@@ -190,13 +203,13 @@ class BeneficiariesService {
         .eq('id', id);
 
       if (error) {
-        console.error('Error deleting beneficiary:', error);
+        logger.error('Error deleting beneficiary:', error);
         return { data: false, error: error.message };
       }
 
       return { data: true, error: null };
     } catch (error) {
-      console.error('Error deleting beneficiary:', error);
+      logger.error('Error deleting beneficiary:', error);
       return { data: false, error: 'Beneficiary silinemedi' };
     }
   }
@@ -207,7 +220,7 @@ class BeneficiariesService {
       // 🔗 Gerçek Supabase sorgusu: WHERE card_no = cardNo
       return { data: null, error: null };
     } catch (error) {
-      console.error('Error fetching beneficiary by card:', error);
+      logger.error('Error fetching beneficiary by card:', error);
       return { data: null, error: 'Beneficiary bulunamadı' };
     }
   }
@@ -218,7 +231,7 @@ class BeneficiariesService {
       // 🔗 Gerçek Supabase sorgusu: WHERE identity_no = identityNo OR tc_no = identityNo
       return { data: null, error: null };
     } catch (error) {
-      console.error('Error fetching beneficiary by identity:', error);
+      logger.error('Error fetching beneficiary by identity:', error);
       return { data: null, error: 'Beneficiary bulunamadı' };
     }
   }
@@ -232,7 +245,7 @@ class BeneficiariesService {
       // 🔗 Gerçek Supabase sorgusu: WHERE city = city AND (settlement = settlement OR settlement IS NULL)
       return { data: [], error: null };
     } catch (error) {
-      console.error('Error fetching beneficiaries by location:', error);
+      logger.error('Error fetching beneficiaries by location:', error);
       return { data: null, error: 'Beneficiaries bulunamadı' };
     }
   }
@@ -243,7 +256,7 @@ class BeneficiariesService {
       // 🔗 Gerçek Supabase sorgusu: GROUP BY category
       return { data: {}, error: null };
     } catch (error) {
-      console.error('Error fetching category stats:', error);
+      logger.error('Error fetching category stats:', error);
       return { data: null, error: 'İstatistikler alınamadı' };
     }
   }
@@ -254,7 +267,7 @@ class BeneficiariesService {
       // 🔗 Gerçek Supabase sorgusu: GROUP BY fund_region
       return { data: {}, error: null };
     } catch (error) {
-      console.error('Error fetching fund region stats:', error);
+      logger.error('Error fetching fund region stats:', error);
       return { data: null, error: 'İstatistikler alınamadı' };
     }
   }
@@ -265,7 +278,7 @@ class BeneficiariesService {
       // 🔗 Gerçek Supabase sorgusu: GROUP BY nationality
       return { data: {}, error: null };
     } catch (error) {
-      console.error('Error fetching nationality stats:', error);
+      logger.error('Error fetching nationality stats:', error);
       return { data: null, error: 'İstatistikler alınamadı' };
     }
   }
@@ -276,7 +289,7 @@ class BeneficiariesService {
       // 🔗 Gerçek Supabase sorgusu: WHERE linked_card = true
       return { data: [], error: null };
     } catch (error) {
-      console.error('Error fetching linked card beneficiaries:', error);
+      logger.error('Error fetching linked card beneficiaries:', error);
       return { data: null, error: 'Kart bağlantılı beneficiaries bulunamadı' };
     }
   }
@@ -287,7 +300,7 @@ class BeneficiariesService {
       // 🔗 Gerçek Supabase sorgusu: WHERE linked_orphan = true
       return { data: [], error: null };
     } catch (error) {
-      console.error('Error fetching linked orphan beneficiaries:', error);
+      logger.error('Error fetching linked orphan beneficiaries:', error);
       return { data: null, error: 'Yetim bağlantılı beneficiaries bulunamadı' };
     }
   }
@@ -308,7 +321,7 @@ class BeneficiariesService {
 
       return { data: results, error: null };
     } catch (error) {
-      console.error('Error bulk updating beneficiaries:', error);
+      logger.error('Error bulk updating beneficiaries:', error);
       return { data: null, error: 'Toplu güncelleme başarısız' };
     }
   }

@@ -1,8 +1,16 @@
+/**
+ * @fileoverview ContextualTooltipSystem Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import React, { useState, useEffect, useRef } from 'react';
 import { HelpCircle, Info, Lightbulb, Zap, X, ChevronRight } from 'lucide-react';
 import { Button } from '../ui/button';
 import { cn } from '../ui/utils';
 
+import { logger } from '../lib/logging/logger';
 interface TooltipContent {
   id: string;
   title: string;
@@ -29,6 +37,12 @@ interface SmartTooltipProps {
   className?: string;
 }
 
+/**
+ * SmartTooltip function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function SmartTooltip({
   children,
   content,
@@ -265,6 +279,12 @@ interface ContextualHelpProps {
   className?: string;
 }
 
+/**
+ * ContextualHelp function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function ContextualHelp({ context, className }: ContextualHelpProps) {
   const getContextualContent = (): TooltipContent => {
     const baseContent = {
@@ -286,13 +306,13 @@ export function ContextualHelp({ context, className }: ContextualHelpProps) {
           {
             label: 'Rapor Oluştur',
             action: () => {
-              console.log('Create report');
+              logger.info('Create report');
             },
           },
           {
             label: 'Ayarları Aç',
             action: () => {
-              console.log('Open settings');
+              logger.info('Open settings');
             },
           },
         ],
@@ -315,13 +335,13 @@ export function ContextualHelp({ context, className }: ContextualHelpProps) {
           {
             label: 'Yeni Başvuru',
             action: () => {
-              console.log('New application');
+              logger.info('New application');
             },
           },
           {
             label: 'Rapor Al',
             action: () => {
-              console.log('Export report');
+              logger.info('Export report');
             },
           },
         ],
@@ -387,7 +407,7 @@ export function ContextualHelp({ context, className }: ContextualHelpProps) {
       },
     };
 
-    return baseContent[context] || baseContent.general;
+    return baseContent[context] ?? baseContent.general;
   };
 
   return (

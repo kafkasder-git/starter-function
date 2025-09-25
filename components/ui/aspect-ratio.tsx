@@ -1,3 +1,10 @@
+/**
+ * @fileoverview aspect-ratio Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 'use client';
 
 import * as AspectRatioPrimitive from '@radix-ui/react-aspect-ratio';

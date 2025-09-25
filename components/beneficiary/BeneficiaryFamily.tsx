@@ -1,3 +1,10 @@
+/**
+ * @fileoverview BeneficiaryFamily Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import { Edit3, Heart, Plus, Trash2, User, Users } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -26,6 +33,12 @@ interface BeneficiaryFamilyProps {
   onFamilyUpdate: (members: FamilyMember[]) => void;
 }
 
+/**
+ * BeneficiaryFamily function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function BeneficiaryFamily({
   beneficiaryId,
   familyMembers = [],
@@ -137,7 +150,7 @@ export function BeneficiaryFamily({
   };
 
   const totalFamilyIncome = familyMembers.reduce(
-    (total, member) => total + (member.income || 0),
+    (total, member) => total + (member.income ?? 0),
     0,
   );
 
@@ -281,7 +294,7 @@ export function BeneficiaryFamily({
               <Label htmlFor="memberName">Ad Soyad *</Label>
               <Input
                 id="memberName"
-                value={newMember.name || ''}
+                value={newMember.name ?? ''}
                 onChange={(e) => {
                   setNewMember((prev) => ({ ...prev, name: e.target.value }));
                 }}
@@ -292,7 +305,7 @@ export function BeneficiaryFamily({
             <div>
               <Label htmlFor="relationship">Yakınlık Derecesi *</Label>
               <Select
-                value={newMember.relationship || ''}
+                value={newMember.relationship ?? ''}
                 onValueChange={(value: string) => {
                   setNewMember((prev) => ({ ...prev, relationship: value }));
                 }}
@@ -316,7 +329,7 @@ export function BeneficiaryFamily({
                 <Input
                   id="memberAge"
                   type="number"
-                  value={newMember.age || ''}
+                  value={newMember.age ?? ''}
                   onChange={(e) => {
                     setNewMember((prev) => ({ ...prev, age: parseInt(e.target.value) || 0 }));
                   }}
@@ -331,7 +344,7 @@ export function BeneficiaryFamily({
                 <Input
                   id="memberIncome"
                   type="number"
-                  value={newMember.income || ''}
+                  value={newMember.income ?? ''}
                   onChange={(e) => {
                     setNewMember((prev) => ({ ...prev, income: parseInt(e.target.value) || 0 }));
                   }}
@@ -344,7 +357,7 @@ export function BeneficiaryFamily({
             <div>
               <Label htmlFor="memberOccupation">Meslek</Label>
               <Select
-                value={newMember.occupation || ''}
+                value={newMember.occupation ?? ''}
                 onValueChange={(value: string) => {
                   setNewMember((prev) => ({ ...prev, occupation: value }));
                 }}
@@ -365,7 +378,7 @@ export function BeneficiaryFamily({
             <div>
               <Label htmlFor="memberHealth">Sağlık Durumu</Label>
               <Select
-                value={newMember.healthStatus || 'Sağlıklı'}
+                value={newMember.healthStatus ?? 'Sağlıklı'}
                 onValueChange={(value: string) => {
                   setNewMember((prev) => ({ ...prev, healthStatus: value }));
                 }}

@@ -1,3 +1,10 @@
+/**
+ * @fileoverview sanitization Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import DOMPurify from 'isomorphic-dompurify';
 import validator from 'validator';
 
@@ -46,7 +53,7 @@ class InputSanitizer {
           "'": '&#x27;',
           '&': '&amp;',
         };
-        return entities[char] || char;
+        return entities[char] ?? char;
       })
       .split('')
       .filter((char) => {
@@ -215,7 +222,7 @@ class InputSanitizer {
     input: unknown,
     schema?: Record<string, (value: unknown) => unknown>,
   ): Record<string, unknown> {
-    if (input == null || typeof input !== 'object' || Array.isArray(input)) {
+    if (input == null ?? typeof input !== 'object' || Array.isArray(input)) {
       return {};
     }
 
@@ -248,6 +255,12 @@ class InputSanitizer {
 
 
 // Main sanitization function
+/**
+ * sanitizeInput function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function sanitizeInput(input: unknown, type = 'text'): unknown {
   switch (type) {
     case 'html':

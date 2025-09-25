@@ -1,3 +1,10 @@
+/**
+ * @fileoverview BeneficiariesPageEnhanced Module - Application module
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import {
   AlertCircle,
   Camera,
@@ -38,6 +45,7 @@ import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 
+import { logger } from '../lib/logging/logger';
 // İhtiyaç sahipleri için display tipi
 interface IhtiyacSahibiDisplay extends IhtiyacSahibi {
   display_id?: number; // 1'den başlayan sıralı ID
@@ -101,6 +109,12 @@ interface BeneficiariesPageProps {
   onNavigateToDetail?: (beneficiaryId: string) => void;
 }
 
+/**
+ * BeneficiariesPageEnhanced function
+ * 
+ * @param {Object} params - Function parameters
+ * @returns {void} Nothing
+ */
 export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesPageProps) {
   // Get authenticated user
   const { user, isAuthenticated } = useSupabaseAuth();
@@ -158,7 +172,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
         status: statusFilter !== 'all' ? statusFilter : undefined,
         city: cityFilter !== 'all' ? cityFilter : undefined,
         // Note: category filter removed as it's not in the database schema
-        searchTerm: searchTerm.trim() || undefined,
+        searchTerm: searchTerm.trim() ?? undefined,
       };
 
       const result = await ihtiyacSahipleriService.getIhtiyacSahipleri(currentPage, pageSize, {
@@ -167,7 +181,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
       });
 
       if (result.error) {
-        console.error('❌ Service returned error:', result.error);
+        logger.error('❌ Service returned error:', result.error);
         setBeneficiaries([]);
         setTotalCount(0);
         return;
@@ -178,21 +192,21 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
         ...item,
         // Migration sonrası gerçek ID'ler 1'den başlayacak, display_id gerekli değil
         display_id: item.id, // Gerçek ID'yi kullan
-        formatted_phone: item.telefon_no || item.Telefon_No || '',
-        formatted_registration_date: item.kayit_tarihi || item.Kayit_Tarihi || '',
+        formatted_phone: item.telefon_no ?? item.Telefon_No ?? '',
+        formatted_registration_date: item.kayit_tarihi ?? item.Kayit_Tarihi ?? '',
         status: 'active' as const, // Default status
         priority_level: 'medium' as const, // Default priority
       }));
 
       setBeneficiaries(transformedData);
-      setTotalCount(result.count || 0);
+      setTotalCount(result.count ?? 0);
     } catch (error) {
-      console.error('Error loading beneficiaries:', error);
+      logger.error('Error loading beneficiaries:', error);
       setBeneficiaries([]);
       setTotalCount(0);
 
       if (error instanceof Error) {
-        const errorMessage = error.message || 'Database hatası';
+        const errorMessage = error.message ?? 'Database hatası';
 
         if (error.message.includes('JWT expired')) {
           toast.error('Oturum süresi doldu. Lütfen bekleyin, sayfa yenileniyor...', {
@@ -234,8 +248,8 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
           .reduce((sum, [, count]) => sum + count, 0);
 
         setStats({
-          total: result.data.toplam || 0,
-          active: result.data.toplam || 0, // Assume all are active for now
+          total: result.data.toplam ?? 0,
+          active: result.data.toplam ?? 0, // Assume all are active for now
           passive: 0,
           suspended: 0,
           underEvaluation: 0,
@@ -243,7 +257,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
           bakimYukumluCount,
         });
       } else if (result.error) {
-        console.error('Error fetching ihtiyac_sahipleri stats:', result.error);
+        logger.error('Error fetching ihtiyac_sahipleri stats:', result.error);
 
         setStats({
           total: 0,
@@ -256,7 +270,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
         });
       }
     } catch (error) {
-      console.error('Stats loading failed:', error);
+      logger.error('Stats loading failed:', error);
 
       setStats({
         total: 0,
@@ -286,7 +300,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
   useEffect(() => {
     const testConnection = async () => {
       const result = await ihtiyacSahipleriService.testConnection();
-      console.log('🔗 Connection test result:', result);
+      logger.info('🔗 Connection test result:', result);
     };
     testConnection();
   }, []);
@@ -324,7 +338,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
 
   const getCategoryBadge = (category: string) => {
     const categoryInfo = categoryMapping[category as keyof typeof categoryMapping];
-    const categoryLabel = categoryInfo?.label || category;
+    const categoryLabel = categoryInfo?.label ?? category;
     const isNewCategory = category === 'Bakmakla Yükümlü Olunan Kişi';
 
     return (
@@ -333,7 +347,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
         className={
           isNewCategory
             ? 'bg-purple-100 text-purple-800 border-purple-200'
-            : categoryInfo?.color || ''
+            : categoryInfo?.color ?? ''
         }
       >
         {categoryInfo?.icon && `${categoryInfo.icon} `}
@@ -360,21 +374,21 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
 
       const ihtiyacSahibiData = {
         ad_soyad: newBeneficiary.ad_soyad.trim(),
-        kimlik_no: newBeneficiary.kimlik_no.trim() || null,
-        telefon_no: newBeneficiary.telefon_no.trim() || null,
-        sehri: newBeneficiary.sehri?.trim() || null,
-        uyruk: newBeneficiary.uyruk?.trim() || null,
-        ulkesi: newBeneficiary.ulkesi?.trim() || null,
-        adres: newBeneficiary.adres.trim() || null,
-        kategori: newBeneficiary.kategori?.trim() || null,
-        tur: newBeneficiary.tur?.trim() || null,
-        iban: newBeneficiary.iban?.trim() || null,
+        kimlik_no: newBeneficiary.kimlik_no.trim() ?? null,
+        telefon_no: newBeneficiary.telefon_no.trim() ?? null,
+        sehri: newBeneficiary.sehri?.trim() ?? null,
+        uyruk: newBeneficiary.uyruk?.trim() ?? null,
+        ulkesi: newBeneficiary.ulkesi?.trim() ?? null,
+        adres: newBeneficiary.adres.trim() ?? null,
+        kategori: newBeneficiary.kategori?.trim() ?? null,
+        tur: newBeneficiary.tur?.trim() ?? null,
+        iban: newBeneficiary.iban?.trim() ?? null,
       };
 
       const { data, error } = await ihtiyacSahipleriService.createIhtiyacSahibi(ihtiyacSahibiData);
 
       if (error || !data) {
-        throw new Error(error || 'Kayıt oluşturulamadı');
+        throw new Error(error ?? 'Kayıt oluşturulamadı');
       }
 
       toast.success(`${data.ad_soyad} başarıyla kaydedildi!`, {
@@ -408,7 +422,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
       await loadBeneficiaries();
       await loadStats();
     } catch (error) {
-      console.error('❌ Error creating beneficiary:', error);
+      logger.error('❌ Error creating beneficiary:', error);
       const errorMessage =
         error instanceof Error ? error.message : 'Kayıt sırasında bir hata oluştu';
       toast.error(errorMessage);
@@ -423,7 +437,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
       ...prev,
       ad_soyad:
         ocrData.name && ocrData.surname ? `${ocrData.name} ${ocrData.surname}` : prev.ad_soyad,
-      kimlik_no: ocrData.idNumber || prev.kimlik_no,
+      kimlik_no: ocrData.idNumber ?? prev.kimlik_no,
     }));
 
     toast.success('Belge bilgileri forma aktarıldı!', {
@@ -680,7 +694,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
               <CardContent className="p-3 sm:p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="text-xl sm:text-2xl text-blue-600">{stats.total || 0}</div>
+                    <div className="text-xl sm:text-2xl text-blue-600">{stats.total ?? 0}</div>
                     <p className="text-xs sm:text-sm text-gray-600">Toplam Kayıt</p>
                   </div>
                   <Users className="h-8 w-8 text-blue-500 opacity-80" />
@@ -691,7 +705,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
               <CardContent className="p-3 sm:p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="text-xl sm:text-2xl text-green-600">{stats.active || 0}</div>
+                    <div className="text-xl sm:text-2xl text-green-600">{stats.active ?? 0}</div>
                     <p className="text-xs sm:text-sm text-gray-600">Aktif</p>
                   </div>
                   <CheckCircle className="h-8 w-8 text-green-500 opacity-80" />
@@ -703,7 +717,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="text-xl sm:text-2xl text-orange-600">
-                      {stats.underEvaluation || 0}
+                      {stats.underEvaluation ?? 0}
                     </div>
                     <p className="text-xs sm:text-sm text-gray-600">Değerlendirmede</p>
                   </div>
@@ -716,7 +730,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="text-xl sm:text-2xl text-purple-600">
-                      {stats.bakimYukumluCount || 0}
+                      {stats.bakimYukumluCount ?? 0}
                     </div>
                     <p className="text-xs sm:text-sm text-gray-600">Bakmakla Yükümlü</p>
                   </div>
@@ -729,7 +743,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="text-lg sm:text-2xl text-emerald-600">
-                      ₺{(stats.totalAidAmount || 0).toLocaleString()}
+                      ₺{(stats.totalAidAmount ?? 0).toLocaleString()}
                     </div>
                     <p className="text-xs sm:text-sm text-gray-600">Toplam Yardım</p>
                   </div>
@@ -839,9 +853,9 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
                               <Search className="w-3 h-3 text-gray-400" />
                               <span
                                 className="truncate max-w-[100px]"
-                                title={beneficiary.tur || beneficiary.Tur || 'İhtiyaç Sahibi'}
+                                title={beneficiary.tur ?? beneficiary.Tur ?? 'İhtiyaç Sahibi'}
                               >
-                                {beneficiary.tur || beneficiary.Tur || 'İhtiyaç Sahibi'}
+                                {beneficiary.tur ?? beneficiary.Tur ?? 'İhtiyaç Sahibi'}
                               </span>
                             </div>
                           </TableCell>
@@ -854,15 +868,15 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
                           </TableCell>
                           <TableCell className="py-3">
                             {getCategoryBadge(
-                              beneficiary.kategori || beneficiary.Kategori || 'Genel',
+                              beneficiary.kategori ?? beneficiary.Kategori ?? 'Genel',
                             )}
                           </TableCell>
                           <TableCell className="py-3 text-center">-</TableCell>
                           <TableCell className="py-3">
-                            {beneficiary.uyruk || beneficiary.Uyruk || 'TR'}
+                            {beneficiary.uyruk ?? beneficiary.Uyruk ?? 'TR'}
                           </TableCell>
                           <TableCell className="py-3 font-mono">
-                            {beneficiary.kimlik_no || beneficiary.Kimlik_No || '-'}
+                            {beneficiary.kimlik_no ?? beneficiary.Kimlik_No ?? '-'}
                           </TableCell>
                           <TableCell className="py-3">
                             {beneficiary.formatted_phone ? (
@@ -871,24 +885,24 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
                               <span className="text-gray-400">-</span>
                             )}
                           </TableCell>
-                          <TableCell className="py-3">{beneficiary.ulkesi || 'Türkiye'}</TableCell>
+                          <TableCell className="py-3">{beneficiary.ulkesi ?? 'Türkiye'}</TableCell>
                           <TableCell className="py-3">
                             <span
                               className="truncate max-w-[120px]"
-                              title={beneficiary.sehri || undefined}
+                              title={beneficiary.sehri ?? undefined}
                             >
-                              {beneficiary.sehri || '-'}
+                              {beneficiary.sehri ?? '-'}
                             </span>
                           </TableCell>
                           <TableCell className="py-3">
-                            {beneficiary.yerlesimi || beneficiary.Yerlesimi || '-'}
+                            {beneficiary.yerlesimi ?? beneficiary.Yerlesimi ?? '-'}
                           </TableCell>
                           <TableCell className="py-3">
                             <span
                               className="truncate max-w-[180px]"
-                              title={beneficiary.adres || beneficiary.Adres || undefined}
+                              title={beneficiary.adres ?? beneficiary.Adres ?? undefined}
                             >
-                              {beneficiary.adres || beneficiary.Adres || '-'}
+                              {beneficiary.adres ?? beneficiary.Adres ?? '-'}
                             </span>
                           </TableCell>
                         </TableRow>
