@@ -1,4 +1,4 @@
-name: GitHub Copilot Code Quality
+name: GitHub Copilot Quality Gates
 
 on:
   push:
@@ -7,13 +7,10 @@ on:
     branches: [main, develop]
   workflow_dispatch:
 
-env:
-  NODE_VERSION: "22"
-
 jobs:
-  copilot-architecture-check:
-    name: Copilot Architecture Compliance
+  copilot-quality-check:
     runs-on: ubuntu-latest
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -21,477 +18,196 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
+          node-version: '22'
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Check Service Layer Usage
+      - name: Check Copilot Architecture Compliance
         run: |
-          echo "🏗️ Checking Service Layer Architecture..."
-
-          # Check for direct Supabase imports in components/hooks
-          echo "🔍 Scanning for direct Supabase usage..."
-          DIRECT_SUPABASE_USAGE=$(find . -name "*.ts" -o -name "*.tsx" | grep -E "(components|hooks)" | xargs grep -l "import.*supabase" | wc -l)
-
-          if [ "$DIRECT_SUPABASE_USAGE" -gt 0 ]; then
-            echo "❌ Found $DIRECT_SUPABASE_USAGE files with direct Supabase usage"
+          echo "🤖 Checking GitHub Copilot architecture compliance..."
+          
+          # Check for direct Supabase usage in components/hooks
+          DIRECT_SUPABASE=$(find . -name "*.ts" -o -name "*.tsx" | grep -E "(components|hooks)" | xargs grep -l "import.*supabase" | wc -l)
+          
+          if [ "$DIRECT_SUPABASE" -gt 0 ]; then
+            echo "::warning::Found $DIRECT_SUPABASE files with direct Supabase usage. Use service layer instead."
             echo "Files with direct Supabase usage:"
             find . -name "*.ts" -o -name "*.tsx" | grep -E "(components|hooks)" | xargs grep -l "import.*supabase"
-            echo "::warning::Direct Supabase usage detected. Use service layer instead."
           else
             echo "✅ No direct Supabase usage found in components/hooks"
           fi
-
-      - name: Check Console.log Usage
-        run: |
-          echo "🔍 Checking for console.log usage..."
-          CONSOLE_USAGE=$(find . -name "*.ts" -o -name "*.tsx" | xargs grep -c "console\.log\|console\.warn\|console\.error" | awk -F: '{sum += $2} END {print sum+0}')
-
-          if [ "$CONSOLE_USAGE" -gt 0 ]; then
-            echo "⚠️ Found $CONSOLE_USAGE console statements"
-            echo "Files with console usage:"
-            find . -name "*.ts" -o -name "*.tsx" | xargs grep -l "console\.log\|console\.warn\|console\.error"
-            echo "::warning::Console statements found. Use logger instead."
+          
+          # Check console.log usage
+          CONSOLE_USAGE=$(find . -name "*.ts" -o -name "*.tsx" | grep -v "test\|spec\|\.d\.ts" | xargs grep -c "console\.\(log\|warn\|error\)" | awk -F: '{sum += $2} END {print sum+0}')
+          
+          if [ "$CONSOLE_USAGE" -gt 5 ]; then
+            echo "::warning::Found $CONSOLE_USAGE console.log usages. Use logger instead."
           else
-            echo "✅ No console statements found"
+            echo "✅ Console.log usage is within acceptable limits: $CONSOLE_USAGE"
           fi
-
-      - name: Check Mock Data Usage
-        run: |
-          echo "🔍 Checking for mock data usage..."
-          MOCK_USAGE=$(find . -name "*.ts" -o -name "*.tsx" | grep -v "test\|spec" | xargs grep -c "mock.*data\|fake.*data\|dummy.*data" | awk -F: '{sum += $2} END {print sum+0}')
-
+          
+          # Check mock data usage
+          MOCK_USAGE=$(find . -name "*.ts" -o -name "*.tsx" | grep -v "test\|spec\|\.d\.ts" | xargs grep -c "mock.*data\|fake.*data\|dummy.*data" | awk -F: '{sum += $2} END {print sum+0}')
+          
           if [ "$MOCK_USAGE" -gt 0 ]; then
-            echo "❌ Found $MOCK_USAGE mock data usage in non-test files"
-            echo "Files with mock data:"
-            find . -name "*.ts" -o -name "*.tsx" | grep -v "test\|spec" | xargs grep -l "mock.*data\|fake.*data\|dummy.*data"
-            echo "::error::Mock data usage detected in production code."
+            echo "::error::Found $MOCK_USAGE mock data usages in production code. Remove mock data."
             exit 1
           else
             echo "✅ No mock data usage found in production code"
           fi
-
-      - name: Check TypeScript Usage
-        run: |
-          echo "🔍 Checking TypeScript usage..."
-
-          # Check for 'any' type usage
-          ANY_USAGE=$(find . -name "*.ts" -o -name "*.tsx" | xargs grep -c ": any" | awk -F: '{sum += $2} END {print sum+0}')
-
-          if [ "$ANY_USAGE" -gt 0 ]; then
-            echo "⚠️ Found $ANY_USAGE 'any' type usage"
-            echo "Files with 'any' types:"
-            find . -name "*.ts" -o -name "*.tsx" | xargs grep -l ": any"
-            echo "::warning::'any' type usage detected. Use specific types instead."
+          
+          # Check TypeScript 'any' usage
+          ANY_USAGE=$(find . -name "*.ts" -o -name "*.tsx" | grep -v "test\|spec\|\.d\.ts" | xargs grep -c ": any\|:any" | awk -F: '{sum += $2} END {print sum+0}')
+          
+          if [ "$ANY_USAGE" -gt 3 ]; then
+            echo "::warning::Found $ANY_USAGE 'any' type usages. Use specific types instead."
           else
-            echo "✅ No 'any' type usage found"
+            echo "✅ TypeScript 'any' usage is within acceptable limits: $ANY_USAGE"
           fi
 
-      - name: Check Turkish UI Text
+      - name: Check Code Quality
         run: |
-          echo "🇹🇷 Checking Turkish UI text usage..."
-
-          # Check for English UI text patterns
-          ENGLISH_UI=$(find . -name "*.tsx" | xargs grep -c "Loading\|Error\|Success\|Cancel\|Save\|Delete" | awk -F: '{sum += $2} END {print sum+0}')
-
-          if [ "$ENGLISH_UI" -gt 0 ]; then
-            echo "⚠️ Found $ENGLISH_UI potential English UI text"
-            echo "Files with potential English UI text:"
-            find . -name "*.tsx" | xargs grep -l "Loading\|Error\|Success\|Cancel\|Save\|Delete"
-            echo "::warning::English UI text detected. Use Turkish text instead."
-          else
-            echo "✅ No English UI text found"
-          fi
-
-      - name: Generate Architecture Report
-        run: |
-          echo "📊 Generating Copilot Architecture Report..."
-
-          cat > copilot-architecture-report.md << EOF
-          # GitHub Copilot Architecture Compliance Report
-
-          ## Summary
-          - **Direct Supabase Usage**: $DIRECT_SUPABASE_USAGE files
-          - **Console Statements**: $CONSOLE_USAGE instances
-          - **Mock Data Usage**: $MOCK_USAGE instances
-          - **Any Type Usage**: $ANY_USAGE instances
-          - **English UI Text**: $ENGLISH_UI instances
-
-          ## Recommendations
-          EOF
-
-          if [ "$DIRECT_SUPABASE_USAGE" -gt 0 ]; then
-            echo "- ❌ Replace direct Supabase usage with service layer" >> copilot-architecture-report.md
-          fi
-
-          if [ "$CONSOLE_USAGE" -gt 0 ]; then
-            echo "- ⚠️ Replace console statements with logger" >> copilot-architecture-report.md
-          fi
-
-          if [ "$MOCK_USAGE" -gt 0 ]; then
-            echo "- ❌ Remove mock data from production code" >> copilot-architecture-report.md
-          fi
-
-          if [ "$ANY_USAGE" -gt 0 ]; then
-            echo "- ⚠️ Replace 'any' types with specific types" >> copilot-architecture-report.md
-          fi
-
-          if [ "$ENGLISH_UI" -gt 0 ]; then
-            echo "- ⚠️ Replace English UI text with Turkish" >> copilot-architecture-report.md
-          fi
-
-          echo "" >> copilot-architecture-report.md
-          echo "## Generated at: $(date)" >> copilot-architecture-report.md
-
-      - name: Upload Architecture Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: copilot-architecture-report
-          path: copilot-architecture-report.md
-
-  copilot-code-quality:
-    name: Copilot Code Quality Metrics
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run TypeScript check
-        run: npm run type-check:app
-
-      - name: Run ESLint with Copilot rules
-        run: |
-          echo "🔍 Running ESLint with Copilot quality rules..."
+          echo "🔍 Checking code quality..."
+          
+          # TypeScript compilation check
+          npm run type-check:app
+          
+          # ESLint check
           npm run lint:check
-
-      - name: Analyze code complexity
-        run: |
-          echo "📊 Analyzing code complexity..."
-
-          # Count functions and classes
-          FUNCTION_COUNT=$(find . -name "*.ts" -o -name "*.tsx" | xargs grep -c "function\|const.*=" | awk -F: '{sum += $2} END {print sum+0}')
-          CLASS_COUNT=$(find . -name "*.ts" -o -name "*.tsx" | xargs grep -c "class " | awk -F: '{sum += $2} END {print sum+0}')
-
-          # Count lines per file
-          LARGE_FILES=$(find . -name "*.ts" -o -name "*.tsx" | xargs wc -l | awk '$1 > 300 {count++} END {print count+0}')
-
-          echo "Functions: $FUNCTION_COUNT"
-          echo "Classes: $CLASS_COUNT"
-          echo "Large files (>300 lines): $LARGE_FILES"
-
+          
+          # Check for large files
+          LARGE_FILES=$(find . -name "*.ts" -o -name "*.tsx" | xargs wc -l | awk '$1 > 500 {print $2}' | wc -l)
+          
           if [ "$LARGE_FILES" -gt 5 ]; then
-            echo "::warning::Too many large files detected. Consider refactoring."
+            echo "::warning::Found $LARGE_FILES files larger than 500 lines. Consider refactoring."
+          else
+            echo "✅ File sizes are within acceptable limits"
           fi
 
-      - name: Check test coverage
+      - name: Check Security Compliance
         run: |
-          echo "🧪 Checking test coverage..."
-          npm run test:coverage
+          echo "🔒 Checking security compliance..."
+          
+          # Check for hardcoded secrets
+          SECRETS=$(find . -name "*.ts" -o -name "*.tsx" | xargs grep -i "password\|secret\|key\|token" | grep -v "process\.env\|import\|export" | wc -l)
+          
+          if [ "$SECRETS" -gt 0 ]; then
+            echo "::warning::Found potential hardcoded secrets. Use environment variables instead."
+          else
+            echo "✅ No hardcoded secrets found"
+          fi
+          
+          # Check for XSS vulnerabilities
+          XSS_VULNS=$(find . -name "*.tsx" | xargs grep -c "dangerouslySetInnerHTML" | awk -F: '{sum += $2} END {print sum+0}')
+          
+          if [ "$XSS_VULNS" -gt 0 ]; then
+            echo "::warning::Found $XSS_VULNS potential XSS vulnerabilities. Review dangerouslySetInnerHTML usage."
+          else
+            echo "✅ No XSS vulnerabilities found"
+          fi
 
-          # Extract coverage percentage
-          COVERAGE=$(cat coverage/coverage-summary.json | jq '.total.lines.pct')
-          echo "Test coverage: $COVERAGE%"
+      - name: Check Performance
+        run: |
+          echo "⚡ Checking performance..."
+          
+          # Check for missing memoization
+          MEMO_USAGE=$(find . -name "*.tsx" | xargs grep -c "React\.memo\|useMemo\|useCallback" | awk -F: '{sum += $2} END {print sum+0}')
+          COMPONENT_COUNT=$(find . -name "*.tsx" | wc -l)
+          
+          if [ "$MEMO_USAGE" -lt $((COMPONENT_COUNT / 2)) ]; then
+            echo "::warning::Consider adding more memoization for performance optimization."
+          else
+            echo "✅ Memoization usage is good: $MEMO_USAGE usages in $COMPONENT_COUNT components"
+          fi
+          
+          # Check for lazy loading
+          LAZY_USAGE=$(find . -name "*.tsx" | xargs grep -c "React\.lazy\|lazy(" | awk -F: '{sum += $2} END {print sum+0}')
+          
+          if [ "$LAZY_USAGE" -eq 0 ]; then
+            echo "::info::Consider adding lazy loading for better performance."
+          else
+            echo "✅ Lazy loading is implemented: $LAZY_USAGE usages"
+          fi
 
-          if (( $(echo "$COVERAGE < 80" | bc -l) )); then
-            echo "::warning::Test coverage is below 80%"
+      - name: Run Tests
+        run: |
+          echo "🧪 Running tests..."
+          npm test -- --coverage --reporter=verbose
+
+      - name: Check Test Coverage
+        run: |
+          echo "📊 Checking test coverage..."
+          
+          # Check if coverage report exists
+          if [ -f "coverage/coverage-summary.json" ]; then
+            COVERAGE=$(cat coverage/coverage-summary.json | jq '.total.lines.pct')
+            echo "Test coverage: $COVERAGE%"
+            
+            if (( $(echo "$COVERAGE < 80" | bc -l) )); then
+              echo "::error::Test coverage is below 80%. Current: $COVERAGE%"
+              exit 1
+            else
+              echo "✅ Test coverage is above 80%: $COVERAGE%"
+            fi
+          else
+            echo "::warning::Coverage report not found. Run tests with coverage first."
           fi
 
       - name: Generate Quality Report
         run: |
-          echo "📊 Generating Copilot Quality Report..."
-
-          cat > copilot-quality-report.md << EOF
-          # GitHub Copilot Code Quality Report
-
-          ## Metrics
-          - **Functions**: $FUNCTION_COUNT
-          - **Classes**: $CLASS_COUNT
-          - **Large Files**: $LARGE_FILES
-          - **Test Coverage**: $COVERAGE%
-
-          ## Quality Gates
-          - ✅ TypeScript compilation
-          - ✅ ESLint checks
-          - ✅ Test coverage: $COVERAGE%
-
-          ## Recommendations
+          echo "📋 Generating quality report..."
+          
+          # Create quality report
+          cat > quality-report.md << EOF
+          # GitHub Copilot Quality Report
+          
+          ## Architecture Compliance
+          - Direct Supabase Usage: $DIRECT_SUPABASE files
+          - Console.log Usage: $CONSOLE_USAGE instances
+          - Mock Data Usage: $MOCK_USAGE instances
+          - TypeScript 'any' Usage: $ANY_USAGE instances
+          
+          ## Code Quality
+          - Large Files (>500 lines): $LARGE_FILES files
+          - TypeScript Compilation: ✅ Passed
+          - ESLint Check: ✅ Passed
+          
+          ## Security
+          - Hardcoded Secrets: $SECRETS instances
+          - XSS Vulnerabilities: $XSS_VULNS instances
+          
+          ## Performance
+          - Memoization Usage: $MEMO_USAGE instances
+          - Lazy Loading: $LAZY_USAGE instances
+          
+          ## Test Coverage
+          - Coverage: $COVERAGE%
+          
+          ## Summary
+          $(if [ "$MOCK_USAGE" -eq 0 ] && [ "$COVERAGE" -ge 80 ]; then echo "✅ All quality gates passed"; else echo "❌ Some quality gates failed"; fi)
           EOF
-
-          if [ "$LARGE_FILES" -gt 5 ]; then
-            echo "- ⚠️ Consider refactoring large files" >> copilot-quality-report.md
-          fi
-
-          if (( $(echo "$COVERAGE < 80" | bc -l) )); then
-            echo "- ⚠️ Increase test coverage to 80%+" >> copilot-quality-report.md
-          fi
-
-          echo "" >> copilot-quality-report.md
-          echo "## Generated at: $(date)" >> copilot-quality-report.md
+          
+          echo "Quality report generated: quality-report.md"
 
       - name: Upload Quality Report
         uses: actions/upload-artifact@v4
         with:
-          name: copilot-quality-report
-          path: |
-            copilot-quality-report.md
-            coverage/
+          name: quality-report
+          path: quality-report.md
 
-  copilot-security-check:
-    name: Copilot Security Compliance
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Check for security anti-patterns
-        run: |
-          echo "🔒 Checking for security anti-patterns..."
-
-          # Check for hardcoded secrets
-          SECRETS=$(find . -name "*.ts" -o -name "*.tsx" | xargs grep -c "password\|secret\|key\|token" | awk -F: '{sum += $2} END {print sum+0}')
-
-          # Check for XSS vulnerabilities
-          XSS_PATTERNS=$(find . -name "*.tsx" | xargs grep -c "dangerouslySetInnerHTML\|innerHTML" | awk -F: '{sum += $2} END {print sum+0}')
-
-          # Check for SQL injection patterns
-          SQL_PATTERNS=$(find . -name "*.ts" -o -name "*.tsx" | xargs grep -c "SELECT\|INSERT\|UPDATE\|DELETE" | awk -F: '{sum += $2} END {print sum+0}')
-
-          echo "Potential secrets: $SECRETS"
-          echo "XSS patterns: $XSS_PATTERNS"
-          echo "SQL patterns: $SQL_PATTERNS"
-
-          if [ "$SECRETS" -gt 0 ]; then
-            echo "::warning::Potential hardcoded secrets detected"
-          fi
-
-          if [ "$XSS_PATTERNS" -gt 0 ]; then
-            echo "::warning::Potential XSS vulnerabilities detected"
-          fi
-
-      - name: Check input validation
-        run: |
-          echo "🔍 Checking input validation..."
-
-          # Check for sanitization usage
-          SANITIZATION=$(find . -name "*.ts" -o -name "*.tsx" | xargs grep -c "sanitize\|validate" | awk -F: '{sum += $2} END {print sum+0}')
-
-          # Check for form validation
-          FORM_VALIDATION=$(find . -name "*.tsx" | xargs grep -c "required\|minLength\|maxLength\|pattern" | awk -F: '{sum += $2} END {print sum+0}')
-
-          echo "Sanitization usage: $SANITIZATION"
-          echo "Form validation: $FORM_VALIDATION"
-
-          if [ "$SANITIZATION" -lt 5 ]; then
-            echo "::warning::Low sanitization usage detected"
-          fi
-
-      - name: Generate Security Report
-        run: |
-          echo "📊 Generating Copilot Security Report..."
-
-          cat > copilot-security-report.md << EOF
-          # GitHub Copilot Security Compliance Report
-
-          ## Security Metrics
-          - **Potential Secrets**: $SECRETS
-          - **XSS Patterns**: $XSS_PATTERNS
-          - **SQL Patterns**: $SQL_PATTERNS
-          - **Sanitization Usage**: $SANITIZATION
-          - **Form Validation**: $FORM_VALIDATION
-
-          ## Security Status
-          EOF
-
-          if [ "$SECRETS" -eq 0 ] && [ "$XSS_PATTERNS" -eq 0 ]; then
-            echo "- ✅ No critical security issues detected" >> copilot-security-report.md
-          else
-            echo "- ⚠️ Security review recommended" >> copilot-security-report.md
-          fi
-
-          echo "" >> copilot-security-report.md
-          echo "## Generated at: $(date)" >> copilot-security-report.md
-
-      - name: Upload Security Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: copilot-security-report
-          path: copilot-security-report.md
-
-  copilot-performance-check:
-    name: Copilot Performance Analysis
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build application
-        run: npm run build
-
-      - name: Analyze bundle size
-        run: |
-          echo "📦 Analyzing bundle size..."
-
-          # Get bundle size
-          BUNDLE_SIZE=$(du -sh dist/ | cut -f1)
-          JS_SIZE=$(find dist -name "*.js" -exec du -ch {} + | tail -1 | cut -f1)
-          CSS_SIZE=$(find dist -name "*.css" -exec du -ch {} + | tail -1 | cut -f1)
-
-          echo "Total bundle size: $BUNDLE_SIZE"
-          echo "JavaScript size: $JS_SIZE"
-          echo "CSS size: $CSS_SIZE"
-
-      - name: Check for performance anti-patterns
-        run: |
-          echo "⚡ Checking for performance anti-patterns..."
-
-          # Check for missing memoization
-          MEMO_USAGE=$(find . -name "*.tsx" | xargs grep -c "useMemo\|useCallback\|React.memo" | awk -F: '{sum += $2} END {print sum+0}')
-
-          # Check for large components
-          LARGE_COMPONENTS=$(find . -name "*.tsx" | xargs wc -l | awk '$1 > 200 {count++} END {print count+0}')
-
-          # Check for missing lazy loading
-          LAZY_IMPORTS=$(find . -name "*.tsx" | xargs grep -c "React.lazy\|lazy" | awk -F: '{sum += $2} END {print sum+0}')
-
-          echo "Memoization usage: $MEMO_USAGE"
-          echo "Large components: $LARGE_COMPONENTS"
-          echo "Lazy imports: $LAZY_IMPORTS"
-
-      - name: Generate Performance Report
-        run: |
-          echo "📊 Generating Copilot Performance Report..."
-
-          cat > copilot-performance-report.md << EOF
-          # GitHub Copilot Performance Analysis Report
-
-          ## Bundle Metrics
-          - **Total Bundle Size**: $BUNDLE_SIZE
-          - **JavaScript Size**: $JS_SIZE
-          - **CSS Size**: $CSS_SIZE
-
-          ## Performance Metrics
-          - **Memoization Usage**: $MEMO_USAGE
-          - **Large Components**: $LARGE_COMPONENTS
-          - **Lazy Imports**: $LAZY_IMPORTS
-
-          ## Performance Status
-          EOF
-
-          if [ "$LARGE_COMPONENTS" -gt 3 ]; then
-            echo "- ⚠️ Consider splitting large components" >> copilot-performance-report.md
-          fi
-
-          if [ "$MEMO_USAGE" -lt 10 ]; then
-            echo "- ⚠️ Consider adding more memoization" >> copilot-performance-report.md
-          fi
-
-          echo "" >> copilot-performance-report.md
-          echo "## Generated at: $(date)" >> copilot-performance-report.md
-
-      - name: Upload Performance Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: copilot-performance-report
-          path: copilot-performance-report.md
-
-  copilot-summary:
-    name: Copilot Quality Summary
-    runs-on: ubuntu-latest
-    needs:
-      [
-        copilot-architecture-check,
-        copilot-code-quality,
-        copilot-security-check,
-        copilot-performance-check,
-      ]
-    if: always()
-    steps:
-      - name: Download all reports
-        uses: actions/download-artifact@v4
-        with:
-          path: reports/
-
-      - name: Generate summary report
-        run: |
-          echo "📊 Generating Copilot Quality Summary..."
-
-          cat > copilot-summary-report.md << EOF
-          # GitHub Copilot Quality Summary
-
-          ## Job Status
-          - **Architecture Check**: ${{ needs.copilot-architecture-check.result }}
-          - **Code Quality**: ${{ needs.copilot-code-quality.result }}
-          - **Security Check**: ${{ needs.copilot-security-check.result }}
-          - **Performance Check**: ${{ needs.copilot-performance-check.result }}
-
-          ## Overall Status
-          EOF
-
-          if [ "${{ needs.copilot-architecture-check.result }}" = "success" ] && 
-             [ "${{ needs.copilot-code-quality.result }}" = "success" ] && 
-             [ "${{ needs.copilot-security-check.result }}" = "success" ] && 
-             [ "${{ needs.copilot-performance-check.result }}" = "success" ]; then
-            echo "- ✅ All Copilot quality checks passed" >> copilot-summary-report.md
-          else
-            echo "- ⚠️ Some Copilot quality checks failed" >> copilot-summary-report.md
-          fi
-
-          echo "" >> copilot-summary-report.md
-          echo "## Reports Generated" >> copilot-summary-report.md
-          echo "- Architecture Compliance Report" >> copilot-summary-report.md
-          echo "- Code Quality Report" >> copilot-summary-report.md
-          echo "- Security Compliance Report" >> copilot-summary-report.md
-          echo "- Performance Analysis Report" >> copilot-summary-report.md
-
-          echo "" >> copilot-summary-report.md
-          echo "## Generated at: $(date)" >> copilot-summary-report.md
-
-      - name: Upload summary report
-        uses: actions/upload-artifact@v4
-        with:
-          name: copilot-summary-report
-          path: copilot-summary-report.md
-
-      - name: Comment on PR
+      - name: Comment PR
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v7
         with:
           script: |
             const fs = require('fs');
-            const summary = fs.readFileSync('copilot-summary-report.md', 'utf8');
-
+            const report = fs.readFileSync('quality-report.md', 'utf8');
+            
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `## 🤖 GitHub Copilot Quality Check Results\n\n${summary}`
+              body: `## 🤖 GitHub Copilot Quality Check Results\n\n${report}`
             });

@@ -7,7 +7,7 @@
 
 import { useCallback, useMemo } from 'react';
 import { toast } from 'sonner';
-import { TABLES } from '../lib/supabase';
+// Removed direct supabase import - using service layer instead
 import type { Member, MemberInsert, MemberUpdate, MemberWithDonations } from '../types/database';
 import { useSupabaseData, useSupabasePagination, useSupabaseSearch } from './useSupabaseData';
 

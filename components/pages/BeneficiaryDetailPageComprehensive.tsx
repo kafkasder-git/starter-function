@@ -35,7 +35,7 @@ import {
 } from 'lucide-react';
 import React, { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { supabaseAdmin } from '../../lib/supabase';
+// Removed direct supabase import - using service layer instead
 import { ihtiyacSahipleriService } from '../../services/ihtiyacSahipleriService';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';

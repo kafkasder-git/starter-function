@@ -108,7 +108,7 @@ export class MembersService {
     filters: MembersFilters = {},
   ): Promise<MembersApiResponse<Member[]>> {
     try {
-      console.log('🔄 Fetching members with filters:', filters);
+      logger.info('Fetching members with filters', { filters });
 
       let query = supabase.from('members').select('*', { count: 'exact' });
 
@@ -168,11 +168,11 @@ export class MembersService {
       const { data, error, count } = await query;
 
       if (error) {
-        console.error('❌ Error fetching members:', error);
+        logger.error('Error fetching members', error);
         return { error: error.message };
       }
 
-      console.log('✅ Successfully fetched', data?.length || 0, 'members');
+      logger.info(`Successfully fetched ${data?.length || 0} members`);
 
       return {
         data: data || [],
@@ -180,7 +180,7 @@ export class MembersService {
         totalPages: Math.ceil((count || 0) / pageSize),
       };
     } catch (error: any) {
-      console.error('❌ Unexpected error in getMembers:', error);
+      logger.error('Unexpected error in getMembers', error);
       return { error: error.message || 'Beklenmeyen hata oluştu' };
     }
   }

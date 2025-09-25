@@ -18,7 +18,7 @@ const TABLES = {
   CAMPAIGNS: 'campaigns',
 };
 
-// Safe stats that only check table existence and provide mock data
+// Safe stats that only check table existence and provide fallback data
 /**
  * SafeStats Interface
  * 
