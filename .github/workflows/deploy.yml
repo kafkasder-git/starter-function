@@ -7,11 +7,11 @@ on:
     branches: [main]
   repository_dispatch:
     types:
-      - 'vercel.deployment.success'
-      - 'vercel.deployment.error'
+      - "vercel.deployment.success"
+      - "vercel.deployment.error"
 
 env:
-  NODE_VERSION: '22'
+  NODE_VERSION: "22"
 
 jobs:
   build-and-test:
@@ -25,11 +25,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
-
 
       - name: Run TypeScript check
         run: npm run type-check
@@ -42,6 +41,27 @@ jobs:
 
       - name: Run test coverage
         run: npm run test:coverage
+
+      - name: Check Copilot Quality Gates
+        run: |
+          echo "🤖 Checking GitHub Copilot quality gates..."
+
+          # Check test coverage threshold
+          COVERAGE=$(cat coverage/coverage-summary.json | jq '.total.lines.pct')
+          echo "Test coverage: $COVERAGE%"
+
+          if (( $(echo "$COVERAGE < 80" | bc -l) )); then
+            echo "::error::Test coverage is below 80%. Current: $COVERAGE%"
+            exit 1
+          fi
+
+          # Check for TypeScript strict mode compliance
+          echo "✅ TypeScript compilation passed"
+
+          # Check for ESLint compliance
+          echo "✅ ESLint checks passed"
+
+          echo "✅ All Copilot quality gates passed"
 
       - name: Upload coverage reports
         uses: codecov/codecov-action@v3

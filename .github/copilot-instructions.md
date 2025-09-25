@@ -1,192 +1,197 @@
-# Kafkasder Management Panel - AI Coding Guidelines
+Kafkasder Yönetim Paneli - GitHub Copilot Kullanım Kılavuzu Bu kılavuz, "Dernek
+Yönetim Sistemi" projesinde GitHub Copilot'ı etkili, tutarlı ve mimariye uygun
+bir şekilde kullanmak için oluşturulmuştur. Temel prensiplerin yanı sıra,
+profesyonel geliştirme akışını takip eden ileri seviye kuralları da içerir.
+Copilot'ın önerilerinin projemizin standartlarına uymasını sağlamak için bu
+kurallara uymak kritik öneme sahiptir.
 
-## Architecture Overview
+🚀 Temel Prensipler Pilot Sizsiniz, Copilot Yardımcı Pilot: Copilot güçlü bir
+asistandır ancak son kararı her zaman geliştirici verir. Üretilen kodu körü
+körüne kabul etmeyin. Kodun doğruluğunu, güvenliğini ve projenin mimari
+desenlerine uygunluğunu daima kontrol edin.
 
-This is a **Dernek Yönetim Sistemi** (Association Management System) - a modern React/TypeScript admin panel for non-profit organizations. Built with Vite, Supabase, and a layered service architecture.
+Önce Düşün, Sonra Üret: Bir özellik geliştirmeye başlamadan önce, projenin
+mevcut yapılarını (servisler, hook'lar, store'lar) nasıl kullanacağınızı
+planlayın. Copilot'a bu plana uygun istemler (prompts) verin.
 
-### Core Stack
-- **Frontend**: React 18 + TypeScript + Vite + SWC
-- **Backend**: Supabase (auth, database, real-time)
-- **State**: Zustand stores + React Context providers
-- **UI**: Radix UI components + Tailwind CSS
-- **Build**: Vite with PWA support, Sentry monitoring
+Mevcut Koddan Öğrenmesini Sağlayın: Copilot, açık olan dosyalardaki bağlamdan
+öğrenir. Yeni bir bileşen veya fonksiyon yazarken, ilgili servis, hook veya tip
+tanım dosyalarını (types.ts) yan sekmede açık tutun. Bu, daha isabetli ve
+tutarlı öneriler almanızı sağlar.
 
-## Essential Architecture Patterns
+Spesifik ve Açıklayıcı Yorumlar Yazın: Copilot'ı yönlendirmenin en iyi yolu, ne
+istediğinizi açıklayan yorum satırları yazmaktır.
 
-### Service Layer Pattern
-All business logic lives in `services/` using inheritance from `BaseService<T>`:
+// KÖTÜ 👎 // bir fonksiyon yaz
 
-```typescript
-// services/baseService.ts - Abstract base class for all services
-export abstract class BaseService<
-  T extends BaseEntity,
-  TInsert,
-  TUpdate,
-  TFilters extends BaseFilters = BaseFilters,
-> {
-  protected delay(ms: number = SERVICE_CONFIG.DEFAULT_DELAY_MS): Promise<void>
-  protected paginateResults<TData>(data: TData[], page: number, pageSize: number): PaginatedResponse<TData>
-  protected applySearchFilter(data: T[], searchTerm: string, searchFields: (keyof T)[]): T[]
-}
-```
+// İYİ 👍 // membersService'i kullanarak belirli bir üyenin son 3 bağışını
+getiren bir React hook'u oluştur. // Hook, yüklenme (loading), hata (error) ve
+veri (data) durumlarını içermelidir.
 
-Key services: `membersService`, `donationsService`, `beneficiariesService`, `aidRequestsService`
+🏆 Profesyonel Geliştirici Akışı ve İleri Seviye Kurallar Bu kurallar, Copilot'ı
+sadece bir kod tamamlama aracından çıkarıp, projenin kalitesini proaktif olarak
+artıran profesyonel bir asistana dönüştürmeyi hedefler.
 
-### Context + Store Hybrid
-- **React Contexts**: Authentication (`SupabaseAuthContext`), notifications
-- **Zustand Stores**: UI state (`uiStore`), complex client state
-- **Pattern**: Use contexts for auth/user data, stores for UI/app state
+1. Planla ve Uygula Metodolojisi KURAL: Karmaşık bir görev için Copilot ile
+   çalışırken üç adımlı bir süreç izleyin: Planlama, Uygulama ve İyileştirme.
 
-```typescript
-// Pattern: Auth state via context, UI state via store
-const { user, isAuthenticated } = useSupabaseAuth(); // Context
-const { sidebarCollapsed, setSidebarCollapsed } = useUIStore(); // Zustand store
-```
+Planlama: Copilot'tan görevi tamamlamak için izlenmesi gereken adımları
+listelemesini isteyin.
 
-### Component Organization
-```
-components/
-├── [feature]/          # Feature-specific (beneficiary/, auth/, etc.)
-├── [utility]/          # Cross-cutting (ui/, utils/, accessibility/)
-└── [layout]/           # Layout components (Header, Sidebar, PageLayout)
-```
+Uygulama: Planın her adımını Copilot'a tek tek uygulattırın.
 
-### AI Integration Architecture
-Centralized AI provider in `components/ai/EnhancedAIProvider.tsx`:
-- Multi-provider support (OpenRouter, OpenAI, Anthropic)
-- Turkish language optimization (`language: 'tr'`)
-- Usage tracking and cost monitoring
-- Context-aware responses for the dernek domain
+Gözden Geçirme ve İyileştirme: Üretilen kodu analiz etmesini, olası
+iyileştirmeleri (refactoring), hata yönetimi eklemeyi veya daha verimli hale
+getirmeyi talep edin. Bu, ilk taslağın ötesine geçerek nihai kaliteyi artırır.
 
-## Critical Development Workflows
+İstem Sıralaması:
 
-### Environment Setup
-```bash
-npm run dev          # Development server with HMR
-npm run build       # TypeScript check + Vite build
-npm run preview     # Preview production build
-npm run lint:fix    # ESLint with auto-fix
-```
+Plan İsteği:
 
-### Supabase Integration
-Check `lib/supabase.ts` for connection status. The app gracefully handles missing Supabase config:
-```typescript
-// Pattern: Always check isSupabaseConfigured before real-time features
-if (isSupabaseConfigured) {
-  // Use real Supabase features
-} else {
-  // Fall back to mock data/local storage
-}
-```
+// Görev: Üyeler tablosuna gelişmiş bir filtreleme özelliği eklemek istiyorum.
+// Plan: Bu özelliği eklemek için hangi dosyalarda (servis, hook, bileşen) //
+değişiklik yapmam gerektiğini ve hangi adımları izlemem gerektiğini Türkçe
+olarak listele. // Her adımı detaylıca açıkla.
 
-### Component Development
-- **Use TypeScript strict mode** - all `tsx` files require proper typing
-- **Follow component patterns**: Wrap in `ErrorBoundary`, use `SafeWrapper` for mobile
-- **Path aliases**: Import from `@/` (maps to root directory)
-- **State management**: UI state → Zustand, Auth → Context, Data → Services
+Adım Adım Uygulama: Copilot'un oluşturduğu plana göre her adımı tek tek isteyin.
 
-## Project-Specific Conventions
+// Planın 1. adımı: membersService.ts dosyasına, TFilters nesnesini genişleterek
+// üyenin aktiflik durumu ve kayıt tarih aralığına göre filtreleme yapacak //
+`getFilteredMembers` adında yeni bir fonksiyon ekle. Bu işlemi yap ve kodunu
+oluştur.
 
-### Turkish Language Support
-This is a Turkish application (`lang: 'tr'` in manifest):
-- UI text in Turkish
-- Date/number formatting for Turkish locale
-- AI prompts optimized for Turkish context
-- Comments can be in English, but user-facing text in Turkish
+2. Kod Tekrarını Önleme (DRY - Don't Repeat Yourself) KURAL: Yeni bir fonksiyon,
+   hook veya bileşen oluşturmadan önce, projedeki mevcut benzer yapıları analiz
+   etmesini ve kopyala-yapıştır yerine mevcut koddan ilham alarak tutarlı bir
+   yapı oluşturmasını isteyin.
 
-### Mobile-First Responsive Design
-Mobile optimization is critical:
-- `components/mobile/` for mobile-specific components
-- `hooks/useMobileForm.ts`, `useTouchDevice.ts` for mobile interactions
-- PWA configured in `vite.config.ts` with Turkish manifest
+İstem Örneği:
 
-### Security & Performance Patterns
-- **Rate limiting**: Implemented in `middleware/rateLimit.ts`
-- **Input validation**: `lib/validation.ts` + Zod schemas
-- **Error boundaries**: Wrap components with `ErrorBoundary` or `StoreErrorBoundary`
-- **Performance monitoring**: Sentry integration with `lib/sentryInit.ts`
+// Projeyi tara. `useDonations` adında bir hook zaten mevcut. // Şimdi yardım
+talepleri (`aidRequests`) için benzer bir hook oluşturmak istiyorum. //
+`useDonations` hook'unun yapısını ve en iyi pratikleri referans alarak //
+`useAidRequests` adında yeni bir hook oluştur. Servis olarak
+`aidRequestsService`'i kullan. // İki hook arasındaki tutarlılığı en üst düzeyde
+tut.
 
-### Data Flow Architecture
-1. **Services** handle all external API calls (Supabase/mock data)
-2. **Hooks** (`hooks/`) provide React integration for services
-3. **Stores** manage client-side state with persistence
-4. **Components** consume via hooks, never directly call services
+3. Sıfır Hata ve Mevcut Kodu İyileştirme Odağı KURAL: Copilot'ı sadece yeni kod
+   üretmek için değil, aynı zamanda mevcut koddaki potansiyel hataları bulmak,
+   performansı iyileştirmek ve kod okunabilirliğini artırmak için de kullanın.
 
-## Key Integration Points
+İstem Örneği (Hata Ayıklama):
 
-### Authentication Flow
-```typescript
-// Pattern: Always use SupabaseAuthContext for auth state
-const { user, isAuthenticated, signIn, signOut } = useSupabaseAuth();
-```
+// Bu useEffect hook'u bazen gereksiz yere birden fazla kez tetikleniyor. //
+Kodu çok dikkatli analiz et. Bağımlılık dizisini (dependency array) ve içerideki
+mantığı // inceleyerek bu sorunun kök nedenini bul ve sorunu düzelten, optimize
+edilmiş kodu yaz. // Yaptığın değişikliği Türkçe olarak açıkla. // [Mevcut
+hatalı kod bloğu buraya yapıştırılır]
 
-### Data Fetching Pattern
-```typescript
-// Pattern: Services return consistent ApiResponse<T> format
-const response = await membersService.getMembers(filters);
-if (response.success) {
-  // Handle data
-} else {
-  // Handle error
-}
-```
+4. Proje Dışına Çıkmama (Strict Context) KURAL: Copilot'tan asla proje
+   mimarisinde bulunmayan bir kütüphane veya desen (örneğin Redux, MobX, farklı
+   bir UI kütüphanesi) önermesini istemeyin. Tüm çözümler daima Zustand, Radix
+   UI, Tailwind CSS ve mevcut servis katmanı mimarisi içinde kalmalıdır. Bu
+   kural kesindir.
 
-### AI Feature Integration
-```typescript
-// Pattern: Use EnhancedAIProvider for all AI features
-const { generateContent, trackAIUsage } = useAI();
-const response = await generateContent(prompt, { language: 'tr' });
-```
+5. Mock Data Kullanımı Kesinlikle Yasaktır KURAL: Kod geliştirme sırasında asla
+   mock data veya sahte veri üreten fonksiyonlar oluşturmayın. Proje,
+   lib/supabase.ts dosyasındaki isSupabaseConfigured kontrolü sayesinde Supabase
+   bağlantısı olmadığında zaten zarif bir şekilde davranacak şekilde
+   tasarlanmıştır. Tüm veri işlemleri, gerçek Supabase servis çağrıları
+   üzerinden yapılmalıdır.
 
-### Validation Pattern
-```typescript
-// Pattern: Use centralized validation utilities
-import { VALIDATION_PATTERNS, sanitizeInput } from '@/lib/validation';
+6. Güvenlik ve Hassas Veri Yönetimi (ZORUNLU) KURAL: Asla API anahtarları,
+   şifreler veya diğer hassas verileri yorum satırlarına veya kodun içine
+   yazarak Copilot'a bağlam olarak vermeyin. Copilot'un hassas verileri işleyen
+   (örn. kullanıcı şifresi güncelleme) kod önerilerini iki kat dikkatle
+   inceleyin ve projenin güvenlik standartlarına (örn. sanitizeInput kullanımı)
+   uyduğundan emin olun.
 
-// Turkish phone validation, IBAN validation, etc.
-const isValidPhone = VALIDATION_PATTERNS.phone.test(phoneNumber);
-const sanitizedInput = sanitizeInput.html(userInput);
-```
+7. Kod Gözden Geçirme (Code Review) Süreci KURAL: Pull Request (PR)
+   açıklamalarınızda, Copilot tarafından yoğun bir şekilde üretilen veya
+   refactor edilen karmaşık kod bloklarını belirtin. Bu, gözden geçiren
+   kişilerin bu bölümlere ekstra dikkat etmesini sağlar ve "Pilot Sizsiniz"
+   prensibini pekiştirir. AI tarafından üretilen kod, insan tarafından üretilen
+   kod ile aynı kalite kontrolünden geçmelidir.
 
-### PWA Configuration
-```typescript
-// vite.config.ts - Extensive PWA setup with Turkish shortcuts
-VitePWA({
-  manifest: {
-    name: 'Dernek Yönetim Sistemi',
-    short_name: 'DernekYS',
-    lang: 'tr',
-    shortcuts: [
-      { name: 'Yardım Başvuruları', url: '/#/yardim/basvurular' },
-      { name: 'Bağış Kaydet', url: '/#/bagis/yeni' },
-      // ... more Turkish shortcuts
-    ]
-  }
-})
-```
+🏛️ Mimari ve Desen Kuralları Bu kurallar, projenin temel mimarisini korumak için
+en önemli olanlardır.
 
-## Development Commands & Debugging
+1. Service Katmanı Kullanımı (ZORUNLU) KURAL: Tüm Supabase veya harici API
+   işlemleri yalnızca services/ dizinindeki ilgili servis dosyası içinde
+   yapılmalıdır. Bileşenler veya hook'lar doğrudan supabaseClient'ı
+   çağırmamalıdır.
 
-### Essential Commands
-- `npm run type-check` - Validate TypeScript without build
-- `npm run analyze` - Bundle analyzer for performance debugging
-- `npm run test:coverage` - Run tests with coverage report
+İstem Örneği:
 
-### Debugging Tips
-- Check browser console for Supabase connection status logs
-- Use React DevTools for Zustand store inspection
-- Sentry captures errors in production - check dashboard
-- AI usage tracking available in browser DevTools under "AI"
+// services/donationsService.ts içinde
 
-### Build Configuration
-- **Path aliases**: `@/*` maps to `./` (configured in `tsconfig.json`)
-- **PWA**: Extensive offline support with service worker
-- **Bundle analysis**: `npm run analyze` generates visual bundle report
-- **Sentry**: Error monitoring with source maps (commented out in config)
+// Belirli bir tarih aralığındaki ve belirli bir bağış türündeki bağışları
+getiren // bir asenkron fonksiyon oluştur. Fonksiyon, filtre olarak TFilters
+nesnesi almalı // ve ApiResponse<Donation[]> formatında bir sonuç döndürmelidir.
+// Supabase'den 'donations' tablosunu sorgula.
 
-### Testing Strategy
-- **Vitest**: Modern testing framework with UI mode
-- **Coverage**: `npm run test:coverage` for detailed reports
-- **Service mocking**: All services support mock data fallback
+2. Veri Akışı Deseni: Service -> Hook -> Component KURAL: Bileşenler, veriye
+   erişmek için servisleri doğrudan çağırmaz. Bunun yerine, servisleri çağıran
+   ve bileşenler için veri, yüklenme ve hata durumlarını yöneten özel hook'ları
+   (hooks/ dizininde) kullanır.
 
-Remember: This codebase prioritizes **Turkish language support**, **mobile responsiveness**, and **graceful degradation** when external services (Supabase) are unavailable.
+İstem Örneği (Hook oluşturma):
+
+// hooks/useDonations.ts içinde
+
+// donationsService'teki getDonationsByDateRange fonksiyonunu çağıran // bir
+React hook'u (useDonations) oluştur. // Hook, filtreleri parametre olarak almalı
+ve [loading, error, data] durumlarını yönetmelidir.
+
+3. State Yönetimi: Context vs Zustand KURAL: State yönetimi için doğru aracı
+   kullanın.
+
+SupabaseAuthContext: Sadece ve sadece kimlik doğrulama (authentication),
+kullanıcı bilgileri (user) ve oturum durumu (isAuthenticated) için kullanılır.
+
+useUIStore (Zustand): Global UI durumları (sidebar'ın açık/kapalı olması,
+bildirimler, modal durumları vb.) için kullanılır.
+
+4. AI Entegrasyonu: EnhancedAIProvider KURAL: Tüm yapay zeka özellikleri için
+   merkezi useAI hook'u kullanılmalıdır. Doğrudan OpenAI veya başka bir
+   sağlayıcının API'si çağrılmamalıdır.
+
+🧩 Bileşen Geliştirme Kuralları TypeScript ve Tipler: Copilot'a bir bileşen
+oluşturmasını söylerken, alacağı props'ların tiplerini belirtin.
+
+Dizin Yapısı: Yeni bir özellik için bileşen oluştururken, components/[feature]/
+yapısına uygun hareket edin.
+
+Yol Kısayolları (@/): Import işlemlerinde her zaman @/ kısayolunu kullanın.
+
+Tipleri Bağlam Olarak Sunma: Karmaşık bir fonksiyon veya bileşen yazdırırken,
+ilgili tipleri (interface, type) yorum içinde veya doğrudan kodda belirterek
+Copilot'a net bir bağlam sunun. Örnek İstem: // Bu fonksiyon, parametre olarak
+bir Member nesnesi alacak. // type Member = { id: string; name: string;
+isActive: boolean; }; // Fonksiyon, üyenin adını ve aktiflik durumunu içeren bir
+string döndürmeli.
+
+🇹🇷 Türkçe Dil ve Yerelleştirme UI Metinleri: Kullanıcıya gösterilen tüm metinler
+(butonlar, etiketler, mesajlar) Türkçe olmalıdır.
+
+AI İstemleri: useAI hook'unu kullanırken, Türkçe içerik istediğinizi belirtin.
+
+Doğrulama (Validation): Türkçe'ye özel formatlar için lib/validation.ts içindeki
+VALIDATION_PATTERNS yapısını kullanın.
+
+🧪 Test Yazımı Birim Testleri (Vitest):
+
+KURAL: Bir fonksiyon veya hook için test yazdırırken, sadece başarılı
+senaryoları değil, aynı zamanda hata durumlarını, kenar durumları (edge cases)
+ve geçersiz girdileri de test etmesini açıkça isteyin. Örnek İstem: //
+getMemberByIdservisi için testler yaz. Başarılı veri dönüşünü, bulunamayan ID
+içinnull dönüşünü ve veritabanı hatası durumunda fırlatılan hatayı test et.
+
+Hook Testleri: Servisleri mock'layarak hook'ların davranışını test edin.
+
+İstem Örneği: // Vitest ve React Testing Library kullanarak useMembers hook'unu
+test et. membersService.getMembers fonksiyonunu mock'la ve hook'un doğru veri,
+yüklenme ve hata durumlarını döndürdüğünü doğrula.
+
+Bu kurallara uyarak, GitHub Copilot'ı projenizin kalitesini ve tutarlılığını
+artıran güçlü bir takım arkadaşı haline getirebilirsiniz.

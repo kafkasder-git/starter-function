@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 env:
-  NODE_VERSION: '22'
+  NODE_VERSION: "22"
 
 jobs:
   quality-check:
@@ -21,7 +21,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -34,6 +34,32 @@ jobs:
           echo "🔍 Running ESLint..."
           npm run lint:check > eslint-results.json || true
           echo "ESLint check completed"
+
+      - name: Check Copilot Architecture Compliance
+        run: |
+          echo "🤖 Checking GitHub Copilot architecture compliance..."
+
+          # Check for direct Supabase usage in components/hooks
+          DIRECT_SUPABASE=$(find . -name "*.ts" -o -name "*.tsx" | grep -E "(components|hooks)" | xargs grep -l "import.*supabase" | wc -l)
+
+          if [ "$DIRECT_SUPABASE" -gt 0 ]; then
+            echo "::warning::Found $DIRECT_SUPABASE files with direct Supabase usage. Use service layer instead."
+          fi
+
+          # Check for console.log usage
+          CONSOLE_USAGE=$(find . -name "*.ts" -o -name "*.tsx" | xargs grep -c "console\.log\|console\.warn\|console\.error" | awk -F: '{sum += $2} END {print sum+0}')
+
+          if [ "$CONSOLE_USAGE" -gt 0 ]; then
+            echo "::warning::Found $CONSOLE_USAGE console statements. Use logger instead."
+          fi
+
+          # Check for mock data in production code
+          MOCK_USAGE=$(find . -name "*.ts" -o -name "*.tsx" | grep -v "test\|spec" | xargs grep -c "mock.*data\|fake.*data\|dummy.*data" | awk -F: '{sum += $2} END {print sum+0}')
+
+          if [ "$MOCK_USAGE" -gt 0 ]; then
+            echo "::error::Found $MOCK_USAGE mock data usage in production code."
+            exit 1
+          fi
 
       - name: Analyze code quality metrics
         run: |
@@ -84,7 +110,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -116,7 +142,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
