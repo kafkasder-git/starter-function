@@ -278,7 +278,7 @@ export class FileStorageService {
       // Validate file
       const validation = this.validateFile(file, options);
       if (!validation.valid) {
-        return { success: false, error: validation.error };
+        return { success: false, error: validation.error || 'Validation failed' };
       }
 
       // Determine bucket and path
@@ -351,9 +351,9 @@ export class FileStorageService {
         uploadedBy: 'system',
         isPublic: options.isPublic || false,
         downloadCount: 0,
-        tags: options.tags,
-        description: options.description,
-        metadata: options.metadata,
+        tags: options.tags || [],
+        description: options.description || '',
+        metadata: options.metadata || {},
       };
 
       // Save metadata to database (in real app)
@@ -469,8 +469,8 @@ export class FileStorageService {
       const files: FileMetadata[] = (data || []).map((file) => ({
         id: file.id || file.name,
         name: file.name,
-        size: file.metadata?.size || 0,
-        type: file.metadata?.mimetype || 'application/octet-stream',
+        size: file.metadata?.['size'] || 0,
+        type: file.metadata?.['mimetype'] || 'application/octet-stream',
         bucket,
         path: folder ? `${folder}/${file.name}` : file.name,
         url: supabase.storage
@@ -478,11 +478,11 @@ export class FileStorageService {
           .getPublicUrl(folder ? `${folder}/${file.name}` : file.name).data.publicUrl,
         createdAt: new Date(file.created_at || ''),
         updatedAt: new Date(file.updated_at || ''),
-        uploadedBy: file.metadata?.uploadedBy || 'system',
+        uploadedBy: file.metadata?.['uploadedBy'] || 'system',
         isPublic: this.config.buckets[bucket]?.isPublic || false,
         downloadCount: 0,
-        tags: file.metadata?.tags ? JSON.parse(file.metadata.tags) : [],
-        description: file.metadata?.description || '',
+        tags: file.metadata?.['tags'] ? JSON.parse(file.metadata['tags']) : [],
+        description: file.metadata?.['description'] || '',
         metadata: file.metadata || {},
       }));
 
@@ -491,7 +491,7 @@ export class FileStorageService {
         files,
         total,
         hasMore,
-        nextOffset: hasMore ? offset + limit : undefined,
+        nextOffset: hasMore ? offset + limit : 0,
       };
 
       // Track success
@@ -544,18 +544,18 @@ export class FileStorageService {
       const fileInfo: FileMetadata = {
         id: file.id || file.name,
         name: file.name,
-        size: file.metadata?.size || 0,
-        type: file.metadata?.mimetype || 'application/octet-stream',
+        size: file.metadata?.['size'] || 0,
+        type: file.metadata?.['mimetype'] || 'application/octet-stream',
         bucket,
         path: filePath,
         url: urlData.publicUrl,
         createdAt: new Date(file.created_at || ''),
         updatedAt: new Date(file.updated_at || ''),
-        uploadedBy: file.metadata?.uploadedBy || 'system',
+        uploadedBy: file.metadata?.['uploadedBy'] || 'system',
         isPublic: this.config.buckets[bucket]?.isPublic || false,
         downloadCount: 0,
-        tags: file.metadata?.tags ? JSON.parse(file.metadata.tags) : [],
-        description: file.metadata?.description || '',
+        tags: file.metadata?.['tags'] ? JSON.parse(file.metadata['tags']) : [],
+        description: file.metadata?.['description'] || '',
         metadata: file.metadata || {},
       };
 
@@ -887,7 +887,7 @@ export class FileStorageService {
         const { data: files } = await supabase.storage.from(config.name).list('', { limit: 1000 });
 
         const bucketFiles = files || [];
-        const bucketSize = bucketFiles.reduce((sum, file) => sum + (file.metadata?.size || 0), 0);
+        const bucketSize = bucketFiles.reduce((sum, file) => sum + (file.metadata?.['size'] || 0), 0);
 
         stats.bucketStats[config.name] = {
           files: bucketFiles.length,

@@ -87,7 +87,7 @@ const AppContent = memo(() => {
 
     if (
       addButton &&
-      (addButton.textContent && addButton.textContent.includes('Ekle')) ||
+      ((addButton.textContent && addButton.textContent.includes('Ekle')) ||
         (addButton.textContent && addButton.textContent.includes('Yeni')) ||
         addButton.querySelector('svg'))
     ) {

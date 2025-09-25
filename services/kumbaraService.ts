@@ -25,8 +25,8 @@ class KumbaraService {
   private readonly defaultHeaders: HeadersInit;
 
   constructor() {
-    this.baseUrl = (import.meta?.env?.VITE_API_URL) || process.env.VITE_API_URL || 'http://localhost:3000/api';
-    this.apiKey = (import.meta?.env?.VITE_API_KEY) || process.env.VITE_API_KEY || '';
+    this.baseUrl = (import.meta?.env?.['VITE_API_URL']) || process.env['VITE_API_URL'] || 'http://localhost:3000/api';
+    this.apiKey = (import.meta?.env?.['VITE_API_KEY']) || process.env['VITE_API_KEY'] || '';
     this.defaultHeaders = {
       'Content-Type': 'application/json',
       Accept: 'application/json',
@@ -249,12 +249,12 @@ class KumbaraService {
         amount: data.amount,
         currency: data.currency || 'TRY',
         collector_name: data.collector_name,
-        collector_id: data.collector_id,
-        notes: data.notes,
-        witness_name: data.witness_name,
-        witness_phone: data.witness_phone,
-        verification_photos: data.verification_photos,
-        weather_condition: data.weather_condition,
+        collector_id: data.collector_id || '',
+        notes: data.notes || '',
+        witness_name: data.witness_name || '',
+        witness_phone: data.witness_phone || '',
+        verification_photos: data.verification_photos || [],
+        weather_condition: data.weather_condition || '',
         collection_method: data.collection_method || 'scheduled',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
@@ -387,8 +387,8 @@ class KumbaraService {
       url: `https://bagis.dernek.org/kumbara/${kumbara.code}`,
       donationUrl: `https://bagis.dernek.org/donate/kumbara/${kumbara.code}`,
       contactInfo: {
-        phone: kumbara.phone,
-        person: kumbara.contactPerson,
+        phone: kumbara.phone || '',
+        person: kumbara.contactPerson || '',
       },
       metadata: {
         installDate: kumbara.installDate,

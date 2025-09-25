@@ -253,9 +253,9 @@ export class DonationsService {
       const stats: DonationStats = {
         total,
         totalAmount,
-        pending: statusCounts.pending || 0,
-        approved: statusCounts.approved || 0,
-        rejected: statusCounts.rejected || 0,
+        pending: statusCounts['pending'] ?? 0,
+        approved: statusCounts['approved'] ?? 0,
+        rejected: statusCounts['rejected'] ?? 0,
         averageAmount,
         monthlyTrend,
         donorTypes,

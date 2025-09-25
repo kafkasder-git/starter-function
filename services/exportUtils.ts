@@ -347,7 +347,7 @@ export class DataFormattingUtils {
       return '';
     }
 
-    const headers = Object.keys(data[0]);
+    const headers = Object.keys(data[0] || {});
     const rows: string[] = [];
 
     // Add headers if requested
@@ -359,7 +359,7 @@ export class DataFormattingUtils {
     data.forEach((row) => {
       const values = headers.map((header) => {
         const value = row[header];
-        return this.formatCSVValue(value, { dateFormat, numberFormat });
+        return this.formatCSVValue(value as string | number | boolean | Date | null | undefined, { dateFormat, numberFormat });
       });
       rows.push(values.map((value) => this.escapeCSVField(value)).join(delimiter));
     });
@@ -382,7 +382,7 @@ export class DataFormattingUtils {
       return [];
     }
 
-    const headers = Object.keys(data[0]);
+    const headers = Object.keys(data[0] || {});
     const result: unknown[][] = [];
 
     // Add headers if requested
@@ -394,7 +394,7 @@ export class DataFormattingUtils {
     data.forEach((row) => {
       const values = headers.map((header) => {
         const value = row[header];
-        return this.formatExcelValue(value, { dateFormat, numberFormat, currencySymbol });
+        return this.formatExcelValue(value as string | number | boolean | Date | null | undefined, { dateFormat, numberFormat, currencySymbol });
       });
       result.push(values);
     });
@@ -420,7 +420,7 @@ export class DataFormattingUtils {
         Değer: this.formatNumber(metric.value, options.numberFormat),
         Değişim: metric.change ? `${metric.change > 0 ? '+' : ''}${metric.change.toFixed(2)}` : '',
         Trend: metric.trend === 'up' ? '↗' : metric.trend === 'down' ? '↘' : '→',
-        Format: metric.format,
+        Format: metric.format || 'number',
       })),
       timeSeries: analyticsData.timeSeries.map((ts) => ({
         Tarih: this.formatDate(new Date(ts.date), options.dateFormat),
@@ -501,7 +501,7 @@ export class DataFormattingUtils {
       return value; // Excel handles numbers natively
     }
 
-    return value;
+    return String(value);
   }
 
   private static formatDate(date: Date, format = 'YYYY-MM-DD'): string {
@@ -519,7 +519,7 @@ export class DataFormattingUtils {
       return String(value);
     }
 
-    const decimals = format.includes('.') ? format.split('.')[1].length : 0;
+    const decimals = format.includes('.') ? (format.split('.')[1]?.length || 0) : 0;
     return num.toFixed(decimals);
   }
 }
@@ -584,15 +584,15 @@ export class OptimizationUtils {
 
     if (data.length < streamingThreshold) {
       // For small datasets, return regular export
-      return this.createSimpleStream(data, format);
+      return Promise.resolve(this.createSimpleStream(data, format));
     }
 
     // For large datasets, create streaming export
-    return new ReadableStream({
+    return Promise.resolve(new ReadableStream({
       start(controller) {
         OptimizationUtils.processLargeDataset(data, format, chunkSize, controller);
       },
-    });
+    }));
   }
 
   /**
@@ -720,7 +720,7 @@ export class ExportTemplateUtils {
       return data;
     }
 
-    return template.transform(data);
+    return template.transform(data) as T;
   }
 
   // Initialize default templates
@@ -737,9 +737,9 @@ export class ExportTemplateUtils {
       name: 'Yönetici Özeti',
       description: 'Özet bilgiler ve grafikler',
       transform: (data) => {
-        if (data.metrics) {
+        if ((data as any).metrics) {
           // Only include key metrics
-          data.metrics = data.metrics.slice(0, 5);
+          (data as any).metrics = (data as any).metrics.slice(0, 5);
         }
         return data;
       },
@@ -752,7 +752,7 @@ export class ExportTemplateUtils {
       transform: (data) => {
         // Include all available data
         return {
-          ...data,
+          ...(data as object),
           includeAllDetails: true,
           showCalculations: true,
         };
@@ -765,7 +765,7 @@ export class ExportTemplateUtils {
       description: 'Görsel ağırlıklı format',
       transform: (data) => {
         return {
-          ...data,
+          ...(data as object),
           emphasizeVisuals: true,
           reduceTextContent: true,
         };

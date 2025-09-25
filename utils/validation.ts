@@ -60,23 +60,23 @@ export const commonSchemas = {
       if (digits.every((d) => d === digits[0])) return false;
 
       // Checksum validation
-      const checksum1 = (digits[0] + digits[2] + digits[4] + digits[6] + digits[8]) * 7;
-      const checksum2 = digits[1] + digits[3] + digits[5] + digits[7];
+      const checksum1 = ((digits[0] ?? 0) + (digits[2] ?? 0) + (digits[4] ?? 0) + (digits[6] ?? 0) + (digits[8] ?? 0)) * 7;
+      const checksum2 = (digits[1] ?? 0) + (digits[3] ?? 0) + (digits[5] ?? 0) + (digits[7] ?? 0);
       const digit10 = (checksum1 - checksum2) % 10;
       const digit11 =
-        (digits[0] +
-          digits[1] +
-          digits[2] +
-          digits[3] +
-          digits[4] +
-          digits[5] +
-          digits[6] +
-          digits[7] +
-          digits[8] +
-          digits[9]) %
+        ((digits[0] ?? 0) +
+          (digits[1] ?? 0) +
+          (digits[2] ?? 0) +
+          (digits[3] ?? 0) +
+          (digits[4] ?? 0) +
+          (digits[5] ?? 0) +
+          (digits[6] ?? 0) +
+          (digits[7] ?? 0) +
+          (digits[8] ?? 0) +
+          (digits[9] ?? 0)) %
         10;
 
-      return digit10 === digits[9] && digit11 === digits[10];
+      return digit10 === (digits[9] ?? 0) && digit11 === (digits[10] ?? 0);
     }, 'Geçersiz TC Kimlik No'),
 
   // IBAN validation (Turkish)
@@ -490,7 +490,7 @@ export const isValid = (result: ValidationResult): boolean => result.success;
 // Helper function to get first error message
 export const getFirstError = (result: ValidationResult): string | null => {
   if ((result.success || !result.errors) ?? result.errors.length === 0) return null;
-  return result.errors[0].message;
+  return result.errors[0]?.message ?? 'Validation error';
 };
 
 export default ValidationService;

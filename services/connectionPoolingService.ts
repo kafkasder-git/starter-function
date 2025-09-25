@@ -29,6 +29,7 @@ export interface ConnectionHealth {
   uptime: number;
   lastError?: string;
   recommendations: string[];
+  timestamp?: Date;
 }
 
 export interface ConnectionConfig {

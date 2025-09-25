@@ -95,7 +95,7 @@ class BeneficiariesService {
         nationality: formData.nationality,
         country: formData.country,
         phone: formData.phone,
-        email: formData.email,
+        email: formData.email || '',
         city: formData.city,
         settlement: formData.settlement,
         neighborhood: formData.neighborhood,
@@ -322,23 +322,23 @@ class BeneficiariesService {
 
     const digits = identityNo.split('').map(Number);
     const checksum1 =
-      ((digits[0] + digits[2] + digits[4] + digits[6] + digits[8]) * 7 -
-        (digits[1] + digits[3] + digits[5] + digits[7])) %
+      ((digits[0]! + digits[2]! + digits[4]! + digits[6]! + digits[8]!) * 7 -
+        (digits[1]! + digits[3]! + digits[5]! + digits[7]!)) %
       10;
     const checksum2 =
-      (digits[0] +
-        digits[1] +
-        digits[2] +
-        digits[3] +
-        digits[4] +
-        digits[5] +
-        digits[6] +
-        digits[7] +
-        digits[8] +
-        digits[9]) %
+      (digits[0]! +
+        digits[1]! +
+        digits[2]! +
+        digits[3]! +
+        digits[4]! +
+        digits[5]! +
+        digits[6]! +
+        digits[7]! +
+        digits[8]! +
+        digits[9]!) %
       10;
 
-    return digits[9] === checksum1 && digits[10] === checksum2;
+    return digits[9]! === checksum1 && digits[10]! === checksum2;
   }
 
   validateIBAN(iban: string): boolean {

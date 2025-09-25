@@ -165,7 +165,7 @@ export class CachingService {
       lastAccessed: Date.now(),
       tags,
       size: this.calculateSize(data),
-      metadata: options.metadata,
+      metadata: options.metadata || {},
     };
 
     // Check if we need to evict entries to make room
@@ -229,7 +229,7 @@ export class CachingService {
 
     // Decompress if needed
     let {data} = entry;
-    if (entry.metadata?.compressed) {
+    if (entry.metadata?.['compressed']) {
       data = this.decompressData(data);
     }
 

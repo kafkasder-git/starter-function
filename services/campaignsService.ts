@@ -447,7 +447,7 @@ class CampaignsService {
       ...campaign,
       donationCount,
       progressPercentage: Math.min(progressPercentage, 100),
-      daysRemaining: daysRemaining && daysRemaining > 0 ? daysRemaining : undefined,
+      daysRemaining: daysRemaining && daysRemaining > 0 ? daysRemaining : 0,
     };
   }
 }

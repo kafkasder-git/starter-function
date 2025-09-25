@@ -34,7 +34,10 @@ class PushNotificationService {
 
   async showNotification(payload: NotificationPayload): Promise<void> {
     if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
-      new Notification(payload.title, { body: payload.body, icon: payload.icon });
+      new Notification(payload.title, { 
+        body: payload.body || '', 
+        icon: payload.icon || '' 
+      });
     }
   }
 

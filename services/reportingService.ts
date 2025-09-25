@@ -203,7 +203,7 @@ export class ReportingService {
 
       const exportConfig: ExportConfig = {
         format: format === 'excel' ? 'excel' : format, // Normalize format
-        filename,
+        filename: filename || 'report',
       };
 
       return await this.processExport(processedData, exportConfig);

@@ -459,15 +459,15 @@ class AISystemController {
     }
 
     if (module === 'bagis') {
-      const totalAmount = data.reduce((sum, item) => sum + (item.miktar || item.amount || 0), 0);
+      const totalAmount = data.reduce((sum, item) => sum + ((item['miktar'] as number) ?? (item['amount'] as number) ?? 0), 0);
       const avgAmount = totalAmount / data.length;
 
       const monthlyData: Record<string, number> = {};
       data.forEach((item) => {
-        const date = item.tarih || item.created_at;
+        const date = item['tarih'] || item['created_at'];
         if (date) {
           const month = new Date(date).toISOString().slice(0, 7);
-          monthlyData[month] = (monthlyData[month] || 0) + (item.miktar || item.amount || 0);
+          monthlyData[month] = (monthlyData[month] || 0) + ((item['miktar'] as number) ?? (item['amount'] as number) ?? 0);
         }
       });
 
@@ -535,7 +535,7 @@ class AISystemController {
     if (data.length === 0) return 0;
 
     const sample = data[0];
-    const fields = Object.keys(sample);
+    const fields = Object.keys(sample || {});
     let totalScore = 0;
 
     data.forEach((item) => {
@@ -593,7 +593,7 @@ class AISystemController {
         executedAt: new Date().toISOString(),
       };
     } catch (error: unknown) {
-      throw new Error(`SQL sorgu hatası: ${error.message}`);
+      throw new Error(`SQL sorgu hatası: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 
@@ -643,7 +643,7 @@ class AISystemController {
       stats.donations = donationsResult.data?.length || 0;
       stats.totalDonationAmount =
         donationsResult.data?.reduce(
-          (sum: number, item: Record<string, unknown>) => sum + ((item.miktar as number) ?? (item.amount as number) ?? 0),
+          (sum: number, item: Record<string, unknown>) => sum + ((item['miktar'] as number) ?? (item['amount'] as number) ?? 0),
           0,
         ) || 0;
 
@@ -652,7 +652,7 @@ class AISystemController {
 
       return stats;
     } catch (error: unknown) {
-      throw new Error(`İstatistik oluşturma hatası: ${error.message}`);
+      throw new Error(`İstatistik oluşturma hatası: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 

@@ -171,7 +171,7 @@ export class ExportService {
     const results: ExportResult[] = [];
 
     for (let i = 0; i < exports.length; i++) {
-      const { data, config } = exports[i];
+      const { data, config } = exports[i] || { data: null, config: null };
 
       progressCallback?.(
         (i / exports.length) * 100,
@@ -284,7 +284,7 @@ export class ExportService {
     });
 
     // Simulate PDF generation (only in non-production)
-    if (typeof process !== 'undefined' && process.env && process.env.NODE_ENV !== 'production') {
+    if (typeof process !== 'undefined' && process.env && process.env['NODE_ENV'] !== 'production') {
       await this.simulateProcessing(1500);
     }
 
@@ -338,7 +338,7 @@ export class ExportService {
     });
 
     // Simulate Excel generation (only in non-production)
-    if (typeof process !== 'undefined' && process.env && process.env.NODE_ENV !== 'production') {
+    if (typeof process !== 'undefined' && process.env && process.env['NODE_ENV'] !== 'production') {
       await this.simulateProcessing(1200);
     }
 

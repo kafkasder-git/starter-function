@@ -121,7 +121,7 @@ class DeepLinkingService {
       module: 'yardim',
       page: 'beneficiary-detail',
       params: {
-        id: match[1],
+        id: match[1] || '',
         ...Object.fromEntries(params.entries()),
       },
     }));
@@ -131,7 +131,7 @@ class DeepLinkingService {
       module: 'bagis',
       page: 'donation-detail',
       params: {
-        id: match[1],
+        id: match[1] || '',
         ...Object.fromEntries(params.entries()),
       },
     }));
@@ -141,7 +141,7 @@ class DeepLinkingService {
       module: 'uye',
       page: 'member-detail',
       params: {
-        id: match[1],
+        id: match[1] || '',
         ...Object.fromEntries(params.entries()),
       },
     }));
@@ -227,7 +227,7 @@ class DeepLinkingService {
       url.hash = fullRoute.path;
 
       // Add query parameters
-      Object.entries(fullRoute.params).forEach(([key, value]) => {
+      Object.entries(fullRoute.params || {}).forEach(([key, value]) => {
         url.searchParams.set(key, value);
       });
 
@@ -568,7 +568,7 @@ class DeepLinkingService {
     } else {
       // Mark last item as active
       if (breadcrumbs.length > 0) {
-        breadcrumbs[breadcrumbs.length - 1].active = true;
+        breadcrumbs[breadcrumbs.length - 1]!.active = true;
       }
     }
 

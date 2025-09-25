@@ -43,7 +43,7 @@ abstract class BaseAggregationStrategy implements AggregationStrategy {
 
   protected extractValues(items: Record<string, unknown>[], field?: string): number[] {
     const values: (number | null)[] = items.map((item) => {
-      const value = field ? item[field] : item.value;
+      const value = field ? item[field] : item['value'];
       return typeof value === 'number' && !isNaN(value) ? value : null;
     });
 
@@ -106,11 +106,11 @@ class CountStrategy extends BaseAggregationStrategy {
     return 'Counts the number of items';
   }
 
-  getSupportedTypes(): string[] {
+  override getSupportedTypes(): string[] {
     return ['any']; // Count works with any data type
   }
 
-  validate(items: Record<string, unknown>[], field?: string): boolean {
+  override validate(items: Record<string, unknown>[], field?: string): boolean {
     return Array.isArray(items);
   }
 
@@ -315,10 +315,10 @@ export class DataProcessor {
     // Tarihe göre grupla
     const grouped = filteredData.reduce((acc: Record<string, T[]>, item) => {
       const date = new Date(String(item[dateField])).toISOString().split('T')[0];
-      if (!acc[date]) {
-        acc[date] = [];
+      if (!acc[date!]) {
+        acc[date!] = [];
       }
-      acc[date].push(item);
+      acc[date!].push(item);
       return acc;
     }, {});
 
@@ -328,7 +328,7 @@ export class DataProcessor {
       .map((date) => ({
         date,
         values: {
-          [valueField]: grouped[date].reduce(
+          [valueField]: grouped[date!].reduce(
             (sum: number, item: T) => sum + (Number(item[valueField]) || 0),
             0,
           ),
@@ -474,7 +474,7 @@ export class DataProcessor {
     return {
       key: metricConfig.key || 'unknown',
       value: 0,
-      format: metricConfig.format || 'number',
+      format: (metricConfig.format as 'number' | 'currency' | 'percentage') || 'number',
       trend: 'stable',
       change: 0,
       icon: 'alert-circle',
@@ -517,16 +517,16 @@ export class DataProcessor {
   private static passesDateFilter<T extends Record<string, unknown>>(item: T, dateRange?: DateRange): boolean {
     if (!dateRange) return true;
 
-    const itemDate = new Date(String(item.created_at || item.date));
+    const itemDate = new Date(String(item['created_at'] || item['date']));
     return !isNaN(itemDate.getTime()) && itemDate >= dateRange.start && itemDate <= dateRange.end;
   }
 
   private static passesCategoryFilter<T extends Record<string, unknown>>(item: T, categories: Set<string> | null): boolean {
-    return !categories || categories.has(String(item.category || item.type));
+    return !categories || categories.has(String(item['category'] || item['type']));
   }
 
   private static passesStatusFilter<T extends Record<string, unknown>>(item: T, statusSet: Set<string> | null): boolean {
-    return !statusSet || statusSet.has(String(item.status));
+    return !statusSet || statusSet.has(String(item['status']));
   }
 
   private static passesAmountFilter<T extends Record<string, unknown>>(
@@ -535,7 +535,7 @@ export class DataProcessor {
   ): boolean {
     if (!amountRange) return true;
 
-    const amount = typeof item.amount === 'number' ? item.amount : 0;
+    const amount = typeof item['amount'] === 'number' ? item['amount'] : 0;
     return amount >= amountRange.min && amount <= amountRange.max;
   }
 
@@ -555,8 +555,8 @@ export class DataProcessor {
 
     try {
       const sortedData = [...data].sort((a, b) => {
-         const dateA = new Date(String(a.created_at || a.date)).getTime();
-         const dateB = new Date(String(b.created_at || b.date)).getTime();
+         const dateA = new Date(String(a['created_at'] || a['date'])).getTime();
+         const dateB = new Date(String(b['created_at'] || b['date'])).getTime();
          return dateA - dateB;
        });
 
@@ -593,7 +593,7 @@ export class DataProcessor {
       hash = name.charCodeAt(i) + ((hash << 5) - hash);
     }
 
-    return this.CONFIG.COLOR_PALETTE[Math.abs(hash) % this.CONFIG.COLOR_PALETTE.length];
+    return this.CONFIG.COLOR_PALETTE[Math.abs(hash) % this.CONFIG.COLOR_PALETTE.length] || '#3B82F6';
   }
 
   // Metrik ikonu
@@ -670,14 +670,14 @@ export class DataProcessor {
 
     // Fill reservoir array with first maxSize elements
     for (let i = 0; i < maxSize; i++) {
-      sampled[i] = data[i];
+      sampled[i] = data[i]!;
     }
 
     // Replace elements with gradually decreasing probability
     for (let i = maxSize; i < data.length; i++) {
       const j = Math.floor(Math.random() * (i + 1));
       if (j < maxSize) {
-        sampled[j] = data[i];
+        sampled[j] = data[i]!;
       }
     }
 
@@ -736,9 +736,9 @@ export class DataProcessor {
       const q3Index = Math.floor(values.length * 0.75);
       const q1 = values[q1Index];
       const q3 = values[q3Index];
-      const iqr = q3 - q1;
-      const lowerBound = q1 - this.CONFIG.IQR_MULTIPLIER * iqr;
-      const upperBound = q3 + this.CONFIG.IQR_MULTIPLIER * iqr;
+      const iqr = (q3 ?? 0) - (q1 ?? 0);
+      const lowerBound = (q1 ?? 0) - this.CONFIG.IQR_MULTIPLIER * iqr;
+      const upperBound = (q3 ?? 0) + this.CONFIG.IQR_MULTIPLIER * iqr;
 
       const outliers: T[] = [];
       const cleaned: T[] = [];
@@ -756,8 +756,8 @@ export class DataProcessor {
         outliers,
         cleaned,
         statistics: {
-          q1,
-          q3,
+          q1: q1 ?? 0,
+          q3: q3 ?? 0,
           iqr,
           bounds: {
             lower: lowerBound,
