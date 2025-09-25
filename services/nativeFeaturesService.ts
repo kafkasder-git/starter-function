@@ -3,6 +3,8 @@
  * Provides access to device native features (Camera, GPS, Contacts, etc.)
  */
 
+import { logger } from '../lib/logging/logger';
+
 export interface CameraOptions {
   facingMode?: 'user' | 'environment';
   width?: number;
@@ -63,9 +65,9 @@ class NativeFeaturesService {
 
       const constraints: MediaStreamConstraints = {
         video: {
-          facingMode: options.facingMode || 'environment',
-          width: options.width || 1280,
-          height: options.height || 720,
+          facingMode: options.facingMode ?? 'environment',
+          width: options.width ?? 1280,
+          height: options.height ?? 720,
         },
         audio: false,
       };
@@ -73,7 +75,7 @@ class NativeFeaturesService {
       this.stream = await navigator.mediaDevices.getUserMedia(constraints);
       return this.stream;
     } catch (error) {
-      console.error('Camera access failed:', error);
+      logger.error('Camera access failed:', error);
       throw new Error(
         `Camera access failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
@@ -110,7 +112,7 @@ class NativeFeaturesService {
       context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
       // Convert to base64
-      const dataURL = canvas.toDataURL('image/jpeg', options.quality || 0.8);
+      const dataURL = canvas.toDataURL('image/jpeg', options.quality ?? 0.8);
 
       // Clean up
       this.stopCamera();
@@ -118,7 +120,7 @@ class NativeFeaturesService {
       return dataURL;
     } catch (error) {
       this.stopCamera();
-      console.error('Photo capture failed:', error);
+      logger.error('Photo capture failed:', error);
       throw new Error(
         `Photo capture failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
@@ -159,7 +161,7 @@ class NativeFeaturesService {
           resolve(position);
         },
         (error) => {
-          console.error('Geolocation error:', error);
+          logger.error('Geolocation error:', error);
           reject(new Error(`Geolocation failed: ${error.message}`));
         },
         defaultOptions,
@@ -176,7 +178,7 @@ class NativeFeaturesService {
     options: GeolocationOptions = {},
   ): number | null {
     if (!navigator.geolocation) {
-      console.error('Geolocation not supported');
+      logger.error('Geolocation not supported');
       return null;
     }
 
@@ -211,12 +213,12 @@ class NativeFeaturesService {
       const contacts = await (navigator as any).contacts.select(['name', 'email', 'tel']);
 
       return contacts.map((contact: any) => ({
-        name: contact.name?.[0] || '',
-        phone: contact.tel?.[0] || '',
-        email: contact.email?.[0] || '',
+        name: contact.name?.[0] ?? '',
+        phone: contact.tel?.[0] ?? '',
+        email: contact.email?.[0] ?? '',
       }));
     } catch (error) {
-      console.error('Contacts access failed:', error);
+      logger.error('Contacts access failed:', error);
       throw new Error(
         `Contacts access failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
@@ -239,7 +241,7 @@ class NativeFeaturesService {
       if (navigator.clipboard && navigator.clipboard.writeText) {
         await navigator.clipboard.writeText(text);
         return true;
-      } else {
+      } 
         // Fallback for older browsers
         const textArea = document.createElement('textarea');
         textArea.value = text;
@@ -253,9 +255,9 @@ class NativeFeaturesService {
         const result = document.execCommand('copy');
         document.body.removeChild(textArea);
         return result;
-      }
+      
     } catch (error) {
-      console.error('Clipboard access failed:', error);
+      logger.error('Clipboard access failed:', error);
       return false;
     }
   }
@@ -267,11 +269,11 @@ class NativeFeaturesService {
     try {
       if (navigator.clipboard && navigator.clipboard.readText) {
         return await navigator.clipboard.readText();
-      } else {
+      } 
         throw new Error('Clipboard read not supported');
-      }
+      
     } catch (error) {
-      console.error('Clipboard read failed:', error);
+      logger.error('Clipboard read failed:', error);
       throw new Error(
         `Clipboard read failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
@@ -295,7 +297,7 @@ class NativeFeaturesService {
       await navigator.share(data);
       return true;
     } catch (error) {
-      console.error('Share failed:', error);
+      logger.error('Share failed:', error);
       return false;
     }
   }
@@ -316,7 +318,7 @@ class NativeFeaturesService {
       }
 
       const fileHandles = await (window as any).showOpenFilePicker({
-        multiple: options.multiple || false,
+        multiple: options.multiple ?? false,
         types: options.accept
           ? [
               {
@@ -328,12 +330,12 @@ class NativeFeaturesService {
               },
             ]
           : undefined,
-        excludeAcceptAllOption: options.excludeAcceptAllOption || false,
+        excludeAcceptAllOption: options.excludeAcceptAllOption ?? false,
       });
 
       return fileHandles;
     } catch (error) {
-      console.error('File picker failed:', error);
+      logger.error('File picker failed:', error);
       throw new Error(
         `File picker failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
@@ -364,7 +366,7 @@ class NativeFeaturesService {
         await writable.close();
 
         return true;
-      } else {
+      } 
         // Fallback to download
         const blob = new Blob([content], { type: mimeType });
         const url = URL.createObjectURL(blob);
@@ -377,9 +379,9 @@ class NativeFeaturesService {
         URL.revokeObjectURL(url);
 
         return true;
-      }
+      
     } catch (error) {
-      console.error('File save failed:', error);
+      logger.error('File save failed:', error);
       return false;
     }
   }
@@ -398,7 +400,7 @@ class NativeFeaturesService {
       }
       return true; // Permission not required on this device
     } catch (error) {
-      console.error('Orientation permission request failed:', error);
+      logger.error('Orientation permission request failed:', error);
       return false;
     }
   }
@@ -473,7 +475,7 @@ class NativeFeaturesService {
    */
   async requestFullscreen(element?: Element): Promise<boolean> {
     try {
-      const target = element || document.documentElement;
+      const target = element ?? document.documentElement;
 
       if (target.requestFullscreen) {
         await target.requestFullscreen();
@@ -487,7 +489,7 @@ class NativeFeaturesService {
 
       return true;
     } catch (error) {
-      console.error('Fullscreen request failed:', error);
+      logger.error('Fullscreen request failed:', error);
       return false;
     }
   }
@@ -509,7 +511,7 @@ class NativeFeaturesService {
 
       return true;
     } catch (error) {
-      console.error('Exit fullscreen failed:', error);
+      logger.error('Exit fullscreen failed:', error);
       return false;
     }
   }
@@ -533,12 +535,12 @@ class NativeFeaturesService {
       if ('wakeLock' in navigator) {
         const wakeLock = await navigator.wakeLock.request('screen');
         return wakeLock;
-      } else {
-        console.warn('Wake Lock API not supported');
+      } 
+        logger.warn('Wake Lock API not supported');
         return null;
-      }
+      
     } catch (error) {
-      console.error('Wake lock request failed:', error);
+      logger.error('Wake lock request failed:', error);
       return null;
     }
   }
@@ -556,11 +558,11 @@ class NativeFeaturesService {
           dischargingTime: battery.dischargingTime,
           level: Math.round(battery.level * 100),
         };
-      } else {
+      } 
         throw new Error('Battery Status API not supported');
-      }
+      
     } catch (error) {
-      console.error('Battery status failed:', error);
+      logger.error('Battery status failed:', error);
       return null;
     }
   }
@@ -585,7 +587,7 @@ class NativeFeaturesService {
       }
       return null;
     } catch (error) {
-      console.error('Network info failed:', error);
+      logger.error('Network info failed:', error);
       return null;
     }
   }
@@ -614,7 +616,7 @@ class NativeFeaturesService {
       }
       return false;
     } catch (error) {
-      console.error('Vibration failed:', error);
+      logger.error('Vibration failed:', error);
       return false;
     }
   }

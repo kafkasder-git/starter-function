@@ -455,7 +455,7 @@ export class ReportingService {
    * @returns Structured donation analytics
    */
   private processDonationData(rawData: DonationRawData): DonationAnalytics {
-    const donations = rawData.donations;
+    const {donations} = rawData;
     const totalAmount = donations.reduce((sum, d) => sum + (d.amount ?? 0), 0);
     const totalCount = donations.length;
 
@@ -539,7 +539,7 @@ export class ReportingService {
    * @returns Structured impact data
    */
   private processImpactData(rawData: ImpactRawData): ImpactData {
-    const beneficiaries = rawData.beneficiaries;
+    const {beneficiaries} = rawData;
     const totalBeneficiaries = beneficiaries.length;
 
     const categories = beneficiaries.reduce<Record<string, number>>((acc, b) => {
@@ -563,7 +563,7 @@ export class ReportingService {
           name,
           value: count,
           percentage: totalBeneficiaries > 0 ? (count / totalBeneficiaries) * 100 : 0,
-          color: '#' + Math.floor(Math.random() * 16777215).toString(16), // Simple color generation
+          color: `#${  Math.floor(Math.random() * 16777215).toString(16)}`, // Simple color generation
         })),
         by_location: Object.entries(cities).map(([city, count]) => ({
           city,

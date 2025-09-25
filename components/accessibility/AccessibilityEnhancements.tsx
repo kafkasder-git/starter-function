@@ -2,16 +2,10 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Eye,
-  EyeOff,
   Volume2,
-  VolumeX,
   Type,
   Contrast,
   MousePointer,
-  Keyboard,
-  Monitor,
-  Smartphone,
-  Settings,
   Check,
   X,
   AlertTriangle,
@@ -19,16 +13,6 @@ import {
   Zap,
   Focus,
   Cpu,
-  ArrowUp,
-  ArrowDown,
-  ArrowLeft,
-  ArrowRight,
-  Home,
-  Search,
-  Menu,
-  User,
-  Bell,
-  HelpCircle,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
@@ -273,8 +257,8 @@ export function AccessibilityEnhancements({
       if (index < 5) {
         // İlk 5 element için kontrol
         const styles = window.getComputedStyle(element);
-        const color = styles.color;
-        const backgroundColor = styles.backgroundColor;
+        const {color} = styles;
+        const {backgroundColor} = styles;
 
         // Basit kontrast hesaplama (gerçek uygulamada daha gelişmiş algoritma kullanılır)
         if (color === backgroundColor) {

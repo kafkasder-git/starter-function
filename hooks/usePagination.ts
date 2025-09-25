@@ -1,5 +1,4 @@
 import { useState, useMemo, useCallback } from 'react';
-import { PaginationConfig } from '../types/search';
 
 interface UsePaginationProps {
   totalItems: number;

@@ -547,8 +547,8 @@ Kullanıcı isteklerini analiz et ve uygun yanıtlar ver.`;
     ];
 
     return (
-      responses[Math.floor(Math.random() * responses.length)] +
-      '\n\n💡 **Öneri:** "İhtiyaç sahiplerini listele" veya "Bağışları analiz et" komutlarını deneyebilirsiniz.'
+      `${responses[Math.floor(Math.random() * responses.length)] 
+      }\n\n💡 **Öneri:** "İhtiyaç sahiplerini listele" veya "Bağışları analiz et" komutlarını deneyebilirsiniz.`
     );
   }
 

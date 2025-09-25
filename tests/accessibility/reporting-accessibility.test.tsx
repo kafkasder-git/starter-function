@@ -263,7 +263,7 @@ describe('Reporting System Accessibility Tests', () => {
       expect(results.results.semanticStructure.success).toBe(true);
 
       // Verify heading hierarchy
-      const headings = results.results.semanticStructure.structure.headings;
+      const {headings} = results.results.semanticStructure.structure;
       expect(headings.length).toBeGreaterThan(0);
       expect(headings[0].tagName).toBe('H1');
     });

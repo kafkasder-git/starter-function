@@ -46,15 +46,34 @@ export class XSSProtection {
   static sanitizeHTML(input: string): string {
     if (!input) return '';
 
-    // For maximum security, encode ALL HTML tags (as expected by tests)
-    return input.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    // Remove dangerous patterns first
+    let sanitized = input.replace(DANGEROUS_PATTERNS, '');
+    
+    // Remove script tags and content
+    sanitized = sanitized.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+    
+    // Remove iframe tags and content
+    sanitized = sanitized.replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '');
+    
+    // Remove event handlers
+    sanitized = sanitized.replace(/on\w+\s*=\s*["'][^"']*["']/gi, '');
+    
+    // Remove javascript: protocols
+    sanitized = sanitized.replace(/javascript:/gi, '');
+    
+    // Encode remaining HTML tags and special characters (avoid double encoding)
+    sanitized = sanitized.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    sanitized = sanitized.replace(/"/g, '&quot;').replace(/'/g, '&#x27;');
+    sanitized = sanitized.replace(/\//g, '&#x2F;');
+    
+    return sanitized;
   }
 
   static sanitizeText(input: string): string {
     if (!input) return '';
     return input
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
+      .replace(/</g, '')
+      .replace(/>/g, '')
       .replace(/javascript:/gi, '')
       .replace(/vbscript:/gi, '')
       .replace(/on\w+\s*=/gi, '');
@@ -85,7 +104,12 @@ export class SQLInjectionProtection {
   static validate(input: string): boolean {
     if (!input) return true;
     // More aggressive validation - reject any input with SQL keywords
-    return !SQL_INJECTION_PATTERNS.test(input);
+    const hasSQLKeywords = /(\bUNION\b|\bSELECT\b|\bINSERT\b|\bUPDATE\b|\bDELETE\b|\bDROP\b|\bCREATE\b|\bALTER\b)/i.test(input);
+    const hasSQLOperators = /(\bOR\b|\bAND\b).*\d+\s*=\s*\d+/i.test(input);
+    const hasSQLComments = /(--|\/\*|\*\/)/.test(input);
+    const hasSQLQuotes = /['";\\]/.test(input);
+    
+    return !(hasSQLKeywords || hasSQLOperators || hasSQLComments || hasSQLQuotes);
   }
 
   static sanitize(input: string): string {
@@ -96,7 +120,101 @@ export class SQLInjectionProtection {
       .replace(/['";\\]/g, '')
       .replace(/--/g, '')
       .replace(/\/\*|\*\//g, '')
+      .replace(/OR\s+\d+\s*=\s*\d+/gi, '')
+      .replace(/AND\s+\d+\s*=\s*\d+/gi, '')
+      .replace(/=\s*\d+/g, '')
       .trim();
+  }
+}
+
+// CSRF Protection
+export class CSRFProtection {
+  private static tokens = new Map<string, { token: string; expires: number }>();
+  private static readonly TOKEN_LENGTH = 32;
+  private static readonly TOKEN_EXPIRY = 30 * 60 * 1000; // 30 minutes
+
+  static generateToken(sessionId?: string): string {
+    const token = Array.from({ length: this.TOKEN_LENGTH }, () => 
+      Math.random().toString(36).charAt(2)
+    ).join('');
+    
+    const expires = Date.now() + this.TOKEN_EXPIRY;
+    this.tokens.set(token, { token, expires });
+    
+    return token;
+  }
+
+  static validateToken(sessionId: string, token: string): boolean {
+    const tokenData = this.tokens.get(token);
+    if (!tokenData) return false;
+    
+    if (Date.now() > tokenData.expires) {
+      this.tokens.delete(token);
+      return false;
+    }
+    
+    return true;
+  }
+
+  static cleanExpiredTokens(): void {
+    const now = Date.now();
+    for (const [token, data] of this.tokens.entries()) {
+      if (now > data.expires) {
+        this.tokens.delete(token);
+      }
+    }
+  }
+}
+
+// Rate Limiter
+export class RateLimiter {
+  private static attempts = new Map<string, { count: number; resetTime: number }>();
+  private static readonly MAX_ATTEMPTS = 5;
+  private static readonly WINDOW_MS = 15 * 60 * 1000; // 15 minutes
+
+  static isAllowed(identifier: string): boolean {
+    const now = Date.now();
+    const attempt = this.attempts.get(identifier);
+    
+    if (!attempt || now > attempt.resetTime) {
+      this.attempts.set(identifier, { count: 1, resetTime: now + this.WINDOW_MS });
+      return true;
+    }
+    
+    if (attempt.count >= this.MAX_ATTEMPTS) {
+      return false;
+    }
+    
+    attempt.count++;
+    return true;
+  }
+
+  static checkLimit(identifier: string, maxAttempts: number, windowMs: number): boolean {
+    const now = Date.now();
+    const attempt = this.attempts.get(identifier);
+    
+    if (!attempt || now > attempt.resetTime) {
+      this.attempts.set(identifier, { count: 1, resetTime: now + windowMs });
+      return true;
+    }
+    
+    if (attempt.count >= maxAttempts) {
+      return false;
+    }
+    
+    attempt.count++;
+    return true;
+  }
+
+  static getRemainingTime(identifier: string): number {
+    const attempt = this.attempts.get(identifier);
+    if (!attempt) return 0;
+    
+    return Math.max(0, attempt.resetTime - Date.now());
+  }
+
+  static resetAttempts(identifier: string): void {
+    this.attempts.delete(identifier);
   }
 }
 

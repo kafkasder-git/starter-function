@@ -27,7 +27,7 @@ export function useAdvancedMobile() {
   // Device detection and capabilities
   useEffect(() => {
     const updateDeviceInfo = () => {
-      const userAgent = navigator.userAgent;
+      const {userAgent} = navigator;
       const isMobile = /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(
         userAgent,
       );
@@ -284,7 +284,7 @@ export function useAdvancedMobile() {
       recognition.interimResults = false;
 
       recognition.onresult = (event: any) => {
-        const transcript = event.results[0][0].transcript;
+        const {transcript} = event.results[0][0];
         triggerHapticFeedback('success');
         resolve(transcript);
       };
@@ -423,12 +423,12 @@ export function useMobileFormOptimization() {
     if (window.visualViewport) {
       window.visualViewport.addEventListener('resize', handleViewportChange);
       return () => window.visualViewport?.removeEventListener('resize', handleViewportChange);
-    } else {
+    } 
       window.addEventListener('resize', handleViewportChange);
       return () => {
         window.removeEventListener('resize', handleViewportChange);
       };
-    }
+    
   }, [deviceInfo.isMobile]);
 
   // Input focus optimization

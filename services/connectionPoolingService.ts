@@ -710,7 +710,7 @@ export class ConnectionPoolingService {
    */
   private async testThroughput(): Promise<number> {
     const metrics = this.getPerformanceMetrics(0.1); // Last 6 minutes
-    const queriesPerMinute = metrics.queriesPerMinute;
+    const {queriesPerMinute} = metrics;
 
     // Score based on queries per minute
     if (queriesPerMinute > 100) return 1.0;

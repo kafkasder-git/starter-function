@@ -132,7 +132,7 @@ export abstract class BaseService<
     }
 
     // Fallback for environments without crypto.randomUUID()
-    return 'id_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    return `id_${  Date.now()  }_${  Math.random().toString(36).substr(2, 9)}`;
   }
 
   protected updateTimestamp(data: Partial<T>): Partial<T> {

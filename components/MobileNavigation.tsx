@@ -9,14 +9,11 @@ import {
   MessageSquare,
   Calendar,
   Menu,
-  X,
   Building2,
   Shield,
   Scale,
 } from 'lucide-react';
 import { cn } from './ui/utils';
-import { Badge } from './ui/badge';
-import { Button } from './ui/button';
 import {
   Sheet,
   SheetContent,

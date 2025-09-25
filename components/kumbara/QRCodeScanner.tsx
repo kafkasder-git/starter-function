@@ -352,7 +352,7 @@ export function QRCodeScanner({
                   <div className="absolute inset-0 pointer-events-none">
                     <div className="absolute top-4 left-4 right-4 bg-black/70 text-white p-3 rounded-lg">
                       <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                        <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
                         <span className="text-sm font-medium">QR kod aranıyor...</span>
                       </div>
                     </div>

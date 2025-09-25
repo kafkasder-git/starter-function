@@ -1,11 +1,8 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Bell,
-  Check,
   CheckCheck,
-  X,
-  Filter,
   Archive,
   AlertCircle,
   Info,
@@ -15,7 +12,6 @@ import {
   Settings,
   Clock,
   User,
-  Calendar,
   DollarSign,
   Users,
   FileText,
@@ -24,7 +20,7 @@ import {
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
+import { Tabs, TabsList, TabsTrigger } from '../ui/tabs';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { ScrollArea } from '../ui/scroll-area';
 import { Separator } from '../ui/separator';

@@ -1,7 +1,7 @@
 // Gelişmiş Raporlama Sistemi - Export Utility Fonksiyonları
 
 import type { ChartConfig, AnalyticsData } from '../types/reporting';
-import { ExportConfig, ExportFormat } from '../types/reporting';
+import { ExportFormat } from '../types/reporting';
 
 // Chart data interfaces
 export interface ChartDataPoint {

@@ -5,17 +5,12 @@ import {
   ChevronUp,
   ChevronDown,
   MoreHorizontal,
-  Eye,
-  Edit,
-  Trash2,
-  Download,
   Filter,
   Search,
   RefreshCw,
 } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
 import { Checkbox } from '../ui/checkbox';
 import {
   DropdownMenu,
@@ -29,7 +24,6 @@ import { useSearchContext } from './SearchProvider';
 import { usePagination } from '../../hooks/usePagination';
 import { useIsMobile } from '../../hooks/useTouchDevice';
 import { cn } from '../ui/utils';
-import { SortConfig } from '../../types/search';
 
 export interface ColumnDef<T = any> {
   id: string;

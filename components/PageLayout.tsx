@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from './ui/button';
-import { Separator } from './ui/separator';
 
 interface PageLayoutProps {
   title: string;

@@ -210,7 +210,7 @@ class AdvancedPerformanceService {
   private observeMemoryUsage(): void {
     if ('memory' in performance) {
       const checkMemory = () => {
-        const memory = (performance as any).memory;
+        const {memory} = (performance as any);
         this.updateMetric('memoryUsage', memory.usedJSHeapSize);
         this.reportMetric('memoryUsage', memory.usedJSHeapSize);
       };
@@ -276,7 +276,7 @@ class AdvancedPerformanceService {
     // Monitor with tracking
     monitoring.trackEvent('performance_metric', {
       metric: key,
-      value: value,
+      value,
       url: window.location.pathname,
     });
 
@@ -414,7 +414,7 @@ class AdvancedPerformanceService {
    */
   private getConnectionInfo(): string {
     if ('connection' in navigator) {
-      const connection = (navigator as any).connection;
+      const {connection} = (navigator as any);
       return `${connection.effectiveType || 'unknown'} (${connection.downlink || 'unknown'} Mbps)`;
     }
     return 'unknown';

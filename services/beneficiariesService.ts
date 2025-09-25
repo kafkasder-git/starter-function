@@ -17,7 +17,7 @@ export interface BeneficiarySearchFilters extends BeneficiaryFilters {
 }
 
 class BeneficiariesService {
-  private supabase = supabase;
+  private readonly supabase = supabase;
 
   // Gelişmiş arama ve filtreleme
   async getAll(

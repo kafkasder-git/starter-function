@@ -5,18 +5,15 @@ import {
   Users,
   Heart,
   DollarSign,
-  FileText,
   Settings,
   HelpCircle,
   BookOpen,
   Shield,
-  Briefcase,
   Calendar,
   UserPlus,
   BarChart3,
 } from 'lucide-react';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '../ui/dialog';
-import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { cn } from '../ui/utils';
 

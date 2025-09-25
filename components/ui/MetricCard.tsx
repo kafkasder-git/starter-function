@@ -65,7 +65,7 @@ export function MetricCard({
 
   return (
     <CardWrapper
-      className={`w-full text-left ${onClick ? 'cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 ' + colors.ring : ''}`}
+      className={`w-full text-left ${onClick ? `cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 ${  colors.ring}` : ''}`}
       onClick={onClick}
       whileHover={onClick ? { scale: 1.02, y: -2 } : undefined}
       whileTap={onClick ? { scale: 0.98 } : undefined}
@@ -76,11 +76,11 @@ export function MetricCard({
           {loading ? (
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <div className="h-4 bg-gray-200 rounded w-20 animate-pulse"></div>
-                <div className="w-10 h-10 bg-gray-200 rounded-lg animate-pulse"></div>
+                <div className="h-4 bg-gray-200 rounded w-20 animate-pulse" />
+                <div className="w-10 h-10 bg-gray-200 rounded-lg animate-pulse" />
               </div>
-              <div className="h-8 bg-gray-200 rounded w-16 animate-pulse"></div>
-              <div className="h-4 bg-gray-200 rounded w-12 animate-pulse"></div>
+              <div className="h-8 bg-gray-200 rounded w-16 animate-pulse" />
+              <div className="h-4 bg-gray-200 rounded w-12 animate-pulse" />
             </div>
           ) : (
             <div className="space-y-4">

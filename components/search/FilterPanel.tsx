@@ -1,14 +1,9 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 import {
   Filter,
   X,
   ChevronDown,
-  Calendar,
-  Hash,
-  Type,
-  ToggleLeft,
-  Sliders,
   RefreshCw,
 } from 'lucide-react';
 import { Button } from '../ui/button';
@@ -16,10 +11,7 @@ import { Badge } from '../ui/badge';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Checkbox } from '../ui/checkbox';
 import { Switch } from '../ui/switch';
-import { Calendar as CalendarComponent } from '../ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import {
   Sheet,
   SheetContent,
@@ -33,7 +25,7 @@ import { useSearchContext } from './SearchProvider';
 import { useIsMobile } from '../../hooks/useTouchDevice';
 import { cn } from '../ui/utils';
 import type { FilterConfig, FilterValue } from '../../types/search';
-import { DATE_RANGE_PRESETS, SEARCH_OPERATORS } from '../../types/search';
+import { DATE_RANGE_PRESETS } from '../../types/search';
 
 interface FilterPanelProps {
   filters: FilterConfig[];
@@ -163,7 +155,7 @@ export function FilterPanel({
                 max={filter.max}
                 className="h-9"
                 onChange={(e) => {
-                  const value = e.target.value;
+                  const {value} = e.target;
                   const maxValue = getFilterValue(filter.field)?.[1];
                   handleFilterChange(
                     filter.field,
@@ -179,7 +171,7 @@ export function FilterPanel({
                 max={filter.max}
                 className="h-9"
                 onChange={(e) => {
-                  const value = e.target.value;
+                  const {value} = e.target;
                   const minValue = getFilterValue(filter.field)?.[0];
                   handleFilterChange(
                     filter.field,

@@ -11,11 +11,11 @@ import type {
 
 // Enhanced Strategy pattern for aggregation operations
 interface AggregationStrategy<T = Record<string, unknown>> {
-  aggregate(items: T[], field?: string): number;
-  validate(items: T[], field?: string): boolean;
-  getName(): string;
-  getDescription(): string;
-  getSupportedTypes(): string[];
+  aggregate: (items: T[], field?: string) => number;
+  validate: (items: T[], field?: string) => boolean;
+  getName: () => string;
+  getDescription: () => string;
+  getSupportedTypes: () => string[];
 }
 
 abstract class BaseAggregationStrategy implements AggregationStrategy {
@@ -754,7 +754,7 @@ export class DataProcessor {
 
       return {
         outliers,
-        cleaned: cleaned,
+        cleaned,
         statistics: {
           q1,
           q3,

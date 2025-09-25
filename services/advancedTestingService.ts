@@ -321,7 +321,7 @@ class AdvancedTestingService {
     test.metrics = metrics;
 
     // Budget kontrolü
-    const budget = this.config.performance.budget;
+    const {budget} = this.config.performance;
     if (metrics.fcp > budget.fcp) {
       throw new Error(`FCP budget exceeded: ${metrics.fcp}ms > ${budget.fcp}ms`);
     }

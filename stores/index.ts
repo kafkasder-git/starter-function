@@ -13,9 +13,9 @@ export type { NotificationState } from './notificationStore';
 
 // Store initialization hook
 import { useEffect, useState, useCallback, useMemo } from 'react';
-import { useAuthStore, authStore } from './authStore';
+import { useAuthStore } from './authStore';
 import { useNotificationStore } from './notificationStore';
-import { useUIStore, uiStore } from './uiStore';
+import { useUIStore } from './uiStore';
 
 // Store initialization hook with improved type safety and performance
 export function useStoreInitialization() {

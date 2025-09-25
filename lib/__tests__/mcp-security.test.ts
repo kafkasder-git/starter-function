@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 
 // Mock types
 interface MCPPermission {
@@ -161,7 +161,7 @@ class MockMCPSecurityManager {
 
   hashPassword(password: string): string {
     if (!password) throw new Error('Password is required');
-    return Buffer.from(password + 'salt').toString('base64');
+    return Buffer.from(`${password  }salt`).toString('base64');
   }
 
   verifyPassword(password: string, hash: string): boolean {

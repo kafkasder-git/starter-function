@@ -1,11 +1,11 @@
 // Simple in-browser push notification service stub
 
-export type NotificationPayload = {
+export interface NotificationPayload {
   title: string;
   body?: string;
   icon?: string;
   url?: string;
-};
+}
 
 class PushNotificationService {
   private subscribed = false;

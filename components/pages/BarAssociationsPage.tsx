@@ -14,7 +14,6 @@ import {
   MapPin,
   Plus,
   Users,
-  Calendar,
   Award,
   Globe,
 } from 'lucide-react';

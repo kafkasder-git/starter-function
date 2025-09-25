@@ -10,7 +10,6 @@ import {
   Calendar,
   DollarSign,
   Users,
-  Plus,
   Download,
 } from 'lucide-react';
 

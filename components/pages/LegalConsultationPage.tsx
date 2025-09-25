@@ -1,32 +1,8 @@
-import {
-  AlertCircle,
-  Calendar,
-  CheckCircle,
-  Clock,
-  Eye,
-  Mail,
-  Phone,
-  Plus,
-  Scale,
-  Search,
-  Star,
-  User,
-} from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
-import { Badge } from '../ui/badge';
-import { Button } from '../ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '../ui/dropdown-menu';
-import { Input } from '../ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
-import { Textarea } from '../ui/textarea';
+
+
+import { useState } from 'react';
+
+
 
 interface LegalConsultation {
   id: number;

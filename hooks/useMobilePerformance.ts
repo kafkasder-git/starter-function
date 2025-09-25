@@ -45,7 +45,7 @@ export function useMobilePerformance() {
     const detectDevicePerformance = () => {
       // Check device memory (if available)
       const memory = (navigator as any).deviceMemory;
-      const hardwareConcurrency = navigator.hardwareConcurrency;
+      const {hardwareConcurrency} = navigator;
 
       // Simple heuristic for device performance
       const isSlowDevice = memory ? memory <= 2 : hardwareConcurrency <= 2;
@@ -60,7 +60,7 @@ export function useMobilePerformance() {
   useEffect(() => {
     if (!isMobile || !('connection' in navigator)) return;
 
-    const connection = (navigator as any).connection;
+    const {connection} = (navigator as any);
 
     const updateNetworkSpeed = () => {
       const effectiveType = connection?.effectiveType;

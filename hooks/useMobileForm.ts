@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 import { useAdvancedMobile } from './useAdvancedMobile';
 
 interface UseMobileFormOptions {
@@ -18,7 +18,7 @@ export function useMobileForm(options: UseMobileFormOptions = {}) {
     const viewport = document.querySelector('meta[name="viewport"]');
     if (viewport) {
       const originalContent = viewport.getAttribute('content');
-      const preventZoomContent = originalContent + ', user-scalable=no';
+      const preventZoomContent = `${originalContent  }, user-scalable=no`;
 
       viewport.setAttribute('content', preventZoomContent);
 

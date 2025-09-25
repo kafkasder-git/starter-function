@@ -76,7 +76,7 @@ class Logger {
 
   private formatMessage(level: string, message: string, ..._args: unknown[]): string {
     const timestamp = new Date().toISOString();
-    const prefix = this.config.prefix;
+    const {prefix} = this.config;
     return `[${timestamp}] ${prefix} [${level}] ${message}`;
   }
 

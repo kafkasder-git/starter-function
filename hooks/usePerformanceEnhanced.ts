@@ -60,7 +60,7 @@ export function usePerformanceEnhanced(
   // Get memory usage (if available)
   const getMemoryUsage = useCallback((): number => {
     if ('memory' in performance) {
-      const memory = (performance as any).memory;
+      const {memory} = (performance as any);
       return memory.usedJSHeapSize || 0;
     }
     return 0;
@@ -146,8 +146,8 @@ export function usePerformanceEnhanced(
       if (process.env.NODE_ENV === 'development') {
         console.log(`📊 Performance Summary for ${componentName}:`, {
           totalRenders: renderCount.current,
-          averageRenderTime: metrics.averageRenderTime.toFixed(2) + 'ms',
-          peakMemoryUsage: (metrics.peakMemoryUsage / 1024 / 1024).toFixed(2) + 'MB',
+          averageRenderTime: `${metrics.averageRenderTime.toFixed(2)  }ms`,
+          peakMemoryUsage: `${(metrics.peakMemoryUsage / 1024 / 1024).toFixed(2)  }MB`,
           mountCount: mountCount.current,
         });
       }

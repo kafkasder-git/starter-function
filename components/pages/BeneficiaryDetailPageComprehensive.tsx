@@ -507,7 +507,7 @@ export function BeneficiaryDetailPageComprehensive({
       );
 
       if (result.error) {
-        toast.error('Güncelleme sırasında hata: ' + result.error);
+        toast.error(`Güncelleme sırasında hata: ${  result.error}`);
         return;
       }
 
@@ -537,7 +537,7 @@ export function BeneficiaryDetailPageComprehensive({
   };
 
   const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
+    const {files} = event.target;
     if (!files) return;
 
     setIsUploadingPhoto(true);
@@ -725,7 +725,7 @@ export function BeneficiaryDetailPageComprehensive({
       );
 
       if (result.error) {
-        toast.error('IBAN kaydedilirken hata: ' + result.error);
+        toast.error(`IBAN kaydedilirken hata: ${  result.error}`);
         return;
       }
 
@@ -921,7 +921,7 @@ export function BeneficiaryDetailPageComprehensive({
         );
       } else if (result.error) {
         console.error('❌ Error loading dependents:', result.error);
-        toast.error('Bağlı kişiler yüklenirken hata: ' + result.error);
+        toast.error(`Bağlı kişiler yüklenirken hata: ${  result.error}`);
         setExistingDependents([]);
       }
     } catch (error: any) {
@@ -1068,7 +1068,7 @@ export function BeneficiaryDetailPageComprehensive({
 
       if (error) {
         console.error('❌ Error creating relationship:', error);
-        toast.error('Bağlantı kaydedilirken hata: ' + error.message);
+        toast.error(`Bağlantı kaydedilirken hata: ${  error.message}`);
         return;
       }
 
@@ -1101,7 +1101,7 @@ export function BeneficiaryDetailPageComprehensive({
 
       if (error) {
         console.error('❌ Error removing relationship:', error);
-        toast.error('Bağlantı kaldırılırken hata: ' + error.message);
+        toast.error(`Bağlantı kaldırılırken hata: ${  error.message}`);
         return;
       }
 
@@ -1117,7 +1117,7 @@ export function BeneficiaryDetailPageComprehensive({
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
+    const {files} = event.target;
     if (!files) return;
 
     setIsUploading(true);
@@ -1134,7 +1134,7 @@ export function BeneficiaryDetailPageComprehensive({
           const newFiles = Array.from(files).map((file, index) => ({
             id: (Date.now() + index).toString(),
             name: file.name,
-            size: (file.size / (1024 * 1024)).toFixed(1) + ' MB',
+            size: `${(file.size / (1024 * 1024)).toFixed(1)  } MB`,
             type: file.type,
             uploadDate: new Date().toISOString().split('T')[0],
             url: URL.createObjectURL(file),
@@ -1190,7 +1190,7 @@ export function BeneficiaryDetailPageComprehensive({
     return (
       <div className="min-h-screen bg-neutral-100 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4" />
           <p className="text-sm text-gray-600">İhtiyaç sahibi bilgileri yükleniyor...</p>
         </div>
       </div>
@@ -1302,7 +1302,7 @@ export function BeneficiaryDetailPageComprehensive({
                 <div className="col-span-12 sm:col-span-3">
                   <div className="space-y-4">
                     <Label className="text-sm font-semibold text-gray-800 block">Fotoğraf</Label>
-                    <div className="photo-upload-area bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg hover:border-gray-400 transition-colors duration-200"></div>
+                    <div className="photo-upload-area bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg hover:border-gray-400 transition-colors duration-200" />
                     <div className="flex items-center gap-2">
                       <Button size="sm" variant="outline" className="flex-1 text-xs">
                         <Upload className="w-3 h-3 mr-1" />
@@ -2553,7 +2553,7 @@ export function BeneficiaryDetailPageComprehensive({
                     <div className="flex items-center justify-between w-full">
                       <span>{record}</span>
                       {record === 'Banka Hesapları' && (beneficiaryData?.iban as string) && (
-                        <div className="w-2 h-2 bg-green-500 rounded-full ml-2"></div>
+                        <div className="w-2 h-2 bg-green-500 rounded-full ml-2" />
                       )}
                     </div>
                   </Button>
@@ -2698,7 +2698,7 @@ export function BeneficiaryDetailPageComprehensive({
                     <div
                       className="bg-blue-600 h-2 rounded-full transition-all duration-300"
                       style={{ width: `${uploadProgress}%` }}
-                    ></div>
+                     />
                   </div>
                 </div>
               )}
@@ -3233,7 +3233,7 @@ export function BeneficiaryDetailPageComprehensive({
                 <div className="space-y-2 max-h-80 overflow-y-auto">
                   {isLoadingDependents ? (
                     <div className="text-center py-8">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4" />
                       <p className="text-sm text-gray-600">Kayıtlar yükleniyor...</p>
                     </div>
                   ) : filteredDependents.length === 0 ? (
@@ -3453,7 +3453,7 @@ export function BeneficiaryDetailPageComprehensive({
                       <div
                         className="bg-blue-600 h-2 rounded-full transition-all duration-300"
                         style={{ width: `${photoUploadProgress}%` }}
-                      ></div>
+                       />
                     </div>
                     <p className="text-sm text-gray-600 mt-2">
                       Yükleniyor... {photoUploadProgress}%

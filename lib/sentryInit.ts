@@ -31,10 +31,10 @@ export const initializeSentry = () => {
     console.log('🧪 Sentry test log sent successfully');
 
     return true;
-  } else {
+  } 
     console.log('⚠️ Sentry is disabled');
     return false;
-  }
+  
 };
 
 // Test function for manual Sentry testing

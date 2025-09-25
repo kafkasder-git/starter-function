@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
-import { forwardRef, useState, useEffect } from 'react';
+import { forwardRef, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { AlertCircle, CheckCircle, Eye, EyeOff, Loader2, X } from 'lucide-react';
+import { Loader2, X } from 'lucide-react';
 import type { FormFieldProps } from './FormField';
 import { FormField } from './FormField';
 import { Button } from '../ui/button';

@@ -1,12 +1,9 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
-  Play,
-  Pause,
   X,
   CheckCircle,
   AlertCircle,
-  Clock,
   RotateCcw,
   Trash2,
   Edit3,
@@ -28,7 +25,6 @@ import {
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
 import { ScrollArea } from '../ui/scroll-area';
-import { Separator } from '../ui/separator';
 import { useBulkOperations } from '../../hooks/useBulkOperations';
 import { useIsMobile } from '../../hooks/useTouchDevice';
 import { cn } from '../ui/utils';
@@ -147,9 +143,9 @@ export function BulkOperationPanel({
       return `${duration}s`;
     } else if (duration < 3600) {
       return `${Math.floor(duration / 60)}m ${duration % 60}s`;
-    } else {
+    } 
       return `${Math.floor(duration / 3600)}h ${Math.floor((duration % 3600) / 60)}m`;
-    }
+    
   };
 
   // Render operation item

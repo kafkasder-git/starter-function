@@ -2,15 +2,11 @@
 
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import {
-  useForm,
   FormProvider as ReactHookFormProvider,
   useFormContext,
-  Controller,
-  type FieldPath,
   type FieldValues,
   type UseFormReturn,
 } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { motion, AnimatePresence } from 'motion/react';
 import type { z } from 'zod';
 import {
@@ -19,24 +15,13 @@ import {
   Info,
   Eye,
   EyeOff,
-  Search,
   Calendar,
-  Clock,
   Phone,
-  Mail,
-  MapPin,
-  User,
-  Building,
-  CreditCard,
-  Hash,
-  FileText,
   Save,
   X,
   Plus,
   Minus,
   Upload,
-  Download,
-  Paperclip,
   Loader2,
 } from 'lucide-react';
 
@@ -50,8 +35,6 @@ import { RadioGroup, RadioGroupItem } from './radio-group';
 import { Switch } from './switch';
 import { Label } from './label';
 import { Card, CardContent, CardHeader, CardTitle } from './card';
-import { Badge } from './badge';
-import { Separator } from './separator';
 import { Alert, AlertDescription } from './alert';
 import { Popover, PopoverContent, PopoverTrigger } from './popover';
 import { Calendar as CalendarComponent } from './calendar';
@@ -590,7 +573,7 @@ export function EnhancedField({
               multiple={multiple}
               accept={accept}
               onChange={(e) => {
-                const files = e.target.files;
+                const {files} = e.target;
                 if (files) {
                   handleChange(multiple ? Array.from(files) : files[0]);
                 }

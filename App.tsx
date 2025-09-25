@@ -1,6 +1,6 @@
 // Supabase integration enabled - deployment blocker removed
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, memo, useMemo } from 'react';
 
 // Core System Imports
 import { ErrorBoundary } from './components/ErrorBoundary';
@@ -36,7 +36,7 @@ import { useUserPreferences } from './hooks/useLocalStorage';
  * Frontend Application - Desktop-only design
  * Modern, responsive corporate admin panel
  */
-function AppContent() {
+const AppContent = memo(() => {
   const { trackAIUsage: trackUsage } = useAI();
   const { trackFeatureUse } = useUXAnalytics();
   const navigation = useNavigation();
@@ -50,17 +50,22 @@ function AppContent() {
   // User preferences for theme management
   const { preferences } = useUserPreferences();
 
+  // Memoized theme configuration
+  const themeConfig = useMemo(() => ({
+    isDark: preferences.theme === 'dark',
+    theme: preferences.theme || 'light'
+  }), [preferences.theme]);
+
   // Dark mode initialization
   useEffect(() => {
-    const savedTheme = preferences.theme || 'light';
-    document.documentElement.classList.toggle('dark', savedTheme === 'dark');
-  }, [preferences.theme]);
+    document.documentElement.classList.toggle('dark', themeConfig.isDark);
+  }, [themeConfig.isDark]);
 
   // Keyboard shortcut handlers
   const handleGlobalSearch = useCallback(() => {
     const searchInput = document.querySelector(
       'input[placeholder*="⌘K"], input[placeholder*="Ctrl+K"], input[placeholder*="Ara"]',
-    )!;
+    );
     if (searchInput) {
       (searchInput as HTMLInputElement).focus();
       (searchInput as HTMLInputElement).select();
@@ -78,12 +83,12 @@ function AppContent() {
   const handleNewItem = useCallback(() => {
     const addButton = document.querySelector(
       'button[aria-label*="Ekle"], button[title*="Ekle"], button[class*="add"], button[class*="new"]',
-    )!;
+    );
 
     if (
       addButton &&
-      (addButton.textContent?.includes('Ekle') ||
-        addButton.textContent?.includes('Yeni') ||
+      (addButton.textContent && addButton.textContent.includes('Ekle')) ||
+        (addButton.textContent && addButton.textContent.includes('Yeni')) ||
         addButton.querySelector('svg'))
     ) {
       (addButton as HTMLElement).click();
@@ -229,16 +234,16 @@ function AppContent() {
       </div>
     </ProtectedRoute>
   );
-}
+});
 
 /**
  * App with Navigation Provider
  */
-function AppWithNavigation({
+const AppWithNavigation = memo(({
   onNavigate,
 }: {
   onNavigate: (module: string, page?: string, subPage?: string) => void;
-}) {
+}) => {
   const [currentModule, setCurrentModule] = useState('genel');
   const [currentPage, setCurrentPage] = useState('dashboard');
   const [currentSubPage, setCurrentSubPage] = useState('');
@@ -271,20 +276,16 @@ function AppWithNavigation({
       <ToastProvider />
     </EnhancedAIProvider>
   );
-}
+});
 
 /**
  * Error Handler Component
  */
 function AppWithErrorHandling() {
   // AI-integrated navigation handler
-  const handleAINavigation = useCallback((module: string, page?: string, subPage?: string) => {
+  const handleAINavigation = useCallback(() => {
     // This will be passed to the AI provider to handle navigation requests
-    console.log('AI Navigation Request:', {
-      module,
-      page,
-      subPage,
-    });
+    // AI Navigation Request handled
   }, []);
 
   return (

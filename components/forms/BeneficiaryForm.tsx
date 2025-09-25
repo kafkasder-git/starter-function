@@ -99,7 +99,7 @@ export function BeneficiaryForm({
         mode === 'create' ? 'İhtiyaç sahibi başarıyla eklendi' : 'Bilgiler başarıyla güncellendi',
       );
     } catch (error) {
-      toast.error('Bir hata oluştu: ' + (error as Error).message);
+      toast.error(`Bir hata oluştu: ${  (error as Error).message}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -465,7 +465,7 @@ export function BeneficiaryForm({
         <Button type="submit" disabled={isSubmitting || isLoading} className="min-w-[120px]">
           {isSubmitting ? (
             <>
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
               Kaydediliyor...
             </>
           ) : (

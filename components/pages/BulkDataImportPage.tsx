@@ -12,7 +12,6 @@ import {
   TrendingUp,
   FileSpreadsheet,
   Download,
-  Upload,
   Info,
   CheckCircle,
   AlertTriangle,
@@ -22,7 +21,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Alert, AlertDescription } from '../ui/alert';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { Separator } from '../ui/separator';
 
 import BulkPersonImport from '../data/BulkPersonImport';

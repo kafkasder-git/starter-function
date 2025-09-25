@@ -1,11 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   ChevronLeft,
   ChevronRight,
   X,
   Play,
   CheckCircle,
-  Circle,
   Star,
   Zap,
   Users,
@@ -13,7 +12,6 @@ import {
   Target,
 } from 'lucide-react';
 import { Button } from '../ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Progress } from '../ui/progress';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '../ui/dialog';

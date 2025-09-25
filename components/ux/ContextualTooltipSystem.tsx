@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { HelpCircle, Info, Lightbulb, Zap, X, ChevronRight } from 'lucide-react';
 import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
 import { cn } from '../ui/utils';
 
 interface TooltipContent {
@@ -83,15 +82,15 @@ export function SmartTooltip({
 
     switch (position) {
       case 'top':
-        return base + 'bottom-full left-1/2 transform -translate-x-1/2 mb-2';
+        return `${base  }bottom-full left-1/2 transform -translate-x-1/2 mb-2`;
       case 'bottom':
-        return base + 'top-full left-1/2 transform -translate-x-1/2 mt-2';
+        return `${base  }top-full left-1/2 transform -translate-x-1/2 mt-2`;
       case 'left':
-        return base + 'right-full top-1/2 transform -translate-y-1/2 mr-2';
+        return `${base  }right-full top-1/2 transform -translate-y-1/2 mr-2`;
       case 'right':
-        return base + 'left-full top-1/2 transform -translate-y-1/2 ml-2';
+        return `${base  }left-full top-1/2 transform -translate-y-1/2 ml-2`;
       default:
-        return base + 'bottom-full left-1/2 transform -translate-x-1/2 mb-2';
+        return `${base  }bottom-full left-1/2 transform -translate-x-1/2 mb-2`;
     }
   };
 
@@ -101,28 +100,28 @@ export function SmartTooltip({
     switch (position) {
       case 'top':
         return (
-          base +
-          'top-full left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-t-0 border-l-0'
+          `${base 
+          }top-full left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-t-0 border-l-0`
         );
       case 'bottom':
         return (
-          base +
-          'bottom-full left-1/2 transform -translate-x-1/2 translate-y-1/2 border-b-0 border-r-0'
+          `${base 
+          }bottom-full left-1/2 transform -translate-x-1/2 translate-y-1/2 border-b-0 border-r-0`
         );
       case 'left':
         return (
-          base +
-          'left-full top-1/2 transform -translate-x-1/2 -translate-y-1/2 border-l-0 border-b-0'
+          `${base 
+          }left-full top-1/2 transform -translate-x-1/2 -translate-y-1/2 border-l-0 border-b-0`
         );
       case 'right':
         return (
-          base +
-          'right-full top-1/2 transform translate-x-1/2 -translate-y-1/2 border-r-0 border-t-0'
+          `${base 
+          }right-full top-1/2 transform translate-x-1/2 -translate-y-1/2 border-r-0 border-t-0`
         );
       default:
         return (
-          base +
-          'top-full left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-t-0 border-l-0'
+          `${base 
+          }top-full left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-t-0 border-l-0`
         );
     }
   };

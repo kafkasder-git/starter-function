@@ -752,27 +752,27 @@ export function DonationsPage() {
                     Array.from({ length: 5 }).map((_, i) => (
                       <TableRow key={i}>
                         <TableCell className="p-3 sm:p-4">
-                          <div className="h-4 bg-gray-200 rounded w-32 animate-pulse"></div>
+                          <div className="h-4 bg-gray-200 rounded w-32 animate-pulse" />
                         </TableCell>
                         <TableCell className="p-3 sm:p-4">
-                          <div className="h-4 bg-gray-200 rounded w-20 animate-pulse"></div>
+                          <div className="h-4 bg-gray-200 rounded w-20 animate-pulse" />
                         </TableCell>
                         <TableCell className="p-3 sm:p-4">
-                          <div className="h-4 bg-gray-200 rounded w-24 animate-pulse"></div>
+                          <div className="h-4 bg-gray-200 rounded w-24 animate-pulse" />
                         </TableCell>
                         <TableCell className="p-3 sm:p-4">
-                          <div className="h-6 bg-gray-200 rounded w-20 animate-pulse"></div>
+                          <div className="h-6 bg-gray-200 rounded w-20 animate-pulse" />
                         </TableCell>
                         <TableCell className="hidden lg:table-cell p-3 sm:p-4">
-                          <div className="h-4 bg-gray-200 rounded w-24 animate-pulse"></div>
+                          <div className="h-4 bg-gray-200 rounded w-24 animate-pulse" />
                         </TableCell>
                         <TableCell className="hidden lg:table-cell p-3 sm:p-4">
-                          <div className="h-4 bg-gray-200 rounded w-16 animate-pulse"></div>
+                          <div className="h-4 bg-gray-200 rounded w-16 animate-pulse" />
                         </TableCell>
                         <TableCell className="p-3 sm:p-4">
                           <div className="flex justify-center gap-2">
-                            <div className="w-8 h-8 bg-gray-200 rounded animate-pulse"></div>
-                            <div className="w-8 h-8 bg-gray-200 rounded animate-pulse"></div>
+                            <div className="w-8 h-8 bg-gray-200 rounded animate-pulse" />
+                            <div className="w-8 h-8 bg-gray-200 rounded animate-pulse" />
                           </div>
                         </TableCell>
                       </TableRow>

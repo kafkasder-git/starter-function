@@ -1,31 +1,24 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   CheckSquare,
   Square,
   Trash2,
-  Edit3,
   Mail,
   Download,
   Archive,
   Tag,
-  Users,
   AlertCircle,
-  Check,
   X,
   Settings,
-  FileText,
-  Send,
 } from 'lucide-react';
 import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { Card, CardContent } from '../ui/card';
 import { Separator } from '../ui/separator';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Textarea } from '../ui/textarea';
 import { Input } from '../ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
-import { Checkbox } from '../ui/checkbox';
 import { useAdvancedMobile } from '../../hooks/useAdvancedMobile';
 
 interface BulkAction {

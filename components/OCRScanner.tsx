@@ -9,7 +9,6 @@ import {
   RotateCw,
   CheckCircle,
   AlertTriangle,
-  FileText,
   Scan,
   Upload,
   Loader2,
@@ -89,8 +88,8 @@ const processOCR = async (
       // Perform OCR recognition
       const result = await worker.recognize(imageData);
 
-      const text = result.data.text;
-      const confidence = result.data.confidence;
+      const {text} = result.data;
+      const {confidence} = result.data;
 
       // Parse extracted text based on document type
       const parsedData = parseDocumentText(text, documentType);
@@ -205,10 +204,10 @@ const parseDocumentText = (text: string, documentType: 'id' | 'passport') => {
       birthDate: dateMatch
         ? `${dateMatch[1].padStart(2, '0')}.${dateMatch[2].padStart(2, '0')}.${dateMatch[3]}`
         : '',
-      birthPlace: birthPlace,
+      birthPlace,
       nationality: 'T.C.',
     };
-  } else {
+  } 
     // Enhanced passport parsing patterns
 
     // Look for passport indicators
@@ -257,10 +256,10 @@ const parseDocumentText = (text: string, documentType: 'id' | 'passport') => {
       birthDate: dateMatch
         ? `${dateMatch[1].padStart(2, '0')}.${dateMatch[2].padStart(2, '0')}.${dateMatch[3]}`
         : '',
-      birthPlace: birthPlace,
+      birthPlace,
       nationality: 'TUR',
     };
-  }
+  
 };
 
 const extractBirthPlace = (text: string): string => {
@@ -326,7 +325,7 @@ const extractBirthPlace = (text: string): string => {
   // First try specific birth place patterns
   for (const pattern of birthPlacePatterns) {
     const match = text.match(pattern);
-    if (match && match[1]) {
+    if (match?.[1]) {
       const foundCity = cities.find((city) => city.includes(match[1]) || match[1].includes(city));
       if (foundCity) return foundCity;
     }
@@ -526,7 +525,7 @@ export function OCRScanner({
         ctx.drawImage(img, 0, 0);
 
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const data = imageData.data;
+        const {data} = imageData;
 
         let brightness = 0;
         let contrast = 0;
@@ -670,10 +669,10 @@ export function OCRScanner({
         {/* Scanning Overlay */}
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="border-2 border-white/50 border-dashed rounded-lg w-4/5 h-3/5 relative">
-            <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-primary rounded-tl-lg"></div>
-            <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-primary rounded-tr-lg"></div>
-            <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-primary rounded-bl-lg"></div>
-            <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-primary rounded-br-lg"></div>
+            <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-primary rounded-tl-lg" />
+            <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-primary rounded-tr-lg" />
+            <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-primary rounded-bl-lg" />
+            <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-primary rounded-br-lg" />
 
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="text-white text-sm bg-black/50 px-3 py-1 rounded">
@@ -728,9 +727,9 @@ export function OCRScanner({
       return () => {
         clearInterval(interval);
       };
-    } else {
+    } 
       setProcessingStep(0);
-    }
+    
   }, [processing]);
 
   const renderProcessingView = () => {
@@ -757,7 +756,7 @@ export function OCRScanner({
             <div
               className="bg-primary h-2 rounded-full transition-all duration-500"
               style={{ width: `${((processingStep + 1) / processingSteps.length) * 100}%` }}
-            ></div>
+             />
           </div>
         </div>
 
@@ -770,7 +769,7 @@ export function OCRScanner({
                 className="max-w-full max-h-48 object-contain rounded-lg border"
               />
               {/* Scanning animation overlay */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/20 to-transparent animate-pulse rounded-lg"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/20 to-transparent animate-pulse rounded-lg" />
             </div>
           </div>
         )}

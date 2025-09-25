@@ -5,7 +5,6 @@
 
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { Button } from '../ui/Button';
 
 // Mock Button component if it doesn't exist
 const ButtonComponent = ({

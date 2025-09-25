@@ -824,7 +824,7 @@ class AdvancedSecurityService {
     const sourceCounts: Record<string, { count: number; totalRisk: number }> = {};
 
     this.events.forEach((event) => {
-      const ip = event.source.ip;
+      const {ip} = event.source;
       if (!sourceCounts[ip]) {
         sourceCounts[ip] = { count: 0, totalRisk: 0 };
       }

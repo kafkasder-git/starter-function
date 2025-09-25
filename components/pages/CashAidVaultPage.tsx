@@ -162,7 +162,7 @@ export function CashAidVaultPage() {
     const transaction: VaultTransaction = {
       id: Date.now(),
       type: newTransaction.type,
-      amount: amount,
+      amount,
       date: new Date().toISOString().slice(0, 16).replace('T', ' '),
       description: newTransaction.description,
       reference: `VLT-2024-${String(transactions.length + 1).padStart(3, '0')}`,

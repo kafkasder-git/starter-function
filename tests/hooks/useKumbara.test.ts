@@ -5,7 +5,6 @@ import { act, renderHook, waitFor } from '@testing-library/react';
 import { toast } from 'sonner';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useKumbara, useKumbaraDashboard, useKumbaraDetail } from '../../hooks/useKumbara';
-import kumbaraService from '../../services/kumbaraService';
 import type { KumbaraFilters, KumbaraInsert, KumbaraUpdate } from '../../types/kumbara';
 import { createMockKumbara, createMockCollection } from '../utils';
 

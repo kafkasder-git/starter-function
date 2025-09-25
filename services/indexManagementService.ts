@@ -349,7 +349,7 @@ export class IndexManagementService {
             indexType: columns.length === 1 ? 'btree' : 'btree',
             reason: 'WHERE clause filtering',
             potentialBenefit: 'high',
-            queryPattern: 'SELECT ... WHERE ' + columns.join(' AND '),
+            queryPattern: `SELECT ... WHERE ${  columns.join(' AND ')}`,
             estimatedSize: this.estimateIndexSize(columns.length),
             priority: 8,
           });
@@ -370,7 +370,7 @@ export class IndexManagementService {
             indexType: 'btree',
             reason: 'JOIN operation',
             potentialBenefit: 'high',
-            queryPattern: 'JOIN ON ' + joinColumns.join(' = '),
+            queryPattern: `JOIN ON ${  joinColumns.join(' = ')}`,
             estimatedSize: this.estimateIndexSize(joinColumns.length),
             priority: 9,
           });
@@ -389,7 +389,7 @@ export class IndexManagementService {
             indexType: 'btree',
             reason: 'ORDER BY sorting',
             potentialBenefit: 'medium',
-            queryPattern: 'ORDER BY ' + orderColumns.join(', '),
+            queryPattern: `ORDER BY ${  orderColumns.join(', ')}`,
             estimatedSize: this.estimateIndexSize(orderColumns.length),
             priority: 6,
           });

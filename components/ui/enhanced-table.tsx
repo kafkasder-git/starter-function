@@ -6,34 +6,21 @@ import {
   Search,
   Filter,
   MoreVertical,
-  ChevronDown,
-  ChevronUp,
-  Eye,
   Edit,
-  Trash2,
   Download,
-  Upload,
   RefreshCw,
   CheckSquare,
-  Square,
   ArrowUpDown,
-  ArrowUp,
-  ArrowDown,
   Plus,
   Settings,
   X,
   Calendar,
-  User,
   Phone,
   Mail,
-  MapPin,
   Hash,
   DollarSign,
-  Clock,
   Zap,
   Save,
-  Copy,
-  ExternalLink,
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
@@ -54,15 +41,11 @@ import { Badge } from './badge';
 import { Checkbox } from './checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './select';
 import { Popover, PopoverContent, PopoverTrigger } from './popover';
-import { Separator } from './separator';
-import { ScrollArea } from './scroll-area';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  DropdownMenuSeparator,
-  DropdownMenuCheckboxItem,
 } from './dropdown-menu';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './table';
 import { Switch } from './switch';
@@ -648,14 +631,14 @@ export function EnhancedTable<T extends Record<string, any> = any>({
       <Card className={cn('w-full shadow-lg border-0 bg-white/80 backdrop-blur-sm', className)}>
         <CardHeader>
           <div className="animate-pulse space-y-3">
-            <div className="h-6 bg-gray-200 rounded w-1/4"></div>
-            <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+            <div className="h-6 bg-gray-200 rounded w-1/4" />
+            <div className="h-4 bg-gray-200 rounded w-1/2" />
           </div>
         </CardHeader>
         <CardContent>
           <div className="animate-pulse space-y-4">
             {[...Array(5)].map((_, i) => (
-              <div key={i} className="h-12 bg-gray-200 rounded"></div>
+              <div key={i} className="h-12 bg-gray-200 rounded" />
             ))}
           </div>
         </CardContent>

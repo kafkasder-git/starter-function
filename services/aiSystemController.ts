@@ -11,7 +11,7 @@ interface SystemAction {
   id: string;
   type: 'navigation' | 'data_operation' | 'ui_control' | 'notification' | 'automation';
   description: string;
-  implementation: (params: any) => Promise<any>;
+  implementation: (params: Record<string, unknown>) => Promise<unknown>;
   requiredPermissions?: string[];
   riskLevel: 'low' | 'medium' | 'high';
 }
@@ -20,27 +20,27 @@ interface NavigationTarget {
   module: string;
   page?: string;
   subPage?: string;
-  params?: Record<string, any>;
+  params?: Record<string, unknown>;
 }
 
 interface DataOperation {
   table: string;
   operation: 'create' | 'read' | 'update' | 'delete';
-  data?: any;
-  filters?: any;
+  data?: Record<string, unknown>;
+  filters?: Record<string, unknown>;
   validation?: boolean;
 }
 
 interface UIControl {
   action: 'open_modal' | 'close_modal' | 'show_notification' | 'update_form' | 'trigger_download';
   target: string;
-  parameters?: any;
+  parameters?: Record<string, unknown>;
 }
 
 class AISystemController {
   private readonly actions = new Map<string, SystemAction>();
   private navigationCallback: ((target: NavigationTarget) => void) | null = null;
-  private currentUser: any = null;
+  private currentUser: Record<string, unknown> | null = null;
 
   constructor() {
     this.initializeSystemActions();
@@ -119,7 +119,7 @@ class AISystemController {
       type: 'automation',
       description: 'Otomatik iş akışlarını çalıştırır',
       riskLevel: 'medium',
-      implementation: async (params: { workflowId: string; parameters?: any }) => {
+      implementation: async (params: { workflowId: string; parameters?: Record<string, unknown> }) => {
         return await this.executeWorkflow(params.workflowId, params.parameters);
       },
     });
@@ -129,7 +129,7 @@ class AISystemController {
       type: 'automation',
       description: 'Otomatik rapor oluşturur ve indirir',
       riskLevel: 'low',
-      implementation: async (params: { reportType: string; module: string; filters?: any }) => {
+      implementation: async (params: { reportType: string; module: string; filters?: Record<string, unknown> }) => {
         return await this.generateReport(params);
       },
     });
@@ -161,9 +161,9 @@ class AISystemController {
   // 🎯 AI'dan gelen komutu çalıştır
   async executeAICommand(
     actionId: string,
-    parameters: any,
+    parameters: Record<string, unknown>,
     userPermissions: string[] = [],
-  ): Promise<any> {
+  ): Promise<unknown> {
     const action = this.actions.get(actionId);
 
     if (!action) {
@@ -199,7 +199,7 @@ class AISystemController {
         result,
         timestamp: new Date().toISOString(),
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(`❌ AI Action failed: ${actionId}`, error);
       throw new Error(`İşlem başarısız: ${error.message}`);
     }
@@ -245,7 +245,7 @@ class AISystemController {
       }
 
       throw new Error(`Desteklenmeyen işlem: ${op} on ${table}`);
-    } catch (error: any) {
+    } catch (error: unknown) {
       throw new Error(`Veri işlemi hatası: ${error.message}`);
     }
   }
@@ -296,7 +296,7 @@ class AISystemController {
         default:
           throw new Error(`Desteklenmeyen UI aksiyonu: ${action}`);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       throw new Error(`UI kontrol hatası: ${error.message}`);
     }
   }
@@ -319,9 +319,9 @@ class AISystemController {
   }
 
   // 🔄 İş akışı çalıştır
-  private async executeWorkflow(workflowId: string, parameters?: any): Promise<any> {
+  private async executeWorkflow(workflowId: string, parameters?: Record<string, unknown>): Promise<unknown> {
     // Örnek iş akışları
-    const workflows: Record<string, () => Promise<any>> = {
+    const workflows: Record<string, () => Promise<unknown>> = {
       daily_review: async () => {
         // Günlük inceleme iş akışı
         const beneficiaries = await ihtiyacSahipleriService.getIhtiyacSahipleri(1, 50, {
@@ -370,13 +370,13 @@ class AISystemController {
   private async generateReport(params: {
     reportType: string;
     module: string;
-    filters?: any;
-  }): Promise<any> {
+    filters?: Record<string, unknown>;
+  }): Promise<unknown> {
     const { reportType, module, filters } = params;
 
     try {
-      let data: any[] = [];
-      let reportData: any = {};
+      let data: Record<string, unknown>[] = [];
+      let reportData: Record<string, unknown> = {};
 
       // Modül verilerini çek
       switch (module) {
@@ -423,13 +423,13 @@ class AISystemController {
         recordCount: data.length,
         generatedAt: new Date().toISOString(),
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       throw new Error(`Rapor oluşturma hatası: ${error.message}`);
     }
   }
 
   // 📝 Özet rapor oluştur
-  private generateSummaryReport(data: any[], module: string): any {
+  private generateSummaryReport(data: Record<string, unknown>[], module: string): Record<string, unknown> {
     const report = {
       module,
       total: data.length,
@@ -483,7 +483,7 @@ class AISystemController {
   }
 
   // 📊 Detaylı rapor oluştur
-  private generateDetailedReport(data: any[], module: string): any {
+  private generateDetailedReport(data: Record<string, unknown>[], module: string): Record<string, unknown> {
     return {
       module,
       type: 'detailed',
@@ -501,7 +501,7 @@ class AISystemController {
   }
 
   // 📈 Analitik rapor oluştur
-  private generateAnalyticsReport(data: any[], module: string): any {
+  private generateAnalyticsReport(data: Record<string, unknown>[], module: string): Record<string, unknown> {
     const analytics = {
       module,
       type: 'analytics',
@@ -531,7 +531,7 @@ class AISystemController {
   }
 
   // 🏥 Veri kalitesi değerlendirmesi
-  private assessDataQuality(data: any[]): number {
+  private assessDataQuality(data: Record<string, unknown>[]): number {
     if (data.length === 0) return 0;
 
     const sample = data[0];
@@ -552,12 +552,12 @@ class AISystemController {
   }
 
   // 📊 Veri tamlığı hesapla
-  private calculateDataCompleteness(data: any[]): number {
+  private calculateDataCompleteness(data: Record<string, unknown>[]): number {
     return this.assessDataQuality(data);
   }
 
   // 📥 Rapor indirme tetikle
-  private triggerReportDownload(reportData: any, filename: string) {
+  private triggerReportDownload(reportData: Record<string, unknown>, filename: string) {
     const dataStr = JSON.stringify(reportData, null, 2);
     const dataBlob = new Blob([dataStr], { type: 'application/json' });
     const url = URL.createObjectURL(dataBlob);
@@ -592,7 +592,7 @@ class AISystemController {
         results: data,
         executedAt: new Date().toISOString(),
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       throw new Error(`SQL sorgu hatası: ${error.message}`);
     }
   }
@@ -643,7 +643,7 @@ class AISystemController {
       stats.donations = donationsResult.data?.length || 0;
       stats.totalDonationAmount =
         donationsResult.data?.reduce(
-          (sum: number, item: any) => sum + (item.miktar || item.amount || 0),
+          (sum: number, item: Record<string, unknown>) => sum + ((item.miktar as number) ?? (item.amount as number) ?? 0),
           0,
         ) || 0;
 
@@ -651,7 +651,7 @@ class AISystemController {
       stats.members = membersResult.data?.length || 0;
 
       return stats;
-    } catch (error: any) {
+    } catch (error: unknown) {
       throw new Error(`İstatistik oluşturma hatası: ${error.message}`);
     }
   }
@@ -662,7 +662,7 @@ class AISystemController {
   }
 
   // 👤 Mevcut kullanıcıyı ayarla
-  setCurrentUser(user: any) {
+  setCurrentUser(user: Record<string, unknown>) {
     this.currentUser = user;
   }
 

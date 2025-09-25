@@ -3,7 +3,6 @@
  * @description Advanced caching strategies with React Query and local storage integration
  */
 
-import { environment } from '../lib/environment';
 import { monitoring } from './monitoringService';
 
 // =============================================================================
@@ -229,7 +228,7 @@ export class CachingService {
     entry.lastAccessed = Date.now();
 
     // Decompress if needed
-    let data = entry.data;
+    let {data} = entry;
     if (entry.metadata?.compressed) {
       data = this.decompressData(data);
     }

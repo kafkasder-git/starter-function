@@ -104,7 +104,7 @@ const buildUserFromSupabaseUser = (supabaseUser: SupabaseUser): User => {
     role = metadata.role as UserRole;
   }
 
-  const email = supabaseUser.email;
+  const {email} = supabaseUser;
   if (!email) {
     throw new Error('User email is required');
   }

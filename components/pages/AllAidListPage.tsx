@@ -9,7 +9,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import {
   List,
   Search,
-  Filter,
   Download,
   FileText,
   Calendar,

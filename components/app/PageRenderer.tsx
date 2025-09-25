@@ -91,7 +91,7 @@ export function PageRenderer({ onQuickAction }: PageRendererProps) {
       componentProps = {
         ...componentProps,
         onNavigate: moduleChange,
-        onQuickAction: onQuickAction,
+        onQuickAction,
       };
     } else if (
       activeModule === 'yardim' &&

@@ -4,7 +4,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 function formatCurrency(amount: number, currency = 'TRY'): string {
   return new Intl.NumberFormat('tr-TR', {
     style: 'currency',
-    currency: currency,
+    currency,
   }).format(amount);
 }
 

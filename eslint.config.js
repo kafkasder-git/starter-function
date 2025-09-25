@@ -20,9 +20,9 @@ export default [
     files: ['**/*.{js,jsx,ts,tsx}'],
     plugins: {
       'react-hooks': reactHooks,
-      'react': react,
+      react,
       'react-refresh': reactRefresh,
-      'security': security,
+      security,
       'unused-imports': unusedImports,
     },
     languageOptions: {

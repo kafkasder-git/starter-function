@@ -286,7 +286,7 @@ export function useDataExport({ onProgress, onComplete, onError }: UseDataExport
         switch (config.format) {
           case 'csv':
             content = generateCSV(filteredData, config);
-            blob = new Blob(['\ufeff' + content], { type: 'text/csv;charset=utf-8;' });
+            blob = new Blob([`\ufeff${  content}`], { type: 'text/csv;charset=utf-8;' });
             break;
 
           case 'excel':

@@ -199,14 +199,14 @@ export const MCP_MONITORING_PRESETS = {
 
 // Monitoring utilities
 export interface MCPMonitoringUtils {
-  calculateUptime(startTime: Date, downtime: number): number;
-  calculateErrorRate(totalErrors: number, totalRequests: number): number;
-  calculateCacheHitRate(hits: number, misses: number): number;
-  formatDuration(milliseconds: number): string;
-  formatBytes(bytes: number): string;
-  generateAlertId(): string;
-  isAlertActive(alert: MCPAlert): boolean;
-  shouldSendAlert(alertType: MCPAlertType, lastSent?: Date): boolean;
+  calculateUptime: (startTime: Date, downtime: number) => number;
+  calculateErrorRate: (totalErrors: number, totalRequests: number) => number;
+  calculateCacheHitRate: (hits: number, misses: number) => number;
+  formatDuration: (milliseconds: number) => string;
+  formatBytes: (bytes: number) => string;
+  generateAlertId: () => string;
+  isAlertActive: (alert: MCPAlert) => boolean;
+  shouldSendAlert: (alertType: MCPAlertType, lastSent?: Date) => boolean;
 }
 
 // Webhook and notification types

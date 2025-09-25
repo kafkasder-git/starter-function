@@ -110,7 +110,7 @@ export class QueryOptimizationService {
 
     try {
       // Replace table name placeholders if any
-      let sql = statement.sql;
+      let {sql} = statement;
       if (sql.includes('{table_name}')) {
         // This is a dynamic table query - handle accordingly
         sql = sql.replace('{table_name}', parameters.shift() || 'donations');

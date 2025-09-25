@@ -185,7 +185,7 @@ export function QRCodeGenerator({ kumbara, onClose, className = '' }: QRCodeGene
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
-                <div className="w-4 h-4 bg-white rounded-sm"></div>
+                <div className="w-4 h-4 bg-white rounded-sm" />
               </div>
               QR Kod Önizleme
             </CardTitle>

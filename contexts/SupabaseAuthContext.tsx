@@ -120,7 +120,7 @@ export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
       if (email === 'demo@example.com' && password === 'demo123') {
         const mockUser = {
           id: 'mock-user-id',
-          email: email,
+          email,
           user_metadata: { name: 'Demo User' },
           app_metadata: {},
           created_at: new Date().toISOString(),
@@ -152,12 +152,12 @@ export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
         setIsLoading(false);
         toast.success('Demo modunda giriş yapıldı');
         return;
-      } else {
+      } 
         setError('Demo için: demo@example.com / demo123 kullanın');
         setIsLoading(false);
         toast.error('Demo için: demo@example.com / demo123 kullanın');
         return;
-      }
+      
     }
 
     try {
@@ -216,7 +216,7 @@ export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
         password,
         options: {
           data: {
-            name: name,
+            name,
           },
         },
       });

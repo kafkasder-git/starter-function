@@ -64,7 +64,7 @@ export function useMobileFormOptimized({
     setFormState((prev) => ({
       ...prev,
       isKeyboardOpen: advancedKeyboardOpen,
-      keyboardHeight: keyboardHeight,
+      keyboardHeight,
     }));
   }, [advancedKeyboardOpen, keyboardHeight]);
 

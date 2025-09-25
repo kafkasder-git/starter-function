@@ -1,29 +1,8 @@
-import {
-  Award,
-  BookOpen,
-  Eye,
-  Mail,
-  MapPin,
-  Phone,
-  Plus,
-  Search,
-  Star,
-  UserCheck,
-} from 'lucide-react';
+
+
 import { useState } from 'react';
-import { Badge } from '../ui/badge';
-import { Button } from '../ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '../ui/dropdown-menu';
-import { Input } from '../ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
+
+
 import { useSearch } from '../../hooks/useSearch';
 import type { Lawyer } from '../../types/lawyer';
 import { LAWYER_SEARCH_CONFIG } from '../../config/search';

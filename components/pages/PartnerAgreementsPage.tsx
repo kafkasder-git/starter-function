@@ -206,7 +206,7 @@ export function PartnerAgreementsPage() {
                     <div
                       className="bg-blue-600 h-2 rounded-full"
                       style={{ width: `${agreement.progress}%` }}
-                    ></div>
+                     />
                   </div>
                 </div>
               </div>

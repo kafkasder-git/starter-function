@@ -1,7 +1,7 @@
 import type { ErrorInfo } from 'react';
 
 export interface StorageLike {
-  getItem(key: string): string | null;
+  getItem: (key: string) => string | null;
 }
 
 export interface EnvironmentSource {
@@ -57,7 +57,7 @@ export const getEnvironmentInfo = (source?: EnvironmentSource): ErrorEnvironment
       : 'unknown';
 
   let userId = 'anonymous';
-  const storage = merged.storage;
+  const {storage} = merged;
 
   if (storage?.getItem) {
     try {

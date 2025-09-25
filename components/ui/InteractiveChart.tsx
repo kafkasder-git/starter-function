@@ -12,7 +12,6 @@ import { XAxis } from 'recharts/lib/cartesian/XAxis';
 import { YAxis } from 'recharts/lib/cartesian/YAxis';
 import { CartesianGrid } from 'recharts/lib/cartesian/CartesianGrid';
 import { Tooltip } from 'recharts/lib/component/Tooltip';
-import { Legend } from 'recharts/lib/component/Legend';
 import { PieChart } from 'recharts/lib/chart/PieChart';
 import { Pie } from 'recharts/lib/polar/Pie';
 import { Cell } from 'recharts/lib/component/Cell';
@@ -119,14 +118,14 @@ export function InteractiveChart({
       return (
         <div className="flex items-center justify-center h-full">
           <div className="animate-pulse space-y-4 w-full">
-            <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+            <div className="h-4 bg-gray-200 rounded w-3/4" />
             <div className="space-y-2">
               {[...Array(6)].map((_, i) => (
                 <div
                   key={i}
                   className="h-3 bg-gray-200 rounded"
                   style={{ width: `${60 + Math.random() * 40}%` }}
-                ></div>
+                 />
               ))}
             </div>
           </div>
@@ -237,9 +236,9 @@ export function InteractiveChart({
   const handleExport = () => {
     // Export implementation
     const csvContent =
-      'data:text/csv;charset=utf-8,' +
-      'Ad,Değer\n' +
-      processedData.map((row) => `${row.name},${row.value}`).join('\n');
+      `data:text/csv;charset=utf-8,` +
+      `Ad,Değer\n${ 
+      processedData.map((row) => `${row.name},${row.value}`).join('\n')}`;
 
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');

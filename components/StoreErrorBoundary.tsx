@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react';
 import React, { Component } from 'react';
-import { PageLoading } from './LoadingSpinner';
 
 interface Props {
   children: ReactNode;

@@ -220,7 +220,7 @@ export function BankPaymentOrdersPage() {
       recipientId: newOrder.recipientId,
       recipientIban: newOrder.recipientIban,
       recipientBank: newOrder.recipientBank || 'Belirtilmemiş',
-      amount: amount,
+      amount,
       description: newOrder.description,
       aidType: newOrder.aidType || 'Nakdi Yardım',
       createdDate: new Date().toISOString().slice(0, 16).replace('T', ' '),

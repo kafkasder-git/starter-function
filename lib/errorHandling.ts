@@ -95,7 +95,7 @@ export class AppErrorClass extends Error implements AppError {
 export class ErrorHandler {
   private static instance: ErrorHandler;
   private errorLog: AppError[] = [];
-  private maxLogSize = 100;
+  private readonly maxLogSize = 100;
 
   private constructor() {}
 
@@ -253,7 +253,7 @@ export class ErrorHandler {
       duration: error.severity === ErrorSeverity.CRITICAL ? 0 : 5000,
       action: error.actionRequired ? {
         label: 'Yeniden Dene',
-        onClick: () => window.location.reload(),
+        onClick: () => { window.location.reload(); },
       } : undefined,
     };
 

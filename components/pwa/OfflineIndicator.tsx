@@ -31,7 +31,7 @@ export function OfflineIndicator({
 
   // Network bilgilerini güncelleyelim - PWA kaldırıldı
   const networkInfo = {
-    isOnline: isOnline,
+    isOnline,
     effectiveType: isInFigma ? 'wifi' : (navigator as any)?.connection?.effectiveType,
     connectionType: isInFigma ? 'wifi' : (navigator as any)?.connection?.type,
   };
@@ -312,7 +312,7 @@ export function NetworkStatusBadge({ className = '' }: { className?: string }) {
   }, []);
 
   const networkInfo = {
-    isOnline: isOnline,
+    isOnline,
     effectiveType: isInFigma ? 'wifi' : (navigator as any)?.connection?.effectiveType,
   };
 

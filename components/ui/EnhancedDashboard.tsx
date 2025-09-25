@@ -28,10 +28,10 @@ const getTimeAgo = (date: Date): string => {
   } else if (diffInSeconds < 86400) {
     const hours = Math.floor(diffInSeconds / 3600);
     return `${hours} saat önce`;
-  } else {
+  } 
     const days = Math.floor(diffInSeconds / 86400);
     return `${days} gün önce`;
-  }
+  
 };
 
 // Sample data for charts

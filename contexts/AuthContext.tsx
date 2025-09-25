@@ -100,11 +100,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
               error: null,
             });
             return;
-          } else {
+          } 
             // Session expired, clear storage
             localStorage.removeItem('auth_user');
             localStorage.removeItem('auth_session');
-          }
+          
         }
 
         if (mounted) {

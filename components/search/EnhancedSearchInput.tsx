@@ -1,18 +1,12 @@
 import type { KeyboardEvent } from 'react';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Search, X, Filter, Clock, TrendingUp, Loader2, Command, History } from 'lucide-react';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
-import {
-  Command as CommandPrimitive,
-  CommandInput,
-  CommandItem,
-  CommandGroup,
-  CommandEmpty,
-} from '../ui/command';
+
+
 import { useSearchContext } from './SearchProvider';
 import { useIsMobile } from '../../hooks/useTouchDevice';
 import useLocalStorage from '../../hooks/useLocalStorage';

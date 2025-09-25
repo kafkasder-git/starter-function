@@ -6,7 +6,7 @@ import type {
   AnalyticsData,
   FinancialData,
 } from '../types/reporting';
-import { ExportFormat, DonationAnalytics, ImpactData } from '../types/reporting';
+import { ExportFormat } from '../types/reporting';
 
 import type { ExportDataOptions, OptimizationOptions } from './exportUtils';
 import {

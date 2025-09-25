@@ -1,28 +1,18 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Zap,
   Play,
   Pause,
-  Settings,
   Plus,
   Edit,
   Trash2,
   Clock,
-  Calendar,
-  User,
-  Heart,
-  Mail,
   Bell,
   CheckCircle,
-  AlertTriangle,
   Activity,
-  Target,
   BarChart3,
-  Filter,
   Search,
-  Copy,
-  Download,
   Upload,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';

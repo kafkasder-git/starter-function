@@ -90,7 +90,7 @@ export function usePerformanceMonitoring({
     if (!enableMemoryMonitoring) return;
 
     if ('memory' in performance) {
-      const memory = (performance as any).memory;
+      const {memory} = (performance as any);
       const usagePercent = Math.round((memory.usedJSHeapSize / memory.jsHeapSizeLimit) * 100);
 
       setMetrics((prev) => ({ ...prev, memoryUsage: usagePercent }));
