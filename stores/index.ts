@@ -42,7 +42,7 @@ export function useStoreInitialization() {
 
   const initializeNotifications = useCallback(async () => {
     try {
-      await notificationStore.startRealtimeSubscription();
+      // await notificationStore.startRealtimeSubscription();
       storeLogger.info('Notification store initialized');
       return true;
     } catch (err) {

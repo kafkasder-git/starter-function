@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase';
+import { logger } from '../lib/logging/logger';
 
 // Member types - Updated to match database schema
 export interface Member {

@@ -258,10 +258,10 @@ export interface BeneficiaryStats {
   /** Gelir grupları */
   byIncomeGroup: Record<string, number>;
   /** Aylık trend */
-  monthlyTrend: Array<{
+  monthlyTrend: {
     month: string;
     count: number;
-  }>;
+  }[];
 }
 
 /**

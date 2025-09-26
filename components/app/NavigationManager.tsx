@@ -7,7 +7,7 @@
 
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useUserPreferences } from '../../hooks/useLocalStorage';
-import { useUXAnalytics } from '../../components/ux/hooks/useUXAnalytics';
+// import { useUXAnalytics } from '../../components/ux/hooks/useUXAnalytics';
 import monitoringService from '../../services/monitoringService';
 
 /**
@@ -82,7 +82,7 @@ export function NavigationProvider({
   initialPage = 'list',
   initialSubPage = '',
 }: NavigationProviderProps) {
-  const { trackNavigation } = useUXAnalytics();
+  // const { trackNavigation } = useUXAnalytics();
   const { preferences, updatePreference } = useUserPreferences();
 
   // Navigation state
@@ -108,7 +108,7 @@ export function NavigationProvider({
   // Navigation actions
   const setActiveModule = useCallback(
     (moduleId: string) => {
-      trackNavigation(navigationState.activeModule, moduleId, 'sidebar');
+      // trackNavigation(navigationState.activeModule, moduleId, 'sidebar');
       setNavigationState((prev) => ({
         ...prev,
         activeModule: moduleId,
@@ -120,7 +120,7 @@ export function NavigationProvider({
       monitoringService.trackFeatureUsage('navigation', 'module_change', { moduleId });
       updatePreference('lastModule', moduleId);
     },
-    [trackNavigation, navigationState.activeModule, updatePreference],
+    [navigationState.activeModule, updatePreference],
   );
 
   const setCurrentPage = useCallback(

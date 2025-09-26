@@ -37,6 +37,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 // Removed direct supabase import - using service layer instead
 import { ihtiyacSahipleriService } from '../../services/ihtiyacSahipleriService';
+import { supabaseAdmin } from '../../lib/supabase';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
@@ -879,12 +880,12 @@ export function BeneficiaryDetailPageComprehensive({
               id: personResult.data.id.toString(),
               name: personResult.data.ad_soyad ?? '',
               relationship:
-                relationshipMap[rel.relationship_type] || rel.relationship_type ?? 'Belirtilmemiş',
+                (relationshipMap[rel.relationship_type] || rel.relationship_type) ?? 'Belirtilmemiş',
               phone: personResult.data.telefon_no ?? personResult.data.Telefon_No ?? undefined,
               ad_soyad: personResult.data.ad_soyad ?? '',
               tur: personResult.data.tur ?? personResult.data.Tur ?? undefined,
               yakinlik:
-                relationshipMap[rel.relationship_type] || rel.relationship_type ?? 'Belirtilmemiş',
+                (relationshipMap[rel.relationship_type] || rel.relationship_type) ?? 'Belirtilmemiş',
               kimlik_no: personResult.data.kimlik_no ?? personResult.data.Kimlik_No ?? undefined,
               telefon_no: personResult.data.telefon_no ?? personResult.data.Telefon_No ?? undefined,
               baglanti_tarihi: rel.created_at?.split('T')[0] || '2024-01-01',
@@ -3416,7 +3417,7 @@ export function BeneficiaryDetailPageComprehensive({
             ) : (
               <Button
                 onClick={handleLinkExistingPerson}
-                disabled={!selectedDependentId || !selectedRelationshipType ?? isSavingDependent}
+                disabled={(!selectedDependentId || !selectedRelationshipType) ?? isSavingDependent}
                 className="px-6 bg-green-600 hover:bg-green-700"
               >
                 {isSavingDependent ? 'Bağlanıyor...' : 'Kişiyi Bağla'}

@@ -5,9 +5,9 @@
  * Removes unused imports and optimizes import statements
  */
 
-const fs = require('fs');
-const path = require('path');
-const { execSync } = require('child_process');
+import fs from 'fs';
+import path from 'path';
+import { execSync } from 'child_process';
 
 // File extensions to process
 const EXTENSIONS = ['.ts', '.tsx', '.js', '.jsx'];
@@ -123,8 +123,8 @@ function main() {
 }
 
 // Run if called directly
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   main();
 }
 
-module.exports = { cleanupImports, shouldProcessFile, getAllFiles };
+export { cleanupImports, shouldProcessFile, getAllFiles };

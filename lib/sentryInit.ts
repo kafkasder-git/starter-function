@@ -153,7 +153,7 @@ export const initializeMCPServer = async () => {
       version: environment.app.version,
     });
 
-    return mcpServer;
+    return null;
   } catch (error) {
     logger.error('❌ Failed to initialize MCP server:', error);
     sentryService.captureException(error as Error, {

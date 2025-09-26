@@ -73,7 +73,7 @@ export const EventsPage = lazy(() =>
 );
 
 export const TasksPage = lazy(() =>
-  import('./pages/TasksPage').then((m) => ({ default: m.TasksPage })),
+  import('./pages/TasksPage').then((m) => ({ default: m.default })),
 );
 
 // New PWA Components - Lazy load for better initial performance

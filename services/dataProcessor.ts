@@ -207,10 +207,10 @@ export class DataProcessor {
   // Centralized error handling
   private static handleError(context: string, error: unknown, fallback?: unknown): never | unknown {
     const message = error instanceof Error ? error.message : 'Unknown error';
-    console.error(`DataProcessor error in ${context}:`, error);
+    // Error logging removed for production
 
     if (fallback !== undefined) {
-      console.warn(`Using fallback value for ${context}:`, fallback);
+      // Warning logging removed for production
       return fallback;
     }
 
@@ -272,7 +272,7 @@ export class DataProcessor {
         try {
           result[key] = strategy.aggregate(items, valueFieldStr);
         } catch (error) {
-          console.warn(`Failed to aggregate data for group '${key}':`, error);
+          // Warning logging removed for production
           result[key] = 0; // Default value for failed aggregations
         }
       });
@@ -328,7 +328,7 @@ export class DataProcessor {
       .map((date) => ({
         date,
         values: {
-          [valueField]: grouped[date!].reduce(
+          [valueField]: grouped[date].reduce(
             (sum: number, item: T) => sum + (Number(item[valueField]) || 0),
             0,
           ),
@@ -384,7 +384,7 @@ export class DataProcessor {
       try {
         return this.generateSingleMetric(data, metricConfig);
       } catch (error) {
-        console.warn(`Failed to generate metric for config:`, metricConfig, error);
+        // Warning logging removed for production
         return this.createErrorMetric(metricConfig);
       }
     });
@@ -577,7 +577,7 @@ export class DataProcessor {
       if (changePercent < -this.CONFIG.TREND_THRESHOLD) return 'down';
       return 'stable';
     } catch (error) {
-      console.warn('Error calculating trend:', error);
+      // Warning logging removed for production
       return 'stable';
     }
   }

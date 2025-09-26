@@ -5,7 +5,7 @@
  * @version 1.0.0
  */
 
-import { logger } from '../lib/logging/logger';
+import { logger } from '../logging/logger';
 /**
  * Test ortamı için güvenli secret üretimi
  * Production'da environment variables kullanılmalı

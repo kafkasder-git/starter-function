@@ -7,17 +7,36 @@
 
 import type { ReactNode } from 'react';
 import { createContext, useContext } from 'react';
-import type { FormState, FormValidationSchema, ValidationError } from '../../types/validation';
-import { useFormValidation } from '../../hooks/useFormValidation';
+
+interface ValidationError {
+  field: string;
+  message: string;
+}
+
+interface FormState {
+  values: Record<string, any>;
+  errors: Record<string, string>;
+  touched: Record<string, boolean>;
+  isSubmitting: boolean;
+  isValid: boolean;
+  isDirty: boolean;
+}
+
+interface FormValidationSchema {
+  [key: string]: {
+    required?: boolean;
+    minLength?: number;
+    maxLength?: number;
+    pattern?: RegExp;
+    custom?: (value: any) => string | boolean;
+  };
+}
 
 interface FormContextType {
   formState: FormState;
   schema: FormValidationSchema;
   validateForm: () => Promise<{ isValid: boolean; errors: ValidationError[] }>;
-  validateField: (
-    fieldName: string,
-    value: any,
-  ) => Promise<{ isValid: boolean; errors: ValidationError[] }>;
+  validateField: (fieldName: string, value: any) => Promise<{ isValid: boolean; errors: ValidationError[] }>;
   setFieldValue: (fieldName: string, value: any) => void;
   setFieldTouched: (fieldName: string, touched?: boolean) => void;
   resetForm: () => void;
@@ -45,16 +64,10 @@ interface FormProviderProps {
   onSubmitCapture?: (e: React.FormEvent) => void;
 }
 
-/**
- * FormProvider function
- * 
- * @param {Object} params - Function parameters
- * @returns {void} Nothing
- */
 export function FormProvider({
   children,
   schema,
-  initialValues,
+  initialValues = {},
   validateOnChange = true,
   validateOnBlur = true,
   debounceMs = 300,
@@ -64,14 +77,128 @@ export function FormProvider({
   onSubmitCapture,
   ...props
 }: FormProviderProps) {
-  const formValidation = useFormValidation({
-    schema,
-    initialValues,
-    validateOnChange,
-    validateOnBlur,
-    debounceMs,
-    onSubmit,
-    onValidationChange,
+  // Simple form state management
+  const formState: FormState = {
+    values: { ...initialValues },
+    errors: {},
+    touched: {},
+    isSubmitting: false,
+    isValid: true,
+    isDirty: false,
+  };
+
+  const validateField = async (fieldName: string, value: any): Promise<{ isValid: boolean; errors: ValidationError[] }> => {
+    const fieldSchema = schema[fieldName];
+    if (!fieldSchema) {
+      return { isValid: true, errors: [] };
+    }
+
+    const errors: ValidationError[] = [];
+
+    if (fieldSchema.required && (!value || value === '')) {
+      errors.push({ field: fieldName, message: `${fieldName} is required` });
+    }
+
+    if (fieldSchema.minLength && value && value.length < fieldSchema.minLength) {
+      errors.push({ field: fieldName, message: `${fieldName} must be at least ${fieldSchema.minLength} characters` });
+    }
+
+    if (fieldSchema.maxLength && value && value.length > fieldSchema.maxLength) {
+      errors.push({ field: fieldName, message: `${fieldName} must be no more than ${fieldSchema.maxLength} characters` });
+    }
+
+    if (fieldSchema.pattern && value && !fieldSchema.pattern.test(value)) {
+      errors.push({ field: fieldName, message: `${fieldName} format is invalid` });
+    }
+
+    if (fieldSchema.custom) {
+      const customResult = fieldSchema.custom(value);
+      if (customResult !== true) {
+        errors.push({ field: fieldName, message: typeof customResult === 'string' ? customResult : `${fieldName} is invalid` });
+      }
+    }
+
+    return { isValid: errors.length === 0, errors };
+  };
+
+  const validateForm = async (): Promise<{ isValid: boolean; errors: ValidationError[] }> => {
+    const allErrors: ValidationError[] = [];
+
+    for (const [fieldName, value] of Object.entries(formState.values)) {
+      const fieldResult = await validateField(fieldName, value);
+      allErrors.push(...fieldResult.errors);
+    }
+
+    return { isValid: allErrors.length === 0, errors: allErrors };
+  };
+
+  const setFieldValue = (fieldName: string, value: any) => {
+    formState.values[fieldName] = value;
+    formState.isDirty = true;
+    
+    if (validateOnChange) {
+      validateField(fieldName, value).then(result => {
+        if (result.errors.length > 0) {
+          formState.errors[fieldName] = result.errors[0].message;
+        } else {
+          delete formState.errors[fieldName];
+        }
+        formState.isValid = Object.keys(formState.errors).length === 0;
+        onValidationChange?.(formState.isValid, result.errors);
+      });
+    }
+  };
+
+  const setFieldTouched = (fieldName: string, touched = true) => {
+    formState.touched[fieldName] = touched;
+    
+    if (validateOnBlur && touched) {
+      validateField(fieldName, formState.values[fieldName]).then(result => {
+        if (result.errors.length > 0) {
+          formState.errors[fieldName] = result.errors[0].message;
+        } else {
+          delete formState.errors[fieldName];
+        }
+        formState.isValid = Object.keys(formState.errors).length === 0;
+        onValidationChange?.(formState.isValid, result.errors);
+      });
+    }
+  };
+
+  const resetForm = () => {
+    formState.values = { ...initialValues };
+    formState.errors = {};
+    formState.touched = {};
+    formState.isSubmitting = false;
+    formState.isValid = true;
+    formState.isDirty = false;
+  };
+
+  const submitForm = async (): Promise<{ isValid: boolean; errors: ValidationError[] }> => {
+    formState.isSubmitting = true;
+    
+    const validationResult = await validateForm();
+    
+    if (validationResult.isValid && onSubmit) {
+      try {
+        await onSubmit(formState.values);
+      } catch (error) {
+        console.error('Form submission error:', error);
+      }
+    }
+    
+    formState.isSubmitting = false;
+    return validationResult;
+  };
+
+  const getFieldValues = () => formState.values;
+
+  const getFieldProps = (fieldName: string) => ({
+    value: formState.values[fieldName] || '',
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => setFieldValue(fieldName, e.target.value),
+    onBlur: () => setFieldTouched(fieldName, true),
+    error: formState.errors[fieldName],
+    touched: formState.touched[fieldName],
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -82,155 +209,53 @@ export function FormProvider({
       onSubmitCapture(e);
     }
 
-    return await formValidation.submitForm();
+    return await submitForm();
   };
 
   const contextValue: FormContextType = {
-    formState: formValidation.formState,
+    formState,
     schema,
-    validateForm: formValidation.validateForm,
-    validateField: formValidation.validateField,
-    setFieldValue: formValidation.setFieldValue,
-    setFieldTouched: formValidation.setFieldTouched,
-    resetForm: formValidation.resetForm,
-    submitForm: formValidation.submitForm,
-    getFieldValues: formValidation.getFieldValues,
-    getFieldProps: formValidation.getFieldProps,
-    isValid: formValidation.isValid,
-    isSubmitting: formValidation.isSubmitting,
-    isDirty: formValidation.isDirty,
-    errors: formValidation.errors,
+    validateForm,
+    validateField,
+    setFieldValue,
+    setFieldTouched,
+    resetForm,
+    submitForm,
+    getFieldValues,
+    getFieldProps,
+    isValid: formState.isValid,
+    isSubmitting: formState.isSubmitting,
+    isDirty: formState.isDirty,
+    errors: Object.entries(formState.errors).map(([field, message]) => ({ field, message })),
   };
 
   return (
     <FormContext.Provider value={contextValue}>
-      <form onSubmit={handleSubmit} className={className} noValidate {...props}>
+      <form onSubmit={handleSubmit} className={className} {...props}>
         {children}
       </form>
     </FormContext.Provider>
   );
 }
 
-/**
- * useForm function
- * 
- * @param {Object} params - Function parameters
- * @returns {void} Nothing
- */
-export function useForm(): FormContextType {
+export function useFormContext() {
   const context = useContext(FormContext);
-  if (context === undefined) {
-    throw new Error('useForm must be used within a FormProvider');
+  if (!context) {
+    throw new Error('useFormContext must be used within a FormProvider');
   }
   return context;
 }
 
-// Field component that automatically connects to the form
-interface FieldProps {
-  name: string;
-  children: (props: any) => ReactNode;
-}
-
-/**
- * Field function
- * 
- * @param {Object} params - Function parameters
- * @returns {void} Nothing
- */
-export function Field({ name, children }: FieldProps) {
-  const { getFieldProps } = useForm();
-  const fieldProps = getFieldProps(name);
-
-  return <>{children(fieldProps)}</>;
-}
-
-// Error summary component
-interface FormErrorSummaryProps {
-  className?: string;
-  showWarnings?: boolean;
-}
-
-/**
- * FormErrorSummary function
- * 
- * @param {Object} params - Function parameters
- * @returns {void} Nothing
- */
-export function FormErrorSummary({ className, showWarnings = false }: FormErrorSummaryProps) {
-  const { errors, formState } = useForm();
-
-  if (errors.length === 0 && (!showWarnings ?? formState.warnings.length === 0)) {
-    return null;
-  }
-
-  return (
-    <div className={className}>
-      {errors.length > 0 && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
-          <h3 className="text-sm font-medium text-red-800 mb-2">Aşağıdaki hataları düzeltin:</h3>
-          <ul className="text-sm text-red-700 space-y-1">
-            {errors.map((error, index) => (
-              <li key={index} className="flex items-center gap-2">
-                <span>•</span>
-                <span>{error.message}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {showWarnings && formState.warnings.length > 0 && (
-        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
-          <h3 className="text-sm font-medium text-amber-800 mb-2">Uyarılar:</h3>
-          <ul className="text-sm text-amber-700 space-y-1">
-            {formState.warnings.map((warning, index) => (
-              <li key={index} className="flex items-center gap-2">
-                <span>•</span>
-                <span>{warning.message}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-    </div>
-  );
-}
-
-// Submit button component
-interface FormSubmitButtonProps {
-  children: ReactNode;
-  className?: string;
-  disabled?: boolean;
-  variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';
-  size?: 'default' | 'sm' | 'lg' | 'icon';
-  loadingText?: string;
-}
-
-/**
- * FormSubmitButton function
- * 
- * @param {Object} params - Function parameters
- * @returns {void} Nothing
- */
-export function FormSubmitButton({
-  children,
-  className,
-  disabled,
-  variant = 'default',
-  size = 'default',
-  loadingText = 'Kaydediliyor...',
-  ...props
-}: FormSubmitButtonProps) {
-  const { isSubmitting, isValid } = useForm();
-
-  return (
-    <button
-      type="submit"
-      disabled={disabled ?? isSubmitting || !isValid}
-      className={className}
-      {...props}
-    >
-      {isSubmitting ? loadingText : children}
-    </button>
-  );
-}
+// Export additional form components for compatibility
+export const useForm = useFormContext;
+export const Field = ({ name, ...props }: any) => <input name={name} {...props} />;
+export const FormErrorSummary = ({ errors }: any) => (
+  <div>
+    {Object.entries(errors).map(([field, error]) => (
+      <div key={field}>{field}: {String(error)}</div>
+    ))}
+  </div>
+);
+export const FormSubmitButton = ({ children, ...props }: any) => (
+  <button type="submit" {...props}>{children}</button>
+);

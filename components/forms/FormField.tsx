@@ -328,7 +328,7 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
                 type={type === 'password' && showPassword ? 'text' : type}
                 ref={ref as React.RefObject<HTMLInputElement>}
                 className={cn(
-                  (prefix ?? suffix || type === 'password' || showValidationIcon) && 'pr-10',
+                  ((prefix ?? suffix) || type === 'password' || showValidationIcon) && 'pr-10',
                   prefix && 'pl-10',
                 )}
               />

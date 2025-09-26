@@ -7,7 +7,7 @@
 
 
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 
 
 import { useSearch } from '../../hooks/useSearch';

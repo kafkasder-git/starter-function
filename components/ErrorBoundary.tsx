@@ -7,7 +7,7 @@
 
 import { AlertTriangle, Home, RefreshCw } from 'lucide-react';
 import type { ErrorInfo, ReactNode } from 'react';
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 
@@ -108,17 +108,19 @@ export class ErrorBoundary extends Component<Props, State> {
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
-export function withErrorBoundary<P extends object>(
+// HOC for error boundary
+export const withErrorBoundary = <P extends object>(
   Component: React.ComponentType<P>,
   fallback?: ReactNode,
-) {
-  return function WrappedComponent(props: P) {
-    return (
-      <ErrorBoundary fallback={fallback}>
-        <Component {...props} />
-      </ErrorBoundary>
-    );
-  };
-}
+) => {
+  const WrappedComponent = (props: P) => (
+    <ErrorBoundary fallback={fallback}>
+      <Component {...props} />
+    </ErrorBoundary>
+  );
+  
+  WrappedComponent.displayName = `withErrorBoundary(${Component.displayName ?? Component.name})`;
+  return WrappedComponent;
+};
 
 export default ErrorBoundary;

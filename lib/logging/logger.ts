@@ -5,7 +5,6 @@
  * @version 1.0.0
  */
 
-import { logger } from '../lib/logging/logger';
 /**
  * Centralized logging utility for the application
  * Provides different log levels and environment-specific behavior
@@ -56,17 +55,17 @@ class Logger {
     if (typeof window === 'undefined') return LogLevel.INFO;
     
     // Production'da sadece error ve üstü
-    if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PROD ?? process.env.NODE_ENV === 'production') {
+    if ((typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PROD) ?? process.env.NODE_ENV === 'production') {
       return LogLevel.ERROR;
     }
     
     // Development'da debug ve üstü
-    if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.DEV ?? process.env.NODE_ENV === 'development') {
+    if ((typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.DEV) ?? process.env.NODE_ENV === 'development') {
       return LogLevel.DEBUG;
     }
     
     // Test ortamında sadece error
-    if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.MODE === 'test' || process.env.NODE_ENV === 'test') {
+    if ((typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.MODE === 'test') || process.env.NODE_ENV === 'test') {
       return LogLevel.ERROR;
     }
     
@@ -75,12 +74,12 @@ class Logger {
 
   private shouldEnableConsole(): boolean {
     // Production'da console'u tamamen devre dışı bırak
-    if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PROD ?? process.env.NODE_ENV === 'production') {
+    if ((typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PROD) ?? process.env.NODE_ENV === 'production') {
       return false;
     }
     
     // Test ortamında console'u devre dışı bırak
-    if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.MODE === 'test' || process.env.NODE_ENV === 'test') {
+    if ((typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.MODE === 'test') || process.env.NODE_ENV === 'test') {
       return false;
     }
     
@@ -103,16 +102,16 @@ class Logger {
     if (this.config.enableConsole) {
       switch (level) {
         case LogLevel.DEBUG:
-          logger.debug(formattedMessage, ...args);
+          console.debug(formattedMessage, ...args);
           break;
         case LogLevel.INFO:
           console.info(formattedMessage, ...args);
           break;
         case LogLevel.WARN:
-          logger.warn(formattedMessage, ...args);
+          console.warn(formattedMessage, ...args);
           break;
         case LogLevel.ERROR:
-          logger.error(formattedMessage, ...args);
+          console.error(formattedMessage, ...args);
           break;
       }
     }

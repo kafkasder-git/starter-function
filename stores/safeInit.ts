@@ -5,15 +5,11 @@
 
 export function initializeStoresSafely() {
   try {
-    console.log('📦 Store sistemi başlatılıyor...');
-
     // Mark initialization as complete
     (window as any).__storeInitialized = true;
-
-    console.log('✅ Store sistemi başarıyla başlatıldı');
     return true;
   } catch (error) {
-    console.error('❌ Store initialization failed:', error);
+    // Error logging removed for production
     return false;
   }
 }

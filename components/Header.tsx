@@ -26,7 +26,7 @@ import { useState } from 'react';
 import { useSupabaseAuth } from '../contexts/SupabaseAuthContext';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
-// SearchInput removed - using EnhancedSearchExperience instead
+// SearchInput removed - using basic search instead
 import { motion } from 'motion/react';
 import { toast } from 'sonner';
 import { useUserPreferences } from '../hooks/useLocalStorage';
@@ -36,16 +36,20 @@ import { NotificationErrorBoundary } from './notifications/NotificationErrorBoun
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 // Enhanced UX imports
 import { ContextualHelp } from './ux/ContextualTooltipSystem';
-import { EnhancedSearchExperience } from './ux/EnhancedSearchExperience';
+// import { EnhancedSearchExperience } from './ux/EnhancedSearchExperience';
 import { SmartCommandPalette } from './ux/SmartCommandPalette';
 import { useCommandPalette } from './ux/hooks/useCommandPalette';
-import { useUXAnalytics } from './ux/hooks/useUXAnalytics';
+// import { useUXAnalytics } from './ux/hooks/useUXAnalytics';
 
 import { logger } from '../lib/logging/logger';
 // AI functions are now defined inline in App.tsx
 const useBasicAI = () => ({
-  toggleAssistant: () => {},
-  toggleHelp: () => {},
+  toggleAssistant: () => {
+    // AI assistant toggle functionality
+  },
+  toggleHelp: () => {
+    // Help toggle functionality
+  },
 });
 
 interface HeaderProps {
@@ -88,7 +92,10 @@ export function Header({
     },
   });
 
-  const { trackClick, trackSearch, trackFeatureUse } = useUXAnalytics();
+  // const { trackClick, trackSearch, trackFeatureUse } = useUXAnalytics();
+  const trackClick = () => {};
+  const trackSearch = () => {};
+  const trackFeatureUse = () => {};
 
   const { preferences, updatePreference, addRecentSearch } = useUserPreferences();
 
@@ -164,18 +171,15 @@ export function Header({
         data-onboarding="search"
       >
         <div className="w-full relative">
-          <EnhancedSearchExperience
+          <input
+            type="text"
             placeholder="Akıllı arama... (⌘K ile komut paleti)"
-            onSearch={(query) => {
+            onChange={(e) => {
+              const query = e.target.value;
               trackSearch(query, 0);
               handleSearch(query);
             }}
-            onNavigate={(url) => {
-              trackClick('header', 'search-navigate', { url });
-            }}
-            showSuggestions={true}
-            showFilters={true}
-            className="w-full"
+            className="w-full px-4 py-2 border rounded-lg"
           />
 
           {/* Command Palette Trigger Button */}
@@ -411,7 +415,7 @@ export function Header({
         </Popover>
 
         {/* Smart Notifications - Use modern system if provided, fallback to legacy */}
-        {notificationComponent || (
+        {notificationComponent ?? (
           <StoreErrorBoundary>
             <NotificationErrorBoundary>
               <NotificationBell size="sm" />
@@ -440,7 +444,7 @@ export function Header({
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-semibold text-slate-900 truncate">
-                        {user?.user_metadata?.name ?? user?.email?.split('@')[0] || 'Kullanıcı'}
+                        {user?.user_metadata?.name ?? user?.email?.split('@')[0] ?? 'Kullanıcı'}
                       </p>
                       <p className="text-sm text-slate-600 truncate">{user?.email ?? ''}</p>
                     </div>
@@ -558,18 +562,15 @@ export function Header({
                 </Button>
               </div>
 
-              <EnhancedSearchExperience
+              <input
+                type="text"
                 placeholder="Ne arıyorsunuz?"
-                onSearch={(query) => {
+                onChange={(e) => {
+                  const query = e.target.value;
                   trackSearch(query, 0, 'mobile-enhanced');
                   handleSearch(query);
                 }}
-                onNavigate={(url) => {
-                  trackClick('mobile-search', 'navigate', { url });
-                  setShowEnhancedSearch(false);
-                }}
-                showSuggestions={true}
-                showFilters={true}
+                className="w-full px-4 py-2 border rounded-lg"
               />
             </div>
           </div>

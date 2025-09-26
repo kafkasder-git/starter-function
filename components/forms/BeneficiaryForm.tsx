@@ -11,7 +11,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
-import type { AidType, BeneficiaryCategory, BeneficiaryFormData } from '../../types/beneficiary';
+// import type { AidType, BeneficiaryCategory, BeneficiaryFormData } from '../../types/beneficiary';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Checkbox } from '../ui/checkbox';
@@ -48,447 +48,679 @@ const beneficiarySchema = z.object({
 
   // Yardım
   category: z.enum(['gıda', 'nakdi', 'eğitim', 'sağlık', 'barınma', 'giyim', 'diğer']),
-  aid_type: z.enum(['tek seferlik', 'aylık paket', 'acil yardım', 'sürekli destek', 'proje bazlı']),
-  fund_region: z.string().min(2, 'Fon bölgesi belirtilmelidir'),
+  aid_type: z.enum(['acil', 'düzenli', 'özel']),
+  fund_region: z.string().min(2, 'Bölge belirtilmelidir'),
 
-  // Kart ve bağlantılar
-  linked_orphan: z.boolean(),
-  linked_card: z.boolean(),
+  // Bağlantılar
+  linked_orphan: z.boolean().optional(),
+  linked_card: z.boolean().optional(),
   card_no: z.string().optional(),
 
-  // Sistem
+  // Ek bilgiler
   opened_by_unit: z.string().min(2, 'Açan birim belirtilmelidir'),
-  iban: z
-    .string()
-    .regex(/^TR[0-9]{2}[0-9]{4}[0-9]{1}[0-9]{16}$/, 'Geçerli IBAN giriniz')
-    .optional()
-    .or(z.literal('')),
+  iban: z.string().optional(),
   notes: z.string().optional(),
+
+  // Aile üyeleri
+  family_members: z.array(z.object({
+    name: z.string().min(2, 'İsim en az 2 karakter olmalıdır'),
+    surname: z.string().min(2, 'Soyisim en az 2 karakter olmalıdır'),
+    phone: z.string().regex(/^(\+90|0)?5[0-9]{9}$/, 'Geçerli telefon numarası giriniz'),
+    email: z.string().email('Geçerli e-posta adresi giriniz').optional().or(z.literal('')),
+    birth_date: z.string().optional(),
+    gender: z.enum(['male', 'female', 'other']).optional(),
+    identity_number: z.string().optional(),
+  })).optional(),
+
+  // İhtiyaçlar
+  needs: z.array(z.object({
+    type: z.string().min(2, 'İhtiyaç türü belirtilmelidir'),
+    description: z.string().min(10, 'Açıklama en az 10 karakter olmalıdır'),
+    priority: z.enum(['düşük', 'orta', 'yüksek']),
+    estimated_cost: z.number().min(0, 'Maliyet negatif olamaz').optional(),
+  })).optional(),
+
+  // Sağlık bilgileri
+  health_info: z.object({
+    has_chronic_disease: z.boolean().optional(),
+    chronic_diseases: z.array(z.string()).optional(),
+    medications: z.array(z.string()).optional(),
+    allergies: z.array(z.string()).optional(),
+    disability_status: z.enum(['yok', 'hafif', 'orta', 'ağır']).optional(),
+  }).optional(),
+
+  // Diğer bilgiler
+  other_info: z.object({
+    education_level: z.enum(['okur_yazar_değil', 'ilkokul', 'ortaokul', 'lise', 'üniversite', 'yüksek_lisans', 'doktora']).optional(),
+    occupation: z.string().optional(),
+    income_source: z.string().optional(),
+    hobbies: z.array(z.string()).optional(),
+    special_skills: z.array(z.string()).optional(),
+  }).optional(),
+
+  // Belgeler
+  documents: z.object({
+    photos: z.array(z.any()).optional(),
+    files: z.array(z.any()).optional(),
+  }).optional(),
 });
+
+type BeneficiaryFormData = z.infer<typeof beneficiarySchema>;
 
 interface BeneficiaryFormProps {
   initialData?: Partial<BeneficiaryFormData>;
   onSubmit: (data: BeneficiaryFormData) => Promise<void>;
-  onCancel: () => void;
+  onCancel?: () => void;
   isLoading?: boolean;
-  mode?: 'create' | 'edit';
 }
 
-/**
- * BeneficiaryForm function
- * 
- * @param {Object} params - Function parameters
- * @returns {void} Nothing
- */
-export function BeneficiaryForm({
+export default function BeneficiaryForm({
   initialData,
   onSubmit,
   onCancel,
   isLoading = false,
-  mode = 'create',
 }: BeneficiaryFormProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [currentStep, setCurrentStep] = useState(1);
+  const totalSteps = 6;
 
-  const form = useForm<BeneficiaryFormData>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    watch,
+    setValue,
+    getValues,
+  } = useForm<BeneficiaryFormData>({
     resolver: zodResolver(beneficiarySchema),
     defaultValues: {
-      nationality: 'TR',
-      country: 'TR',
-      household_size: 1,
-      linked_orphan: false,
-      linked_card: false,
-      category: 'gıda',
-      aid_type: 'aylık paket',
-      opened_by_unit: 'Sosyal Yardım Birimi',
+      family_members: [],
+      needs: [],
+      health_info: {},
+      other_info: {},
+      documents: {},
       ...initialData,
     },
   });
 
-  const handleSubmit = async (data: BeneficiaryFormData) => {
-    setIsSubmitting(true);
+  const watchedValues = watch();
+
+  const handleFormSubmit = async (data: BeneficiaryFormData) => {
     try {
       await onSubmit(data);
-      toast.success(
-        mode === 'create' ? 'İhtiyaç sahibi başarıyla eklendi' : 'Bilgiler başarıyla güncellendi',
-      );
+      toast.success('Yardım alanı başarıyla kaydedildi');
     } catch (error) {
-      toast.error(`Bir hata oluştu: ${  (error as Error).message}`);
-    } finally {
-      setIsSubmitting(false);
+      toast.error('Kayıt sırasında bir hata oluştu');
+      console.error('Form submission error:', error);
     }
   };
 
-  const watchedLinkedCard = form.watch('linked_card');
+  const nextStep = () => {
+    if (currentStep < totalSteps) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
 
-  return (
-    <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-      {/* Temel Bilgiler */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <User className="w-5 h-5" />
-            Temel Bilgiler
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="full_name">Ad Soyad *</Label>
-              <Input
-                id="full_name"
-                {...form.register('full_name')}
-                placeholder="Örn: Ahmet Yılmaz"
-                className={form.formState.errors.full_name ? 'border-red-500' : ''}
-              />
-              {form.formState.errors.full_name && (
-                <p className="text-red-500 text-sm">{form.formState.errors.full_name.message}</p>
-              )}
-            </div>
+  const prevStep = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
 
-            <div className="space-y-2">
-              <Label htmlFor="identity_no">Kimlik Numarası *</Label>
-              <Input
-                id="identity_no"
-                {...form.register('identity_no')}
-                placeholder="12345678901"
-                maxLength={11}
-                className={form.formState.errors.identity_no ? 'border-red-500' : ''}
-              />
-              {form.formState.errors.identity_no && (
-                <p className="text-red-500 text-sm">{form.formState.errors.identity_no.message}</p>
-              )}
-            </div>
+  const addFamilyMember = () => {
+    const currentMembers = getValues('family_members') || [];
+    setValue('family_members', [
+      ...currentMembers,
+      {
+        name: '',
+        surname: '',
+        phone: '',
+        email: '',
+        birth_date: '',
+        gender: 'male',
+        identity_number: '',
+      },
+    ]);
+  };
 
-            <div className="space-y-2">
-              <Label htmlFor="nationality">Uyruk *</Label>
-              <Select
-                value={form.watch('nationality')}
-                onValueChange={(value) => {
-                  form.setValue('nationality', value);
-                }}
-              >
-                <SelectTrigger
-                  className={form.formState.errors.nationality ? 'border-red-500' : ''}
-                >
-                  <SelectValue placeholder="Uyruk seçiniz" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="TR">Türkiye</SelectItem>
-                  <SelectItem value="SY">Suriye</SelectItem>
-                  <SelectItem value="AF">Afganistan</SelectItem>
-                  <SelectItem value="IQ">Irak</SelectItem>
-                  <SelectItem value="IR">İran</SelectItem>
-                  <SelectItem value="Other">Diğer</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+  const removeFamilyMember = (index: number) => {
+    const currentMembers = getValues('family_members') || [];
+    setValue('family_members', currentMembers.filter((_, i) => i !== index));
+  };
 
-            <div className="space-y-2">
-              <Label htmlFor="household_size">Hane Büyüklüğü *</Label>
-              <Input
-                id="household_size"
-                type="number"
-                min="1"
-                max="20"
-                {...form.register('household_size', { valueAsNumber: true })}
-                className={form.formState.errors.household_size ? 'border-red-500' : ''}
-              />
-              {form.formState.errors.household_size && (
-                <p className="text-red-500 text-sm">
-                  {form.formState.errors.household_size.message}
-                </p>
-              )}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+  const addNeed = () => {
+    const currentNeeds = getValues('needs') || [];
+    setValue('needs', [
+      ...currentNeeds,
+      {
+        type: '',
+        description: '',
+        priority: 'orta',
+        estimated_cost: 0,
+      },
+    ]);
+  };
 
-      {/* İletişim Bilgileri */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Phone className="w-5 h-5" />
-            İletişim Bilgileri
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="phone">Telefon *</Label>
-              <Input
-                id="phone"
-                {...form.register('phone')}
-                placeholder="+90 5xx xxx xx xx"
-                className={form.formState.errors.phone ? 'border-red-500' : ''}
-              />
-              {form.formState.errors.phone && (
-                <p className="text-red-500 text-sm">{form.formState.errors.phone.message}</p>
-              )}
-            </div>
+  const removeNeed = (index: number) => {
+    const currentNeeds = getValues('needs') || [];
+    setValue('needs', currentNeeds.filter((_, i) => i !== index));
+  };
 
-            <div className="space-y-2">
-              <Label htmlFor="email">E-posta</Label>
-              <Input
-                id="email"
-                type="email"
-                {...form.register('email')}
-                placeholder="ornek@email.com"
-                className={form.formState.errors.email ? 'border-red-500' : ''}
-              />
-              {form.formState.errors.email && (
-                <p className="text-red-500 text-sm">{form.formState.errors.email.message}</p>
-              )}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Adres Bilgileri */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <MapPin className="w-5 h-5" />
-            Adres Bilgileri
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="city">Şehir *</Label>
-              <Input
-                id="city"
-                {...form.register('city')}
-                placeholder="İstanbul"
-                className={form.formState.errors.city ? 'border-red-500' : ''}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="settlement">Yerleşim Yeri *</Label>
-              <Input
-                id="settlement"
-                {...form.register('settlement')}
-                placeholder="Fatih"
-                className={form.formState.errors.settlement ? 'border-red-500' : ''}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="neighborhood">Mahalle</Label>
-              <Input
-                id="neighborhood"
-                {...form.register('neighborhood')}
-                placeholder="Akşemsettin"
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="address">Tam Adres *</Label>
-            <Textarea
-              id="address"
-              {...form.register('address')}
-              placeholder="Akşemsettin Mah., Örnek Sk. No:12"
-              rows={3}
-              className={form.formState.errors.address ? 'border-red-500' : ''}
+  const renderStep1 = () => (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <User className="h-5 w-5" />
+          Temel Bilgiler
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="full_name">Ad Soyad *</Label>
+            <Input
+              id="full_name"
+              {...register('full_name')}
+              placeholder="Ad Soyad"
             />
-            {form.formState.errors.address && (
-              <p className="text-red-500 text-sm">{form.formState.errors.address.message}</p>
+            {errors.full_name && (
+              <p className="text-sm text-red-500">{errors.full_name.message}</p>
             )}
           </div>
-        </CardContent>
-      </Card>
 
-      {/* Yardım Bilgileri */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Heart className="w-5 h-5" />
-            Yardım Bilgileri
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="category">Kategori *</Label>
-              <Select
-                value={form.watch('category')}
-                onValueChange={(value) => {
-                  form.setValue('category', value as BeneficiaryCategory);
-                }}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Kategori seçiniz" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="gıda">🍽️ Gıda Yardımı</SelectItem>
-                  <SelectItem value="nakdi">💰 Nakdi Yardım</SelectItem>
-                  <SelectItem value="eğitim">📚 Eğitim Desteği</SelectItem>
-                  <SelectItem value="sağlık">🏥 Sağlık Yardımı</SelectItem>
-                  <SelectItem value="barınma">🏠 Barınma Desteği</SelectItem>
-                  <SelectItem value="giyim">👕 Giyim Yardımı</SelectItem>
-                  <SelectItem value="diğer">📦 Diğer Yardım</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="aid_type">Yardım Türü *</Label>
-              <Select
-                value={form.watch('aid_type')}
-                onValueChange={(value) => {
-                  form.setValue('aid_type', value as AidType);
-                }}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Yardım türü seçiniz" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="tek seferlik">⚡ Tek Seferlik</SelectItem>
-                  <SelectItem value="aylık paket">📦 Aylık Paket</SelectItem>
-                  <SelectItem value="acil yardım">🚨 Acil Yardım</SelectItem>
-                  <SelectItem value="sürekli destek">🔄 Sürekli Destek</SelectItem>
-                  <SelectItem value="proje bazlı">📋 Proje Bazlı</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="fund_region">Fon Bölgesi *</Label>
-              <Input
-                id="fund_region"
-                {...form.register('fund_region')}
-                placeholder="İstanbul-Avrupa"
-                className={form.formState.errors.fund_region ? 'border-red-500' : ''}
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Kart ve Bağlantı Bilgileri */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <CreditCard className="w-5 h-5" />
-            Kart ve Bağlantı Bilgileri
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="linked_orphan"
-                checked={form.watch('linked_orphan')}
-                onCheckedChange={(checked) => {
-                  form.setValue('linked_orphan', checked as boolean);
-                }}
-              />
-              <Label htmlFor="linked_orphan">Yetim ile bağlantılı</Label>
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="linked_card"
-                checked={form.watch('linked_card')}
-                onCheckedChange={(checked) => {
-                  form.setValue('linked_card', checked as boolean);
-                }}
-              />
-              <Label htmlFor="linked_card">Kart ile bağlantılı</Label>
-            </div>
+          <div>
+            <Label htmlFor="identity_no">Kimlik Numarası *</Label>
+            <Input
+              id="identity_no"
+              {...register('identity_no')}
+              placeholder="11 haneli kimlik numarası"
+            />
+            {errors.identity_no && (
+              <p className="text-sm text-red-500">{errors.identity_no.message}</p>
+            )}
           </div>
 
-          {watchedLinkedCard && (
-            <div className="space-y-2">
+          <div>
+            <Label htmlFor="nationality">Uyruk *</Label>
+            <Input
+              id="nationality"
+              {...register('nationality')}
+              placeholder="Uyruk"
+            />
+            {errors.nationality && (
+              <p className="text-sm text-red-500">{errors.nationality.message}</p>
+            )}
+          </div>
+
+          <div>
+            <Label htmlFor="country">Ülke Kodu *</Label>
+            <Input
+              id="country"
+              {...register('country')}
+              placeholder="TR"
+              maxLength={2}
+            />
+            {errors.country && (
+              <p className="text-sm text-red-500">{errors.country.message}</p>
+            )}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  const renderStep2 = () => (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Phone className="h-5 w-5" />
+          İletişim Bilgileri
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="phone">Telefon *</Label>
+            <Input
+              id="phone"
+              {...register('phone')}
+              placeholder="05XX XXX XX XX"
+            />
+            {errors.phone && (
+              <p className="text-sm text-red-500">{errors.phone.message}</p>
+            )}
+          </div>
+
+          <div>
+            <Label htmlFor="email">E-posta</Label>
+            <Input
+              id="email"
+              type="email"
+              {...register('email')}
+              placeholder="ornek@email.com"
+            />
+            {errors.email && (
+              <p className="text-sm text-red-500">{errors.email.message}</p>
+            )}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  const renderStep3 = () => (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <MapPin className="h-5 w-5" />
+          Adres Bilgileri
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="city">Şehir *</Label>
+            <Input
+              id="city"
+              {...register('city')}
+              placeholder="Şehir"
+            />
+            {errors.city && (
+              <p className="text-sm text-red-500">{errors.city.message}</p>
+            )}
+          </div>
+
+          <div>
+            <Label htmlFor="settlement">Yerleşim Yeri *</Label>
+            <Input
+              id="settlement"
+              {...register('settlement')}
+              placeholder="İlçe/Mahalle"
+            />
+            {errors.settlement && (
+              <p className="text-sm text-red-500">{errors.settlement.message}</p>
+            )}
+          </div>
+
+          <div>
+            <Label htmlFor="neighborhood">Mahalle</Label>
+            <Input
+              id="neighborhood"
+              {...register('neighborhood')}
+              placeholder="Mahalle"
+            />
+          </div>
+
+          <div className="md:col-span-2">
+            <Label htmlFor="address">Adres *</Label>
+            <Textarea
+              id="address"
+              {...register('address')}
+              placeholder="Detaylı adres"
+              rows={3}
+            />
+            {errors.address && (
+              <p className="text-sm text-red-500">{errors.address.message}</p>
+            )}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  const renderStep4 = () => (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Heart className="h-5 w-5" />
+          Yardım Bilgileri
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="category">Kategori *</Label>
+            <Select onValueChange={(value) => setValue('category', value as any)}>
+              <SelectTrigger>
+                <SelectValue placeholder="Kategori seçin" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="gıda">Gıda</SelectItem>
+                <SelectItem value="nakdi">Nakdi</SelectItem>
+                <SelectItem value="eğitim">Eğitim</SelectItem>
+                <SelectItem value="sağlık">Sağlık</SelectItem>
+                <SelectItem value="barınma">Barınma</SelectItem>
+                <SelectItem value="giyim">Giyim</SelectItem>
+                <SelectItem value="diğer">Diğer</SelectItem>
+              </SelectContent>
+            </Select>
+            {errors.category && (
+              <p className="text-sm text-red-500">{errors.category.message}</p>
+            )}
+          </div>
+
+          <div>
+            <Label htmlFor="aid_type">Yardım Türü *</Label>
+            <Select onValueChange={(value) => setValue('aid_type', value as any)}>
+              <SelectTrigger>
+                <SelectValue placeholder="Yardım türü seçin" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="acil">Acil</SelectItem>
+                <SelectItem value="düzenli">Düzenli</SelectItem>
+                <SelectItem value="özel">Özel</SelectItem>
+              </SelectContent>
+            </Select>
+            {errors.aid_type && (
+              <p className="text-sm text-red-500">{errors.aid_type.message}</p>
+            )}
+          </div>
+
+          <div>
+            <Label htmlFor="fund_region">Bölge *</Label>
+            <Input
+              id="fund_region"
+              {...register('fund_region')}
+              placeholder="Bölge"
+            />
+            {errors.fund_region && (
+              <p className="text-sm text-red-500">{errors.fund_region.message}</p>
+            )}
+          </div>
+
+          <div>
+            <Label htmlFor="opened_by_unit">Açan Birim *</Label>
+            <Input
+              id="opened_by_unit"
+              {...register('opened_by_unit')}
+              placeholder="Açan birim"
+            />
+            {errors.opened_by_unit && (
+              <p className="text-sm text-red-500">{errors.opened_by_unit.message}</p>
+            )}
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="linked_orphan"
+              checked={watchedValues.linked_orphan}
+              onCheckedChange={(checked) => setValue('linked_orphan', !!checked)}
+            />
+            <Label htmlFor="linked_orphan">Yetim ile bağlantılı</Label>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="linked_card"
+              checked={watchedValues.linked_card}
+              onCheckedChange={(checked) => setValue('linked_card', !!checked)}
+            />
+            <Label htmlFor="linked_card">Kart ile bağlantılı</Label>
+          </div>
+
+          {watchedValues.linked_card && (
+            <div>
               <Label htmlFor="card_no">Kart Numarası</Label>
-              <Input id="card_no" {...form.register('card_no')} placeholder="KART-00123" />
+              <Input
+                id="card_no"
+                {...register('card_no')}
+                placeholder="Kart numarası"
+              />
             </div>
           )}
-        </CardContent>
-      </Card>
 
-      {/* Sistem Bilgileri */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Building className="w-5 h-5" />
-            Sistem Bilgileri
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="opened_by_unit">Açan Birim *</Label>
-              <Select
-                value={form.watch('opened_by_unit')}
-                onValueChange={(value) => {
-                  form.setValue('opened_by_unit', value);
-                }}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Birim seçiniz" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Sosyal Yardım Birimi">Sosyal Yardım Birimi</SelectItem>
-                  <SelectItem value="Eğitim Birimi">Eğitim Birimi</SelectItem>
-                  <SelectItem value="Sağlık Birimi">Sağlık Birimi</SelectItem>
-                  <SelectItem value="Genel Koordinasyon">Genel Koordinasyon</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="iban">IBAN</Label>
-              <Input
-                id="iban"
-                {...form.register('iban')}
-                placeholder="TR120006200119000006672315"
-                className={form.formState.errors.iban ? 'border-red-500' : ''}
-              />
-              {form.formState.errors.iban && (
-                <p className="text-red-500 text-sm">{form.formState.errors.iban.message}</p>
-              )}
-            </div>
+          <div>
+            <Label htmlFor="iban">IBAN</Label>
+            <Input
+              id="iban"
+              {...register('iban')}
+              placeholder="TR00 0000 0000 0000 0000 0000 00"
+            />
+            {errors.iban && (
+              <p className="text-sm text-red-500">{errors.iban.message}</p>
+            )}
           </div>
 
-          <div className="space-y-2">
+          <div>
             <Label htmlFor="notes">Notlar</Label>
             <Textarea
               id="notes"
-              {...form.register('notes')}
-              placeholder="Ek bilgiler ve notlar..."
+              {...register('notes')}
+              placeholder="Ek notlar"
               rows={3}
             />
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </CardContent>
+    </Card>
+  );
 
-      {/* Form Actions */}
-      <div className="flex justify-end gap-3 pt-6 border-t">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={onCancel}
-          disabled={isSubmitting ?? isLoading}
-        >
-          <X className="w-4 h-4 mr-2" />
-          İptal
-        </Button>
-        <Button type="submit" disabled={isSubmitting ?? isLoading} className="min-w-[120px]">
-          {isSubmitting ? (
-            <>
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-              Kaydediliyor...
-            </>
-          ) : (
-            <>
-              <Save className="w-4 h-4 mr-2" />
-              {mode === 'create' ? 'Kaydet' : 'Güncelle'}
-            </>
-          )}
-        </Button>
+  const renderStep5 = () => (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Building className="h-5 w-5" />
+          Aile Üyeleri
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="flex justify-between items-center">
+          <p className="text-sm text-gray-600">
+            Aile üyelerini ekleyebilirsiniz
+          </p>
+          <Button type="button" onClick={addFamilyMember} variant="outline">
+            Aile Üyesi Ekle
+          </Button>
+        </div>
+
+        {(watchedValues.family_members || []).map((member, index) => (
+          <div key={index} className="border rounded-lg p-4 space-y-4">
+            <div className="flex justify-between items-center">
+              <h4 className="font-medium">Aile Üyesi {index + 1}</h4>
+              <Button
+                type="button"
+                onClick={() => removeFamilyMember(index)}
+                variant="outline"
+                size="sm"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor={`family_members.${index}.name`}>Ad</Label>
+                <Input
+                  {...register(`family_members.${index}.name`)}
+                  placeholder="Ad"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor={`family_members.${index}.surname`}>Soyad</Label>
+                <Input
+                  {...register(`family_members.${index}.surname`)}
+                  placeholder="Soyad"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor={`family_members.${index}.phone`}>Telefon</Label>
+                <Input
+                  {...register(`family_members.${index}.phone`)}
+                  placeholder="05XX XXX XX XX"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor={`family_members.${index}.email`}>E-posta</Label>
+                <Input
+                  {...register(`family_members.${index}.email`)}
+                  placeholder="ornek@email.com"
+                />
+              </div>
+            </div>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  );
+
+  const renderStep6 = () => (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <CreditCard className="h-5 w-5" />
+          İhtiyaçlar
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="flex justify-between items-center">
+          <p className="text-sm text-gray-600">
+            İhtiyaçları ekleyebilirsiniz
+          </p>
+          <Button type="button" onClick={addNeed} variant="outline">
+            İhtiyaç Ekle
+          </Button>
+        </div>
+
+        {(watchedValues.needs || []).map((need, index) => (
+          <div key={index} className="border rounded-lg p-4 space-y-4">
+            <div className="flex justify-between items-center">
+              <h4 className="font-medium">İhtiyaç {index + 1}</h4>
+              <Button
+                type="button"
+                onClick={() => removeNeed(index)}
+                variant="outline"
+                size="sm"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor={`needs.${index}.type`}>Tür</Label>
+                <Input
+                  {...register(`needs.${index}.type`)}
+                  placeholder="İhtiyaç türü"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor={`needs.${index}.priority`}>Öncelik</Label>
+                <Select onValueChange={(value) => setValue(`needs.${index}.priority`, value as any)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Öncelik seçin" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="düşük">Düşük</SelectItem>
+                    <SelectItem value="orta">Orta</SelectItem>
+                    <SelectItem value="yüksek">Yüksek</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="md:col-span-2">
+                <Label htmlFor={`needs.${index}.description`}>Açıklama</Label>
+                <Textarea
+                  {...register(`needs.${index}.description`)}
+                  placeholder="İhtiyaç açıklaması"
+                  rows={3}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor={`needs.${index}.estimated_cost`}>Tahmini Maliyet</Label>
+                <Input
+                  type="number"
+                  {...register(`needs.${index}.estimated_cost`, { valueAsNumber: true })}
+                  placeholder="0"
+                />
+              </div>
+            </div>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  );
+
+  const renderCurrentStep = () => {
+    switch (currentStep) {
+      case 1:
+        return renderStep1();
+      case 2:
+        return renderStep2();
+      case 3:
+        return renderStep3();
+      case 4:
+        return renderStep4();
+      case 5:
+        return renderStep5();
+      case 6:
+        return renderStep6();
+      default:
+        return renderStep1();
+    }
+  };
+
+  return (
+    <div className="max-w-4xl mx-auto p-6">
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold mb-2">Yardım Alanı Kayıt Formu</h2>
+        <p className="text-gray-600">
+          Adım {currentStep} / {totalSteps}
+        </p>
+        <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+          <div
+            className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+            style={{ width: `${(currentStep / totalSteps) * 100}%` }}
+          />
+        </div>
       </div>
-    </form>
+
+      <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
+        {renderCurrentStep()}
+
+        <div className="flex justify-between">
+          <div>
+            {currentStep > 1 && (
+              <Button type="button" onClick={prevStep} variant="outline">
+                Önceki
+              </Button>
+            )}
+          </div>
+
+          <div className="flex gap-2">
+            {onCancel && (
+              <Button type="button" onClick={onCancel} variant="outline">
+                İptal
+              </Button>
+            )}
+
+            {currentStep < totalSteps ? (
+              <Button type="button" onClick={nextStep}>
+                Sonraki
+              </Button>
+            ) : (
+              <Button type="submit" disabled={isSubmitting || isLoading}>
+                {isSubmitting || isLoading ? (
+                  <>
+                    <Save className="h-4 w-4 mr-2 animate-spin" />
+                    Kaydediliyor...
+                  </>
+                ) : (
+                  <>
+                    <Save className="h-4 w-4 mr-2" />
+                    Kaydet
+                  </>
+                )}
+              </Button>
+            )}
+          </div>
+        </div>
+      </form>
+    </div>
   );
 }

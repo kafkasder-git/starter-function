@@ -6,7 +6,6 @@
  */
 
 // Notification component exports
-export { NotificationCenter } from './NotificationCenter';
 export { NotificationBell } from './NotificationBell';
 
 // Store exports

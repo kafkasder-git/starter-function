@@ -185,11 +185,11 @@ export function useBeneficiaries(options: UseBeneficiariesOptions = {}) {
         setBeneficiaries(prev => [response.data!, ...prev]);
         toast.success('İhtiyaç sahibi başarıyla oluşturuldu');
         return response.data;
-      } else {
+      } 
         setError(response.error || 'İhtiyaç sahibi oluşturulamadı');
         toast.error('İhtiyaç sahibi oluşturulurken hata oluştu');
         return null;
-      }
+      
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Beklenmeyen bir hata oluştu';
       setError(errorMessage);
@@ -216,11 +216,11 @@ export function useBeneficiaries(options: UseBeneficiariesOptions = {}) {
         );
         toast.success('İhtiyaç sahibi başarıyla güncellendi');
         return response.data;
-      } else {
+      } 
         setError(response.error || 'İhtiyaç sahibi güncellenemedi');
         toast.error('İhtiyaç sahibi güncellenirken hata oluştu');
         return null;
-      }
+      
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Beklenmeyen bir hata oluştu';
       setError(errorMessage);
@@ -247,11 +247,11 @@ export function useBeneficiaries(options: UseBeneficiariesOptions = {}) {
         );
         toast.success('İhtiyaç sahibi durumu başarıyla güncellendi');
         return response.data;
-      } else {
+      } 
         setError(response.error || 'İhtiyaç sahibi durumu güncellenemedi');
         toast.error('İhtiyaç sahibi durumu güncellenirken hata oluştu');
         return null;
-      }
+      
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Beklenmeyen bir hata oluştu';
       setError(errorMessage);
@@ -276,11 +276,11 @@ export function useBeneficiaries(options: UseBeneficiariesOptions = {}) {
         setBeneficiaries(prev => prev.filter(b => b.id !== id));
         toast.success('İhtiyaç sahibi başarıyla silindi');
         return true;
-      } else {
+      } 
         setError(response.error || 'İhtiyaç sahibi silinemedi');
         toast.error('İhtiyaç sahibi silinirken hata oluştu');
         return false;
-      }
+      
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Beklenmeyen bir hata oluştu';
       setError(errorMessage);
@@ -341,6 +341,6 @@ export function useBeneficiaries(options: UseBeneficiariesOptions = {}) {
     
     // Utilities
     refresh: fetchBeneficiaries,
-    clearError: () => setError(null)
+    clearError: () => { setError(null); }
   };
 }

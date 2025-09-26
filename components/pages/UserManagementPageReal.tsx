@@ -5,9 +5,6 @@
  * @version 1.0.0
  */
 
-// 👥 REAL USER MANAGEMENT PAGE
-// Enhanced user management with real Supabase integration
-
 import {
   Activity,
   AlertTriangle,
@@ -50,9 +47,11 @@ import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { Checkbox } from '../ui/checkbox';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -62,249 +61,454 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
 import { Input } from '../ui/input';
-import { ScrollArea } from '../ui/scroll-area';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { Label } from '../ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../ui/select';
+import { Skeleton } from '../ui/skeleton';
 import { Switch } from '../ui/switch';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
+import { Textarea } from '../ui/textarea';
+import { useToast } from '../../hooks/use-toast';
+import { userManagementService } from '../../services/userManagementService';
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-
-import { useDebounce } from '../../hooks/useDebounce';
-// import { useMobileForm } from '../../hooks/useMobileForm'; // Unused for now
-import useUserManagement from '../../hooks/useUserManagement';
-import type { ManagedUser } from '../../services/userManagementService';
-import { useAuthStore } from '../../stores/authStore';
-import { Permission, UserRole } from '../../types/auth';
-
-// Form validation schemas
-const createUserSchema = z.object({
-  email: z.string().email('Geçerli bir email adresi giriniz').min(1, 'Email adresi zorunludur'),
-  name: z
-    .string()
-    .trim()
-    .min(2, 'Ad en az 2 karakter olmalıdır')
-    .max(100, 'Ad en fazla 100 karakter olabilir')
-    .regex(/^[a-zA-ZğüşıöçĞÜŞİÖÇ\s]+$/, 'Ad sadece harf ve boşluk içerebilir'),
-  role: z.nativeEnum(UserRole),
-  phone: z
-    .string()
-    .regex(/^(\+90|0)?[5][0-9]{9}$/, 'Geçerli bir telefon numarası giriniz')
-    .optional()
-    .or(z.literal('')),
-  department: z.string().optional(),
-  notes: z.string().max(500, 'Notlar en fazla 500 karakter olabilir').optional(),
-  sendInvitation: z.boolean().default(true),
-}) satisfies z.ZodType<{
+// Types
+interface User {
+  id: string;
   email: string;
-  name: string;
-  role: UserRole;
+  full_name?: string;
+  avatar_url?: string;
+  role: 'admin' | 'moderator' | 'user';
+  status: 'active' | 'inactive' | 'suspended';
+  last_sign_in_at?: string;
+  created_at: string;
+  updated_at: string;
   phone?: string;
-  department?: string;
-  notes?: string;
-  sendInvitation: boolean;
-}>;
+  organization?: string;
+  permissions: string[];
+}
 
-const updateUserSchema = createUserSchema
-  .partial()
-  .omit({ email: true, sendInvitation: true })
-  .extend({
-    status: z.enum(['active', 'inactive', 'suspended'] as const).optional(),
-  }) satisfies z.ZodType<{
-  name?: string;
-  role?: UserRole;
+interface UserStats {
+  total: number;
+  active: number;
+  inactive: number;
+  suspended: number;
+  new_this_month: number;
+}
+
+interface UserFormData {
+  email: string;
+  full_name: string;
+  role: 'admin' | 'moderator' | 'user';
+  status: 'active' | 'inactive' | 'suspended';
   phone?: string;
-  department?: string;
-  notes?: string;
-  status?: 'active' | 'inactive' | 'suspended';
-}>;
+  organization?: string;
+  permissions: string[];
+}
 
-type CreateUserFormData = z.infer<typeof createUserSchema>;
-type UpdateUserFormData = z.infer<typeof updateUserSchema>;
+// User Management Components
+const UserStatsCards = ({ stats }: { stats: UserStats }) => (
+  <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+    <Card>
+      <CardContent className="p-4">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-blue-100 rounded-lg">
+            <Users className="h-5 w-5 text-blue-600" />
+          </div>
+          <div>
+            <p className="text-sm text-gray-600">Toplam</p>
+            <p className="text-xl font-bold">{stats.total}</p>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
 
-// Role and status configurations
-const ROLES = {
-  [UserRole.ADMIN]: { label: 'Yönetici', color: 'bg-red-100 text-red-800 border-red-200' },
-  [UserRole.MANAGER]: { label: 'Müdür', color: 'bg-purple-100 text-purple-800 border-purple-200' },
-  [UserRole.OPERATOR]: { label: 'Operatör', color: 'bg-blue-100 text-blue-800 border-blue-200' },
-  [UserRole.VIEWER]: { label: 'Görüntüleyici', color: 'bg-gray-100 text-gray-800 border-gray-200' },
+    <Card>
+      <CardContent className="p-4">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-green-100 rounded-lg">
+            <UserCheck className="h-5 w-5 text-green-600" />
+          </div>
+          <div>
+            <p className="text-sm text-gray-600">Aktif</p>
+            <p className="text-xl font-bold">{stats.active}</p>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+
+    <Card>
+      <CardContent className="p-4">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-gray-100 rounded-lg">
+            <UserX className="h-5 w-5 text-gray-600" />
+          </div>
+          <div>
+            <p className="text-sm text-gray-600">Pasif</p>
+            <p className="text-xl font-bold">{stats.inactive}</p>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+
+    <Card>
+      <CardContent className="p-4">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-red-100 rounded-lg">
+            <XCircle className="h-5 w-5 text-red-600" />
+          </div>
+          <div>
+            <p className="text-sm text-gray-600">Askıya Alınmış</p>
+            <p className="text-xl font-bold">{stats.suspended}</p>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+
+    <Card>
+      <CardContent className="p-4">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-purple-100 rounded-lg">
+            <Activity className="h-5 w-5 text-purple-600" />
+          </div>
+          <div>
+            <p className="text-sm text-gray-600">Bu Ay Yeni</p>
+            <p className="text-xl font-bold">{stats.new_this_month}</p>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const UserTable = ({ 
+  users, 
+  onEdit, 
+  onDelete, 
+  onToggleStatus 
+}: { 
+  users: User[];
+  onEdit: (user: User) => void;
+  onDelete: (userId: string) => void;
+  onToggleStatus: (userId: string, status: string) => void;
+}) => (
+  <Card>
+    <CardHeader>
+      <CardTitle>Kullanıcı Listesi</CardTitle>
+    </CardHeader>
+    <CardContent>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Kullanıcı</TableHead>
+            <TableHead>Rol</TableHead>
+            <TableHead>Durum</TableHead>
+            <TableHead>Son Giriş</TableHead>
+            <TableHead className="text-right">İşlemler</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {users.map((user) => (
+            <TableRow key={user.id}>
+              <TableCell>
+                <div className="flex items-center gap-3">
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src={user.avatar_url} />
+                    <AvatarFallback>
+                      {user.full_name?.charAt(0) ?? user.email.charAt(0).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="font-medium">{user.full_name ?? 'İsimsiz'}</p>
+                    <p className="text-sm text-gray-500">{user.email}</p>
+                  </div>
+                </div>
+              </TableCell>
+              <TableCell>
+                <Badge variant={user.role === 'admin' ? 'destructive' : 'secondary'}>
+                  {user.role === 'admin' ? 'Yönetici' : 
+                   user.role === 'moderator' ? 'Moderatör' : 'Kullanıcı'}
+                </Badge>
+              </TableCell>
+              <TableCell>
+                <Badge variant={user.status === 'active' ? 'default' : 'secondary'}>
+                  {user.status === 'active' ? 'Aktif' : 
+                   user.status === 'inactive' ? 'Pasif' : 'Askıya Alınmış'}
+                </Badge>
+              </TableCell>
+              <TableCell>
+                {user.last_sign_in_at ? new Date(user.last_sign_in_at).toLocaleDateString('tr-TR') : 'Hiç giriş yapmamış'}
+              </TableCell>
+              <TableCell className="text-right">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm">
+                      <MoreVertical className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuLabel>İşlemler</DropdownMenuLabel>
+                    <DropdownMenuItem onClick={() => onEdit(user)}>
+                      <Edit className="mr-2 h-4 w-4" />
+                      Düzenle
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      onClick={() => onToggleStatus(user.id, user.status === 'active' ? 'inactive' : 'active')}
+                    >
+                      {user.status === 'active' ? (
+                        <>
+                          <UserX className="mr-2 h-4 w-4" />
+                          Pasifleştir
+                        </>
+                      ) : (
+                        <>
+                          <UserCheck className="mr-2 h-4 w-4" />
+                          Aktifleştir
+                        </>
+                      )}
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem 
+                      onClick={() => onDelete(user.id)}
+                      className="text-red-600"
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      Sil
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </CardContent>
+  </Card>
+);
+
+const UserForm = ({ 
+  user, 
+  onSubmit, 
+  onCancel, 
+  isLoading 
+}: { 
+  user?: User;
+  onSubmit: (data: UserFormData) => void;
+  onCancel: () => void;
+  isLoading: boolean;
+}) => {
+  const [formData, setFormData] = useState<UserFormData>({
+    email: user?.email ?? '',
+    full_name: user?.full_name ?? '',
+    role: user?.role ?? 'user',
+    status: user?.status ?? 'active',
+    phone: user?.phone ?? '',
+    organization: user?.organization ?? '',
+    permissions: user?.permissions ?? [],
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit(formData);
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="email">E-posta *</Label>
+          <Input
+            id="email"
+            type="email"
+            value={formData.email}
+            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            required
+          />
+        </div>
+        <div>
+          <Label htmlFor="full_name">Ad Soyad *</Label>
+          <Input
+            id="full_name"
+            value={formData.full_name}
+            onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
+            required
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="role">Rol</Label>
+          <Select value={formData.role} onValueChange={(value) => setFormData({ ...formData, role: value as any })}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="user">Kullanıcı</SelectItem>
+              <SelectItem value="moderator">Moderatör</SelectItem>
+              <SelectItem value="admin">Yönetici</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label htmlFor="status">Durum</Label>
+          <Select value={formData.status} onValueChange={(value) => setFormData({ ...formData, status: value as any })}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="active">Aktif</SelectItem>
+              <SelectItem value="inactive">Pasif</SelectItem>
+              <SelectItem value="suspended">Askıya Alınmış</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="phone">Telefon</Label>
+          <Input
+            id="phone"
+            value={formData.phone}
+            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+          />
+        </div>
+        <div>
+          <Label htmlFor="organization">Kurum</Label>
+          <Input
+            id="organization"
+            value={formData.organization}
+            onChange={(e) => setFormData({ ...formData, organization: e.target.value })}
+          />
+        </div>
+      </div>
+
+      <div className="flex justify-end gap-2">
+        <Button type="button" variant="outline" onClick={onCancel}>
+          İptal
+        </Button>
+        <Button type="submit" disabled={isLoading}>
+          {isLoading ? 'Kaydediliyor...' : user ? 'Güncelle' : 'Oluştur'}
+        </Button>
+      </div>
+    </form>
+  );
 };
 
-const STATUS_CONFIG = {
-  active: {
-    label: 'Aktif',
-    color: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-    icon: CheckCircle,
-  },
-  inactive: { label: 'Pasif', color: 'bg-gray-100 text-gray-800 border-gray-200', icon: XCircle },
-  pending: {
-    label: 'Beklemede',
-    color: 'bg-amber-100 text-amber-800 border-amber-200',
-    icon: Clock,
-  },
-  suspended: { label: 'Askıda', color: 'bg-red-100 text-red-800 border-red-200', icon: XCircle },
-};
-
-const DEPARTMENTS = [
-  'Yönetim',
-  'Finans',
-  'Yardım Koordinasyonu',
-  'Üye İşleri',
-  'Halkla İlişkiler',
-  'Teknoloji',
-  'Hukuk',
-  'Muhasebe',
-] as const;
-
-/**
- * UserManagementPageReal function
- * 
- * @param {Object} params - Function parameters
- * @returns {void} Nothing
- */
+// Main Component
 export function UserManagementPageReal() {
-  // Real user management hook
-  const {
-    users,
-    activities,
-    loading,
-    error,
-    totalUsers,
-    currentPage,
-    stats,
-    loadUsers,
-    createUser,
-    updateUser,
-    deleteUser,
-    resetPassword,
-    refreshData,
-    clearError,
-  } = useUserManagement();
-
-  // Auth context for permission checks
-  const { hasPermission } = useAuthStore();
-
-  // Local state for UI
-  const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [roleFilter, setRoleFilter] = useState<string>('all');
-  const [departmentFilter, setDepartmentFilter] = useState<string>('all');
-  const [activeTab, setActiveTab] = useState('users');
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<ManagedUser | null>(null);
-  // const [showInactive, setShowInactive] = useState(true);
-
-  const debouncedSearch = useDebounce(searchQuery, 300);
-
-  // Check permissions
-  const canManageUsers =
-    hasPermission(Permission.VIEW_USERS) && hasPermission(Permission.CREATE_USER);
-  const canViewActivities = hasPermission(Permission.VIEW_REPORTS);
-
-  // Forms
-  const createForm = useForm<CreateUserFormData>({
-    resolver: zodResolver(createUserSchema) as any,  
-    defaultValues: {
-      role: UserRole.VIEWER,
-      sendInvitation: true,
-    },
+  const [users, setUsers] = useState<User[]>([]);
+  const [stats, setStats] = useState<UserStats>({
+    total: 0,
+    active: 0,
+    inactive: 0,
+    suspended: 0,
+    new_this_month: 0,
   });
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState<User | undefined>();
+  const [deleteUserId, setDeleteUserId] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
-  const updateForm = useForm<UpdateUserFormData>({
-    resolver: zodResolver(updateUserSchema) as any,  
-  });
+  const { toast } = useToast();
 
-  // Load users when filters change
-  useEffect(() => {
-    const filters = {
-      search: debouncedSearch ?? undefined,
-      role: roleFilter !== 'all' ? (roleFilter as UserRole) : undefined,
-      status:
-        statusFilter !== 'all'
-          ? (statusFilter as 'active' | 'inactive' | 'pending' | 'suspended')
-          : undefined,
-      department: departmentFilter !== 'all' ? departmentFilter : undefined,
-      page: currentPage,
-    };
-
-    loadUsers(filters);
-  }, [debouncedSearch, roleFilter, statusFilter, departmentFilter, currentPage, loadUsers]);
-
-  // Handle create user
-  const handleCreateUser = async (data: CreateUserFormData) => {
+  // Load users
+  const loadUsers = async () => {
     try {
-      await createUser(data);
-      setIsCreateDialogOpen(false);
-      createForm.reset();
-    } catch {
-      // Error already handled in hook
+      setIsLoading(true);
+      const response = await userManagementService.getUsers();
+      setUsers(response.users);
+      setStats(response.stats);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Kullanıcılar yüklenirken hata oluştu');
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // Handle update user
-  const handleUpdateUser = async (data: UpdateUserFormData) => {
-    if (!selectedUser) return;
-
+  // Handle user creation/update
+  const handleUserSubmit = async (data: UserFormData) => {
     try {
-      await updateUser(selectedUser.id, data);
-      setIsEditDialogOpen(false);
-      setSelectedUser(null);
-      updateForm.reset();
-    } catch {
-      // Error already handled in hook
+      if (editingUser) {
+        await userManagementService.updateUser(editingUser.id, data);
+        toast({ title: 'Kullanıcı güncellendi' });
+      } else {
+        await userManagementService.createUser(data);
+        toast({ title: 'Kullanıcı oluşturuldu' });
+      }
+      setIsDialogOpen(false);
+      setEditingUser(undefined);
+      await loadUsers();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Kullanıcı kaydedilirken hata oluştu');
     }
   };
 
-  // Handle delete user
+  // Handle user deletion
   const handleDeleteUser = async (userId: string) => {
     try {
-      await deleteUser(userId);
-    } catch {
-      // Error already handled in hook
+      await userManagementService.deleteUser(userId);
+      toast({ title: 'Kullanıcı silindi' });
+      setDeleteUserId(null);
+      await loadUsers();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Kullanıcı silinirken hata oluştu');
     }
   };
 
-  // Handle reset password
-  const handleResetPassword = async (userId: string) => {
+  // Handle status toggle
+  const handleToggleStatus = async (userId: string, newStatus: string) => {
     try {
-      await resetPassword(userId);
-    } catch {
-      // Error already handled in hook
+      await userManagementService.updateUserStatus(userId, newStatus);
+      toast({ title: 'Kullanıcı durumu güncellendi' });
+      await loadUsers();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Durum güncellenirken hata oluştu');
     }
   };
 
-  // Open edit dialog
-  const openEditDialog = (user: ManagedUser) => {
-    setSelectedUser(user);
-    updateForm.reset({
-      name: user.name,
-      role: user.role,
-      status: user.status === 'pending' ? 'inactive' : user.status,
-      phone: user.phone ?? '',
-      department: user.department ?? '',
-      notes: user.notes ?? '',
-    });
-    setIsEditDialogOpen(true);
-  };
+  // Filter users based on search term
+  const filteredUsers = users.filter(user =>
+    user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.organization?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
-  // Permission check
-  if (!canManageUsers) {
+  useEffect(() => {
+    loadUsers();
+  }, []);
+
+  if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <Card className="w-full max-w-md">
-          <CardContent className="p-6 text-center">
-            <Shield className="h-12 w-12 text-red-500 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Erişim Engellendi</h3>
-            <p className="text-gray-600">
-              Bu sayfayı görüntülemek için kullanıcı yönetimi yetkisine ihtiyacınız var.
-            </p>
+      <div className="space-y-6">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <Card key={i}>
+              <CardContent className="p-4">
+                <Skeleton className="h-16 w-full" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-6 w-32" />
+          </CardHeader>
+          <CardContent>
+            <Skeleton className="h-64 w-full" />
           </CardContent>
         </Card>
       </div>
@@ -314,197 +518,38 @@ export function UserManagementPageReal() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-            <Users className="h-8 w-8 text-blue-600" />
-            Kullanıcı Yönetimi
-          </h1>
-          <p className="text-gray-600 mt-2">
-            Sistem kullanıcılarını yönetin, roller atayın ve aktiviteleri takip edin.
-          </p>
+          <h1 className="text-2xl font-bold">Kullanıcı Yönetimi</h1>
+          <p className="text-gray-600">Sistem kullanıcılarını yönetin</p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={refreshData} disabled={loading}>
-            <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={loadUsers}>
+            <RefreshCw className="h-4 w-4 mr-2" />
             Yenile
           </Button>
-          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button>
+              <Button onClick={() => setEditingUser(undefined)}>
                 <Plus className="h-4 w-4 mr-2" />
                 Yeni Kullanıcı
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-md">
+            <DialogContent className="max-w-2xl">
               <DialogHeader>
-                <DialogTitle>Yeni Kullanıcı Oluştur</DialogTitle>
+                <DialogTitle>
+                  {editingUser ? 'Kullanıcı Düzenle' : 'Yeni Kullanıcı'}
+                </DialogTitle>
+                <DialogDescription>
+                  {editingUser ? 'Kullanıcı bilgilerini güncelleyin' : 'Yeni kullanıcı oluşturun'}
+                </DialogDescription>
               </DialogHeader>
-              <Form {...createForm}>
-                <form onSubmit={createForm.handleSubmit(handleCreateUser)} className="space-y-4">
-                  <FormField
-                    control={createForm.control}
-                    name="email"
-                    render={({
-                      field,
-                    }: {
-                      field: ControllerRenderProps<CreateUserFormData, 'email'>;
-                    }) => (
-                      <FormItem>
-                        <FormLabel>Email Adresi</FormLabel>
-                        <FormControl>
-                          <Input placeholder="user@dernek.org" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={createForm.control}
-                    name="name"
-                    render={({
-                      field,
-                    }: {
-                      field: ControllerRenderProps<CreateUserFormData, 'name'>;
-                    }) => (
-                      <FormItem>
-                        <FormLabel>Ad Soyad</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Ahmet Yılmaz" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={createForm.control}
-                    name="role"
-                    render={({
-                      field,
-                    }: {
-                      field: ControllerRenderProps<CreateUserFormData, 'role'>;
-                    }) => (
-                      <FormItem>
-                        <FormLabel>Rol</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Rol seçin" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {Object.entries(ROLES).map(([role, config]) => (
-                              <SelectItem key={role} value={role}>
-                                {config.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={createForm.control}
-                    name="phone"
-                    render={({
-                      field,
-                    }: {
-                      field: ControllerRenderProps<CreateUserFormData, 'phone'>;
-                    }) => (
-                      <FormItem>
-                        <FormLabel>Telefon</FormLabel>
-                        <FormControl>
-                          <Input placeholder="05551234567" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={createForm.control}
-                    name="department"
-                    render={({
-                      field,
-                    }: {
-                      field: ControllerRenderProps<CreateUserFormData, 'department'>;
-                    }) => (
-                      <FormItem>
-                        <FormLabel>Departman</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Departman seçin" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {DEPARTMENTS.map((dept) => (
-                              <SelectItem key={dept} value={dept}>
-                                {dept}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={createForm.control}
-                    name="sendInvitation"
-                    render={({
-                      field,
-                    }: {
-                      field: ControllerRenderProps<CreateUserFormData, 'sendInvitation'>;
-                    }) => (
-                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                        <div className="space-y-0.5">
-                          <FormLabel>Davet Emaili Gönder</FormLabel>
-                          <div className="text-xs text-gray-500">
-                            Kullanıcıya hesap aktivasyon emaili gönderilsin
-                          </div>
-                        </div>
-                        <FormControl>
-                          <Switch checked={field.value} onCheckedChange={field.onChange} />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-
-                  <DialogFooter>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => {
-                        setIsCreateDialogOpen(false);
-                      }}
-                    >
-                      İptal
-                    </Button>
-                    <Button type="submit" disabled={createForm.formState.isSubmitting}>
-                      {createForm.formState.isSubmitting ? (
-                        <>
-                          <motion.div
-                            animate={{ rotate: 360 }}
-                            transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                            className="mr-2"
-                          >
-                            <RefreshCw className="h-4 w-4" />
-                          </motion.div>
-                          Oluşturuluyor...
-                        </>
-                      ) : (
-                        'Oluştur'
-                      )}
-                    </Button>
-                  </DialogFooter>
-                </form>
-              </Form>
+              <UserForm
+                user={editingUser}
+                onSubmit={handleUserSubmit}
+                onCancel={() => setIsDialogOpen(false)}
+                isLoading={false}
+              />
             </DialogContent>
           </Dialog>
         </div>
@@ -516,7 +561,7 @@ export function UserManagementPageReal() {
           <AlertTriangle className="h-4 w-4" />
           <AlertDescription className="flex items-center justify-between">
             {error}
-            <Button variant="ghost" size="sm" onClick={clearError}>
+            <Button variant="ghost" size="sm" onClick={() => setError(null)}>
               <X className="h-4 w-4" />
             </Button>
           </AlertDescription>
@@ -524,494 +569,56 @@ export function UserManagementPageReal() {
       )}
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <Users className="h-5 w-5 text-blue-600" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Toplam</p>
-                <p className="text-xl font-bold">{stats.total}</p>
-              </div>
+      <UserStatsCards stats={stats} />
+
+      {/* Search and Filters */}
+      <Card>
+        <CardContent className="p-4">
+          <div className="flex items-center gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Input
+                placeholder="Kullanıcı ara..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </CardContent>
+      </Card>
 
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-green-100 rounded-lg">
-                <UserCheck className="h-5 w-5 text-green-600" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Aktif</p>
-                <p className="text-xl font-bold text-green-600">{stats.active}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      {/* User Table */}
+      <UserTable
+        users={filteredUsers}
+        onEdit={(user) => {
+          setEditingUser(user);
+          setIsDialogOpen(true);
+        }}
+        onDelete={setDeleteUserId}
+        onToggleStatus={handleToggleStatus}
+      />
 
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-amber-100 rounded-lg">
-                <Clock className="h-5 w-5 text-amber-600" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Beklemede</p>
-                <p className="text-xl font-bold text-amber-600">{stats.pending}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-gray-100 rounded-lg">
-                <UserX className="h-5 w-5 text-gray-600" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Pasif</p>
-                <p className="text-xl font-bold text-gray-600">{stats.inactive}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-red-100 rounded-lg">
-                <XCircle className="h-5 w-5 text-red-600" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Askıda</p>
-                <p className="text-xl font-bold text-red-600">{stats.suspended}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList>
-          <TabsTrigger value="users">Kullanıcılar ({totalUsers})</TabsTrigger>
-          {canViewActivities && (
-            <TabsTrigger value="activities">Aktiviteler ({activities.length})</TabsTrigger>
-          )}
-        </TabsList>
-
-        {/* Users Tab */}
-        <TabsContent value="users" className="space-y-4">
-          {/* Filters */}
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex flex-col sm:flex-row gap-4">
-                <div className="flex-1">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                    <Input
-                      placeholder="Kullanıcı ara..."
-                      value={searchQuery}
-                      onChange={(e) => {
-                        setSearchQuery(e.target.value);
-                      }}
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
-
-                <Select value={roleFilter} onValueChange={setRoleFilter}>
-                  <SelectTrigger className="w-full sm:w-48">
-                    <SelectValue placeholder="Rol filtrele" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Tüm Roller</SelectItem>
-                    {Object.entries(ROLES).map(([role, config]) => (
-                      <SelectItem key={role} value={role}>
-                        {config.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="w-full sm:w-48">
-                    <SelectValue placeholder="Durum filtrele" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Tüm Durumlar</SelectItem>
-                    {Object.entries(STATUS_CONFIG).map(([status, config]) => (
-                      <SelectItem key={status} value={status}>
-                        {config.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-
-                <Select value={departmentFilter} onValueChange={setDepartmentFilter}>
-                  <SelectTrigger className="w-full sm:w-48">
-                    <SelectValue placeholder="Departman filtrele" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Tüm Departmanlar</SelectItem>
-                    {DEPARTMENTS.map((dept) => (
-                      <SelectItem key={dept} value={dept}>
-                        {dept}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Users List */}
-          <Card>
-            <CardContent className="p-0">
-              {loading && users.length === 0 ? (
-                <div className="flex items-center justify-center py-12">
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                  >
-                    <RefreshCw className="h-8 w-8 text-blue-600" />
-                  </motion.div>
-                  <span className="ml-3 text-gray-600">Kullanıcılar yükleniyor...</span>
-                </div>
-              ) : users.length === 0 ? (
-                <div className="text-center py-12">
-                  <Users className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">Kullanıcı bulunamadı</h3>
-                  <p className="text-gray-500 mb-4">
-                    {searchQuery ?? roleFilter !== 'all' || statusFilter !== 'all'
-                      ? 'Arama kriterlerinize uygun kullanıcı bulunamadı'
-                      : 'Henüz hiç kullanıcı eklenmemiş'}
-                  </p>
-                  <Button
-                    onClick={() => {
-                      setIsCreateDialogOpen(true);
-                    }}
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    İlk Kullanıcıyı Ekle
-                  </Button>
-                </div>
-              ) : (
-                <div className="divide-y">
-                  <AnimatePresence>
-                    {users.map((user) => {
-                      const roleConfig = ROLES[user.role];
-                      const statusConfig = STATUS_CONFIG[user.status];
-                      const StatusIcon = statusConfig.icon;
-
-                      return (
-                        <motion.div
-                          key={user.id}
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -20 }}
-                          className="p-4 hover:bg-gray-50 transition-colors"
-                        >
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-4">
-                              <Avatar className="h-12 w-12">
-                                <AvatarImage src={user.avatar} />
-                                <AvatarFallback>
-                                  {user.name
-                                    .split(' ')
-                                    .map((n) => n[0])
-                                    .join('')
-                                    .toUpperCase()}
-                                </AvatarFallback>
-                              </Avatar>
-
-                              <div>
-                                <div className="flex items-center gap-2">
-                                  <h3 className="font-semibold">{user.name}</h3>
-                                  <Badge className={roleConfig.color}>{roleConfig.label}</Badge>
-                                  <div
-                                    className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs ${statusConfig.color}`}
-                                  >
-                                    <StatusIcon className="h-3 w-3" />
-                                    {statusConfig.label}
-                                  </div>
-                                </div>
-                                <div className="flex items-center gap-4 text-sm text-gray-500 mt-1">
-                                  <span className="flex items-center gap-1">
-                                    <Mail className="h-3 w-3" />
-                                    {user.email}
-                                  </span>
-                                  {user.phone && (
-                                    <span className="flex items-center gap-1">
-                                      <Phone className="h-3 w-3" />
-                                      {user.phone}
-                                    </span>
-                                  )}
-                                  {user.department && (
-                                    <span className="flex items-center gap-1">
-                                      <Building className="h-3 w-3" />
-                                      {user.department}
-                                    </span>
-                                  )}
-                                </div>
-                                {user.lastLoginAt && (
-                                  <p className="text-xs text-gray-400 mt-1">
-                                    Son giriş: {user.lastLoginAt.toLocaleDateString('tr-TR')}
-                                  </p>
-                                )}
-                              </div>
-                            </div>
-
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="sm">
-                                  <MoreVertical className="h-4 w-4" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                <DropdownMenuItem
-                                  onClick={() => {
-                                    openEditDialog(user);
-                                  }}
-                                >
-                                  <Edit className="h-4 w-4 mr-2" />
-                                  Düzenle
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => handleResetPassword(user.id)}>
-                                  <Key className="h-4 w-4 mr-2" />
-                                  Şifre Sıfırla
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <AlertDialog>
-                                  <AlertDialogTrigger asChild>
-                                    <DropdownMenuItem
-                                      className="text-red-600 focus:text-red-600"
-                                      onSelect={(e: Event) => {
-                                        e.preventDefault();
-                                      }}
-                                    >
-                                      <Trash2 className="h-4 w-4 mr-2" />
-                                      Sil
-                                    </DropdownMenuItem>
-                                  </AlertDialogTrigger>
-                                  <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                      <AlertDialogTitle>Kullanıcıyı Sil</AlertDialogTitle>
-                                      <AlertDialogDescription>
-                                        {user.name} kullanıcısını silmek istediğinizden emin
-                                        misiniz? Bu işlem geri alınamaz.
-                                      </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                      <AlertDialogCancel>İptal</AlertDialogCancel>
-                                      <AlertDialogAction
-                                        onClick={() => handleDeleteUser(user.id)}
-                                        className="bg-red-600 hover:bg-red-700"
-                                      >
-                                        Sil
-                                      </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                  </AlertDialogContent>
-                                </AlertDialog>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </div>
-                        </motion.div>
-                      );
-                    })}
-                  </AnimatePresence>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Activities Tab */}
-        {canViewActivities && (
-          <TabsContent value="activities" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Activity className="h-5 w-5" />
-                  Kullanıcı Aktiviteleri
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {activities.length === 0 ? (
-                  <div className="text-center py-8">
-                    <Activity className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                    <p className="text-gray-500">Henüz aktivite kaydı bulunmuyor</p>
-                  </div>
-                ) : (
-                  <ScrollArea className="h-96">
-                    <div className="space-y-3">
-                      {activities.map((activity) => (
-                        <div
-                          key={activity.id}
-                          className="flex items-start gap-3 p-3 rounded-lg bg-gray-50"
-                        >
-                          <div
-                            className={`p-2 rounded-full ${
-                              activity.status === 'success'
-                                ? 'bg-green-100'
-                                : activity.status === 'failed'
-                                  ? 'bg-red-100'
-                                  : 'bg-yellow-100'
-                            }`}
-                          >
-                            <Activity
-                              className={`h-4 w-4 ${
-                                activity.status === 'success'
-                                  ? 'text-green-600'
-                                  : activity.status === 'failed'
-                                    ? 'text-red-600'
-                                    : 'text-yellow-600'
-                              }`}
-                            />
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2">
-                              <span className="font-medium">{activity.userName}</span>
-                              <Badge variant="outline" className="text-xs">
-                                {activity.action}
-                              </Badge>
-                            </div>
-                            <p className="text-sm text-gray-600 mt-1">{activity.description}</p>
-                            <p className="text-xs text-gray-400 mt-1">
-                              {activity.timestamp.toLocaleString('tr-TR')}
-                            </p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </ScrollArea>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-        )}
-      </Tabs>
-
-      {/* Edit User Dialog */}
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Kullanıcı Düzenle</DialogTitle>
-          </DialogHeader>
-          {selectedUser && (
-            <Form {...updateForm}>
-              <form onSubmit={updateForm.handleSubmit(handleUpdateUser)} className="space-y-4">
-                <FormField
-                  control={updateForm.control}
-                  name="name"
-                  render={({
-                    field,
-                  }: {
-                    field: ControllerRenderProps<UpdateUserFormData, 'name'>;
-                  }) => (
-                    <FormItem>
-                      <FormLabel>Ad Soyad</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={updateForm.control}
-                  name="role"
-                  render={({
-                    field,
-                  }: {
-                    field: ControllerRenderProps<UpdateUserFormData, 'role'>;
-                  }) => (
-                    <FormItem>
-                      <FormLabel>Rol</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {Object.entries(ROLES).map(([role, config]) => (
-                            <SelectItem key={role} value={role}>
-                              {config.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={updateForm.control}
-                  name="status"
-                  render={({
-                    field,
-                  }: {
-                    field: ControllerRenderProps<UpdateUserFormData, 'status'>;
-                  }) => (
-                    <FormItem>
-                      <FormLabel>Durum</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {Object.entries(STATUS_CONFIG)
-                            .filter(([status]) => status !== 'pending')
-                            .map(([status, config]) => (
-                              <SelectItem key={status} value={status}>
-                                {config.label}
-                              </SelectItem>
-                            ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <DialogFooter>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => {
-                      setIsEditDialogOpen(false);
-                    }}
-                  >
-                    İptal
-                  </Button>
-                  <Button type="submit" disabled={updateForm.formState.isSubmitting}>
-                    {updateForm.formState.isSubmitting ? (
-                      <>
-                        <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                        Güncelleniyor...
-                      </>
-                    ) : (
-                      'Güncelle'
-                    )}
-                  </Button>
-                </DialogFooter>
-              </form>
-            </Form>
-          )}
-        </DialogContent>
-      </Dialog>
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={!!deleteUserId} onOpenChange={() => setDeleteUserId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Kullanıcıyı Sil</AlertDialogTitle>
+            <AlertDialogDescription>
+              Bu kullanıcıyı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>İptal</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => deleteUserId && handleDeleteUser(deleteUserId)}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Sil
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
-
-export { UserManagementPageReal as UserManagementPage };
-export default UserManagementPageReal;

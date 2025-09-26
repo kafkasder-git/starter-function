@@ -5,6 +5,7 @@
 
 import React from 'react';
 import { monitoring } from './monitoringService';
+import { logger } from '../lib/logging/logger';
 
 // Declare gtag for analytics (if available)
 declare global {

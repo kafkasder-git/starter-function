@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 // Removed direct supabase import - using service layer instead
 import type { Member, MemberInsert, MemberUpdate, MemberWithDonations } from '../types/database';
 import { useSupabaseData, useSupabasePagination, useSupabaseSearch } from './useSupabaseData';
+import { TABLES } from '../lib/supabase';
 
 // Basic members hook
 /**

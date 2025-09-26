@@ -27,9 +27,7 @@ import { SupabaseAuthProvider, useSupabaseAuth } from './contexts/SupabaseAuthCo
 import { EnhancedAIProvider, useAI } from './components/ai/EnhancedAIProvider';
 
 // App Management Components
-import AppInitializer from './components/app/AppInitializer';
 import NavigationProvider, { useNavigation } from './components/app/NavigationManager';
-import NotificationManager, { NotificationProvider } from './components/app/NotificationManager';
 import PageRenderer from './components/app/PageRenderer';
 
 // Layout Components
@@ -40,7 +38,7 @@ import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { SmartNotificationCenter } from './components/notifications/SmartNotificationCenter';
 
 // UX Components
-import { useUXAnalytics } from './components/ux/hooks/useUXAnalytics';
+// import { useUXAnalytics } from './components/ux/hooks/useUXAnalytics';
 
 // Performance Hooks
 import { useGlobalShortcuts } from './hooks/useKeyboard';
@@ -62,7 +60,7 @@ import { useUserPreferences } from './hooks/useLocalStorage';
  */
 const AppContent = memo(() => {
   const { trackAIUsage: trackUsage } = useAI();
-  const { trackFeatureUse } = useUXAnalytics();
+  // const { trackFeatureUse } = useUXAnalytics();
   const navigation = useNavigation();
   const { isLoading } = useSupabaseAuth();
 
@@ -111,8 +109,8 @@ const AppContent = memo(() => {
 
     if (
       addButton &&
-      ((addButton.textContent && addButton.textContent.includes('Ekle')) ||
-        (addButton.textContent && addButton.textContent.includes('Yeni')) ||
+      ((addButton.textContent?.includes('Ekle')) ||
+        (addButton.textContent?.includes('Yeni')) ||
         addButton.querySelector('svg'))
     ) {
       (addButton as HTMLElement).click();
@@ -122,9 +120,9 @@ const AppContent = memo(() => {
   // Quick action handler with AI integration
   const handleQuickAction = useCallback(
     (actionId: string) => {
-      trackFeatureUse('quick-action', actionId, {
-        source: 'header-actions',
-      });
+      // trackFeatureUse('quick-action', actionId, {
+      //   source: 'header-actions',
+      // });
       trackUsage('quick_action', actionId);
 
       const actionMap = {
@@ -157,7 +155,7 @@ const AppContent = memo(() => {
         navigation.setCurrentSubPage(action.subPage);
       }
     },
-    [navigation, trackFeatureUse, trackUsage],
+    [navigation, trackUsage],
   );
 
   // Initialize keyboard shortcuts
@@ -195,8 +193,10 @@ const AppContent = memo(() => {
                       notifications={notificationState.notifications.map(notif => ({
                         ...notif,
                         actionable: notif.actionUrl ? true : false,
-                        timestamp: notif.createdAt,
+                        timestamp: (notif as any).createdAt || notif.created_at || new Date().toISOString(),
                         archived: false,
+                        category: 'general',
+                        priority: 'medium'
                       }))}
                       onMarkAsRead={notificationActions.markAsRead}
                       onMarkAllAsRead={notificationActions.markAllAsRead}
@@ -322,11 +322,7 @@ function AppWithErrorHandling() {
   return (
     <ErrorBoundary>
       <SupabaseAuthProvider>
-        <NotificationProvider>
-          <AppInitializer>
             <AppWithNavigation onNavigate={handleAINavigation} />
-          </AppInitializer>
-        </NotificationProvider>
       </SupabaseAuthProvider>
     </ErrorBoundary>
   );

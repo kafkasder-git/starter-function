@@ -9,7 +9,7 @@ import { logger } from '../lib/logging/logger';
 import { supabase } from '../lib/supabase';
 import { TABLES } from '../lib/supabase';
 import type { Beneficiary, BeneficiaryInsert, BeneficiaryUpdate } from '../types/beneficiary';
-import type { ApiResponse, PaginatedResponse } from './config';
+import type { ApiResponse } from './config';
 import { BaseService } from './baseService';
 
 /**

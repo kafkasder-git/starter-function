@@ -42,7 +42,7 @@ declare module 'sonner' {
       options: {
         loading: string;
         success: string | ((data: T) => string);
-        error: string | ((error: any) => string);
+        error: string | ((error: Error) => string);
       },
     ) => Promise<T>;
   }
@@ -62,7 +62,7 @@ declare module 'sonner' {
       options: {
         loading: string;
         success: string | ((data: T) => string);
-        error: string | ((error: any) => string);
+        error: string | ((error: Error) => string);
       },
     ): Promise<T>;
   }
@@ -82,17 +82,17 @@ declare class SpeechRecognition extends EventTarget {
   interimResults: boolean;
   lang: string;
   maxAlternatives: number;
-  onaudioend: ((this: SpeechRecognition, ev: Event) => any) | null;
-  onaudiostart: ((this: SpeechRecognition, ev: Event) => any) | null;
-  onend: ((this: SpeechRecognition, ev: Event) => any) | null;
-  onerror: ((this: SpeechRecognition, ev: SpeechRecognitionErrorEvent) => any) | null;
-  onnomatch: ((this: SpeechRecognition, ev: SpeechRecognitionEvent) => any) | null;
-  onresult: ((this: SpeechRecognition, ev: SpeechRecognitionEvent) => any) | null;
-  onsoundend: ((this: SpeechRecognition, ev: Event) => any) | null;
-  onsoundstart: ((this: SpeechRecognition, ev: Event) => any) | null;
-  onspeechend: ((this: SpeechRecognition, ev: Event) => any) | null;
-  onspeechstart: ((this: SpeechRecognition, ev: Event) => any) | null;
-  onstart: ((this: SpeechRecognition, ev: Event) => any) | null;
+  onaudioend: ((this: SpeechRecognition, ev: Event) => void) | null;
+  onaudiostart: ((this: SpeechRecognition, ev: Event) => void) | null;
+  onend: ((this: SpeechRecognition, ev: Event) => void) | null;
+  onerror: ((this: SpeechRecognition, ev: SpeechRecognitionErrorEvent) => void) | null;
+  onnomatch: ((this: SpeechRecognition, ev: SpeechRecognitionEvent) => void) | null;
+  onresult: ((this: SpeechRecognition, ev: SpeechRecognitionEvent) => void) | null;
+  onsoundend: ((this: SpeechRecognition, ev: Event) => void) | null;
+  onsoundstart: ((this: SpeechRecognition, ev: Event) => void) | null;
+  onspeechend: ((this: SpeechRecognition, ev: Event) => void) | null;
+  onspeechstart: ((this: SpeechRecognition, ev: Event) => void) | null;
+  onstart: ((this: SpeechRecognition, ev: Event) => void) | null;
   serviceURI: string;
   start(): void;
   stop(): void;
@@ -261,12 +261,12 @@ declare module 'lucide-react@0.487.0' {
 
 // React Hook Form
 declare module 'react-hook-form@7.55.0' {
-  export interface UseFormProps<TFieldValues = Record<string, any>> {
+  export interface UseFormProps<TFieldValues = Record<string, unknown>> {
     defaultValues?: TFieldValues;
     mode?: 'onChange' | 'onBlur' | 'onSubmit';
     reValidateMode?: 'onChange' | 'onBlur' | 'onSubmit';
-    resolver?: any;
-    context?: any;
+    resolver?: unknown;
+    context?: unknown;
     criteriaMode?: 'firstError' | 'all';
     shouldFocusError?: boolean;
     shouldUnregister?: boolean;
@@ -274,10 +274,10 @@ declare module 'react-hook-form@7.55.0' {
     delayError?: number;
   }
 
-  export interface UseFormReturn<TFieldValues = Record<string, any>> {
-    control: any;
+  export interface UseFormReturn<TFieldValues = Record<string, unknown>> {
+    control: unknown;
     formState: {
-      errors: any;
+      errors: Record<string, unknown>;
       isDirty: boolean;
       isLoading: boolean;
       isSubmitted: boolean;
@@ -286,11 +286,11 @@ declare module 'react-hook-form@7.55.0' {
       isValid: boolean;
       isValidating: boolean;
       submitCount: number;
-      touchedFields: any;
-      dirtyFields: any;
+      touchedFields: Record<string, unknown>;
+      dirtyFields: Record<string, unknown>;
     };
-    getFieldState: (name: string) => any;
-    getValues: (payload?: any) => TFieldValues;
+    getFieldState: (name: string) => { isDirty: boolean; isTouched: boolean; invalid: boolean; error?: unknown };
+    getValues: (payload?: string | string[]) => TFieldValues;
     handleSubmit: (
       onValid: (data: TFieldValues) => void,
       onInvalid?: (errors: any) => void,

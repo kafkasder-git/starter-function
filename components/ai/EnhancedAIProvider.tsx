@@ -8,7 +8,7 @@ import React, { createContext, useContext, useCallback, useState, useEffect } fr
 import { environment } from '../../lib/environment';
 import { monitoring } from '../../services/monitoringService';
 
-import { logger } from '../lib/logging/logger';
+import { logger } from '../../lib/logging/logger';
 // =============================================================================
 // TYPES AND INTERFACES
 // =============================================================================
