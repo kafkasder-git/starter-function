@@ -231,43 +231,29 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
     }
   }, [currentPage, pageSize, statusFilter, cityFilter, searchTerm]);
 
-  // Load stats with enhanced calculation for new category
+  // Load stats computed from already loaded beneficiaries to avoid extra network calls
   const loadStats = useCallback(async () => {
     try {
-      const result = await ihtiyacSahipleriService.getIstatistikler();
+      const data = Array.isArray(beneficiaries) ? beneficiaries : [];
 
-      if (result.data) {
-        // Calculate stats based on ihtiyac_sahipleri data (defensive defaults)
-        const turler = (result.data as any).turler ?? {};
-        const bakimYukumluCount = Object.entries(turler)
-          .filter(([key]) => typeof key === 'string' && (key.toLowerCase().includes('bakmakla') || key.toLowerCase().includes('yükümlü')))
-          .reduce((sum, [, count]) => sum + (Number(count) || 0), 0);
+      const bakimYukumluCount = data
+        .map((item) => (item.tur || '').toString())
+        .filter(
+          (key) =>
+            key.toLowerCase().includes('bakmakla') || key.toLowerCase().includes('yükümlü'),
+        ).length;
 
-        setStats({
-          total: (result.data as any).toplam ?? 0,
-          active: (result.data as any).toplam ?? 0, // Assume all are active for now
-          passive: 0,
-          suspended: 0,
-          underEvaluation: 0,
-          totalAidAmount: 0, // This data is not available in ihtiyac_sahipleri table
-          bakimYukumluCount,
-        });
-      } else if (result.error) {
-        logger.error('Error fetching ihtiyac_sahipleri stats:', result.error);
-
-        setStats({
-          total: 0,
-          active: 0,
-          passive: 0,
-          suspended: 0,
-          underEvaluation: 0,
-          totalAidAmount: 0,
-          bakimYukumluCount: 0,
-        });
-      }
+      setStats({
+        total: data.length,
+        active: data.length, // Varsayılan: hepsi aktif
+        passive: 0,
+        suspended: 0,
+        underEvaluation: 0,
+        totalAidAmount: 0, // Bu veri tabloda yok
+        bakimYukumluCount,
+      });
     } catch (error) {
       logger.error('Stats loading failed:', error);
-
       setStats({
         total: 0,
         active: 0,
