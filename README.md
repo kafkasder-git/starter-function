@@ -46,7 +46,6 @@ npm run dev
 - **Prettier** - Code formatting
 - **Vitest** - Unit testing
 - **Playwright** - E2E testing
-- **Sentry** - Error monitoring
 
 ## 📁 Proje Yapısı
 
@@ -207,7 +206,6 @@ npm run test:coverage
 ## 📈 Monitoring
 
 ### Error Tracking
-- **Sentry** - Error monitoring
 - **Console Logging** - Structured logging
 - **Performance Monitoring** - Core Web Vitals
 

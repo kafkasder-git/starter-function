@@ -59,7 +59,6 @@
 - **Prettier** - Code formatting
 - **Vitest** - Unit testing
 - **Playwright** - E2E testing
-- **Sentry** - Error monitoring
 
 ### CI/CD & Deployment
 - **GitHub Actions** - Automated workflows

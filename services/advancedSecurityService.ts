@@ -749,18 +749,6 @@ class AdvancedSecurityService {
     return 'low';
   }
 
-  private getSentryLevel(level: SecurityLevel): 'error' | 'warning' | 'info' {
-    switch (level) {
-      case 'critical':
-        return 'error';
-      case 'high':
-        return 'error';
-      case 'medium':
-        return 'warning';
-      case 'low':
-        return 'info';
-    }
-  }
 
   private getClientIP(): string {
     // Gerçek uygulamada bu bilgi server-side'dan gelir

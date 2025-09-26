@@ -56,6 +56,13 @@ Object.defineProperty(window, 'matchMedia', {
   })),
 });
 
+// Make __REACT_DEVTOOLS_GLOBAL_HOOK__ writable on the window object for tests
+Object.defineProperty(window, '__REACT_DEVTOOLS_GLOBAL_HOOK__', {
+  value: {},
+  configurable: true,
+  writable: true,
+});
+
 // Mock ResizeObserver
 global.ResizeObserver = vi.fn().mockImplementation(() => ({
   observe: vi.fn(),

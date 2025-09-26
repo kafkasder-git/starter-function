@@ -149,6 +149,11 @@ export class ExportService {
         case ExportFormat.SVG:
           result = await this.exportToSVG(processedData, config, exportId);
           break;
+        case 'pdf':
+        case 'excel':
+        case 'csv':
+        case 'png':
+        case 'svg':
         default:
           throw new Error(`Desteklenmeyen export formatı: ${config.format}`);
       }

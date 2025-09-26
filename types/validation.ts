@@ -64,10 +64,10 @@ export const ValidationRules = {
 
   email: (message = 'Geçerli bir e-posta adresi girin'): FieldValidationRule => ({
     email: true,
-    pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+    pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
     custom: (value) => {
       if (!value) return true;
-      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) || message;
+      return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value) || message;
     },
   }),
 
@@ -126,19 +126,19 @@ export const ValidationRules = {
   }),
 
   decimal: (message = 'Geçerli bir sayı girin'): FieldValidationRule => ({
-    pattern: /^\d+(?:\.\d{1,2})?$/,
+    pattern: /^[0-9]{1,15}(?:\.[0-9]{1,2})?$/,
     custom: (value) => {
       if (!value) return true;
-      const decimalRegex = /^\d+(\.\d{1,2})?$/;
+      const decimalRegex = /^[0-9]{1,15}(?:\.[0-9]{1,2})?$/;
       return decimalRegex.test(value.toString()) || message;
     },
   }),
 
   money: (message = 'Geçerli bir tutar girin'): FieldValidationRule => ({
-    pattern: /^\d+(?:\.\d{1,2})?$/,
+    pattern: /^[0-9]{1,15}(?:\.[0-9]{1,2})?$/,
     custom: (value) => {
       if (!value) return true;
-      const moneyRegex = /^\d+(\.\d{1,2})?$/;
+      const moneyRegex = /^[0-9]{1,15}(?:\.[0-9]{1,2})?$/;
       const numValue = parseFloat(value.toString());
       return (moneyRegex.test(value.toString()) && !isNaN(numValue) && numValue >= 0) || message;
     },

@@ -299,26 +299,15 @@ export class ErrorHandler {
   }
 
   /**
-   * Report error to external services (Sentry, etc.)
+   * Report error to external services (external error tracking services)
    */
   private reportError(error: AppError, context?: ErrorContext): void {
     // Only report high severity errors in production
-    if (process.env.NODE_ENV === 'production' && 
+    if (process.env.NODE_ENV === 'production' &&
         (error.severity === ErrorSeverity.HIGH ?? error.severity === ErrorSeverity.CRITICAL)) {
-      
-      // Sentry reporting (if configured)
-      if (typeof window !== 'undefined' && (window as any).Sentry) {
-        (window as any).Sentry.captureException(error, {
-          tags: {
-            errorType: error.type,
-            errorSeverity: error.severity,
-          },
-          extra: {
-            ...error.details,
-            ...context,
-          },
-        });
-      }
+
+      // External error reporting can be configured here
+      // Currently no external error tracking service is configured
     }
   }
 

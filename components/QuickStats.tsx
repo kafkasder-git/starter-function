@@ -41,6 +41,7 @@ export function StatCard({
         return `₺${val.toLocaleString()}`;
       case 'percentage':
         return `%${val}`;
+      case 'number':
       default:
         return val.toLocaleString();
     }

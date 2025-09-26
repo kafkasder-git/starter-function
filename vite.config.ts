@@ -1,4 +1,3 @@
-import { sentryVitePlugin } from '@sentry/vite-plugin';
 import react from '@vitejs/plugin-react-swc';
 import path from 'path';
 import { visualizer } from 'rollup-plugin-visualizer';
@@ -6,10 +5,22 @@ import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
+  define: {
+    // Set production environment
+    'process.env.NODE_ENV': JSON.stringify('production'),
+  },
+  esbuild: {
+    // Drop console and debugger in production
+    drop: ['console', 'debugger'],
+    legalComments: 'none',
+  },
   plugins: [
     react({
       // SWC plugin with proper configuration
       tsDecorators: true,
+      // Enable Fast Refresh in development
+      fastRefresh: true,
+      reactRefresh: true,
     }),
     VitePWA({
       registerType: 'autoUpdate',
@@ -95,10 +106,6 @@ export default defineConfig({
       gzipSize: true,
       brotliSize: true,
     }),
-    // sentryVitePlugin({
-    //   org: 'kafkasder-sa',
-    //   project: 'node',
-    // }),
   ],
   resolve: {
     extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
@@ -167,10 +174,16 @@ export default defineConfig({
       compress: {
         drop_console: true,
         drop_debugger: true,
-        passes: 3, // Daha fazla optimizasyon
+        passes: 5, // Daha fazla optimizasyon
         unsafe: false,
         // Daha agresif optimizasyonlar
-        pure_funcs: ['console.log', 'console.info', 'console.debug', 'console.warn'],
+        pure_funcs: [
+          'console.log',
+          'console.info',
+          'console.debug',
+          'console.warn',
+          'console.error',
+        ],
         dead_code: true,
         unused: true,
         evaluate: true,
@@ -181,6 +194,9 @@ export default defineConfig({
         if_return: true,
         join_vars: true,
         side_effects: false,
+        // Remove all React DevTools related code
+        toplevel: true,
+        module: true,
       },
       mangle: {
         safari10: true,

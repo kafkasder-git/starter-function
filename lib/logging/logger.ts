@@ -124,14 +124,9 @@ class Logger {
 
   private sendToAnalytics(level: string, message: string, args: unknown[]): void {
     // Analytics gönderimi burada implemente edilecek
-    // Örneğin: Sentry, Google Analytics, vb.
-    if (typeof window !== 'undefined' && (window as unknown as { Sentry?: unknown }).Sentry) {
-      const sentry = (window as unknown as { Sentry: { captureMessage: (msg: string, opts: { level: string; extra: { args: unknown[] } }) => void } }).Sentry;
-      sentry.captureMessage(message, {
-        level: level.toLowerCase(),
-        extra: { args },
-      });
-    }
+    // External analytics services can be integrated here
+    // Example: Google Analytics, etc.
+    // Currently no external analytics service is configured
   }
 
   debug(message: string, ...args: unknown[]): void {

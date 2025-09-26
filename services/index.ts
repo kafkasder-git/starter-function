@@ -20,7 +20,6 @@ import queryOptimizationService from './queryOptimizationService';
 import connectionPoolingService from './connectionPoolingService';
 import cachingService from './cachingService';
 import performanceMonitoringService from './performanceMonitoringService';
-import sentryService from './sentryService';
 
 // =============================================================================
 // CORE SERVICES
@@ -202,8 +201,7 @@ export { default as monitoring } from './monitoringService';
 // Export service
 export { default as exportService } from './exportService';
 
-// Error tracking
-export { default as sentryService } from './sentryService';
+// Error tracking removed
 
 // =============================================================================
 // NATIVE FEATURES
@@ -360,8 +358,7 @@ export const checkServiceHealth = async () => {
         responseTime: Date.now() - startTime,
       };
 
-      // Track service health issues with Sentry
-      sentryService.trackServiceHealth(name, 'unhealthy', Date.now() - startTime, errorMessage);
+      // Service health tracking removed
     }
   }
 

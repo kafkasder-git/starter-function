@@ -75,21 +75,7 @@ interface EnvironmentConfig {
     performanceLogging: boolean;
   };
 
-  // Sentry
-  sentry: {
-    dsn: string;
-    environment: string;
-    enabled: boolean;
-    debug: boolean;
-    tracesSampleRate: number;
-    profilesSampleRate: number;
-    enableLogs: boolean;
-    consoleLoggingLevels: string[];
-    // MCP-specific settings
-    mcpMonitoring: boolean;
-    mcpTracesSampleRate: number;
-    mcpServerName: string;
-  };
+  // External error tracking removed
 }
 
 // Environment variable getter with type safety
@@ -304,26 +290,7 @@ export const environment: EnvironmentConfig = {
     performanceLogging: getEnvBool('VITE_ENABLE_PERFORMANCE_LOGGING', true),
   },
 
-  sentry: {
-    dsn: getEnvVar(
-      'VITE_SENTRY_DSN',
-      'https://02c770edd9fe48bbe40659ff7727789d@o4510066087362560.ingest.de.sentry.io/4510066095423568',
-    ),
-    environment: getEnvVar('VITE_SENTRY_ENVIRONMENT', getEnvVar('VITE_APP_MODE', 'development')),
-    enabled: getEnvBool(
-      'VITE_SENTRY_ENABLED',
-      getEnvVar('VITE_APP_MODE', 'development') === 'production',
-    ),
-    debug: getEnvBool('VITE_SENTRY_DEBUG', getEnvBool('VITE_APP_DEBUG', true)),
-    tracesSampleRate: parseFloat(getEnvVar('VITE_SENTRY_TRACES_SAMPLE_RATE', '1.0')),
-    profilesSampleRate: parseFloat(getEnvVar('VITE_SENTRY_PROFILES_SAMPLE_RATE', '1.0')),
-    enableLogs: getEnvBool('VITE_SENTRY_ENABLE_LOGS', true),
-    consoleLoggingLevels: getEnvVar('VITE_SENTRY_CONSOLE_LEVELS', 'log,warn,error').split(','),
-    // MCP-specific settings
-    mcpMonitoring: getEnvBool('VITE_SENTRY_MCP_MONITORING', true),
-    mcpTracesSampleRate: parseFloat(getEnvVar('VITE_SENTRY_MCP_TRACES_SAMPLE_RATE', '1.0')),
-    mcpServerName: getEnvVar('VITE_SENTRY_MCP_SERVER_NAME', 'dernek-management-server'),
-  },
+  // External error tracking configuration removed
 };
 
 // Environment info for debugging

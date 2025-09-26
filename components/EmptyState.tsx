@@ -52,6 +52,7 @@ export function EmptyState({
           buttonBg:
             'bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700',
         };
+      case 'default':
       default:
         return {
           background: 'bg-gradient-to-br from-slate-50 to-gray-50',

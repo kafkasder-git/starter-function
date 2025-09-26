@@ -155,6 +155,21 @@ export class ChartExportUtils {
         case 'pie':
           this.addPieChartToSVG(svg, chartData, chartConfig, width, height);
           break;
+        case 'doughnut':
+          this.addDoughnutChartToSVG(svg, chartData, chartConfig, width, height);
+          break;
+        case 'area':
+          this.addAreaChartToSVG(svg, chartData, chartConfig, width, height);
+          break;
+        case 'scatter':
+          this.addScatterChartToSVG(svg, chartData, chartConfig, width, height);
+          break;
+        case 'heatmap':
+          this.addHeatmapChartToSVG(svg, chartData, chartConfig, width, height);
+          break;
+        case 'treemap':
+          this.addTreemapChartToSVG(svg, chartData, chartConfig, width, height);
+          break;
         default:
           throw new Error(`Unsupported chart type: ${chartConfig.type}`);
       }

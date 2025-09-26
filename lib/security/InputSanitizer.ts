@@ -14,27 +14,27 @@ const HTML_ESCAPE_MAP = new Map([
   ['/', '&#x2F;'],
 ]);
 
-// Optimized dangerous patterns using a single RegExp
+// Safe dangerous patterns using simple RegExp
 const DANGEROUS_PATTERNS = new RegExp([
-  /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/i,
-  /<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/i,
-  /<object\b[^<]*(?:(?!<\/object>)<[^<]*)*<\/object>/i,
-  /<embed\b[^<]*(?:(?!<\/embed>)<[^<]*)*<\/embed>/i,
-  /<link\b[^<]*(?:(?!<\/link>)<[^<]*)*<\/link>/i,
-  /<meta\b[^<]*(?:(?!<\/meta>)<[^<]*)*<\/meta>/i,
-  /javascript:/i,
-  /vbscript:/i,
-  /data:text\/html/i,
-  /on\w+\s*=/i,
-].map(r => r.source).join('|'), 'i');
+  '<script[^>]*>[^<]*(?:</script>)?',
+  '<iframe[^>]*>[^<]*(?:</iframe>)?',
+  '<object[^>]*>[^<]*(?:</object>)?',
+  '<embed[^>]*>[^<]*(?:</embed>)?',
+  '<link[^>]*>[^<]*(?:</link>)?',
+  '<meta[^>]*>[^<]*(?:</meta>)?',
+  'javascript:',
+  'vbscript:',
+  'data:text/html',
+  'on\\w+\\s*=',
+].join('|'), 'gi');
 
 // Optimized SQL injection patterns using a single RegExp
 const SQL_INJECTION_PATTERNS = new RegExp([
-  /(\bUNION\b|\bSELECT\b|\bINSERT\b|\bUPDATE\b|\bDELETE\b|\bDROP\b|\bCREATE\b|\bALTER\b)/i,
-  /['";\\]/,
-  /--/,
-  /\/\*|\*\//,
-].map(r => r.source).join('|'), 'i');
+  '\\bUNION\\b|\\bSELECT\\b|\\bINSERT\\b|\\bUPDATE\\b|\\bDELETE\\b|\\bDROP\\b|\\bCREATE\\b|\\bALTER\\b',
+  "['\"\\\\]",
+  '--',
+  '/\\*|\\*/',
+].join('|'), 'gi');
 
 // XSS Protection
 /**
@@ -56,10 +56,12 @@ export class XSSProtection {
     let sanitized = input.replace(DANGEROUS_PATTERNS, '');
     
     // Remove script tags and content
-    sanitized = sanitized.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+    sanitized = sanitized.replace(/<script[^>]*>.*?<\/script>/gi, '');
+    sanitized = sanitized.replace(/<script[^>]*>/gi, '');
     
     // Remove iframe tags and content
-    sanitized = sanitized.replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '');
+    sanitized = sanitized.replace(/<iframe[^>]*>.*?<\/iframe>/gi, '');
+    sanitized = sanitized.replace(/<iframe[^>]*>/gi, '');
     
     // Remove event handlers
     sanitized = sanitized.replace(/on\w+\s*=\s*["'][^"']*["']/gi, '');
