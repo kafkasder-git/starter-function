@@ -174,40 +174,17 @@ const AppContent = memo(() => {
       <div className="h-screen flex flex-col bg-gradient-to-br from-slate-50 via-gray-50 to-slate-100 overflow-hidden">
         {/* Header */}
         <div className="shadow-lg relative z-40" data-testid="header" data-onboarding="header">
-          <NotificationManager>
-            {(notificationState, notificationActions) => (
-              <Header
-                onNavigateToProfile={navigation.navigateToProfile}
-                onNavigateToSettings={navigation.navigateToSettings}
-                onNavigateToUserManagement={navigation.navigateToUserManagement}
-                onNavigate={navigation.moduleChange}
-                onQuickAction={handleQuickAction}
-                currentModule={navigation.activeModule}
-                onMobileMenuToggle={() => {
-                  setIsMobileSidebarOpen(!isMobileSidebarOpen);
-                }}
-                notificationComponent={
-                  <SafeWrapper componentName="SmartNotificationCenter">
-                    <SmartNotificationCenter
-                      notifications={notificationState.notifications.map(notif => ({
-                        ...notif,
-                        actionable: notif.actionUrl ? true : false,
-                        timestamp: (notif as any).createdAt || notif.created_at || new Date().toISOString(),
-                        archived: false,
-                        category: 'general',
-                        priority: 'medium'
-                      }))}
-                      onMarkAsRead={notificationActions.markAsRead}
-                      onMarkAllAsRead={notificationActions.markAllAsRead}
-                      onArchive={notificationActions.archive}
-                      onDelete={notificationActions.delete}
-                      onAction={notificationActions.handleAction}
-                    />
-                  </SafeWrapper>
-                }
-              />
-            )}
-          </NotificationManager>
+          <Header
+            onNavigateToProfile={navigation.navigateToProfile}
+            onNavigateToSettings={navigation.navigateToSettings}
+            onNavigateToUserManagement={navigation.navigateToUserManagement}
+            onNavigate={navigation.moduleChange}
+            onQuickAction={handleQuickAction}
+            currentModule={navigation.activeModule}
+            onMobileMenuToggle={() => {
+              setIsMobileSidebarOpen(!isMobileSidebarOpen);
+            }}
+          />
         </div>
 
         {/* Main Layout */}
@@ -271,16 +248,7 @@ const AppWithNavigation = memo(({
   const [currentPage, setCurrentPage] = useState('dashboard');
   const [currentSubPage, setCurrentSubPage] = useState('');
 
-  // Navigation handler
-  const handleNavigate = useCallback(
-    (module: string, page?: string, subPage?: string) => {
-      setCurrentModule(module);
-      if (page) setCurrentPage(page);
-      if (subPage !== undefined) setCurrentSubPage(subPage);
-      onNavigate(module, page, subPage);
-    },
-    [onNavigate],
-  );
+  // Navigation handler removed
 
   return (
     <NavigationProvider

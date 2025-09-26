@@ -18,11 +18,7 @@ const BeneficiaryDetailPageComprehensive = lazy(
 
 // Demo components removed
 
-const MeetingsPage = lazy(() =>
-  import('../pages/MeetingsPage').then((module) => ({
-    default: module.MeetingsPage,
-  })),
-);
+// MeetingsPage removed
 
 // AI Assistant page removed
 
