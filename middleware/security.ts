@@ -279,7 +279,7 @@ export class SecurityMiddleware {
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: https:",
       "font-src 'self'",
-      "connect-src 'self' https://api.supabase.co wss://realtime.supabase.co",
+      "connect-src 'self' https://api.supabase.co wss://realtime.supabase.co https://*.supabase.co wss://*.supabase.co",
       "frame-ancestors 'none'",
     ].join('; ');
 
