@@ -1,7 +1,5 @@
-import type { ReactElement } from 'react';
-import React from 'react';
-import type { RenderOptions } from '@testing-library/react';
-import { render } from '@testing-library/react';
+import React, { type ReactElement } from 'react';
+import { render, type RenderOptions } from '@testing-library/react';
 import { vi } from 'vitest';
 // import { SupabaseAuthProvider } from '../../contexts/SupabaseAuthContext';
 // import { ToastProvider } from '../../components/ToastProvider';

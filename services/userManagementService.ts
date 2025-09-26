@@ -99,7 +99,7 @@ export interface UserActivity {
 
 // Placeholder service for user management
 const userManagementService = {
-  async getUsers(filters: UserFilters): Promise<UserListResponse> {
+  async getUsers(_filters: UserFilters): Promise<UserListResponse> {
     // Placeholder implementation
     return {
       users: [],
@@ -110,27 +110,27 @@ const userManagementService = {
     };
   },
 
-  async createUser(request: CreateUserRequest): Promise<ManagedUser> {
+  async createUser(_request: CreateUserRequest): Promise<ManagedUser> {
     // Placeholder implementation
     throw new Error('Not implemented');
   },
 
-  async updateUser(id: string, request: UpdateUserRequest): Promise<ManagedUser> {
+  async updateUser(_id: string, _request: UpdateUserRequest): Promise<ManagedUser> {
     // Placeholder implementation
     throw new Error('Not implemented');
   },
 
-  async deleteUser(id: string): Promise<void> {
+  async deleteUser(_id: string): Promise<void> {
     // Placeholder implementation
     throw new Error('Not implemented');
   },
 
-  async resetUserPassword(id: string, newPassword: string): Promise<void> {
+  async resetUserPassword(_id: string, _newPassword: string): Promise<void> {
     // Placeholder implementation
     throw new Error('Not implemented');
   },
 
-  async getUserActivities(userId: string, limit: number): Promise<UserActivity[]> {
+  async getUserActivities(_userId: string, _limit: number): Promise<UserActivity[]> {
     // Placeholder implementation
     return [];
   },

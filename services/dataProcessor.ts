@@ -324,7 +324,7 @@ export class DataProcessor {
 
     // Zaman serisi formatına dönüştür
     return Object.keys(grouped)
-      .sort()
+      .sort((a, b) => a.localeCompare(b))
       .map((date) => ({
         date,
         values: {

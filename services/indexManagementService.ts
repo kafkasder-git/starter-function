@@ -307,7 +307,7 @@ export class IndexManagementService {
     const seen = new Map<string, DatabaseIndex>();
 
     for (const index of indexes) {
-      const key = `${index.tableName}:${index.columnNames.sort().join(',')}`;
+      const key = `${index.tableName}:${index.columnNames.sort((a, b) => a.localeCompare(b)).join(',')}`;
       const existing = seen.get(key);
 
       if (existing && !existing.isPrimary && !index.isPrimary) {
@@ -506,7 +506,7 @@ export class IndexManagementService {
   private deduplicateSuggestions(suggestions: IndexSuggestion[]): IndexSuggestion[] {
     const seen = new Set<string>();
     return suggestions.filter((suggestion) => {
-      const key = `${suggestion.table}:${suggestion.columns.sort().join(',')}:${suggestion.reason}`;
+      const key = `${suggestion.table}:${suggestion.columns.sort((a, b) => a.localeCompare(b)).join(',')}:${suggestion.reason}`;
       if (seen.has(key)) {
         return false;
       }

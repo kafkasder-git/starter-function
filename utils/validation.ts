@@ -60,7 +60,7 @@ export const commonSchemas = {
   // Phone validation (Turkish)
   phone: z
     .string()
-    .regex(/^(\+90|90|0)?\s*([0-9]\s*){10}$/, 'Geçersiz telefon numarası formatı')
+    .regex(/^(\+90|90|0)?[0-9]{10}$/, 'Geçersiz telefon numarası formatı')
     .transform((val) => val.replace(/\s/g, '')),
 
   // TC Kimlik No validation
@@ -395,7 +395,7 @@ export class ValidationService {
    * Sanitize string input
    */
   static sanitize(input: string): string {
-    const scriptRegex = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi;
+    const scriptRegex = /<script[^>]*>.*?<\/script>/gi;
     const htmlRegex = /<[^>]*>/g;
     const jsProtocolRegex = /javascript:/gi;
     const eventHandlerRegex = /on\w+\s*=/gi;

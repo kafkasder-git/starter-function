@@ -137,7 +137,7 @@ export abstract class BaseService<
       }
     }
 
-    return Array.from(new Set(values)).sort();
+    return Array.from(new Set(values)).sort((a, b) => a.localeCompare(b));
   }
 
   /**
