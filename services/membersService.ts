@@ -283,11 +283,11 @@ export class MembersService {
 
       const stats: MemberStats = {
         total,
-        active: statusCounts['active'] ?? 0,
-        inactive: statusCounts['inactive'] ?? 0,
-        suspended: statusCounts['suspended'] ?? 0,
-        expired: statusCounts['expired'] ?? 0,
-        pending: statusCounts['pending'] ?? 0,
+        active: statusCounts.active ?? 0,
+        inactive: statusCounts.inactive ?? 0,
+        suspended: statusCounts.suspended ?? 0,
+        expired: statusCounts.expired ?? 0,
+        pending: statusCounts.pending ?? 0,
         byMembershipType: membershipTypeCounts,
         byCity: cityCounts,
         byProfession: professionCounts,

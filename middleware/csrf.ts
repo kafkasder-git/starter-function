@@ -306,7 +306,7 @@ export function getCSRFTokenInfo(token: string): CSRFTokenEntry | null {
  * @class CSRFProtection
  */
 export class CSRFProtection {
-  private static tokens = new Map<string, { token: string; userId: string; expiresAt: number }>();
+  private static readonly tokens = new Map<string, { token: string; userId: string; expiresAt: number }>();
 
   static generateToken(userId: string): string {
     const token = generateToken();
@@ -563,7 +563,7 @@ export async function rateLimit(request: Request): Promise<RateLimitResult> {
   store.set(key, entry);
 
   const remaining = Math.max(0, config.maxRequests - entry.count);
-  const resetTime = entry.resetTime;
+  const {resetTime} = entry;
 
   // Check if limit exceeded
   if (entry.count > config.maxRequests) {
@@ -615,7 +615,7 @@ export function createRateLimit(config: RateLimitConfig) {
     store.set(key, entry);
 
     const remaining = Math.max(0, config.maxRequests - entry.count);
-    const resetTime = entry.resetTime;
+    const {resetTime} = entry;
 
     if (entry.count > config.maxRequests) {
       const retryAfter = Math.ceil((resetTime - now) / 1000);
@@ -658,9 +658,9 @@ export function cleanup(): void {
  * @class RateLimiter
  */
 export class RateLimiter {
-  private static attempts = new Map<string, { count: number; resetTime: number; }>();
+  private static readonly attempts = new Map<string, { count: number; resetTime: number; }>();
 
-  static checkLimit(userId: string, maxAttempts: number = 5, windowMs: number = 15 * 60 * 1000): boolean {
+  static checkLimit(userId: string, maxAttempts = 5, windowMs: number = 15 * 60 * 1000): boolean {
     const key = userId;
     const now = Date.now();
 
@@ -675,7 +675,7 @@ export class RateLimiter {
     return entry.count <= maxAttempts;
   }
 
-  static getRemainingAttempts(userId: string, maxAttempts: number = 5): number {
+  static getRemainingAttempts(userId: string, maxAttempts = 5): number {
     const entry = this.attempts.get(userId);
     if (!entry) return maxAttempts;
     return Math.max(0, maxAttempts - entry.count);

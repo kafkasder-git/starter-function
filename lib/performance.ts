@@ -337,7 +337,7 @@ export const PerformanceUtils = {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
           const img = entry.target as HTMLImageElement;
-          img.setAttribute('src', img.dataset['src'] ?? '');
+          img.setAttribute('src', img.dataset.src ?? '');
           img.removeAttribute('data-src');
           imageObserver.unobserve(img);
         }

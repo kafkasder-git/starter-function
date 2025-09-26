@@ -8,18 +8,11 @@
 import {
   Activity,
   AlertTriangle,
-  Building,
-  CheckCircle,
-  Clock,
   Edit,
-  Key,
-  Mail,
   MoreVertical,
-  Phone,
   Plus,
   RefreshCw,
   Search,
-  Shield,
   Trash2,
   UserCheck,
   UserX,
@@ -27,10 +20,8 @@ import {
   X,
   XCircle,
 } from 'lucide-react';
-import { AnimatePresence, motion } from 'motion/react';
 import { useEffect, useState } from 'react';
 
-import type { ControllerRenderProps } from 'react-hook-form';
 import { Alert, AlertDescription } from '../ui/alert';
 import {
   AlertDialog,
@@ -41,18 +32,15 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from '../ui/alert-dialog';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { Checkbox } from '../ui/checkbox';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -65,7 +53,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import {
@@ -76,9 +63,7 @@ import {
   SelectValue,
 } from '../ui/select';
 import { Skeleton } from '../ui/skeleton';
-import { Switch } from '../ui/switch';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
-import { Textarea } from '../ui/textarea';
 import { useToast } from '../../hooks/use-toast';
 import { userManagementService } from '../../services/userManagementService';
 
@@ -258,12 +243,12 @@ const UserTable = ({
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuLabel>İşlemler</DropdownMenuLabel>
-                    <DropdownMenuItem onClick={() => onEdit(user)}>
+                    <DropdownMenuItem onClick={() => { onEdit(user); }}>
                       <Edit className="mr-2 h-4 w-4" />
                       Düzenle
                     </DropdownMenuItem>
                     <DropdownMenuItem 
-                      onClick={() => onToggleStatus(user.id, user.status === 'active' ? 'inactive' : 'active')}
+                      onClick={() => { onToggleStatus(user.id, user.status === 'active' ? 'inactive' : 'active'); }}
                     >
                       {user.status === 'active' ? (
                         <>
@@ -279,7 +264,7 @@ const UserTable = ({
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem 
-                      onClick={() => onDelete(user.id)}
+                      onClick={() => { onDelete(user.id); }}
                       className="text-red-600"
                     >
                       <Trash2 className="mr-2 h-4 w-4" />
@@ -331,7 +316,7 @@ const UserForm = ({
             id="email"
             type="email"
             value={formData.email}
-            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            onChange={(e) => { setFormData({ ...formData, email: e.target.value }); }}
             required
           />
         </div>
@@ -340,7 +325,7 @@ const UserForm = ({
           <Input
             id="full_name"
             value={formData.full_name}
-            onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
+            onChange={(e) => { setFormData({ ...formData, full_name: e.target.value }); }}
             required
           />
         </div>
@@ -349,7 +334,7 @@ const UserForm = ({
       <div className="grid grid-cols-2 gap-4">
         <div>
           <Label htmlFor="role">Rol</Label>
-          <Select value={formData.role} onValueChange={(value) => setFormData({ ...formData, role: value as any })}>
+          <Select value={formData.role} onValueChange={(value) => { setFormData({ ...formData, role: value as any }); }}>
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
@@ -362,7 +347,7 @@ const UserForm = ({
         </div>
         <div>
           <Label htmlFor="status">Durum</Label>
-          <Select value={formData.status} onValueChange={(value) => setFormData({ ...formData, status: value as any })}>
+          <Select value={formData.status} onValueChange={(value) => { setFormData({ ...formData, status: value as any }); }}>
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
@@ -381,7 +366,7 @@ const UserForm = ({
           <Input
             id="phone"
             value={formData.phone}
-            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+            onChange={(e) => { setFormData({ ...formData, phone: e.target.value }); }}
           />
         </div>
         <div>
@@ -389,7 +374,7 @@ const UserForm = ({
           <Input
             id="organization"
             value={formData.organization}
-            onChange={(e) => setFormData({ ...formData, organization: e.target.value })}
+            onChange={(e) => { setFormData({ ...formData, organization: e.target.value }); }}
           />
         </div>
       </div>
@@ -530,7 +515,7 @@ export function UserManagementPageReal() {
           </Button>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button onClick={() => setEditingUser(undefined)}>
+              <Button onClick={() => { setEditingUser(undefined); }}>
                 <Plus className="h-4 w-4 mr-2" />
                 Yeni Kullanıcı
               </Button>
@@ -547,7 +532,7 @@ export function UserManagementPageReal() {
               <UserForm
                 user={editingUser}
                 onSubmit={handleUserSubmit}
-                onCancel={() => setIsDialogOpen(false)}
+                onCancel={() => { setIsDialogOpen(false); }}
                 isLoading={false}
               />
             </DialogContent>
@@ -561,7 +546,7 @@ export function UserManagementPageReal() {
           <AlertTriangle className="h-4 w-4" />
           <AlertDescription className="flex items-center justify-between">
             {error}
-            <Button variant="ghost" size="sm" onClick={() => setError(null)}>
+            <Button variant="ghost" size="sm" onClick={() => { setError(null); }}>
               <X className="h-4 w-4" />
             </Button>
           </AlertDescription>
@@ -580,7 +565,7 @@ export function UserManagementPageReal() {
               <Input
                 placeholder="Kullanıcı ara..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => { setSearchTerm(e.target.value); }}
                 className="pl-10"
               />
             </div>
@@ -600,7 +585,7 @@ export function UserManagementPageReal() {
       />
 
       {/* Delete Confirmation Dialog */}
-      <AlertDialog open={!!deleteUserId} onOpenChange={() => setDeleteUserId(null)}>
+      <AlertDialog open={!!deleteUserId} onOpenChange={() => { setDeleteUserId(null); }}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Kullanıcıyı Sil</AlertDialogTitle>

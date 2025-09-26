@@ -278,7 +278,7 @@ export const createServices = (_config?: {
     files: fileStorageService,
 
     // Utilities
-    monitoring: monitoring,
+    monitoring,
     export: exportService,
 
     // AI services removed

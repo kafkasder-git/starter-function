@@ -187,7 +187,7 @@ export class ColorContrastTester {
         }
       }
 
-      const fontWeight = style.fontWeight;
+      const {fontWeight} = style;
       const fontWeightNum =
         fontWeight === 'bold' || fontWeight === 'bolder'
           ? 700

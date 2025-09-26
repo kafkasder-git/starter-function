@@ -5,7 +5,6 @@
  * @version 1.0.0
  */
 
-import { z } from 'zod';
 import { ServiceError, ServiceErrorCode } from '../../services/config';
 
 // Rate limiting configuration
@@ -281,7 +280,7 @@ export class InputSanitizer {
     const normalizedType = contentType.toLowerCase().split(';')[0].trim();
     return allowedTypes.some(
       (allowed) =>
-        normalizedType === allowed.toLowerCase() ?? normalizedType.startsWith(allowed.toLowerCase() + '/'),
+        normalizedType === allowed.toLowerCase() ?? normalizedType.startsWith(`${allowed.toLowerCase()  }/`),
     );
   }
 }
@@ -429,7 +428,7 @@ export class APIVersionManager {
   }
 
   static isVersionDeprecated(version: string): boolean {
-    const currentVersion = DEFAULT_SECURITY_CONFIG.apiVersioning.currentVersion;
+    const {currentVersion} = DEFAULT_SECURITY_CONFIG.apiVersioning;
     return version !== currentVersion && this.isVersionSupported(version);
   }
 

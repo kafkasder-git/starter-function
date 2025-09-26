@@ -1,5 +1,4 @@
 import { configureAxe } from 'jest-axe';
-import axeCore from 'axe-core';
 
 // Configure axe-core for accessibility testing
 export const axe = configureAxe({

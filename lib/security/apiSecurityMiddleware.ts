@@ -5,7 +5,6 @@
  * @version 1.0.0
  */
 
-import { z } from 'zod';
 import { ServiceError, ServiceErrorCode } from '../../services/config';
 import { logger } from './logging/logger';
 import {
@@ -17,7 +16,6 @@ import {
   SecurityHeaders,
   DEFAULT_SECURITY_CONFIG,
   type APISecurityConfig,
-  type RateLimitConfig,
 } from './apiSecurity';
 
 // Request context interface

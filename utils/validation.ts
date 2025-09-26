@@ -395,12 +395,17 @@ export class ValidationService {
    * Sanitize string input
    */
   static sanitize(input: string): string {
+    const scriptRegex = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi;
+    const htmlRegex = /<[^>]*>/g;
+    const jsProtocolRegex = /javascript:/gi;
+    const eventHandlerRegex = /on\w+\s*=/gi;
+    
     return input
       .trim()
-      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '') // Remove script tags
-      .replace(/<[^>]*>/g, '') // Remove HTML tags
-      .replace(/javascript:/gi, '') // Remove javascript: protocols
-      .replace(/on\w+\s*=/gi, '') // Remove event handlers
+      .replace(scriptRegex, '') // Remove script tags
+      .replace(htmlRegex, '') // Remove HTML tags
+      .replace(jsProtocolRegex, '') // Remove javascript: protocols
+      .replace(eventHandlerRegex, '') // Remove event handlers
       .slice(0, 1000); // Limit length
   }
 

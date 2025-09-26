@@ -1,4 +1,3 @@
-import { AccessibilityTestSuite } from './automated-testing';
 import { testKeyboardNavigation } from './keyboard-navigation';
 import { testScreenReaderAccessibility } from './screen-reader';
 import { testColorContrast } from './color-contrast';

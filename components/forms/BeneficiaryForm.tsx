@@ -379,7 +379,7 @@ export default function BeneficiaryForm({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <Label htmlFor="category">Kategori *</Label>
-            <Select onValueChange={(value) => setValue('category', value as any)}>
+            <Select onValueChange={(value) => { setValue('category', value as any); }}>
               <SelectTrigger>
                 <SelectValue placeholder="Kategori seçin" />
               </SelectTrigger>
@@ -400,7 +400,7 @@ export default function BeneficiaryForm({
 
           <div>
             <Label htmlFor="aid_type">Yardım Türü *</Label>
-            <Select onValueChange={(value) => setValue('aid_type', value as any)}>
+            <Select onValueChange={(value) => { setValue('aid_type', value as any); }}>
               <SelectTrigger>
                 <SelectValue placeholder="Yardım türü seçin" />
               </SelectTrigger>
@@ -445,7 +445,7 @@ export default function BeneficiaryForm({
             <Checkbox
               id="linked_orphan"
               checked={watchedValues.linked_orphan}
-              onCheckedChange={(checked) => setValue('linked_orphan', !!checked)}
+              onCheckedChange={(checked) => { setValue('linked_orphan', !!checked); }}
             />
             <Label htmlFor="linked_orphan">Yetim ile bağlantılı</Label>
           </div>
@@ -454,7 +454,7 @@ export default function BeneficiaryForm({
             <Checkbox
               id="linked_card"
               checked={watchedValues.linked_card}
-              onCheckedChange={(checked) => setValue('linked_card', !!checked)}
+              onCheckedChange={(checked) => { setValue('linked_card', !!checked); }}
             />
             <Label htmlFor="linked_card">Kart ile bağlantılı</Label>
           </div>
@@ -520,7 +520,7 @@ export default function BeneficiaryForm({
               <h4 className="font-medium">Aile Üyesi {index + 1}</h4>
               <Button
                 type="button"
-                onClick={() => removeFamilyMember(index)}
+                onClick={() => { removeFamilyMember(index); }}
                 variant="outline"
                 size="sm"
               >
@@ -591,7 +591,7 @@ export default function BeneficiaryForm({
               <h4 className="font-medium">İhtiyaç {index + 1}</h4>
               <Button
                 type="button"
-                onClick={() => removeNeed(index)}
+                onClick={() => { removeNeed(index); }}
                 variant="outline"
                 size="sm"
               >
@@ -610,7 +610,7 @@ export default function BeneficiaryForm({
 
               <div>
                 <Label htmlFor={`needs.${index}.priority`}>Öncelik</Label>
-                <Select onValueChange={(value) => setValue(`needs.${index}.priority`, value as any)}>
+                <Select onValueChange={(value) => { setValue(`needs.${index}.priority`, value as any); }}>
                   <SelectTrigger>
                     <SelectValue placeholder="Öncelik seçin" />
                   </SelectTrigger>

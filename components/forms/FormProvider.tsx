@@ -22,15 +22,13 @@ interface FormState {
   isDirty: boolean;
 }
 
-interface FormValidationSchema {
-  [key: string]: {
+type FormValidationSchema = Record<string, {
     required?: boolean;
     minLength?: number;
     maxLength?: number;
     pattern?: RegExp;
     custom?: (value: any) => string | boolean;
-  };
-}
+  }>;
 
 interface FormContextType {
   formState: FormState;
@@ -195,8 +193,8 @@ export function FormProvider({
 
   const getFieldProps = (fieldName: string) => ({
     value: formState.values[fieldName] || '',
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => setFieldValue(fieldName, e.target.value),
-    onBlur: () => setFieldTouched(fieldName, true),
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => { setFieldValue(fieldName, e.target.value); },
+    onBlur: () => { setFieldTouched(fieldName, true); },
     error: formState.errors[fieldName],
     touched: formState.touched[fieldName],
   });

@@ -1,4 +1,3 @@
-import { fireEvent, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 // Keyboard navigation testing utilities
@@ -67,7 +66,7 @@ export class KeyboardNavigationTester {
 
     for (let i = 0; i < focusableElements.length; i++) {
       await this.user.tab();
-      const activeElement = document.activeElement;
+      const {activeElement} = document;
 
       if (activeElement) {
         focusOrder.push(activeElement);
@@ -119,7 +118,7 @@ export class KeyboardNavigationTester {
 
     for (let i = focusableElements.length - 1; i >= 0; i--) {
       await this.user.tab({ shift: true });
-      const activeElement = document.activeElement;
+      const {activeElement} = document;
 
       if (activeElement) {
         focusOrder.push(activeElement);

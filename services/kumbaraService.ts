@@ -25,8 +25,8 @@ class KumbaraService {
   private readonly defaultHeaders: HeadersInit;
 
   constructor() {
-    this.baseUrl = (import.meta?.env?.['VITE_API_URL']) || process.env['VITE_API_URL'] || 'http://localhost:3000/api';
-    this.apiKey = (import.meta?.env?.['VITE_API_KEY']) || process.env['VITE_API_KEY'] || '';
+    this.baseUrl = (import.meta?.env?.VITE_API_URL) || process.env.VITE_API_URL || 'http://localhost:3000/api';
+    this.apiKey = (import.meta?.env?.VITE_API_KEY) || process.env.VITE_API_KEY || '';
     this.defaultHeaders = {
       'Content-Type': 'application/json',
       Accept: 'application/json',

@@ -591,7 +591,7 @@ class DeepLinkingService {
     } else {
       // Mark last item as active
       if (breadcrumbs.length > 0) {
-        breadcrumbs[breadcrumbs.length - 1]!.active = true;
+        breadcrumbs[breadcrumbs.length - 1].active = true;
       }
     }
 

@@ -11,16 +11,13 @@ import type {
   DateRange,
   DonationAnalytics,
   DonorTypeData,
-  ExportConfig,
   FinancialData,
   ImpactData,
   ReportFilters,
   ReportResponse,
-  ReportingError,
   FilterConfig,
   TimeSeriesData,
 } from '../types/reporting';
-import { ErrorSeverity, ErrorType } from '../types/reporting';
 import { supabase } from '../lib/supabase';
 import { logger } from '../lib/logging/logger';
 

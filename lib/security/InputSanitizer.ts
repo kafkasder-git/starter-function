@@ -3,7 +3,6 @@
  * Protects against XSS, SQL Injection, and other security threats
  */
 
-import DOMPurify from 'dompurify';
 
 // Optimized HTML escape map using a Map for O(1) lookup
 const HTML_ESCAPE_MAP = new Map([
@@ -150,7 +149,7 @@ export class SQLInjectionProtection {
  * @class CSRFProtection
  */
 export class CSRFProtection {
-  private static tokens = new Map<string, { token: string; expires: number }>();
+  private static readonly tokens = new Map<string, { token: string; expires: number }>();
   private static readonly TOKEN_LENGTH = 32;
   private static readonly TOKEN_EXPIRY = 30 * 60 * 1000; // 30 minutes
 
@@ -196,7 +195,7 @@ export class CSRFProtection {
  * @class RateLimiter
  */
 export class RateLimiter {
-  private static attempts = new Map<string, { count: number; resetTime: number }>();
+  private static readonly attempts = new Map<string, { count: number; resetTime: number }>();
   private static readonly MAX_ATTEMPTS = 5;
   private static readonly WINDOW_MS = 15 * 60 * 1000; // 15 minutes
 
@@ -315,7 +314,7 @@ export class InputSanitizer {
       .trim();
   }
 
-  static sanitizeUserInput(input: string, type: string = 'text'): string {
+  static sanitizeUserInput(input: string, type = 'text'): string {
     switch (type) {
       case 'email':
         return this.sanitizeEmail(input);

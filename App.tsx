@@ -31,10 +31,8 @@ import PageRenderer from './components/app/PageRenderer';
 
 // Layout Components
 import { Header } from './components/Header';
-import { SafeWrapper } from './components/SafeWrapper';
 import { Sidebar } from './components/Sidebar';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
-import { SmartNotificationCenter } from './components/notifications/SmartNotificationCenter';
 
 // UX Components
 // import { useUXAnalytics } from './components/ux/hooks/useUXAnalytics';

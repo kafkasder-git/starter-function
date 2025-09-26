@@ -43,7 +43,7 @@ abstract class BaseAggregationStrategy implements AggregationStrategy {
 
   protected extractValues(items: Record<string, unknown>[], field?: string): number[] {
     const values: (number | null)[] = items.map((item) => {
-      const value = field ? item[field] : item['value'];
+      const value = field ? item[field] : item.value;
       return typeof value === 'number' && !isNaN(value) ? value : null;
     });
 
@@ -315,10 +315,10 @@ export class DataProcessor {
     // Tarihe göre grupla
     const grouped = filteredData.reduce((acc: Record<string, T[]>, item) => {
       const date = new Date(String(item[dateField])).toISOString().split('T')[0];
-      if (!acc[date!]) {
-        acc[date!] = [];
+      if (!acc[date]) {
+        acc[date] = [];
       }
-      acc[date!].push(item);
+      acc[date].push(item);
       return acc;
     }, {});
 
@@ -517,16 +517,16 @@ export class DataProcessor {
   private static passesDateFilter<T extends Record<string, unknown>>(item: T, dateRange?: DateRange): boolean {
     if (!dateRange) return true;
 
-    const itemDate = new Date(String(item['created_at'] || item['date']));
+    const itemDate = new Date(String(item.created_at || item.date));
     return !isNaN(itemDate.getTime()) && itemDate >= dateRange.start && itemDate <= dateRange.end;
   }
 
   private static passesCategoryFilter<T extends Record<string, unknown>>(item: T, categories: Set<string> | null): boolean {
-    return !categories || categories.has(String(item['category'] || item['type']));
+    return !categories || categories.has(String(item.category || item.type));
   }
 
   private static passesStatusFilter<T extends Record<string, unknown>>(item: T, statusSet: Set<string> | null): boolean {
-    return !statusSet || statusSet.has(String(item['status']));
+    return !statusSet || statusSet.has(String(item.status));
   }
 
   private static passesAmountFilter<T extends Record<string, unknown>>(
@@ -535,7 +535,7 @@ export class DataProcessor {
   ): boolean {
     if (!amountRange) return true;
 
-    const amount = typeof item['amount'] === 'number' ? item['amount'] : 0;
+    const amount = typeof item.amount === 'number' ? item.amount : 0;
     return amount >= amountRange.min && amount <= amountRange.max;
   }
 
@@ -555,8 +555,8 @@ export class DataProcessor {
 
     try {
       const sortedData = [...data].sort((a, b) => {
-         const dateA = new Date(String(a['created_at'] || a['date'])).getTime();
-         const dateB = new Date(String(b['created_at'] || b['date'])).getTime();
+         const dateA = new Date(String(a.created_at || a.date)).getTime();
+         const dateB = new Date(String(b.created_at || b.date)).getTime();
          return dateA - dateB;
        });
 

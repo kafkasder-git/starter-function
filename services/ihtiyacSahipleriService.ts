@@ -52,24 +52,24 @@ export const ihtiyacSahipleriService = {
       logger.info('📊 Initial query built for table: ihtiyac_sahipleri');
       
       // Apply filters if provided
-      if (filters['status']) {
-        query = query.eq('status', filters['status']);
-        logger.info('🔍 Applied status filter:', filters['status']);
+      if (filters.status) {
+        query = query.eq('status', filters.status);
+        logger.info('🔍 Applied status filter:', filters.status);
       }
       
-      if (filters['sehir']) {
-        query = query.eq('sehir', filters['sehir']);
-        logger.info('🔍 Applied sehir filter:', filters['sehir']);
+      if (filters.sehir) {
+        query = query.eq('sehir', filters.sehir);
+        logger.info('🔍 Applied sehir filter:', filters.sehir);
       }
       
-      if (filters['kategori']) {
-        query = query.eq('kategori', filters['kategori']);
-        logger.info('🔍 Applied kategori filter:', filters['kategori']);
+      if (filters.kategori) {
+        query = query.eq('kategori', filters.kategori);
+        logger.info('🔍 Applied kategori filter:', filters.kategori);
       }
       
-      if (filters['search']) {
-        query = query.or(`ad.ilike.%${filters['search']}%,soyad.ilike.%${filters['search']}%,tc_no.ilike.%${filters['search']}%`);
-        logger.info('🔍 Applied search filter:', filters['search']);
+      if (filters.search) {
+        query = query.or(`ad.ilike.%${filters.search}%,soyad.ilike.%${filters.search}%,tc_no.ilike.%${filters.search}%`);
+        logger.info('🔍 Applied search filter:', filters.search);
       }
       
       logger.info('📄 Applying pagination - offset:', offset, 'limit:', limit);

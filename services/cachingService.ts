@@ -262,7 +262,7 @@ export class CachingService {
 
     // Decompress if needed
     let {data} = entry;
-    if (entry.metadata?.['compressed']) {
+    if (entry.metadata?.compressed) {
       data = this.decompressData(data);
     }
 

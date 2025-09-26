@@ -214,7 +214,7 @@ export class SecurityMiddleware {
   ) {
     const url = new URL(request.url);
     const path = url.pathname;
-    const method = request.method;
+    const {method} = request;
 
     // Define permission requirements for different endpoints
     const permissionMap: Record<string, { methods: string[]; permissions: string[] }> = {

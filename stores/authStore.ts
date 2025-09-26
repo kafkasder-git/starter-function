@@ -98,10 +98,10 @@ const buildUserFromSupabaseUser = (supabaseUser: SupabaseUser): User => {
   const appMetadata = supabaseUser.app_metadata;
 
   let role: UserRole = UserRole.VIEWER;
-  if (appMetadata['role'] && Object.values(UserRole).includes(appMetadata['role'] as UserRole)) {
-    role = appMetadata['role'] as UserRole;
-  } else if (metadata['role'] && Object.values(UserRole).includes(metadata['role'] as UserRole)) {
-    role = metadata['role'] as UserRole;
+  if (appMetadata.role && Object.values(UserRole).includes(appMetadata.role as UserRole)) {
+    role = appMetadata.role as UserRole;
+  } else if (metadata.role && Object.values(UserRole).includes(metadata.role as UserRole)) {
+    role = metadata.role as UserRole;
   }
 
   const {email} = supabaseUser;
@@ -112,9 +112,9 @@ const buildUserFromSupabaseUser = (supabaseUser: SupabaseUser): User => {
   return {
     id: supabaseUser.id,
     email,
-    name: (metadata['name'] as string) || (metadata['full_name'] as string) || email.split('@')[0] || 'User',
+    name: (metadata.name as string) || (metadata.full_name as string) || email.split('@')[0] || 'User',
     role,
-    avatar: (metadata['avatar_url'] as string) || (appMetadata['avatar_url'] as string),
+    avatar: (metadata.avatar_url as string) || (appMetadata.avatar_url as string),
     permissions: ROLE_PERMISSIONS[role],
     metadata: { ...metadata, ...appMetadata },
     lastLogin: supabaseUser.last_sign_in_at ? new Date(supabaseUser.last_sign_in_at) : undefined,

@@ -308,7 +308,7 @@ export class ExportService {
     });
 
     // Simulate PDF generation (only in non-production)
-    if (typeof process !== 'undefined' && process.env && process.env['NODE_ENV'] !== 'production') {
+    if (typeof process !== 'undefined' && process.env && process.env.NODE_ENV !== 'production') {
       await this.simulateProcessing(1500);
     }
 
@@ -362,7 +362,7 @@ export class ExportService {
     });
 
     // Simulate Excel generation (only in non-production)
-    if (typeof process !== 'undefined' && process.env && process.env['NODE_ENV'] !== 'production') {
+    if (typeof process !== 'undefined' && process.env && process.env.NODE_ENV !== 'production') {
       await this.simulateProcessing(1200);
     }
 
