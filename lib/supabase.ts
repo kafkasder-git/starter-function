@@ -53,9 +53,10 @@ if (!supabaseAnonKey) {
 }
 
 // Create a safe Supabase client - use dummy values if environment is not configured
-const safeSupabaseUrl =
-  supabaseUrl && supabaseUrl.startsWith('http') ? supabaseUrl : 'https://placeholder.supabase.co';
-const safeSupabaseKey = supabaseAnonKey ?? 'placeholder-key';
+const normalizedUrl = (supabaseUrl || '').trim();
+const normalizedKey = (supabaseAnonKey || '').trim();
+const safeSupabaseUrl = normalizedUrl.startsWith('http') ? normalizedUrl : 'https://placeholder.supabase.co';
+const safeSupabaseKey = normalizedKey ? normalizedKey : 'placeholder-key';
 
 // Supabase client instance oluştur
 export const supabase = createClient(safeSupabaseUrl, safeSupabaseKey, {
@@ -75,7 +76,7 @@ export const supabase = createClient(safeSupabaseUrl, safeSupabaseKey, {
 // Admin client (service role key ile) - RLS bypass için
 export const supabaseAdmin = createClient(
   safeSupabaseUrl,
-  environment.supabase.serviceRoleKey ?? safeSupabaseKey,
+  ((environment.supabase.serviceRoleKey || '').trim()) || safeSupabaseKey,
   {
     auth: {
       autoRefreshToken: false,
