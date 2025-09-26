@@ -5,12 +5,8 @@ import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
-  define: {
-    // Set production environment
-    'process.env.NODE_ENV': JSON.stringify('production'),
-  },
   esbuild: {
-    // Drop console and debugger in production
+    // Drop console and debugger in production builds (Vite handles modes)
     drop: ['console', 'debugger'],
     legalComments: 'none',
   },
@@ -20,7 +16,6 @@ export default defineConfig({
       tsDecorators: true,
       // Enable Fast Refresh in development
       fastRefresh: true,
-      reactRefresh: true,
     }),
     VitePWA({
       registerType: 'autoUpdate',
