@@ -23,8 +23,7 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { ToastProvider } from './components/ToastProvider';
 import { SupabaseAuthProvider, useSupabaseAuth } from './contexts/SupabaseAuthContext';
 
-// Enhanced AI System
-import { EnhancedAIProvider, useAI } from './components/ai/EnhancedAIProvider';
+// AI System removed
 
 // App Management Components
 import NavigationProvider, { useNavigation } from './components/app/NavigationManager';
@@ -59,7 +58,7 @@ import { useUserPreferences } from './hooks/useLocalStorage';
  * ```
  */
 const AppContent = memo(() => {
-  const { trackAIUsage: trackUsage } = useAI();
+  // AI system removed
   // const { trackFeatureUse } = useUXAnalytics();
   const navigation = useNavigation();
   const { isLoading } = useSupabaseAuth();
@@ -117,13 +116,13 @@ const AppContent = memo(() => {
     }
   }, []);
 
-  // Quick action handler with AI integration
+  // Quick action handler
   const handleQuickAction = useCallback(
     (actionId: string) => {
       // trackFeatureUse('quick-action', actionId, {
       //   source: 'header-actions',
       // });
-      trackUsage('quick_action', actionId);
+      // AI tracking removed
 
       const actionMap = {
         'new-beneficiary': {
@@ -155,7 +154,7 @@ const AppContent = memo(() => {
         navigation.setCurrentSubPage(action.subPage);
       }
     },
-    [navigation, trackUsage],
+    [navigation],
   );
 
   // Initialize keyboard shortcuts
@@ -272,7 +271,7 @@ const AppWithNavigation = memo(({
   const [currentPage, setCurrentPage] = useState('dashboard');
   const [currentSubPage, setCurrentSubPage] = useState('');
 
-  // Enhanced navigation handler that syncs with AI
+  // Navigation handler
   const handleNavigate = useCallback(
     (module: string, page?: string, subPage?: string) => {
       setCurrentModule(module);
@@ -284,21 +283,14 @@ const AppWithNavigation = memo(({
   );
 
   return (
-    <EnhancedAIProvider
-      onNavigate={handleNavigate}
-      currentModule={currentModule}
-      currentPage={currentPage}
-      currentSubPage={currentSubPage}
+    <NavigationProvider
+      initialModule={currentModule}
+      initialPage={currentPage}
+      initialSubPage={currentSubPage}
     >
-      <NavigationProvider
-        initialModule={currentModule}
-        initialPage={currentPage}
-        initialSubPage={currentSubPage}
-      >
-        <AppContent />
-      </NavigationProvider>
+      <AppContent />
       <ToastProvider />
-    </EnhancedAIProvider>
+    </NavigationProvider>
   );
 });
 
@@ -313,16 +305,15 @@ const AppWithNavigation = memo(({
  * @returns {JSX.Element} The application wrapped with error handling and context providers
  */
 function AppWithErrorHandling() {
-  // AI-integrated navigation handler
-  const handleAINavigation = useCallback(() => {
-    // This will be passed to the AI provider to handle navigation requests
-    // AI Navigation Request handled
+  // Navigation handler
+  const handleNavigation = useCallback(() => {
+    // Navigation handled
   }, []);
 
   return (
     <ErrorBoundary>
       <SupabaseAuthProvider>
-            <AppWithNavigation onNavigate={handleAINavigation} />
+            <AppWithNavigation onNavigate={handleNavigation} />
       </SupabaseAuthProvider>
     </ErrorBoundary>
   );

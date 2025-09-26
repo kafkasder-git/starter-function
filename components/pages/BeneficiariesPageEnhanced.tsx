@@ -7,12 +7,10 @@
 
 import {
   AlertCircle,
-  Camera,
   CheckCircle,
   Clock,
   Download,
   Loader2,
-  Scan,
   Search,
   TrendingUp,
   UserPlus,
@@ -26,7 +24,7 @@ import {
   type IhtiyacSahibi,
 } from '../../services/ihtiyacSahipleriService';
 import { PageLoading } from '../LoadingSpinner';
-import { OCRScanner } from '../OCRScanner';
+// OCR Scanner removed
 import { PageLayout } from '../PageLayout';
 import { NewCategoryNotification } from '../notifications/NewCategoryNotification';
 import { Badge } from '../ui/badge';
@@ -129,7 +127,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(10);
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [showOCRScanner, setShowOCRScanner] = useState(false);
+  // OCR Scanner removed
   const [stats, setStats] = useState({
     total: 0,
     active: 0,
@@ -431,19 +429,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
     }
   };
 
-  // Handle OCR Scanner Result
-  const handleOCRResult = (ocrData: any) => {
-    setNewBeneficiary((prev) => ({
-      ...prev,
-      ad_soyad:
-        ocrData.name && ocrData.surname ? `${ocrData.name} ${ocrData.surname}` : prev.ad_soyad,
-      kimlik_no: ocrData.idNumber ?? prev.kimlik_no,
-    }));
-
-    toast.success('Belge bilgileri forma aktarıldı!', {
-      description: 'Lütfen bilgileri kontrol edin ve gerekirse düzeltin.',
-    });
-  };
+  // OCR Scanner removed
 
   if (loading && beneficiaries.length === 0) {
     return <PageLoading />;
@@ -518,20 +504,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <Label htmlFor="kimlik_no">Kimlik No</Label>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          setShowOCRScanner(true);
-                        }}
-                        className="h-8 px-3 gap-1 hover:bg-primary/5 hover:text-primary hover:border-primary/30 transition-colors"
-                        disabled={saving}
-                      >
-                        <Camera className="w-3 h-3" />
-                        <span className="hidden sm:inline">Kamera ile Tara</span>
-                        <span className="sm:hidden">Tara</span>
-                      </Button>
+                      {/* OCR Scanner removed */}
                     </div>
                     <Input
                       id="kimlik_no"
@@ -543,11 +516,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
                       className="min-h-[44px] focus-corporate"
                       disabled={saving}
                     />
-                    <p className="flex items-center gap-1 text-xs text-muted-foreground">
-                      <Scan className="w-3 h-3" />
-                      İhtiyaç sahibinin kimlik kartını tarayarak bilgileri otomatik
-                      doldurabilirsiniz
-                    </p>
+                    {/* OCR Scanner help text removed */}
                   </div>
 
                   <div className="space-y-2">
@@ -915,42 +884,13 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
           </Card>
         </div>
 
-        {/* OCR Scanner Modal - Fixed accessibility */}
-        <OCRScanner
-          isOpen={showOCRScanner}
-          onClose={() => {
-            setShowOCRScanner(false);
-          }}
-          onResult={handleOCRResult}
-        />
+        {/* OCR Scanner removed */}
       </PageLayout>
 
       {/* New Category Notification */}
       <NewCategoryNotification />
 
-      {/* OCR Scanner Modal */}
-      {showOCRScanner && (
-        <Dialog open={showOCRScanner} onOpenChange={setShowOCRScanner}>
-          <DialogContent className="sm:max-w-md max-w-[95vw] max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <Camera className="w-5 h-5 text-primary" />
-                Kimlik Kartı Tara
-              </DialogTitle>
-              <DialogDescription>
-                Kimlik kartının ön yüzünü kameraya tutarak bilgileri otomatik olarak doldurun.
-              </DialogDescription>
-            </DialogHeader>
-            <OCRScanner
-              isOpen={true}
-              onResult={handleOCRResult}
-              onClose={() => {
-                setShowOCRScanner(false);
-              }}
-            />
-          </DialogContent>
-        </Dialog>
-      )}
+      {/* OCR Scanner Modal removed */}
     </>
   );
 }

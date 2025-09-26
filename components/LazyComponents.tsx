@@ -43,7 +43,7 @@ export const BulkDataImportPage = lazy(() =>
   import('./pages/BulkDataImportPage').then((m) => ({ default: m.BulkDataImportPage })),
 );
 
-export const AIAssistantPage = lazy(() => import('./pages/AIAssistantPage'));
+// AI Assistant page removed
 
 export const UserManagementPageReal = lazy(() =>
   import('./pages/UserManagementPageReal').then((m) => ({ default: m.UserManagementPageReal })),

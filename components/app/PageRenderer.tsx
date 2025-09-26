@@ -24,7 +24,7 @@ const MeetingsPage = lazy(() =>
   })),
 );
 
-const AIAssistantPage = lazy(() => import('../pages/AIAssistantPage'));
+// AI Assistant page removed
 
 interface PageRendererProps {
   onQuickAction?: (actionId: string) => void;

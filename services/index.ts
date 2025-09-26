@@ -15,9 +15,7 @@ import notificationService from './notificationService';
 import fileStorageService from './fileStorageService';
 import monitoring from './monitoringService';
 import exportService from './exportService';
-import realAIService from './realAIService';
-import freeAIService from './freeAIService';
-import aiSystemController from './aiSystemController';
+// AI services removed
 import queryOptimizationService from './queryOptimizationService';
 import connectionPoolingService from './connectionPoolingService';
 import cachingService from './cachingService';
@@ -189,10 +187,7 @@ export {
 // UTILITY SERVICES
 // =============================================================================
 
-// AI services
-export { default as realAIService } from './realAIService';
-export { default as freeAIService } from './freeAIService';
-export { default as aiSystemController } from './aiSystemController';
+// AI services removed
 
 // Monitoring and analytics
 export {
@@ -286,10 +281,7 @@ export const createServices = (_config?: {
     monitoring: monitoring,
     export: exportService,
 
-    // AI
-    realAI: realAIService,
-    freeAI: freeAIService,
-    aiController: aiSystemController,
+    // AI services removed
 
     // Native features
     native: nativeFeaturesService,
