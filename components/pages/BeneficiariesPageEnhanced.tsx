@@ -237,17 +237,15 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
       const result = await ihtiyacSahipleriService.getIstatistikler();
 
       if (result.data) {
-        // Calculate stats based on ihtiyac_sahipleri data
-        const bakimYukumluCount = Object.entries(result.data.turler)
-          .filter(
-            ([key]) =>
-              key.toLowerCase().includes('bakmakla') || key.toLowerCase().includes('yükümlü'),
-          )
-          .reduce((sum, [, count]) => sum + count, 0);
+        // Calculate stats based on ihtiyac_sahipleri data (defensive defaults)
+        const turler = (result.data as any).turler ?? {};
+        const bakimYukumluCount = Object.entries(turler)
+          .filter(([key]) => typeof key === 'string' && (key.toLowerCase().includes('bakmakla') || key.toLowerCase().includes('yükümlü')))
+          .reduce((sum, [, count]) => sum + (Number(count) || 0), 0);
 
         setStats({
-          total: result.data.toplam ?? 0,
-          active: result.data.toplam ?? 0, // Assume all are active for now
+          total: (result.data as any).toplam ?? 0,
+          active: (result.data as any).toplam ?? 0, // Assume all are active for now
           passive: 0,
           suspended: 0,
           underEvaluation: 0,
