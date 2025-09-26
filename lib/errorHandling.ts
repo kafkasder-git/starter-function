@@ -5,7 +5,7 @@
 
 import { toast } from 'sonner';
 
-import { logger } from '../lib/logging/logger';
+import { logger } from './logging/logger';
 // Error types for better categorization
 export enum ErrorType {
   NETWORK = 'NETWORK',

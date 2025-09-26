@@ -43,7 +43,7 @@ import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 
-import { logger } from '../lib/logging/logger';
+import { logger } from '../../lib/logging/logger';
 // İhtiyaç sahipleri için display tipi
 interface IhtiyacSahibiDisplay extends IhtiyacSahibi {
   display_id?: number; // 1'den başlayan sıralı ID

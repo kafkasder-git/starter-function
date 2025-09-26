@@ -111,7 +111,7 @@ export default defineConfig({
   build: {
     target: 'esnext',
     outDir: 'dist',
-    chunkSizeWarningLimit: 1500, // Daha düşük limit
+    chunkSizeWarningLimit: 1000, // Daha düşük limit
     rollupOptions: {
       output: {
         manualChunks: {
@@ -123,31 +123,42 @@ export default defineConfig({
             '@radix-ui/react-select',
             '@radix-ui/react-popover',
             '@radix-ui/react-tooltip',
+            '@radix-ui/react-tabs',
+            '@radix-ui/react-accordion',
+            '@radix-ui/react-collapsible',
           ],
           'supabase-vendor': ['@supabase/supabase-js'],
           'chart-vendor': ['recharts'],
           'form-vendor': ['react-hook-form', '@hookform/resolvers', 'zod'],
-          'utils-vendor': ['date-fns', 'clsx', 'tailwind-merge'],
+          'utils-vendor': ['date-fns', 'clsx', 'tailwind-merge', 'class-variance-authority', 'crypto-js'],
           'icons-vendor': ['lucide-react'],
           'motion-vendor': ['motion'],
+          'query-vendor': ['@tanstack/react-query'],
         },
         // Daha iyi cache stratejisi
         chunkFileNames: (chunkInfo) => {
           const facadeModuleId = chunkInfo.facadeModuleId
             ? chunkInfo.facadeModuleId.split('/').pop()
             : 'chunk';
-          return `js/[name]-[hash].js`;
+          return `js/[name]-[hash:8].js`;
         },
-        entryFileNames: 'js/[name]-[hash].js',
+        entryFileNames: 'js/[name]-[hash:8].js',
         assetFileNames: (assetInfo) => {
           const safeName = assetInfo.name || 'asset.bin';
           const info = safeName.split('.');
           const ext = info[info.length - 1] || 'bin';
           if (/\.(css)$/.test(safeName)) {
-            return `css/[name]-[hash].${ext}`;
+            return `css/[name]-[hash:8].${ext}`;
           }
-          return `assets/[name]-[hash].${ext}`;
+          if (/\.(png|jpe?g|svg|gif|tiff|bmp|ico|webp)$/i.test(safeName)) {
+            return `img/[name]-[hash:8].${ext}`;
+          }
+          return `assets/[name]-[hash:8].${ext}`;
         },
+      },
+      external: (id) => {
+        // External olarak işaretlenecek modüller
+        return ['virtual:pwa-register'].includes(id);
       },
     },
     sourcemap: false, // Production'da sourcemap kapalı
@@ -156,12 +167,20 @@ export default defineConfig({
       compress: {
         drop_console: true,
         drop_debugger: true,
-        passes: 2, // Daha fazla optimizasyon
+        passes: 3, // Daha fazla optimizasyon
         unsafe: false,
         // Daha agresif optimizasyonlar
-        pure_funcs: ['console.log', 'console.info', 'console.debug'],
+        pure_funcs: ['console.log', 'console.info', 'console.debug', 'console.warn'],
         dead_code: true,
         unused: true,
+        evaluate: true,
+        reduce_vars: true,
+        collapse_vars: true,
+        hoist_funs: true,
+        hoist_vars: true,
+        if_return: true,
+        join_vars: true,
+        side_effects: false,
       },
       mangle: {
         safari10: true,
@@ -174,12 +193,15 @@ export default defineConfig({
         comments: false,
         // Daha kompakt output
         beautify: false,
+        ecma: 2020,
       },
     },
     // Daha hızlı build
     reportCompressedSize: false,
     // CSS optimizasyonu
     cssCodeSplit: true,
+    // Chunk size limits
+    assetsInlineLimit: 4096, // 4KB limit for inlining assets
   },
   server: {
     port: 5173,

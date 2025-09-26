@@ -19,11 +19,7 @@ export const createLazyComponent = (
 
 // Dashboard removed - using EnhancedDashboard
 
-// AI Assistant
-export const AIAssistantPage = createLazyComponent(
-  () => import('../pages/AIAssistantPage').then((m) => ({ default: m.default })),
-  'AIAssistantPage',
-);
+// AI Assistant removed
 
 // Aid Management (Yardım) Module - Enhanced version
 export const BeneficiariesPage = createLazyComponent(
@@ -130,10 +126,7 @@ export const KumbaraPage = createLazyComponent(
   'KumbaraPage',
 );
 
-export const DonationReportsPage = createLazyComponent(
-  () => import('../pages/DonationReportsPage').then((m) => ({ default: m.DonationReportsPage })),
-  'DonationReportsPage',
-);
+// DonationReportsPage removed
 
 // Members (Üye) Module
 export const MembersPage = createLazyComponent(
@@ -168,10 +161,7 @@ export const FinanceIncomePage = createLazyComponent(
   'FinanceIncomePage',
 );
 
-export const FinanceReportsPage = createLazyComponent(
-  () => import('../pages/FinanceReportsPage').then((m) => ({ default: m.FinanceReportsPage })),
-  'FinanceReportsPage',
-);
+// FinanceReportsPage removed
 
 // Communication (Mesaj) Module
 export const BulkMessagePage = createLazyComponent(
@@ -191,55 +181,11 @@ export const EventsPage = createLazyComponent(
   'EventsPage',
 );
 
-export const MeetingsPage = createLazyComponent(
-  () => import('../pages/MeetingsPage').then((m) => ({ default: m.MeetingsPage })),
-  'MeetingsPage',
-);
-
-export const TasksPage = createLazyComponent(() => import('../pages/TasksPage'), 'TasksPage');
+// MeetingsPage removed
+// TasksPage removed
 
 // Partners Module
-export const PartnerListPage = createLazyComponent(
-  () => import('../pages/PartnerListPage').then((m) => ({ default: m.PartnerListPage })),
-  'PartnerListPage',
-);
-
-export const PartnerDonorsPage = createLazyComponent(
-  () => import('../pages/PartnerDonorsPage').then((m) => ({ default: m.PartnerDonorsPage })),
-  'PartnerDonorsPage',
-);
-
-export const PartnerInstitutionsPage = createLazyComponent(
-  () =>
-    import('../pages/PartnerInstitutionsPage').then((m) => ({
-      default: m.PartnerInstitutionsPage,
-    })),
-  'PartnerInstitutionsPage',
-);
-
-export const PartnerSuppliersPage = createLazyComponent(
-  () => import('../pages/PartnerSuppliersPage').then((m) => ({ default: m.PartnerSuppliersPage })),
-  'PartnerSuppliersPage',
-);
-
-export const PartnerSponsorsPage = createLazyComponent(
-  () => import('../pages/PartnerSponsorsPage').then((m) => ({ default: m.PartnerSponsorsPage })),
-  'PartnerSponsorsPage',
-);
-
-export const PartnerAgreementsPage = createLazyComponent(
-  () =>
-    import('../pages/PartnerAgreementsPage').then((m) => ({ default: m.PartnerAgreementsPage })),
-  'PartnerAgreementsPage',
-);
-
-export const PartnerAssociationsPage = createLazyComponent(
-  () =>
-    import('../pages/PartnerAssociationsPage').then((m) => ({
-      default: m.PartnerAssociationsPage,
-    })),
-  'PartnerAssociationsPage',
-);
+// Partner pages removed
 
 // Legal (Hukuki) Module
 export const LegalConsultationPage = createLazyComponent(
@@ -274,10 +220,7 @@ export const LegalDocumentsPage = createLazyComponent(
   'LegalDocumentsPage',
 );
 
-export const LegalReportsPage = createLazyComponent(
-  () => import('../pages/LegalReportsPage'),
-  'LegalReportsPage',
-);
+// LegalReportsPage removed
 
 export const BarAssociationsPage = createLazyComponent(
   () => import('../pages/BarAssociationsPage'),
@@ -290,10 +233,7 @@ export const ProfilePage = createLazyComponent(
   'ProfilePage',
 );
 
-export const SystemSettingsPage = createLazyComponent(
-  () => import('../pages/SystemSettingsPage').then((m) => ({ default: m.SystemSettingsPage })),
-  'SystemSettingsPage',
-);
+// SystemSettingsPage removed
 
 export const UserManagementPage = createLazyComponent(
   () =>
@@ -335,22 +275,7 @@ export interface RouteConfig {
  * Route Registry - Centralized route management
  */
 export const ROUTE_REGISTRY: Record<string, Record<string, RouteConfig>> = {
-  // AI Assistant Module
-  ai: {
-    '/ai/chat': {
-      component: AIAssistantPage,
-      skeletonVariant: 'dashboard',
-      props: {},
-    },
-    '/ai/commands': {
-      component: AIAssistantPage,
-      skeletonVariant: 'dashboard',
-    },
-    '/ai/analysis': {
-      component: AIAssistantPage,
-      skeletonVariant: 'dashboard',
-    },
-  },
+  // AI Assistant Module removed
 
   // Aid Management Module
   yardim: {
@@ -433,7 +358,6 @@ export const ROUTE_REGISTRY: Record<string, Record<string, RouteConfig>> = {
 
   bagis: {
     '/bagis/kumbara': { component: KumbaraPage, skeletonVariant: 'dashboard' },
-    '/bagis/raporlar': { component: DonationReportsPage, skeletonVariant: 'dashboard' },
     default: { component: DonationsPage, skeletonVariant: 'table' },
   },
 
@@ -451,7 +375,6 @@ export const ROUTE_REGISTRY: Record<string, Record<string, RouteConfig>> = {
 
   fon: {
     '/fon/gelir-gider': { component: FinanceIncomePage, skeletonVariant: 'dashboard' },
-    '/fon/raporlar': { component: FinanceReportsPage, skeletonVariant: 'dashboard' },
     default: { component: FinanceIncomePage, skeletonVariant: 'dashboard' },
   },
 
@@ -463,28 +386,16 @@ export const ROUTE_REGISTRY: Record<string, Record<string, RouteConfig>> = {
 
   is: {
     '/is/etkinlikler': { component: EventsPage, skeletonVariant: 'table' },
-    '/is/toplantilar': { component: MeetingsPage, skeletonVariant: 'table' },
-    '/is/gorevler': { component: TasksPage, skeletonVariant: 'table' },
     default: { component: EventsPage, skeletonVariant: 'table' },
   },
 
-  partner: {
-    '/partner/liste': { component: PartnerListPage, skeletonVariant: 'table' },
-    '/partner/bagiscilar': { component: PartnerDonorsPage, skeletonVariant: 'table' },
-    '/partner/kurumlar': { component: PartnerInstitutionsPage, skeletonVariant: 'table' },
-    '/partner/tedarikci': { component: PartnerSuppliersPage, skeletonVariant: 'table' },
-    '/partner/sponsorlar': { component: PartnerSponsorsPage, skeletonVariant: 'table' },
-    '/partner/anlasmalar': { component: PartnerAgreementsPage, skeletonVariant: 'table' },
-    '/partner/dernekler': { component: PartnerAssociationsPage, skeletonVariant: 'table' },
-    default: { component: PartnerListPage, skeletonVariant: 'table' },
-  },
+  // Partner module removed
 
   hukuki: {
     '/hukuki/danismanlik': { component: LegalConsultationPage, skeletonVariant: 'dashboard' },
     '/hukuki/avukatlar': { component: LawyerAssignmentsPage, skeletonVariant: 'table' },
     '/hukuki/davalar': { component: LawsuitTrackingPage, skeletonVariant: 'table' },
     '/hukuki/belgeler': { component: LegalDocumentsPage, skeletonVariant: 'table' },
-    '/hukuki/raporlar': { component: LegalReportsPage, skeletonVariant: 'dashboard' },
     '/hukuki/barolar': { component: BarAssociationsPage, skeletonVariant: 'table' },
     default: { component: LegalConsultationPage, skeletonVariant: 'dashboard' },
   },
@@ -496,9 +407,7 @@ export const ROUTE_REGISTRY: Record<string, Record<string, RouteConfig>> = {
     default: { component: ProfilePage, skeletonVariant: 'detail' },
   },
 
-  settings: {
-    default: { component: SystemSettingsPage, skeletonVariant: 'detail' },
-  },
+  // Settings module removed
 
   'user-management': {
     default: { component: UserManagementPage, skeletonVariant: 'table' },

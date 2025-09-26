@@ -6,7 +6,7 @@
 import { sentryService } from '../services/sentryService';
 import { environment } from './environment';
 
-import { logger } from '../lib/logging/logger';
+import { logger } from './logging/logger';
 // Initialize Sentry when the module is imported
 export const initializeSentry = () => {
   logger.info('🔧 Initializing Sentry error tracking...');

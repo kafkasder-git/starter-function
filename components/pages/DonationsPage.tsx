@@ -46,7 +46,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { Textarea } from '../ui/textarea';
 
-import { logger } from '../lib/logging/logger';
+import { logger } from '../../lib/logging/logger';
 interface DonationFormData {
   donor_name: string;
   donor_phone: string;

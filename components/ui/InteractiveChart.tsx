@@ -123,7 +123,7 @@ export function InteractiveChart({
   ];
 
   const processedData = useMemo(() => {
-    if (!data ?? data.length === 0) return [];
+      if (!data || data.length === 0) return [];
 
     return data.map((item) => ({
       ...item,

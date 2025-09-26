@@ -66,7 +66,7 @@ export function useSearch<T = unknown>({
   const [searchState, setSearchState] = useState<SearchState>({
     query: initialQuery,
     filters: initialFilters,
-    sort: initialSort ?? config.defaultSort || { field: 'id', direction: 'desc' },
+      sort: initialSort ?? (config.defaultSort || { field: 'id', direction: 'desc' }),
     currentPage: 1,
     totalPages: 1,
     totalItems: 0,
@@ -137,7 +137,7 @@ export function useSearch<T = unknown>({
       const aValue = getNestedValue(a, sort.field);
       const bValue = getNestedValue(b, sort.field);
 
-      if (aValue == null ?? bValue == null) {
+        if (aValue == null || bValue == null) {
         return (aValue == null ? 1 : 0) - (bValue == null ? 1 : 0);
       }
 
@@ -288,7 +288,7 @@ export function useSearch<T = unknown>({
   }, []);
 
   const loadMore = useCallback(() => {
-    if (!searchState.hasMore ?? searchState.isLoading) return;
+      if (!searchState.hasMore || searchState.isLoading) return;
     executeSearch(
       searchState.query,
       searchState.filters,

@@ -12,7 +12,7 @@ import { useState, useMemo } from 'react';
 
 import { useSearch } from '../../hooks/useSearch';
 import type { Lawyer } from '../../types/lawyer';
-import { LAWYER_SEARCH_CONFIG } from '../../config/search';
+// Search config removed
 
 interface Lawyer {
   id: number;

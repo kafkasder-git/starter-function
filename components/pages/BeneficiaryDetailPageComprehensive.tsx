@@ -49,7 +49,7 @@ import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Textarea } from '../ui/textarea';
 
-import { logger } from '../lib/logging/logger';
+import { logger } from '../../lib/logging/logger';
 // Health conditions data
 const healthConditions = [
   'Akdeniz Anemisi',

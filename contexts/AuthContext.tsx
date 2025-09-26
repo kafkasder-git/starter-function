@@ -156,7 +156,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const user = MOCK_USERS.find((u) => u.email === credentials.email);
       const expectedPassword = MOCK_CREDENTIALS[credentials.email as keyof typeof MOCK_CREDENTIALS];
 
-      if (!user ?? credentials.password !== expectedPassword) {
+        if (!user || credentials.password !== expectedPassword) {
         throw new Error('Kullanıcı adı veya şifre hatalı');
       }
 

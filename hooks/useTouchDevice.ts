@@ -38,7 +38,7 @@ export function useTouchDevice(): TouchDeviceState {
   });
 
   function getDeviceState(): TouchDeviceState {
-    const isTouchDevice = 'ontouchstart' in window ?? navigator.maxTouchPoints > 0;
+      const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
     const width = window.innerWidth;
     const height = window.innerHeight;
 

@@ -7,7 +7,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
-import { logger } from '../lib/logging/logger';
+import { logger } from '../../lib/logging/logger';
 interface OnboardingData {
   variant: string;
   completedAt: string;

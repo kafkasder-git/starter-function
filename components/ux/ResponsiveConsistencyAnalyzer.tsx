@@ -10,7 +10,7 @@ import { Monitor, Smartphone, Tablet, AlertTriangle, CheckCircle2, Info } from '
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Badge } from '../ui/badge';
-import { logger } from '../lib/logging/logger';
+import { logger } from '../../lib/logging/logger';
 // import { ResponsiveSection } from '../EnhancedResponsiveWrapper'; // File doesn't exist
 // Using a simple div as fallback
 const ResponsiveSection = ({ children, className }: { children: React.ReactNode; className?: string }) => (

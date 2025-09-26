@@ -8,7 +8,7 @@
 import type { ReactNode } from 'react';
 import React, { Component } from 'react';
 
-import { logger } from '../lib/logging/logger';
+import { logger } from '../../lib/logging/logger';
 interface Props {
   children: ReactNode;
   fallback?: ReactNode;

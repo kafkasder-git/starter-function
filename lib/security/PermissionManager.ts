@@ -5,7 +5,7 @@
  * @version 1.0.0
  */
 
-import { logger } from '../lib/logging/logger';
+import { logger } from './logging/logger';
 /**
  * Role-Based Access Control (RBAC) System
  * Manages user roles, permissions, and access control

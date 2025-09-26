@@ -34,7 +34,7 @@ interface LegalConsultation {
 import { useState, useMemo } from 'react';
 import { useSearch } from '../../hooks/useSearch';
 import type { Consultation } from '../../types/consultation';
-import { CONSULTATION_SEARCH_CONFIG } from '../../config/search';
+// Search config removed
 
 const mockConsultations: Consultation[] = [
   // ... existing mock data ...

@@ -25,7 +25,7 @@ import { Badge } from '../ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../ui/dialog';
 import { cn } from '../ui/utils';
 
-import { logger } from '../lib/logging/logger';
+import { logger } from '../../lib/logging/logger';
 interface QuickAction {
   id: string;
   title: string;

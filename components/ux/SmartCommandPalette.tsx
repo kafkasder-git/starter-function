@@ -24,7 +24,7 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription } from '../ui/dia
 import { Badge } from '../ui/badge';
 import { cn } from '../ui/utils';
 
-import { logger } from '../lib/logging/logger';
+import { logger } from '../../lib/logging/logger';
 interface CommandItem {
   id: string;
   title: string;

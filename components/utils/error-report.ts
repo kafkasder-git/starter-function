@@ -7,7 +7,7 @@
 
 import type { ErrorInfo } from 'react';
 
-import { logger } from '../../lib/logging/logger';
+import { logger } from '../lib/logging/logger';
 /**
  * StorageLike Interface
  * 

@@ -10,7 +10,7 @@
 
 import { generateTestSecret } from './security/testSecrets';
 
-import { logger } from '../lib/logging/logger';
+import { logger } from './logging/logger';
 interface EnvironmentConfig {
   // Application
   app: {
@@ -107,7 +107,7 @@ function getEnvVar(key: string, defaultValue?: string): string {
   }
 
   // If no environment variable is set, use default value
-  if (!value ?? value === '') {
+    if (!value || value === '') {
     if (defaultValue === undefined) {
       logger.warn(`Environment variable ${key} is not defined and no default provided`);
       return '';
@@ -153,7 +153,7 @@ function validateEnvironment(): void {
 
   for (const varName of requiredVars) {
     const value = getEnvVar(varName, '');
-    if (!value ?? value === '') {
+    if (!value || value === '') {
       missingVars.push(varName);
     }
   }

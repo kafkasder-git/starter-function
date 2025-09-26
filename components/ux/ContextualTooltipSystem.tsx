@@ -10,7 +10,7 @@ import { HelpCircle, Info, Lightbulb, Zap, X, ChevronRight } from 'lucide-react'
 import { Button } from '../ui/button';
 import { cn } from '../ui/utils';
 
-import { logger } from '../lib/logging/logger';
+import { logger } from '../../lib/logging/logger';
 interface TooltipContent {
   id: string;
   title: string;

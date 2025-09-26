@@ -24,7 +24,7 @@ import { Progress } from '../ui/progress';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '../ui/dialog';
 import { cn } from '../ui/utils';
 
-import { logger } from '../lib/logging/logger';
+import { logger } from '../../lib/logging/logger';
 interface OnboardingStep {
   id: string;
   title: string;

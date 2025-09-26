@@ -8,7 +8,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { environment } from './environment';
 
-import { logger } from '../lib/logging/logger';
+import { logger } from './logging/logger';
 // Shared table name constants for hooks/services
 export const TABLES = {
   DONATIONS: 'donations',

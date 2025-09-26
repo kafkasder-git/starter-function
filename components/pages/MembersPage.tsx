@@ -31,7 +31,7 @@ import { DesktopActionButtons, DesktopFilters, DesktopStatsCard } from '../ui/de
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 
-import { logger } from '../lib/logging/logger';
+import { logger } from '../../lib/logging/logger';
 // Status and membership type mappings for Turkish display
 const statusMapping = {
   active: 'Aktif',
@@ -493,9 +493,9 @@ export function MembersPage() {
                       <TableCell colSpan={7} className="p-8 text-center">
                         <UserPlus className="w-12 h-12 mx-auto mb-4 text-gray-300" />
                         <p className="text-gray-600 mb-2">
-                          {searchTerm ?? statusFilter !== 'all' || typeFilter !== 'all'
-                            ? 'Arama kriterlerinize uygun üye bulunamadı.'
-                            : 'Henüz hiç üye kaydı yok.'}
+                            {(searchTerm || statusFilter !== 'all' || typeFilter !== 'all')
+                              ? 'Arama kriterlerinize uygun üye bulunamadı.'
+                              : 'Henüz hiç üye kaydı yok.'}
                         </p>
                         <Button className="gap-2">
                           <Plus className="h-4 w-4" />
@@ -526,7 +526,7 @@ export function MembersPage() {
                     onClick={() => {
                       setCurrentPage((prev) => Math.max(1, prev - 1));
                     }}
-                    disabled={currentPage === 1 ?? loading}
+                      disabled={currentPage === 1 || loading}
                     className="px-4"
                   >
                     Önceki

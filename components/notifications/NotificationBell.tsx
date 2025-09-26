@@ -13,7 +13,7 @@ import { Badge } from '../ui/badge';
 import { useNotificationStore } from '../../stores/notificationStore';
 import { cn } from '../ui/utils';
 
-import { logger } from '../lib/logging/logger';
+import { logger } from '../../lib/logging/logger';
 interface NotificationBellProps {
   className?: string;
   showBadge?: boolean;

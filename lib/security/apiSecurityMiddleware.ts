@@ -7,7 +7,7 @@
 
 import { z } from 'zod';
 import { ServiceError, ServiceErrorCode } from '../../services/config';
-import { logger } from '../lib/logging/logger';
+import { logger } from './logging/logger';
 import {
   RateLimiter,
   InputSanitizer,

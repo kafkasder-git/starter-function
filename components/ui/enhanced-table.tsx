@@ -60,7 +60,7 @@ import { Label } from './label';
 import { Textarea } from './textarea';
 import { cn } from './utils';
 
-import { logger } from '../../lib/logging/logger';
+import { logger } from '../lib/logging/logger';
 // Enhanced Table Types - Improved with TypeScript best practices
 export type TableColumnType =
   | 'text'

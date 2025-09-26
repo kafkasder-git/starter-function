@@ -6,7 +6,7 @@ import type { Permission } from './PermissionManager';
 import { PermissionManager, AuditLogger } from './PermissionManager';
 import { InputSanitizer, CSRFProtection, RateLimiter } from './InputSanitizer';
 
-import { logger } from '../lib/logging/logger';
+import { logger } from './logging/logger';
 // API Security Wrapper
 /**
  * SecureAPIClient Service

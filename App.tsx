@@ -240,13 +240,13 @@ const AppContent = memo(() => {
  * App with Navigation Provider
  */
 const AppWithNavigation = memo(({
-  onNavigate,
+  onNavigate: _onNavigate,
 }: {
   onNavigate: (module: string, page?: string, subPage?: string) => void;
 }) => {
-  const [currentModule, setCurrentModule] = useState('genel');
-  const [currentPage, setCurrentPage] = useState('dashboard');
-  const [currentSubPage, setCurrentSubPage] = useState('');
+  const [currentModule, _setCurrentModule] = useState('genel');
+  const [currentPage, _setCurrentPage] = useState('dashboard');
+  const [currentSubPage, _setCurrentSubPage] = useState('');
 
   // Navigation handler removed
 
