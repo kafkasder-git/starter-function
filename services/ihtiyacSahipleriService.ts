@@ -251,10 +251,11 @@ export const ihtiyacSahipleriService = {
         .select('*');
 
       if (error) {
-        logger.error('❌ Error fetching statistics data:', error);
+        const errMsg = (error as any)?.message || JSON.stringify(error);
+        logger.error('❌ Error fetching statistics data:', errMsg);
         return {
           data: null,
-          error: error.message
+          error: errMsg,
         };
       }
 
