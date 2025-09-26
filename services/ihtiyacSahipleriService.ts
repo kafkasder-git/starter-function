@@ -329,7 +329,7 @@ export const ihtiyacSahipleriService = {
       }
 
       // Get unique cities
-      const cities = [...new Set(data?.map(item => item.sehri).filter(Boolean))].sort();
+      const cities = [...new Set(data?.map(item => item.sehri).filter(Boolean))].sort((a, b) => a.localeCompare(b));
 
       logger.info('✅ Successfully fetched cities:', cities);
       return {

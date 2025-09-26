@@ -129,7 +129,7 @@ export const ValidationRules = {
     pattern: /^\d+(?:\.\d{1,2})?$/,
     custom: (value) => {
       if (!value) return true;
-      const decimalRegex = /^\d+(?:\.\d{1,2})?$/;
+      const decimalRegex = /^\d+(\.\d{1,2})?$/;
       return decimalRegex.test(value.toString()) || message;
     },
   }),
@@ -138,7 +138,7 @@ export const ValidationRules = {
     pattern: /^\d+(?:\.\d{1,2})?$/,
     custom: (value) => {
       if (!value) return true;
-      const moneyRegex = /^\d+(?:\.\d{1,2})?$/;
+      const moneyRegex = /^\d+(\.\d{1,2})?$/;
       const numValue = parseFloat(value.toString());
       return (moneyRegex.test(value.toString()) && !isNaN(numValue) && numValue >= 0) || message;
     },

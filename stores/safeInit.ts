@@ -8,7 +8,7 @@ export function initializeStoresSafely() {
     // Mark initialization as complete
     (window as any).__storeInitialized = true;
     return true;
-  } catch (error) {
+  } catch (_error) {
     // Error logging removed for production
     return false;
   }

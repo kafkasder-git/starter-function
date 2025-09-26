@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
-import type { AccessibilityTestReport } from './accessibility-test-runner';
-import { runReportingAccessibilityTests } from './accessibility-test-runner';
+import { runReportingAccessibilityTests, type AccessibilityTestReport } from './accessibility-test-runner';
 import { logger } from '../../lib/logging';
 import { JSDOM } from 'jsdom';
 import fs from 'fs';

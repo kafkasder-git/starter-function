@@ -5,8 +5,7 @@ import { devtools, persist, subscribeWithSelector } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { supabase } from '../lib/supabase';
 import { authLogger } from '../lib/logging';
-import type { Permission } from '../types/auth';
-import { ROLE_PERMISSIONS, UserRole } from '../types/auth';
+import { ROLE_PERMISSIONS, UserRole, type Permission } from '../types/auth';
 
 // Error type for Supabase auth operations
 interface AuthError {
@@ -525,12 +524,12 @@ export const useAuthStore = create<AuthStore>()(
             if (!isAuthenticated || !session) return;
 
             if (isSessionExpired(session)) {
-              void get().logout();
+              get().logout();
               toast.error('Oturumunuz sona erdi. Lütfen tekrar giriş yapın.', {
                 duration: 5000,
               });
             } else if (shouldRefreshSession(session)) {
-              void get().refreshSession();
+              get().refreshSession();
             }
           },
 

@@ -111,7 +111,7 @@ export class ReportingService {
    * @param filters - Optional filters
    * @returns Financial report data
    */
-  async generateFinancialReport(dateRange: DateRange, filters?: ReportFilters): Promise<FinancialData> {
+  async generateFinancialReport(dateRange: DateRange, _filters?: ReportFilters): Promise<FinancialData> {
     const startDate = dateRange.start.toISOString();
     const endDate = dateRange.end.toISOString();
 
@@ -154,7 +154,7 @@ export class ReportingService {
    * @param filters - Optional filters
    * @returns Donation analytics data
    */
-  async generateDonationAnalytics(dateRange: DateRange, filters?: ReportFilters): Promise<DonationAnalytics> {
+  async generateDonationAnalytics(dateRange: DateRange, _filters?: ReportFilters): Promise<DonationAnalytics> {
     const startDate = dateRange.start.toISOString();
     const endDate = dateRange.end.toISOString();
 
@@ -299,7 +299,7 @@ export class ReportingService {
    */
   async exportReport(reportConfig: CustomReport, format: 'csv' | 'excel' | 'pdf' = 'csv', filename?: string): Promise<{ success: boolean; url?: string; error?: string }> {
     try {
-      const report = await this.generateReport(reportConfig);
+      const _report = await this.generateReport(reportConfig);
       
       // This would implement actual export logic
       const exportFilename = filename ?? `report_${Date.now()}.${format}`;
@@ -329,6 +329,10 @@ export class ReportingService {
         return await this.fetchDonationData(dateRange ?? defaultDateRange);
       case 'beneficiaries':
         return await this.fetchImpactData(dateRange ?? defaultDateRange);
+      case 'members':
+        return await this.fetchMemberData(dateRange ?? defaultDateRange);
+      case 'campaigns':
+        return await this.fetchCampaignData(dateRange ?? defaultDateRange);
       default:
         return await this.fetchFinancialData(dateRange ?? defaultDateRange);
     }
@@ -594,10 +598,10 @@ export class ReportingService {
     return previousTotal > 0 ? ((currentTotal - previousTotal) / previousTotal) * 100 : 0;
   }
 
-  private processAgeGroupData(beneficiaries: ImpactRawBeneficiary[]): { ageGroup: string; count: number }[] {
+  private processAgeGroupData(_beneficiaries: ImpactRawBeneficiary[]): { ageGroup: string; count: number }[] {
     const ageGroups = new Map<string, number>();
     
-    beneficiaries.forEach(beneficiary => {
+    _beneficiaries.forEach(_beneficiary => {
       const ageGroup = 'Unknown'; // Placeholder - would need actual age calculation
       ageGroups.set(ageGroup, (ageGroups.get(ageGroup) ?? 0) + 1);
     });
@@ -611,8 +615,8 @@ export class ReportingService {
   private processGenderData(beneficiaries: ImpactRawBeneficiary[]): { gender: string; count: number }[] {
     const genders = new Map<string, number>();
     
-    beneficiaries.forEach(beneficiary => {
-      const gender = beneficiary.gender ?? 'Unknown';
+    beneficiaries.forEach(_beneficiary => {
+      const gender = _beneficiary.gender ?? 'Unknown';
       genders.set(gender, (genders.get(gender) ?? 0) + 1);
     });
     
@@ -657,6 +661,56 @@ export class ReportingService {
       const date = new Date(d.created_at);
       return date >= lastMonthStart && date <= lastMonthEnd;
     });
+  }
+
+  private async fetchFinancialData(dateRange: DateRange): Promise<unknown> {
+    return await this.generateFinancialReport(dateRange);
+  }
+
+  private async fetchDonationData(dateRange: DateRange): Promise<unknown> {
+    return await this.generateDonationAnalytics(dateRange);
+  }
+
+  private async fetchImpactData(dateRange: DateRange): Promise<unknown> {
+    return await this.generateImpactReport(dateRange);
+  }
+
+  private async fetchMemberData(dateRange: DateRange): Promise<unknown> {
+    // Placeholder for member data fetching
+    const startDate = dateRange.start.toISOString();
+    const endDate = dateRange.end.toISOString();
+
+    try {
+      const { data, error } = await supabase
+        .from('members')
+        .select('*')
+        .gte('created_at', startDate)
+        .lte('created_at', endDate);
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      throw new Error(`Member data fetch failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
+
+  private async fetchCampaignData(dateRange: DateRange): Promise<unknown> {
+    // Placeholder for campaign data fetching
+    const startDate = dateRange.start.toISOString();
+    const endDate = dateRange.end.toISOString();
+
+    try {
+      const { data, error } = await supabase
+        .from('campaigns')
+        .select('*')
+        .gte('created_at', startDate)
+        .lte('created_at', endDate);
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      throw new Error(`Campaign data fetch failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   }
 }
 

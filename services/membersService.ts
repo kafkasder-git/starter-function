@@ -320,7 +320,7 @@ export class MembersService {
         return { error: error.message };
       }
 
-      const cities = [...new Set(data.map((item) => item.city))].filter(Boolean).sort();
+      const cities = [...new Set(data.map((item) => item.city))].filter(Boolean).sort((a, b) => a.localeCompare(b));
       return { data: cities };
     } catch (error: any) {
       return { error: error.message || 'Şehirler getirilemedi' };
@@ -339,7 +339,7 @@ export class MembersService {
         return { error: error.message };
       }
 
-      const membershipTypes = [...new Set(data.map((item) => item.membership_type))].sort();
+      const membershipTypes = [...new Set(data.map((item) => item.membership_type))].sort((a, b) => a.localeCompare(b));
       return { data: membershipTypes };
     } catch (error: any) {
       return { error: error.message || 'Üyelik türleri getirilemedi' };
@@ -358,7 +358,7 @@ export class MembersService {
         return { error: error.message };
       }
 
-      const professions = [...new Set(data.map((item) => item.profession))].filter(Boolean).sort();
+      const professions = [...new Set(data.map((item) => item.profession))].filter(Boolean).sort((a, b) => a.localeCompare(b));
       return { data: professions };
     } catch (error: any) {
       return { error: error.message || 'Meslekler getirilemedi' };
