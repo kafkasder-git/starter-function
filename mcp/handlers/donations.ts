@@ -8,7 +8,7 @@ export async function handleDonationRequest(request: MCPRequest): Promise<MCPRes
   try {
     const payload = request.payload as DonationPayload;
     
-    if (!payload || !payload.donorName || !payload.amount || !payload.currency) {
+    if (!payload?.donorName || !payload?.amount || !payload?.currency) {
       return {
         success: false,
         error: {
@@ -32,7 +32,7 @@ export async function handleDonationRequest(request: MCPRequest): Promise<MCPRes
     };
 
     // Show a processing notification
-    const loadingToast = enhancedNotifications.bilgi({
+    const _loadingToast = enhancedNotifications.bilgi({
       title: 'Bağış İşleniyor',
       message: 'Bağış kaydı oluşturuluyor...',
       category: 'bagis',

@@ -298,10 +298,7 @@ export function ContextualHelp({ context, className }: ContextualHelpProps) {
           'Son aktiviteler bölümünden hızlıca işlemlerinizi takip edin',
           'Önemli metrikler için bildirimleri etkinleştirin',
         ],
-        shortcuts: [
-          { key: '⌘+K', description: 'Komut paletini aç' },
-          { key: '⌘+/', description: 'Yardım merkezi' },
-        ],
+        shortcuts: [],
         relatedActions: [
           {
             label: 'Rapor Oluştur',
@@ -327,10 +324,7 @@ export function ContextualHelp({ context, className }: ContextualHelpProps) {
           "Toplu işlemler için checkbox'ları kullanın",
           'Detay sayfasında tüm başvuru geçmişini görebilirsiniz',
         ],
-        shortcuts: [
-          { key: '⌘+N', description: 'Yeni kayıt ekle' },
-          { key: '⌘+F', description: 'Ara ve filtrele' },
-        ],
+        shortcuts: [],
         relatedActions: [
           {
             label: 'Yeni Başvuru',
@@ -356,10 +350,7 @@ export function ContextualHelp({ context, className }: ContextualHelpProps) {
           'Makbuz numaralarını takip etmeyi unutmayın',
           'Aylık bağış raporlarını düzenli oluşturun',
         ],
-        shortcuts: [
-          { key: '⌘+D', description: 'Yeni bağış kaydı' },
-          { key: '⌘+R', description: 'Rapor oluştur' },
-        ],
+        shortcuts: [],
       },
       members: {
         id: 'help-members',
@@ -371,10 +362,7 @@ export function ContextualHelp({ context, className }: ContextualHelpProps) {
           'Aidat hatırlatmalarını otomatikleştirin',
           'Üye haklarını ve sorumluluklarını belirleyin',
         ],
-        shortcuts: [
-          { key: '⌘+M', description: 'Yeni üye ekle' },
-          { key: '⌘+A', description: 'Aidat takibi' },
-        ],
+        shortcuts: [],
       },
       finance: {
         id: 'help-finance',
@@ -386,24 +374,14 @@ export function ContextualHelp({ context, className }: ContextualHelpProps) {
           'Aylık mali raporları düzenli hazırlayın',
           'Bütçe limitlerini belirlemeyi unutmayın',
         ],
-        shortcuts: [
-          { key: '⌘+E', description: 'Gider kaydı' },
-          { key: '⌘+I', description: 'Gelir kaydı' },
-        ],
+        shortcuts: [],
       },
       general: {
         id: 'help-general',
-        title: 'Genel Yardım',
-        description: 'Sistem kullanımı hakkında genel bilgiler ve ipuçları.',
-        tips: [
-          'Sol menüden tüm modüllere erişebilirsiniz',
-          'Sağ üst köşedeki bildirimlerinizi kontrol edin',
-          'Arama çubuğunu kullanarak hızlıca bulun',
-        ],
-        shortcuts: [
-          { key: '⌘+K', description: 'Komut paleti' },
-          { key: '⌘+?', description: 'Yardım' },
-        ],
+        title: 'Sistem',
+        description: 'Dernek yönetim sistemi.',
+        tips: [],
+        shortcuts: [],
       },
     };
 

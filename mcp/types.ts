@@ -6,7 +6,7 @@ export type MCPAction = 'notification' | 'member' | 'donation';
 
 export interface MCPRequest {
   action: MCPAction;
-  payload?: Record<string, any>;
+  payload?: Record<string, unknown>;
   meta?: {
     userId?: string;
     sessionId?: string;
@@ -16,11 +16,11 @@ export interface MCPRequest {
 
 export interface MCPResponse {
   success: boolean;
-  data?: Record<string, any>;
+  data?: Record<string, unknown>;
   error?: {
     code: string;
     message: string;
-    details?: any;
+    details?: unknown;
   };
 }
 

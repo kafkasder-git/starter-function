@@ -145,6 +145,7 @@ function validateEnvironment(): void {
   }
 
   if (missingVars.length > 0) {
+    // Production'da daha yumuşak hata handling
     const errorMessage = `
 🚨 KRİTİK GÜVENLİK UYARISI!
 
@@ -164,7 +165,27 @@ VITE_CSRF_SECRET=your_csrf_secret_key
 Bu eksiklikler giderilmezse uygulama çalışmayacaktır!
         `;
 
-    throw new Error(errorMessage);
+    // Production'da console.error kullan, throw etme
+    if (typeof window !== 'undefined') {
+      console.error(errorMessage);
+      // Show a user-friendly error message
+      const errorDiv = document.createElement('div');
+      errorDiv.innerHTML = `
+        <div style="padding: 20px; background: #fee; border: 1px solid #fcc; color: #800; font-family: monospace;">
+          <h3>🚨 Konfigürasyon Hatası</h3>
+          <p>Uygulama environment variable'ları eksik. Lütfen administrator ile iletişime geçin.</p>
+          <details>
+            <summary>Teknik Detaylar</summary>
+            <pre>${errorMessage}</pre>
+          </details>
+        </div>
+      `;
+      document.body.appendChild(errorDiv);
+      return; // Don't throw in production
+    } else {
+      // Only throw in build/server environments
+      throw new Error(errorMessage);
+    }
   }
 
   // Security check - hardcoded credentials kontrolü (test ortamında disable)

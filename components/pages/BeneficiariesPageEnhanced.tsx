@@ -121,6 +121,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [cityFilter, setCityFilter] = useState('all');
+  const [sortBy, setSortBy] = useState('name-asc');
   const [beneficiaries, setBeneficiaries] = useState<IhtiyacSahibiDisplay[]>([]);
   const [cities, setCities] = useState<string[]>([]);
   const [totalCount, setTotalCount] = useState(0);
@@ -176,6 +177,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
       const result = await ihtiyacSahipleriService.getIhtiyacSahipleri(currentPage, pageSize, {
         searchTerm: filters.searchTerm,
         sehir: filters.city,
+        sortBy: sortBy,
       });
 
       if (result.error) {
@@ -185,15 +187,40 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
         return;
       }
 
-      // Transform data to include display fields
+      // Transform data to include display fields with proper fallbacks
       const transformedData = (result.data || []).map((item: IhtiyacSahibi, index: number) => ({
         ...item,
         // Migration sonrası gerçek ID'ler 1'den başlayacak, display_id gerekli değil
         display_id: item.id, // Gerçek ID'yi kullan
-        formatted_phone: item.telefon_no ?? item.Telefon_No ?? '',
-        formatted_registration_date: item.kayit_tarihi ?? item.Kayit_Tarihi ?? '',
-        status: 'active' as const, // Default status
-        priority_level: 'medium' as const, // Default priority
+        
+        // Phone formatting with multiple fallbacks
+        formatted_phone: item.telefon_no ?? item.Telefon_No ?? 'Telefon bilgisi yok',
+        
+        // Registration date with proper formatting
+        formatted_registration_date: item.kayit_tarihi ?? item.Kayit_Tarihi ?? new Date().toISOString().split('T')[0],
+        
+        // Name with fallback
+        ad_soyad: item.ad_soyad ?? 'Ad Soyad bilgisi yok',
+        
+        // Identity number with fallback
+        kimlik_no: item.kimlik_no ?? item.Kimlik_No ?? 'TC No bilgisi yok',
+        
+        // City with fallback
+        sehri: item.sehri ?? 'Şehir bilgisi yok',
+        
+        // Address with fallback
+        adres: item.adres ?? item.Adres ?? 'Adres bilgisi yok',
+        
+        // Category and type with fallbacks
+        kategori: item.kategori ?? item.Kategori ?? 'Kategori belirtilmemiş',
+        tur: item.tur ?? item.Tur ?? 'Tür belirtilmemiş',
+        
+        // IBAN with fallback
+        iban: item.iban ?? 'IBAN bilgisi yok',
+        
+        // Status and priority with defaults
+        status: (item.status as any) ?? 'active' as const,
+        priority_level: 'medium' as const,
       }));
 
       setBeneficiaries(transformedData);
@@ -229,7 +256,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
     } finally {
       setLoading(false);
     }
-  }, [currentPage, pageSize, statusFilter, cityFilter, searchTerm]);
+  }, [currentPage, pageSize, statusFilter, cityFilter, searchTerm, sortBy]);
 
   // Load stats computed from already loaded beneficiaries to avoid extra network calls
   const loadStats = useCallback(async () => {
@@ -310,7 +337,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [searchTerm, statusFilter, cityFilter, loadBeneficiaries]);
+  }, [searchTerm, statusFilter, cityFilter, sortBy, loadBeneficiaries]);
 
   const getStatusBadge = (status: string) => {
     const statusInfo =
@@ -754,6 +781,19 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
                       ))}
                     </SelectContent>
                   </Select>
+                  <Select value={sortBy} onValueChange={setSortBy}>
+                    <SelectTrigger className="min-w-[140px] min-h-[44px] focus-corporate">
+                      <SelectValue placeholder="Sıralama" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="name-asc">Ad (A-Z)</SelectItem>
+                      <SelectItem value="name-desc">Ad (Z-A)</SelectItem>
+                      <SelectItem value="date-newest">En Yeni</SelectItem>
+                      <SelectItem value="date-oldest">En Eski</SelectItem>
+                      <SelectItem value="city-asc">Şehir (A-Z)</SelectItem>
+                      <SelectItem value="category-asc">Kategori (A-Z)</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 
@@ -814,7 +854,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
                           </TableCell>
                           <TableCell className="py-3">
                             <div className="flex flex-col">
-                              <span className="font-medium text-gray-900">
+                              <span className={`font-medium ${beneficiary.ad_soyad === 'Ad Soyad bilgisi yok' ? 'text-gray-400 italic' : 'text-gray-900'}`}>
                                 {beneficiary.ad_soyad}
                               </span>
                             </div>
@@ -829,19 +869,21 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
                             {beneficiary.uyruk ?? beneficiary.Uyruk ?? 'TR'}
                           </TableCell>
                           <TableCell className="py-3 font-mono">
-                            {beneficiary.kimlik_no ?? beneficiary.Kimlik_No ?? '-'}
+                            <span className={beneficiary.kimlik_no === 'TC No bilgisi yok' ? 'text-gray-400 italic' : ''}>
+                              {beneficiary.kimlik_no ?? beneficiary.Kimlik_No ?? '-'}
+                            </span>
                           </TableCell>
                           <TableCell className="py-3">
-                            {beneficiary.formatted_phone ? (
+                            {beneficiary.formatted_phone && beneficiary.formatted_phone !== 'Telefon bilgisi yok' ? (
                               <span className="text-blue-600">{beneficiary.formatted_phone}</span>
                             ) : (
-                              <span className="text-gray-400">-</span>
+                              <span className="text-gray-400 italic">Telefon bilgisi yok</span>
                             )}
                           </TableCell>
                           <TableCell className="py-3">{beneficiary.ulkesi ?? 'Türkiye'}</TableCell>
                           <TableCell className="py-3">
                             <span
-                              className="truncate max-w-[120px]"
+                              className={`truncate max-w-[120px] ${beneficiary.sehri === 'Şehir bilgisi yok' ? 'text-gray-400 italic' : ''}`}
                               title={beneficiary.sehri ?? undefined}
                             >
                               {beneficiary.sehri ?? '-'}
@@ -852,7 +894,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
                           </TableCell>
                           <TableCell className="py-3">
                             <span
-                              className="truncate max-w-[180px]"
+                              className={`truncate max-w-[180px] ${beneficiary.adres === 'Adres bilgisi yok' ? 'text-gray-400 italic' : ''}`}
                               title={beneficiary.adres ?? beneficiary.Adres ?? undefined}
                             >
                               {beneficiary.adres ?? beneficiary.Adres ?? '-'}

@@ -5,19 +5,17 @@
  * @version 1.0.0
  */
 
-import { Activity, Calendar, Clock, Heart, RefreshCw, Users } from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
-import React from 'react';
+import { Activity, Calendar, Clock, Heart, RefreshCw, Users, type LucideIcon } from 'lucide-react';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { motion } from 'motion/react';
-import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { Badge } from './badge';
 import { Button } from './button';
 import { Card, CardContent, CardHeader, CardTitle } from './card';
+import { Progress } from './progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './tabs';
 import InteractiveChart from './InteractiveChart';
 import MetricCard from './MetricCard';
 // Auth import removed for simplified implementation
-import { useSupabaseAuth } from '../../contexts/SupabaseAuthContext';
 import { useAdvancedMobile } from '../../hooks/useAdvancedMobile';
 import { intelligentStatsService } from '../../services/intelligentStatsService';
 import { PersonalizedQuickActions } from '../ux/PersonalizedQuickActions';
@@ -208,8 +206,6 @@ const EnhancedDashboard = memo(
       aidRequests: { total: 0, pending: 0 },
     });
 
-    // Get real authenticated user
-    const { user } = useSupabaseAuth();
     const { deviceInfo, triggerHapticFeedback } = useAdvancedMobile();
 
     // Load dashboard data with useCallback optimization
@@ -242,7 +238,7 @@ const EnhancedDashboard = memo(
 
     // Load dashboard data
     useEffect(() => {
-      void loadData();
+      loadData();
     }, [loadData]);
 
     const handleRefresh = useCallback(() => {
@@ -315,14 +311,7 @@ const EnhancedDashboard = memo(
         >
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
-              Hoş Geldiniz,{' '}
-              {user
-                ? (user.user_metadata.name ??
-                  user.email?.split('@')[0] ??
-                  user.email ??
-                  'Kullanıcı')
-                : 'Kullanıcı'}
-              ! 👋
+              Dashboard 📊
             </h1>
             <p className="text-gray-600 mt-1">Dernek yönetim sistemi - Güncel durum özeti</p>
           </div>
@@ -435,12 +424,7 @@ const EnhancedDashboard = memo(
                                 <span>İlerleme</span>
                                 <span>{task.progress}%</span>
                               </div>
-                              <div className="w-full bg-gray-200 rounded-full h-1.5">
-                                <div
-                                  className="bg-blue-600 h-1.5 rounded-full transition-all duration-300"
-                                  style={{ width: `${task.progress}%` }}
-                                />
-                              </div>
+                              <Progress value={task.progress} className="h-1.5 bg-gray-200 rounded-full" />
                             </div>
 
                             <div className="flex items-center gap-2">

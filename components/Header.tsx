@@ -6,12 +6,8 @@
  */
 
 import {
-  Bot,
   Building2,
   Command,
-  HelpCircle,
-  Keyboard,
-  Lightbulb,
   LogOut,
   Menu,
   Moon,
@@ -20,7 +16,6 @@ import {
   Sun,
   User,
   X,
-  Zap,
 } from 'lucide-react';
 import { useState } from 'react';
 import { useSupabaseAuth } from '../contexts/SupabaseAuthContext';
@@ -35,22 +30,12 @@ import { NotificationBell } from './notifications/NotificationBell';
 import { NotificationErrorBoundary } from './notifications/NotificationErrorBoundary';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 // Enhanced UX imports
-import { ContextualHelp } from './ux/ContextualTooltipSystem';
 // import { EnhancedSearchExperience } from './ux/EnhancedSearchExperience';
 import { SmartCommandPalette } from './ux/SmartCommandPalette';
 import { useCommandPalette } from './ux/hooks/useCommandPalette';
 // import { useUXAnalytics } from './ux/hooks/useUXAnalytics';
 
 import { logger } from '../lib/logging/logger';
-// AI functions are now defined inline in App.tsx
-const useBasicAI = () => ({
-  toggleAssistant: () => {
-    // AI assistant toggle functionality
-  },
-  toggleHelp: () => {
-    // Help toggle functionality
-  },
-});
 
 interface HeaderProps {
   onNavigateToProfile?: () => void;
@@ -82,7 +67,6 @@ export function Header({
   // Get real authenticated user
   const { user, signOut } = useSupabaseAuth();
   const [showEnhancedSearch, setShowEnhancedSearch] = useState(false);
-  const { toggleAssistant } = useBasicAI();
 
   // Enhanced UX features
   const commandPalette = useCommandPalette({
@@ -273,146 +257,8 @@ export function Header({
           )}
         </Button>
 
-        {/* AI Assistant - Enhanced with UX tracking */}
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => {
-            trackFeatureUse('ai-assistant', 'click');
-            toggleAssistant();
-            toast.success('AI Asistant - Geliştirilme aşamasında');
-          }}
-          className="w-9 h-9 p-0 rounded-lg hover:bg-purple-100/80 transition-all duration-200 focus-corporate min-h-[44px] min-w-[44px]"
-          title="AI Asistant"
-        >
-          <Bot className="w-4 h-4 text-purple-600" />
-        </Button>
 
-        {/* Contextual Help System */}
-        <ContextualHelp
-          context={
-            currentModule as
-              | 'dashboard'
-              | 'beneficiaries'
-              | 'donations'
-              | 'members'
-              | 'finance'
-              | 'general'
-          }
-          className="inline-flex"
-        />
 
-        {/* Enhanced Help System */}
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                trackClick('header', 'help-menu-open');
-              }}
-              className="w-9 h-9 p-0 rounded-lg hover:bg-slate-100/80 transition-all duration-200 focus-corporate"
-            >
-              <HelpCircle className="w-4 h-4 text-slate-700" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-80 p-0 shadow-xl border-slate-200/60" align="end">
-            <div className="p-4 border-b border-slate-200/60 bg-gradient-to-r from-slate-50 to-slate-100/80">
-              <h4 className="font-semibold text-slate-900 flex items-center gap-2">
-                <Lightbulb className="w-4 h-4 text-primary" />
-                Gelişmiş Yardım Sistemi
-              </h4>
-              <p className="text-xs text-slate-600 mt-1">
-                Modern UX özellikleri ile daha iyi deneyim
-              </p>
-            </div>
-            <div className="p-4 space-y-3">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  trackFeatureUse('command-palette', 'help-trigger');
-                  commandPalette.open();
-                }}
-                className="w-full justify-start gap-2 text-slate-700 hover:bg-slate-50"
-              >
-                <Command className="w-4 h-4" />
-                Komut Paleti (⌘K)
-              </Button>
-
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  trackFeatureUse('enhanced-search', 'help-trigger');
-                  setShowEnhancedSearch(true);
-                }}
-                className="w-full justify-start gap-2 text-blue-700 hover:bg-blue-50"
-              >
-                <Search className="w-4 h-4" />
-                Akıllı Arama
-              </Button>
-
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  trackFeatureUse('ai-assistant', 'help-trigger');
-                  toggleAssistant();
-                  toast.info('AI Asistant - Geliştirilme aşamasında');
-                }}
-                className="w-full justify-start gap-2 text-purple-700 hover:bg-purple-50"
-              >
-                <Bot className="w-4 h-4" />
-                AI Asistant
-              </Button>
-
-              <hr className="my-2" />
-
-              <div className="space-y-2">
-                <h5 className="font-medium text-sm text-slate-900 flex items-center gap-2">
-                  <Keyboard className="w-3 h-3" />
-                  Gelişmiş Kısayollar
-                </h5>
-                <div className="space-y-1 text-xs">
-                  <div className="flex justify-between">
-                    <span className="text-slate-600">Komut Paleti</span>
-                    <Badge variant="secondary" className="text-xs font-mono">
-                      ⌘K
-                    </Badge>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-600">Hızlı Yenile</span>
-                    <Badge variant="secondary" className="text-xs font-mono">
-                      ⌘R
-                    </Badge>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-600">Yeni Kayıt</span>
-                    <Badge variant="secondary" className="text-xs font-mono">
-                      ⌘N
-                    </Badge>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-600">Yardım</span>
-                    <Badge variant="secondary" className="text-xs font-mono">
-                      ⌘?
-                    </Badge>
-                  </div>
-                </div>
-              </div>
-
-              <hr className="my-2" />
-
-              <div className="text-center">
-                <Badge variant="outline" className="text-xs">
-                  <Zap className="w-3 h-3 mr-1" />
-                  UX Enhanced v2.0
-                </Badge>
-              </div>
-            </div>
-          </PopoverContent>
-        </Popover>
 
         {/* Smart Notifications - Use modern system if provided, fallback to legacy */}
         {notificationComponent ?? (

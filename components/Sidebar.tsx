@@ -7,7 +7,6 @@
 
 import {
   BarChart3,
-  Bot,
   Building2,
   Calendar,
   Database,
@@ -18,7 +17,6 @@ import {
   MessageSquare,
   Scale,
   Shield,
-  Sparkles,
   Users,
   Wallet,
 } from 'lucide-react';
@@ -92,21 +90,6 @@ export function Sidebar({
       icon: <Home className="w-5 h-5" />,
       subPages: [{ name: 'Dashboard', href: '/dashboard' }],
       // badge removed - no unnecessary notifications
-    },
-    {
-      id: 'ai',
-      name: 'AI Asistan',
-      icon: (
-        <div className="relative">
-          <Bot className="w-5 h-5" />
-          <Sparkles className="w-3 h-3 text-yellow-500 absolute -top-1 -right-1" />
-        </div>
-      ),
-      subPages: [
-        { name: 'AI Sohbet', href: '/ai/chat' },
-        { name: 'Komut Merkezi', href: '/ai/commands' },
-        { name: 'Akıllı Analiz', href: '/ai/analysis' },
-      ],
     },
     {
       id: 'bagis',

@@ -94,7 +94,8 @@ export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
         // Handle auth events
         switch (event) {
           case 'SIGNED_IN':
-            toast.success(`Hoş geldiniz, ${session?.user?.email}!`);
+            // Removed welcome toast notification
+            logger.info('User signed in:', session?.user?.email);
             break;
           case 'SIGNED_OUT':
             toast.success('Başarıyla çıkış yaptınız');

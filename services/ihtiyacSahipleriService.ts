@@ -67,16 +67,51 @@ export const ihtiyacSahipleriService = {
         logger.info('🔍 Applied kategori filter:', filters.kategori);
       }
       
-      if (filters.search) {
-        query = query.or(`ad.ilike.%${filters.search}%,soyad.ilike.%${filters.search}%,tc_no.ilike.%${filters.search}%`);
-        logger.info('🔍 Applied search filter:', filters.search);
+      if (filters.searchTerm) {
+        query = query.or(`ad_soyad.ilike.%${filters.searchTerm}%,kimlik_no.ilike.%${filters.searchTerm}%,telefon_no.ilike.%${filters.searchTerm}%`);
+        logger.info('🔍 Applied search filter:', filters.searchTerm);
       }
       
       logger.info('📄 Applying pagination - offset:', offset, 'limit:', limit);
       
-      // Apply pagination and ordering
+      // Apply sorting based on user selection
+      let sortField = 'ad_soyad';
+      let ascending = true;
+      
+      if (filters.sortBy) {
+        switch (filters.sortBy) {
+          case 'name-asc':
+            sortField = 'ad_soyad';
+            ascending = true;
+            break;
+          case 'name-desc':
+            sortField = 'ad_soyad';
+            ascending = false;
+            break;
+          case 'date-newest':
+            sortField = 'created_at';
+            ascending = false;
+            break;
+          case 'date-oldest':
+            sortField = 'created_at';
+            ascending = true;
+            break;
+          case 'city-asc':
+            sortField = 'sehri';
+            ascending = true;
+            break;
+          case 'category-asc':
+            sortField = 'kategori';
+            ascending = true;
+            break;
+          default:
+            sortField = 'ad_soyad';
+            ascending = true;
+        }
+      }
+      
       const { data, error, count } = await query
-        .order('created_at', { ascending: false })
+        .order(sortField, { ascending })
         .range(offset, offset + limit - 1);
       
       logger.info('📊 Supabase response:', { data, error, count });

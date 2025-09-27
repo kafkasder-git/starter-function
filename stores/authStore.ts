@@ -298,9 +298,7 @@ export const useAuthStore = create<AuthStore>()(
 
               get().resetLoginAttempts();
 
-              toast.success(`Hoş geldiniz, ${user.name}!`, {
-                duration: 3000,
-              });
+              // Removed welcome toast notification
             } catch (error: unknown) {
               let errorMessage = 'Giriş yapılamadı';
 

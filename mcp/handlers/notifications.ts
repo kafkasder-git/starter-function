@@ -9,7 +9,7 @@ export async function handleNotificationRequest(request: MCPRequest): Promise<MC
   try {
     const payload = request.payload as NotificationPayload;
     
-    if (!payload || !payload.title || !payload.message || !payload.category) {
+    if (!payload?.title || !payload?.message || !payload?.category) {
       return {
         success: false,
         error: {
@@ -33,7 +33,9 @@ export async function handleNotificationRequest(request: MCPRequest): Promise<MC
             label: payload.action.label,
             onClick: (): void => {
               // Navigate to the specified route
-              window.location.href = payload.action!.route;
+              if (payload.action && payload.action.route) {
+                window.location.href = payload.action.route;
+              }
             }
           } : undefined
         });
@@ -80,7 +82,12 @@ export async function handleNotificationRequest(request: MCPRequest): Promise<MC
       }
     };
   } catch (error) {
-    console.error('Error handling notification request:', error);
+    // Safety log only in development
+    if (process.env.NODE_ENV !== 'production') {
+      // eslint-disable-next-line no-console
+      console.error('Error handling notification request:', error);
+    }
+    
     return {
       success: false,
       error: {
