@@ -124,7 +124,8 @@ export class SQLInjectionProtection {
     const hasSQLComments = /(--|\/\*|\*\/)/.test(input);
     const hasSQLQuotes = /['";\\]/.test(input);
     
-    return !(hasSQLKeywords ?? hasSQLOperators || hasSQLComments ?? hasSQLQuotes);
+    // Return false if any SQL-related suspicious pattern is present
+    return !(hasSQLKeywords || hasSQLOperators || hasSQLComments || hasSQLQuotes);
   }
 
   static sanitize(input: string): string {
@@ -205,7 +206,7 @@ export class RateLimiter {
     const now = Date.now();
     const attempt = this.attempts.get(identifier);
     
-    if (!attempt ?? now > attempt.resetTime) {
+    if (!attempt || now > attempt.resetTime) {
       this.attempts.set(identifier, { count: 1, resetTime: now + this.WINDOW_MS });
       return true;
     }

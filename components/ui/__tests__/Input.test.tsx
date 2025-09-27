@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, userEvent } from '../../../src/test/utils';
+import { render, screen, userEvent } from '../../../tests/utils';
 import { Input } from '../Input';
 
 describe('Input', () => {

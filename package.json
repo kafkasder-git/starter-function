@@ -36,7 +36,13 @@
     "precommit": "lint-staged",
     "postinstall": "husky install",
     "cleanup:imports": "node scripts/cleanup-imports.js",
-    "cleanup:all": "npm run cleanup:imports && npm run format"
+    "cleanup:all": "npm run cleanup:imports && npm run format",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "browsers:install": "playwright install",
+    "clean:win": "npx rimraf dist node_modules/.vite .tsbuildinfo",
+    "test:e2e:report": "playwright test --reporter=html",
+    "test:e2e:report:open": "playwright show-report"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",

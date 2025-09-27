@@ -14,8 +14,6 @@ export default defineConfig({
     react({
       // SWC plugin with proper configuration
       tsDecorators: true,
-      // Enable Fast Refresh in development
-      fastRefresh: true,
     }),
     VitePWA({
       registerType: 'autoUpdate',
