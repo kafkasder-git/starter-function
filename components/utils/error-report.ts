@@ -120,7 +120,7 @@ export const createErrorReport = ({
 }: CreateErrorReportParams): ErrorReport => {
   const mergedSource = mergeEnvironmentSource(environmentSource);
   const environment = getEnvironmentInfo(mergedSource);
-  const dateFactory = mergedSource.dateFactory ?? (() => new Date());
+  const { dateFactory } = mergedSource;
 
   return {
     errorId,

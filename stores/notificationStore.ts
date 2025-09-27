@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 
+import { logger } from '../lib/logging/logger';
+
 export interface NotificationState {
   id: string;
   userId: string;
@@ -130,7 +132,7 @@ export const notificationSelectors = {
   getUnreadCount: (state: NotificationStoreState) => state.unreadCount,
   getTotalCount: (state: NotificationStoreState) => state.notifications.length,
   startRealtimeSubscription: () => {
-    console.log('Realtime subscription started (mock)');
+    logger.info('Realtime subscription started (mock)');
     return Promise.resolve();
   },
   getState: () => useNotificationStore.getState(),

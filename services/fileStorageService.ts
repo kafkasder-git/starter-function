@@ -6,6 +6,7 @@
 import { supabase } from '../lib/supabase';
 import { environment } from '../lib/environment';
 import { monitoring } from './monitoringService';
+import { logger } from '../lib/logging/logger';
 
 // =============================================================================
 // TYPES AND INTERFACES
@@ -228,7 +229,7 @@ export class FileStorageService {
       const { data: buckets, error } = await supabase.storage.listBuckets();
 
       if (error) {
-        console.error('Failed to list buckets:', error);
+        logger.error('Failed to list buckets:', error);
         return;
       }
 
@@ -243,9 +244,9 @@ export class FileStorageService {
           });
 
           if (createError) {
-            console.error(`Failed to create bucket ${config.name}:`, createError);
+            logger.error(`Failed to create bucket ${config.name}:`, createError);
           } else {
-            console.log(`✅ Created bucket: ${config.name}`);
+            logger.info(`✅ Created bucket: ${config.name}`);
           }
         }
       }
@@ -260,7 +261,7 @@ export class FileStorageService {
         },
       });
     } catch (error) {
-      console.error('Failed to initialize buckets:', error);
+      logger.error('Failed to initialize buckets:', error);
     }
   }
 
@@ -846,7 +847,7 @@ export class FileStorageService {
    */
   private async saveFileMetadata(metadata: FileMetadata): Promise<void> {
     // In real app, save to database
-    console.log('Saving file metadata:', metadata);
+    logger.info('Saving file metadata:', metadata);
   }
 
   /**
@@ -854,7 +855,7 @@ export class FileStorageService {
    */
   private async deleteFileMetadata(bucket: string, filePath: string): Promise<void> {
     // In real app, delete from database
-    console.log('Deleting file metadata:', { bucket, filePath });
+    logger.info('Deleting file metadata:', { bucket, filePath });
   }
 
   /**
@@ -862,7 +863,7 @@ export class FileStorageService {
    */
   private async incrementDownloadCount(bucket: string, filePath: string): Promise<void> {
     // In real app, update download count in database
-    console.log('Incrementing download count:', { bucket, filePath });
+    logger.info('Incrementing download count:', { bucket, filePath });
   }
 
   /**
@@ -897,7 +898,7 @@ export class FileStorageService {
         stats.totalFiles += bucketFiles.length;
         stats.totalSize += bucketSize;
       } catch (error) {
-        console.error(`Failed to get stats for bucket ${config.name}:`, error);
+        logger.error(`Failed to get stats for bucket ${config.name}:`, error);
       }
     }
 

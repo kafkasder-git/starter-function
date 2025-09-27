@@ -1,3 +1,4 @@
+import { logger } from '../lib/logging/logger';
 // 🏦 KUMBARA SERVICE
 // Comprehensive service layer for Kumbara (Piggy Bank) management
 
@@ -40,7 +41,7 @@ class KumbaraService {
   private handleError(error: unknown, operation: string): never {
     const errorMessage = error instanceof Error ? error.message : 'Bilinmeyen bir hata oluştu';
 
-    console.error(`KumbaraService.${operation} error:`, error);
+    logger.error(`KumbaraService.${operation} error:`, error);
     throw new Error(`${operation} işlemi başarısız: ${errorMessage}`);
   }
 
@@ -137,7 +138,7 @@ class KumbaraService {
         filters_applied: filters,
       };
     } catch (error) {
-      console.error('Error fetching kumbaras:', error);
+      logger.error('Error fetching kumbaras:', error);
       throw new Error('Kumbara listesi alınamadı');
     }
   }
@@ -157,7 +158,7 @@ class KumbaraService {
 
       return kumbara;
     } catch (error) {
-      console.error('Error fetching kumbara:', error);
+      logger.error('Error fetching kumbara:', error);
       throw new Error('Kumbara bilgileri alınamadı');
     }
   }
@@ -194,7 +195,7 @@ class KumbaraService {
       // Mock API call - replace with real implementation
       return newKumbara;
     } catch (error) {
-      console.error('Error creating kumbara:', error);
+      logger.error('Error creating kumbara:', error);
       throw new Error('Kumbara oluşturulamadı');
     }
   }
@@ -215,7 +216,7 @@ class KumbaraService {
       // Mock API call - replace with real implementation
       return updatedKumbara;
     } catch (error) {
-      console.error('Error updating kumbara:', error);
+      logger.error('Error updating kumbara:', error);
       throw new Error('Kumbara güncellenemedi');
     }
   }
@@ -228,7 +229,7 @@ class KumbaraService {
       // Mock API call - replace with real implementation
       return true;
     } catch (error) {
-      console.error('Error deleting kumbara:', error);
+      logger.error('Error deleting kumbara:', error);
       throw new Error('Kumbara silinemedi');
     }
   }
@@ -264,7 +265,7 @@ class KumbaraService {
       // Mock API call - replace with real implementation
       return newCollection;
     } catch (error) {
-      console.error('Error recording collection:', error);
+      logger.error('Error recording collection:', error);
       throw new Error('Toplama kaydı oluşturulamadı');
     }
   }
@@ -277,7 +278,7 @@ class KumbaraService {
       // 🔗 Gerçek API'den toplama kayıtları alınacak
       return [];
     } catch (error) {
-      console.error('Error fetching collections:', error);
+      logger.error('Error fetching collections:', error);
       throw new Error('Toplama kayıtları alınamadı');
     }
   }
@@ -330,7 +331,7 @@ class KumbaraService {
 
       return stats;
     } catch (error) {
-      console.error('Error fetching dashboard stats:', error);
+      logger.error('Error fetching dashboard stats:', error);
       throw new Error('Dashboard istatistikleri alınamadı');
     }
   }
@@ -366,7 +367,7 @@ class KumbaraService {
 
       return analytics;
     } catch (error) {
-      console.error('Error fetching kumbara analytics:', error);
+      logger.error('Error fetching kumbara analytics:', error);
       throw new Error('Kumbara analitikleri alınamadı');
     }
   }
@@ -542,7 +543,7 @@ class KumbaraService {
       // For other formats, implement accordingly
       throw new Error(`${format} formatı henüz desteklenmiyor`);
     } catch (error) {
-      console.error('Error exporting kumbaras:', error);
+      logger.error('Error exporting kumbaras:', error);
       throw new Error('Kumbara verileri dışa aktarılamadı');
     }
   }
@@ -612,7 +613,7 @@ class KumbaraService {
 
       return alerts;
     } catch (error) {
-      console.error('Error fetching kumbara alerts:', error);
+      logger.error('Error fetching kumbara alerts:', error);
       throw new Error('Kumbara uyarıları alınamadı');
     }
   }
@@ -625,7 +626,7 @@ class KumbaraService {
       // Mock API call - replace with real implementation
       return true;
     } catch (error) {
-      console.error('Error acknowledging alert:', error);
+      logger.error('Error acknowledging alert:', error);
       throw new Error('Uyarı onaylanamadı');
     }
   }

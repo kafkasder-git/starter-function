@@ -20,6 +20,7 @@ import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Textarea } from '../ui/textarea';
 
+import { logger } from '../lib/logging/logger';
 // Form validation schema
 const beneficiarySchema = z.object({
   // Temel bilgiler
@@ -150,7 +151,7 @@ export default function BeneficiaryForm({
       toast.success('Yardım alanı başarıyla kaydedildi');
     } catch (error) {
       toast.error('Kayıt sırasında bir hata oluştu');
-      console.error('Form submission error:', error);
+      logger.error('Form submission error:', error);
     }
   };
 

@@ -189,19 +189,19 @@ export class MembersService {
   // Get single member
   async getMember(id: number): Promise<MembersApiResponse<Member>> {
     try {
-      console.log('🔄 Fetching single member with id:', id);
+      logger.info('🔄 Fetching single member with id:', id);
 
       const { data, error } = await supabase.from('members').select('*').eq('id', id).single();
 
       if (error) {
-        console.error('❌ Error fetching single member:', error);
+        logger.error('❌ Error fetching single member:', error);
         return { error: error.message };
       }
 
-      console.log('✅ Successfully fetched member:', data?.name);
+      logger.info('✅ Successfully fetched member:', data?.name);
       return { data };
     } catch (error: any) {
-      console.error('❌ Unexpected error in getMember:', error);
+      logger.error('❌ Unexpected error in getMember:', error);
       return { error: error.message || 'Üye bulunamadı' };
     }
   }
@@ -209,7 +209,7 @@ export class MembersService {
   // Get member statistics
   async getMemberStats(): Promise<MembersApiResponse<MemberStats>> {
     try {
-      console.log('🔄 Fetching member statistics');
+      logger.info('🔄 Fetching member statistics');
 
       // Get all member data
       const { data: membersData, error } = await supabase
@@ -219,7 +219,7 @@ export class MembersService {
         );
 
       if (error) {
-        console.error('❌ Error fetching member stats:', error);
+        logger.error('❌ Error fetching member stats:', error);
         return { error: error.message };
       }
 
@@ -298,7 +298,7 @@ export class MembersService {
         feePaidPercentage: Math.round(feePaidPercentage),
       };
 
-      console.log('✅ Successfully calculated member statistics:', {
+      logger.info('✅ Successfully calculated member statistics:', {
         total: stats.total,
         active: stats.active,
         averageAge: stats.averageAge,
@@ -306,7 +306,7 @@ export class MembersService {
 
       return { data: stats };
     } catch (error: any) {
-      console.error('❌ Error calculating member statistics:', error);
+      logger.error('❌ Error calculating member statistics:', error);
       return { error: error.message || 'İstatistikler hesaplanamadı' };
     }
   }
@@ -368,7 +368,7 @@ export class MembersService {
   // Create new member
   async createMember(memberData: Partial<Member>): Promise<MembersApiResponse<Member>> {
     try {
-      console.log('🔄 Creating new member:', memberData);
+      logger.info('🔄 Creating new member:', memberData);
 
       // Generate membership number if not provided
       const membershipNumber =
@@ -432,14 +432,14 @@ export class MembersService {
         .single();
 
       if (error) {
-        console.error('❌ Error creating member:', error);
+        logger.error('❌ Error creating member:', error);
         return { error: error.message };
       }
 
-      console.log('✅ Successfully created member:', newMember?.name);
+      logger.info('✅ Successfully created member:', newMember?.name);
       return { data: newMember };
     } catch (error: any) {
-      console.error('❌ Unexpected error in createMember:', error);
+      logger.error('❌ Unexpected error in createMember:', error);
       return { error: error.message || 'Üye oluşturulamadı' };
     }
   }
@@ -447,7 +447,7 @@ export class MembersService {
   // Update member
   async updateMember(id: number, updates: Partial<Member>): Promise<MembersApiResponse<Member>> {
     try {
-      console.log('🔄 Updating member:', id, updates);
+      logger.info('🔄 Updating member:', id, updates);
 
       const { data, error } = await supabase
         .from('members')
@@ -460,14 +460,14 @@ export class MembersService {
         .single();
 
       if (error) {
-        console.error('❌ Error updating member:', error);
+        logger.error('❌ Error updating member:', error);
         return { error: error.message };
       }
 
-      console.log('✅ Successfully updated member:', data?.name);
+      logger.info('✅ Successfully updated member:', data?.name);
       return { data };
     } catch (error: any) {
-      console.error('❌ Unexpected error in updateMember:', error);
+      logger.error('❌ Unexpected error in updateMember:', error);
       return { error: error.message || 'Üye güncellenemedi' };
     }
   }
@@ -475,19 +475,19 @@ export class MembersService {
   // Delete member
   async deleteMember(id: number): Promise<MembersApiResponse<boolean>> {
     try {
-      console.log('🔄 Deleting member:', id);
+      logger.info('🔄 Deleting member:', id);
 
       const { error } = await supabase.from('members').delete().eq('id', id);
 
       if (error) {
-        console.error('❌ Error deleting member:', error);
+        logger.error('❌ Error deleting member:', error);
         return { error: error.message };
       }
 
-      console.log('✅ Successfully deleted member:', id);
+      logger.info('✅ Successfully deleted member:', id);
       return { data: true };
     } catch (error: any) {
-      console.error('❌ Unexpected error in deleteMember:', error);
+      logger.error('❌ Unexpected error in deleteMember:', error);
       return { error: error.message || 'Üye silinemedi' };
     }
   }
@@ -502,7 +502,7 @@ export class MembersService {
         .limit(1);
 
       if (error) {
-        console.error('❌ Error generating membership number:', error);
+        logger.error('❌ Error generating membership number:', error);
         return `UYE-${Date.now()}`;
       }
 
@@ -517,7 +517,7 @@ export class MembersService {
 
       return 'UYE-0001';
     } catch (error) {
-      console.error('❌ Error in generateMembershipNumber:', error);
+      logger.error('❌ Error in generateMembershipNumber:', error);
       return `UYE-${Date.now()}`;
     }
   }
@@ -525,7 +525,7 @@ export class MembersService {
   // Bulk update membership status
   async bulkUpdateStatus(ids: number[], status: string): Promise<MembersApiResponse<boolean>> {
     try {
-      console.log('🔄 Bulk updating member status:', ids, status);
+      logger.info('🔄 Bulk updating member status:', ids, status);
 
       const { error } = await supabase
         .from('members')
@@ -536,14 +536,14 @@ export class MembersService {
         .in('id', ids);
 
       if (error) {
-        console.error('❌ Error bulk updating member status:', error);
+        logger.error('❌ Error bulk updating member status:', error);
         return { error: error.message };
       }
 
-      console.log('✅ Successfully bulk updated', ids.length, 'members');
+      logger.info('✅ Successfully bulk updated', ids.length, 'members');
       return { data: true };
     } catch (error: any) {
-      console.error('❌ Unexpected error in bulkUpdateStatus:', error);
+      logger.error('❌ Unexpected error in bulkUpdateStatus:', error);
       return { error: error.message || 'Toplu güncelleme başarısız' };
     }
   }
@@ -551,7 +551,7 @@ export class MembersService {
   // Export members to CSV
   async exportMembers(filters: MembersFilters = {}): Promise<MembersApiResponse<Member[]>> {
     try {
-      console.log('🔄 Exporting members with filters:', filters);
+      logger.info('🔄 Exporting members with filters:', filters);
 
       let query = supabase.from('members').select('*');
 
@@ -591,14 +591,14 @@ export class MembersService {
       const { data, error } = await query;
 
       if (error) {
-        console.error('❌ Error exporting members:', error);
+        logger.error('❌ Error exporting members:', error);
         return { error: error.message };
       }
 
-      console.log('✅ Successfully exported', data?.length || 0, 'members');
+      logger.info('✅ Successfully exported', data?.length || 0, 'members');
       return { data: data || [] };
     } catch (error: any) {
-      console.error('❌ Unexpected error in exportMembers:', error);
+      logger.error('❌ Unexpected error in exportMembers:', error);
       return { error: error.message || 'Dışa aktarma başarısız' };
     }
   }

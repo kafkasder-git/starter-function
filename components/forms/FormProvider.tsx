@@ -8,6 +8,7 @@
 import type { ReactNode } from 'react';
 import { createContext, useContext } from 'react';
 
+import { logger } from '../lib/logging/logger';
 interface ValidationError {
   field: string;
   message: string;
@@ -181,7 +182,7 @@ export function FormProvider({
       try {
         await onSubmit(formState.values);
       } catch (error) {
-        console.error('Form submission error:', error);
+        logger.error('Form submission error:', error);
       }
     }
     

@@ -1,3 +1,4 @@
+import { logger } from '../lib/logging/logger';
 /**
  * @fileoverview logger Module - Application module
  * 
@@ -102,16 +103,16 @@ class Logger {
     if (this.config.enableConsole) {
       switch (level) {
         case LogLevel.DEBUG:
-          console.debug(formattedMessage, ...args);
+          logger.debug(formattedMessage, ...args);
           break;
         case LogLevel.INFO:
           console.info(formattedMessage, ...args);
           break;
         case LogLevel.WARN:
-          console.warn(formattedMessage, ...args);
+          logger.warn(formattedMessage, ...args);
           break;
         case LogLevel.ERROR:
-          console.error(formattedMessage, ...args);
+          logger.error(formattedMessage, ...args);
           break;
       }
     }

@@ -105,9 +105,9 @@ const AppContent = memo(() => {
     );
 
     if (
-      addButton &&
-      ((addButton.textContent?.includes('Ekle')) ||
-        (addButton.textContent?.includes('Yeni')) ||
+      addButton?.textContent &&
+      ((addButton.textContent.includes('Ekle')) ||
+        (addButton.textContent.includes('Yeni')) ||
         addButton.querySelector('svg'))
     ) {
       (addButton as HTMLElement).click();
@@ -147,6 +147,7 @@ const AppContent = memo(() => {
       };
 
       const action = actionMap[actionId as keyof typeof actionMap];
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (action) {
         navigation.setActiveModule(action.module);
         navigation.setCurrentSubPage(action.subPage);
@@ -237,22 +238,15 @@ const AppContent = memo(() => {
 /**
  * App with Navigation Provider
  */
-const AppWithNavigation = memo(({
-  onNavigate: _onNavigate,
-}: {
-  onNavigate: (module: string, page?: string, subPage?: string) => void;
-}) => {
-  const [currentModule, _setCurrentModule] = useState('genel');
-  const [currentPage, _setCurrentPage] = useState('dashboard');
-  const [currentSubPage, _setCurrentSubPage] = useState('');
+const AppWithNavigation = memo(() => {
 
   // Navigation handler removed
 
   return (
     <NavigationProvider
-      initialModule={currentModule}
-      initialPage={currentPage}
-      initialSubPage={currentSubPage}
+      initialModule="genel"
+      initialPage="dashboard"
+      initialSubPage=""
     >
       <AppContent />
       <ToastProvider />
@@ -271,15 +265,10 @@ const AppWithNavigation = memo(({
  * @returns {JSX.Element} The application wrapped with error handling and context providers
  */
 function AppWithErrorHandling() {
-  // Navigation handler
-  const handleNavigation = useCallback(() => {
-    // Navigation handled
-  }, []);
-
   return (
     <ErrorBoundary>
       <SupabaseAuthProvider>
-            <AppWithNavigation onNavigate={handleNavigation} />
+            <AppWithNavigation />
       </SupabaseAuthProvider>
     </ErrorBoundary>
   );

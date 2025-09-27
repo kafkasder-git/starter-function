@@ -32,7 +32,7 @@ interface DesktopTableProps<T> {
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
-export function DesktopTable<T extends { id: string | number }>({
+export function MobileResponsiveTable<T extends { id: string | number }>({
   data,
   columns,
   onRowClick,
@@ -71,7 +71,7 @@ export function DesktopTable<T extends { id: string | number }>({
             >
               {columns.map((column) => (
                 <TableCell key={column.key} className={`p-4 ${column.className ?? ''}`}>
-                  {column.render ? column.render(item) : (item as any)[column.key]}
+                  {column.render ? column.render(item) : item[column.key]}
                 </TableCell>
               ))}
             </TableRow>
@@ -253,7 +253,8 @@ export function DesktopStatsCard({
           </div>
           {icon && (
             <div
-              className={`w-10 h-10 rounded-full flex items-center justify-center ${colorClasses[color]}`}
+              // eslint-disable-next-line security/detect-object-injection
+className={`w-10 h-10 rounded-full flex items-center justify-center ${color in colorClasses ? colorClasses[color] : colorClasses.gray}`}
             >
               {icon}
             </div>
