@@ -1,6 +1,6 @@
 /**
  * @fileoverview ApplicationWorkflowPage Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -151,12 +151,11 @@ const partners: Partner[] = [
 
 /**
  * PartnerListPage function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
 export default function PartnerListPage() {
-  const [partnersList, setPartnersList] = useState<Partner[]>(partners);
   const [filteredPartners, setFilteredPartners] = useState<Partner[]>(partners);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<string>('all');
@@ -208,34 +207,68 @@ export default function PartnerListPage() {
     }
 
     setFilteredPartners(filtered);
-  }, [partners, searchTerm, filterType, filterCategory, filterStatus, activeTab]);
+  }, [searchTerm, filterType, filterCategory, filterStatus, activeTab]);
 
   const getStatusBadge = (status: Partner['status']) => {
-    const config = {
-      aktif: { label: 'Aktif', className: 'bg-green-50 text-green-700 border-green-200' },
-      pasif: { label: 'Pasif', className: 'bg-gray-50 text-gray-700 border-gray-200' },
-      askida: { label: 'Askıda', className: 'bg-yellow-50 text-yellow-700 border-yellow-200' },
-    };
+    let label: string;
+    let className: string;
 
-    const { label, className } = config[status];
+    switch (status) {
+      case 'aktif':
+        label = 'Aktif';
+        className = 'bg-green-50 text-green-700 border-green-200';
+        break;
+      case 'pasif':
+        label = 'Pasif';
+        className = 'bg-gray-50 text-gray-700 border-gray-200';
+        break;
+      case 'askida':
+        label = 'Askıda';
+        className = 'bg-yellow-50 text-yellow-700 border-yellow-200';
+        break;
+      default:
+        label = 'Bilinmiyor';
+        className = 'bg-gray-50 text-gray-700 border-gray-200';
+    }
+
     return (
-      <Badge variant="outline" className={`${className} text-xs px-2 py-1`}>
+      <Badge variant="outline" className={`${className} px-2 py-1 text-xs`}>
         {label}
       </Badge>
     );
   };
 
   const getCategoryBadge = (category: Partner['category']) => {
-    const config = {
-      bagisci: { label: 'Bağışçı', className: 'bg-blue-50 text-blue-700' },
-      tedarikci: { label: 'Tedarikçi', className: 'bg-purple-50 text-purple-700' },
-      sponsor: { label: 'Sponsor', className: 'bg-orange-50 text-orange-700' },
-      isbirligi: { label: 'İşbirliği', className: 'bg-green-50 text-green-700' },
-      dernek: { label: 'Dernek', className: 'bg-indigo-50 text-indigo-700' },
-    };
+    let label: string;
+    let className: string;
 
-    const { label, className } = config[category];
-    return <Badge className={`${className} text-xs px-2 py-1 border-0`}>{label}</Badge>;
+    switch (category) {
+      case 'bagisci':
+        label = 'Bağışçı';
+        className = 'bg-blue-50 text-blue-700';
+        break;
+      case 'tedarikci':
+        label = 'Tedarikçi';
+        className = 'bg-purple-50 text-purple-700';
+        break;
+      case 'sponsor':
+        label = 'Sponsor';
+        className = 'bg-orange-50 text-orange-700';
+        break;
+      case 'isbirligi':
+        label = 'İşbirliği';
+        className = 'bg-green-50 text-green-700';
+        break;
+      case 'dernek':
+        label = 'Dernek';
+        className = 'bg-indigo-50 text-indigo-700';
+        break;
+      default:
+        label = 'Bilinmiyor';
+        className = 'bg-gray-50 text-gray-700';
+    }
+
+    return <Badge className={`${className} border-0 px-2 py-1 text-xs`}>{label}</Badge>;
   };
 
   const formatCurrency = (amount: number) => {
@@ -263,29 +296,29 @@ export default function PartnerListPage() {
   return (
     <div className="flex-1 space-y-4 p-4 sm:space-y-6 sm:p-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-medium">Partner Yönetimi</h1>
           <p className="text-muted-foreground mt-1">
             Tüm partner kuruluşlar ve işbirliği ilişkileri
           </p>
         </div>
-        <Button className="gap-2 w-full sm:w-auto">
-          <Plus className="w-4 h-4" />
+        <Button className="w-full gap-2 sm:w-auto">
+          <Plus className="h-4 w-4" />
           Yeni Partner
         </Button>
       </div>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Toplam</p>
+                <p className="text-muted-foreground text-sm">Toplam</p>
                 <p className="text-2xl font-medium">{partners.length}</p>
               </div>
-              <Building2 className="w-5 h-5 text-muted-foreground" />
+              <Building2 className="text-muted-foreground h-5 w-5" />
             </div>
           </CardContent>
         </Card>
@@ -294,12 +327,12 @@ export default function PartnerListPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Aktif</p>
+                <p className="text-muted-foreground text-sm">Aktif</p>
                 <p className="text-2xl font-medium text-green-600">
                   {partners.filter((p) => p.status === 'aktif').length}
                 </p>
               </div>
-              <Users className="w-5 h-5 text-green-600" />
+              <Users className="h-5 w-5 text-green-600" />
             </div>
           </CardContent>
         </Card>
@@ -308,12 +341,12 @@ export default function PartnerListPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Bağışçı</p>
+                <p className="text-muted-foreground text-sm">Bağışçı</p>
                 <p className="text-2xl font-medium text-blue-600">
                   {partners.filter((p) => p.category === 'bagisci').length}
                 </p>
               </div>
-              <Star className="w-5 h-5 text-blue-600" />
+              <Star className="h-5 w-5 text-blue-600" />
             </div>
           </CardContent>
         </Card>
@@ -322,21 +355,21 @@ export default function PartnerListPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Top Rated</p>
+                <p className="text-muted-foreground text-sm">Top Rated</p>
                 <p className="text-2xl font-medium text-orange-600">
                   {partners.filter((p) => p.rating >= 4).length}
                 </p>
               </div>
-              <AlertCircle className="w-5 h-5 text-orange-600" />
+              <AlertCircle className="h-5 w-5 text-orange-600" />
             </div>
           </CardContent>
         </Card>
       </div>
 
       {/* Search and Filters */}
-      <div className="flex flex-col sm:flex-row gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+          <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
           <Input
             placeholder="Partner ara..."
             value={searchTerm}
@@ -403,9 +436,9 @@ export default function PartnerListPage() {
           {filteredPartners.length === 0 ? (
             <Card>
               <CardContent className="flex flex-col items-center justify-center py-12">
-                <Building2 className="w-12 h-12 text-muted-foreground mb-4" />
-                <h3 className="text-lg font-medium mb-2">Partner bulunamadı</h3>
-                <p className="text-muted-foreground text-center mb-4">
+                <Building2 className="text-muted-foreground mb-4 h-12 w-12" />
+                <h3 className="mb-2 text-lg font-medium">Partner bulunamadı</h3>
+                <p className="text-muted-foreground mb-4 text-center">
                   Arama kriterlerinize uygun partner bulunmuyor.
                 </p>
                 <Button onClick={clearFilters}>Filtreleri Temizle</Button>
@@ -414,17 +447,17 @@ export default function PartnerListPage() {
           ) : (
             <div className="grid gap-4">
               {filteredPartners.map((partner) => (
-                <Card key={partner.id} className="hover:shadow-md transition-shadow">
+                <Card key={partner.id} className="transition-shadow hover:shadow-md">
                   <CardHeader className="pb-3">
-                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-                      <div className="flex-1 min-w-0">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                      <div className="min-w-0 flex-1">
                         <CardTitle className="text-lg font-medium">{partner.name}</CardTitle>
-                        <div className="flex flex-wrap items-center gap-2 mt-2">
+                        <div className="mt-2 flex flex-wrap items-center gap-2">
                           {getStatusBadge(partner.status)}
                           {getCategoryBadge(partner.category)}
                           <div className="flex items-center gap-1">
-                            <Star className="w-3 h-3 text-yellow-500 fill-current" />
-                            <span className="text-xs text-muted-foreground">{partner.rating}</span>
+                            <Star className="h-3 w-3 fill-current text-yellow-500" />
+                            <span className="text-muted-foreground text-xs">{partner.rating}</span>
                           </div>
                         </div>
                       </div>
@@ -432,7 +465,7 @@ export default function PartnerListPage() {
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" size="icon" className="h-8 w-8">
-                            <Eye className="w-4 h-4" />
+                            <Eye className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
@@ -441,7 +474,7 @@ export default function PartnerListPage() {
                               handleViewDetails(partner);
                             }}
                           >
-                            <Eye className="w-4 h-4 mr-2" />
+                            <Eye className="mr-2 h-4 w-4" />
                             Detayları Görüntüle
                           </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -450,21 +483,21 @@ export default function PartnerListPage() {
                   </CardHeader>
 
                   <CardContent className="pt-0">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                       <div className="flex items-center gap-2 text-sm">
-                        <Phone className="w-4 h-4 text-muted-foreground" />
+                        <Phone className="text-muted-foreground h-4 w-4" />
                         <span className="truncate">{partner.phone}</span>
                       </div>
                       <div className="flex items-center gap-2 text-sm">
-                        <Mail className="w-4 h-4 text-muted-foreground" />
+                        <Mail className="text-muted-foreground h-4 w-4" />
                         <span className="truncate">{partner.email}</span>
                       </div>
                       <div className="flex items-center gap-2 text-sm">
-                        <MapPin className="w-4 h-4 text-muted-foreground" />
+                        <MapPin className="text-muted-foreground h-4 w-4" />
                         <span className="truncate">{partner.address}</span>
                       </div>
                       <div className="flex items-center gap-2 text-sm">
-                        <Calendar className="w-4 h-4 text-muted-foreground" />
+                        <Calendar className="text-muted-foreground h-4 w-4" />
                         <span className="truncate">
                           Son İletişim: {new Date(partner.lastContact).toLocaleDateString('tr-TR')}
                         </span>
@@ -472,7 +505,7 @@ export default function PartnerListPage() {
                     </div>
 
                     {partner.totalContribution > 0 && (
-                      <div className="mt-4 p-3 bg-green-50 rounded-lg">
+                      <div className="mt-4 rounded-lg bg-green-50 p-3">
                         <div className="flex items-center justify-between">
                           <span className="text-sm text-green-700">Toplam Katkı</span>
                           <span className="font-medium text-green-800">
@@ -491,48 +524,48 @@ export default function PartnerListPage() {
 
       {/* Partner Detail Dialog */}
       <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Building2 className="w-5 h-5" />
+              <Building2 className="h-5 w-5" />
               {selectedPartner?.name}
             </DialogTitle>
           </DialogHeader>
 
           {selectedPartner && (
             <div className="space-y-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="space-y-3">
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">
+                    <label className="text-muted-foreground text-sm font-medium">
                       İletişim Kişisi
                     </label>
                     <p>{selectedPartner.contactPerson}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">Telefon</label>
+                    <label className="text-muted-foreground text-sm font-medium">Telefon</label>
                     <p>{selectedPartner.phone}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">E-posta</label>
+                    <label className="text-muted-foreground text-sm font-medium">E-posta</label>
                     <p>{selectedPartner.email}</p>
                   </div>
                 </div>
 
                 <div className="space-y-3">
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">Adres</label>
+                    <label className="text-muted-foreground text-sm font-medium">Adres</label>
                     <p>{selectedPartner.address}</p>
                   </div>
                   {selectedPartner.website && (
                     <div>
-                      <label className="text-sm font-medium text-muted-foreground">Website</label>
+                      <label className="text-muted-foreground text-sm font-medium">Website</label>
                       <p>{selectedPartner.website}</p>
                     </div>
                   )}
                   {selectedPartner.taxNumber && (
                     <div>
-                      <label className="text-sm font-medium text-muted-foreground">Vergi No</label>
+                      <label className="text-muted-foreground text-sm font-medium">Vergi No</label>
                       <p>{selectedPartner.taxNumber}</p>
                     </div>
                   )}
@@ -541,7 +574,7 @@ export default function PartnerListPage() {
 
               {selectedPartner.description && (
                 <div>
-                  <label className="text-sm font-medium text-muted-foreground">Açıklama</label>
+                  <label className="text-muted-foreground text-sm font-medium">Açıklama</label>
                   <p className="mt-1">{selectedPartner.description}</p>
                 </div>
               )}

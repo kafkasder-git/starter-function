@@ -1,18 +1,31 @@
 /**
  * @fileoverview ServiceTrackingPage Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
 
 import { useState } from 'react';
-import { PageLayout } from '../PageLayout';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Badge } from '../ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { PageLayout } from '@/components/PageLayout';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import {
   Settings,
   Search,
@@ -52,11 +65,7 @@ interface ServiceTracking {
   location: string;
 }
 
-// Service data will be fetched from API
-const getServices = async (): Promise<ServiceTracking[]> => {
-  // TODO: Implement real API call to fetch services
-  return [];
-};
+// Service data - will be fetched from API in the future
 
 const services: ServiceTracking[] = [
   {
@@ -151,65 +160,79 @@ const services: ServiceTracking[] = [
 ];
 
 /**
- * ServiceTrackingPage function
- * 
- * @param {Object} params - Function parameters
- * @returns {void} Nothing
+ * ServiceTrackingPage component
  */
 export function ServiceTrackingPage() {
-  const [servicesList, setServicesList] = useState<ServiceTracking[]>(services);
+  const [servicesList] = useState<ServiceTracking[]>(services);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [priorityFilter, setPriorityFilter] = useState<string>('all');
 
   const getStatusBadge = (status: ServiceTracking['status']) => {
-    const statusConfig = {
-      requested: { label: 'Talep Edildi', color: 'bg-gray-100 text-gray-800' },
-      approved: { label: 'Onaylandı', color: 'bg-blue-100 text-blue-800' },
-      in_progress: { label: 'Devam Ediyor', color: 'bg-yellow-100 text-yellow-800' },
-      completed: { label: 'Tamamlandı', color: 'bg-green-100 text-green-800' },
-      cancelled: { label: 'İptal Edildi', color: 'bg-red-100 text-red-800' },
-    };
-
-    const config = statusConfig[status];
-    return <Badge className={config.color}>{config.label}</Badge>;
+    switch (status) {
+      case 'requested':
+        return <Badge className="bg-gray-100 text-gray-800">Talep Edildi</Badge>;
+      case 'approved':
+        return <Badge className="bg-blue-100 text-blue-800">Onaylandı</Badge>;
+      case 'in_progress':
+        return <Badge className="bg-yellow-100 text-yellow-800">Devam Ediyor</Badge>;
+      case 'completed':
+        return <Badge className="bg-green-100 text-green-800">Tamamlandı</Badge>;
+      case 'cancelled':
+        return <Badge className="bg-red-100 text-red-800">İptal Edildi</Badge>;
+      default:
+        return <Badge className="bg-gray-100 text-gray-800">Bilinmiyor</Badge>;
+    }
   };
 
   const getPriorityBadge = (priority: ServiceTracking['priority']) => {
-    const priorityConfig = {
-      low: { label: 'Düşük', color: 'bg-gray-100 text-gray-800' },
-      medium: { label: 'Orta', color: 'bg-blue-100 text-blue-800' },
-      high: { label: 'Yüksek', color: 'bg-orange-100 text-orange-800' },
-      urgent: { label: 'Acil', color: 'bg-red-100 text-red-800' },
-    };
-
-    const config = priorityConfig[priority];
-    return <Badge className={config.color}>{config.label}</Badge>;
+    switch (priority) {
+      case 'low':
+        return <Badge className="bg-gray-100 text-gray-800">Düşük</Badge>;
+      case 'medium':
+        return <Badge className="bg-blue-100 text-blue-800">Orta</Badge>;
+      case 'high':
+        return <Badge className="bg-orange-100 text-orange-800">Yüksek</Badge>;
+      case 'urgent':
+        return <Badge className="bg-red-100 text-red-800">Acil</Badge>;
+      default:
+        return <Badge className="bg-gray-100 text-gray-800">Bilinmiyor</Badge>;
+    }
   };
 
   const getServiceTypeIcon = (serviceType: string) => {
-    const icons = {
-      'Ev Onarımı': <Home className="w-4 h-4 text-blue-600" />,
-      'Ulaşım Hizmeti': <Car className="w-4 h-4 text-green-600" />,
-      Danışmanlık: <Briefcase className="w-4 h-4 text-purple-600" />,
-      'Eğitim Desteği': <GraduationCap className="w-4 h-4 text-orange-600" />,
-      'Temizlik Hizmeti': <Wrench className="w-4 h-4 text-teal-600" />,
-    };
-    return (
-      icons[serviceType as keyof typeof icons] || <Settings className="w-4 h-4 text-gray-600" />
-    );
+    switch (serviceType) {
+      case 'Ev Onarımı':
+        return <Home className="h-4 w-4 text-blue-600" />;
+      case 'Ulaşım Hizmeti':
+        return <Car className="h-4 w-4 text-green-600" />;
+      case 'Danışmanlık':
+        return <Briefcase className="h-4 w-4 text-purple-600" />;
+      case 'Eğitim Desteği':
+        return <GraduationCap className="h-4 w-4 text-orange-600" />;
+      case 'Temizlik Hizmeti':
+        return <Wrench className="h-4 w-4 text-teal-600" />;
+      default:
+        return <Settings className="h-4 w-4 text-gray-600" />;
+    }
   };
 
   const getStatusIcon = (status: ServiceTracking['status']) => {
-    const icons = {
-      requested: <Clock className="w-4 h-4 text-gray-600" />,
-      approved: <CheckCircle className="w-4 h-4 text-blue-600" />,
-      in_progress: <AlertCircle className="w-4 h-4 text-yellow-600" />,
-      completed: <CheckCircle className="w-4 h-4 text-green-600" />,
-      cancelled: <AlertCircle className="w-4 h-4 text-red-600" />,
-    };
-    return icons[status];
+    switch (status) {
+      case 'requested':
+        return <Clock className="h-4 w-4 text-gray-600" />;
+      case 'approved':
+        return <CheckCircle className="h-4 w-4 text-blue-600" />;
+      case 'in_progress':
+        return <AlertCircle className="h-4 w-4 text-yellow-600" />;
+      case 'completed':
+        return <CheckCircle className="h-4 w-4 text-green-600" />;
+      case 'cancelled':
+        return <AlertCircle className="h-4 w-4 text-red-600" />;
+      default:
+        return <Clock className="h-4 w-4 text-gray-600" />;
+    }
   };
 
   const filteredServices = servicesList.filter((service) => {
@@ -242,27 +265,27 @@ export function ServiceTrackingPage() {
       actions={
         <div className="flex gap-2">
           <Button variant="outline">
-            <Download className="w-4 h-4 mr-2" />
+            <Download className="mr-2 h-4 w-4" />
             Hizmet Raporu
           </Button>
           <Button>
-            <Plus className="w-4 h-4 mr-2" />
+            <Plus className="mr-2 h-4 w-4" />
             İhtiyaç Sahibi İçin Yeni Hizmet
           </Button>
         </div>
       }
     >
-      <div className="p-6 space-y-6">
+      <div className="space-y-6 p-6">
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-blue-100 rounded-lg">
-                  <Settings className="w-5 h-5 text-blue-600" />
+                <div className="rounded-lg bg-blue-100 p-2">
+                  <Settings className="h-5 w-5 text-blue-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Toplam Hizmet</p>
+                  <p className="text-muted-foreground text-sm">Toplam Hizmet</p>
                   <p className="text-2xl font-bold">{stats.total}</p>
                 </div>
               </div>
@@ -272,11 +295,11 @@ export function ServiceTrackingPage() {
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-yellow-100 rounded-lg">
-                  <AlertCircle className="w-5 h-5 text-yellow-600" />
+                <div className="rounded-lg bg-yellow-100 p-2">
+                  <AlertCircle className="h-5 w-5 text-yellow-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Devam Eden</p>
+                  <p className="text-muted-foreground text-sm">Devam Eden</p>
                   <p className="text-2xl font-bold">{stats.inProgress}</p>
                 </div>
               </div>
@@ -286,11 +309,11 @@ export function ServiceTrackingPage() {
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-green-100 rounded-lg">
-                  <CheckCircle className="w-5 h-5 text-green-600" />
+                <div className="rounded-lg bg-green-100 p-2">
+                  <CheckCircle className="h-5 w-5 text-green-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Tamamlanan</p>
+                  <p className="text-muted-foreground text-sm">Tamamlanan</p>
                   <p className="text-2xl font-bold">{stats.completed}</p>
                 </div>
               </div>
@@ -300,11 +323,11 @@ export function ServiceTrackingPage() {
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-purple-100 rounded-lg">
-                  <FileText className="w-5 h-5 text-purple-600" />
+                <div className="rounded-lg bg-purple-100 p-2">
+                  <FileText className="h-5 w-5 text-purple-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Toplam Maliyet</p>
+                  <p className="text-muted-foreground text-sm">Toplam Maliyet</p>
                   <p className="text-2xl font-bold">₺{stats.totalCost.toLocaleString('tr-TR')}</p>
                 </div>
               </div>
@@ -315,14 +338,14 @@ export function ServiceTrackingPage() {
         {/* Filters */}
         <Card>
           <CardContent className="p-4">
-            <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex flex-col gap-4 md:flex-row">
               <div className="flex-1">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                  <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
                   <Input
                     placeholder="İhtiyaç sahibinin adı, TC kimlik, hizmet no veya açıklama ile ara..."
                     value={searchTerm}
-                    onChange={(e) => {
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                       setSearchTerm(e.target.value);
                     }}
                     className="pl-10"
@@ -380,7 +403,7 @@ export function ServiceTrackingPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Settings className="w-5 h-5 text-blue-600" />
+              <Settings className="h-5 w-5 text-blue-600" />
               Hizmet Takip Listesi ({filteredServices.length} hizmet)
             </CardTitle>
           </CardHeader>
@@ -405,22 +428,22 @@ export function ServiceTrackingPage() {
                     <TableRow key={service.id}>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          <FileText className="w-4 h-4 text-gray-400" />
+                          <FileText className="h-4 w-4 text-gray-400" />
                           <span className="font-mono text-sm">{service.serviceNumber}</span>
                         </div>
                       </TableCell>
                       <TableCell>
                         <div>
                           <p className="font-medium">{service.recipientName}</p>
-                          <p className="text-sm text-muted-foreground">{service.recipientId}</p>
+                          <p className="text-muted-foreground text-sm">{service.recipientId}</p>
                         </div>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
                           {getServiceTypeIcon(service.serviceType)}
                           <div>
-                            <p className="font-medium text-sm">{service.serviceType}</p>
-                            <p className="text-xs text-muted-foreground">
+                            <p className="text-sm font-medium">{service.serviceType}</p>
+                            <p className="text-muted-foreground text-xs">
                               {service.serviceCategory}
                             </p>
                           </div>
@@ -430,7 +453,7 @@ export function ServiceTrackingPage() {
                         <div>
                           <p className="text-sm">{service.description}</p>
                           {service.notes && (
-                            <p className="text-xs text-muted-foreground mt-1">{service.notes}</p>
+                            <p className="text-muted-foreground mt-1 text-xs">{service.notes}</p>
                           )}
                         </div>
                       </TableCell>
@@ -445,12 +468,12 @@ export function ServiceTrackingPage() {
                         {service.assignedTo ? (
                           <div>
                             <p className="text-sm font-medium">{service.assignedTo}</p>
-                            <p className="text-xs text-muted-foreground">
+                            <p className="text-muted-foreground text-xs">
                               {service.serviceProvider}
                             </p>
                           </div>
                         ) : (
-                          <span className="text-sm text-muted-foreground">Atanmamış</span>
+                          <span className="text-muted-foreground text-sm">Atanmamış</span>
                         )}
                       </TableCell>
                       <TableCell>
@@ -458,7 +481,7 @@ export function ServiceTrackingPage() {
                           <p className="font-medium">
                             ₺{(service.actualCost ?? service.estimatedCost).toLocaleString('tr-TR')}
                           </p>
-                          <p className="text-xs text-muted-foreground">
+                          <p className="text-muted-foreground text-xs">
                             {service.actualCost ? 'Gerçek' : 'Tahmini'}
                           </p>
                         </div>
@@ -466,13 +489,13 @@ export function ServiceTrackingPage() {
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <Button variant="ghost" size="sm">
-                            <Eye className="w-4 h-4" />
+                            <Eye className="h-4 w-4" />
                           </Button>
                           <Button variant="ghost" size="sm">
-                            <FileText className="w-4 h-4" />
+                            <FileText className="h-4 w-4" />
                           </Button>
                           <Button variant="ghost" size="sm">
-                            <Calendar className="w-4 h-4" />
+                            <Calendar className="h-4 w-4" />
                           </Button>
                         </div>
                       </TableCell>

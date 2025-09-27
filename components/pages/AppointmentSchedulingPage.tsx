@@ -1,6 +1,6 @@
 /**
  * @fileoverview AppointmentSchedulingPage Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -138,12 +138,11 @@ const appointments: Appointment[] = [
 
 /**
  * AppointmentSchedulingPage function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
 export function AppointmentSchedulingPage() {
-  const [appointmentsList, setAppointmentsList] = useState<Appointment[]>(appointments);
   const [filteredAppointments, setFilteredAppointments] = useState<Appointment[]>(appointments);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('all');
@@ -222,54 +221,121 @@ export function AppointmentSchedulingPage() {
     }
 
     setFilteredAppointments(filtered);
-  }, [appointments, searchTerm, filterStatus, filterType, filterDate, activeTab]);
+  }, [searchTerm, filterStatus, filterType, filterDate, activeTab]);
 
   const getStatusBadge = (status: Appointment['status']) => {
-    const config = {
-      beklemede: {
-        label: 'Beklemede',
-        className: 'bg-yellow-50 text-yellow-700 border-yellow-200',
-      },
-      onaylandı: { label: 'Onaylandı', className: 'bg-blue-50 text-blue-700 border-blue-200' },
-      tamamlandı: { label: 'Tamamlandı', className: 'bg-green-50 text-green-700 border-green-200' },
-      iptal: { label: 'İptal', className: 'bg-red-50 text-red-700 border-red-200' },
-      ertelendi: {
-        label: 'Ertelendi',
-        className: 'bg-orange-50 text-orange-700 border-orange-200',
-      },
-    };
-
-    const { label, className } = config[status];
-    return (
-      <Badge variant="outline" className={`${className} text-xs px-2 py-1`}>
-        {label}
-      </Badge>
-    );
+    switch (status) {
+      case 'beklemede':
+        return (
+          <Badge
+            variant="outline"
+            className="border-yellow-200 bg-yellow-50 px-2 py-1 text-xs text-yellow-700"
+          >
+            Beklemede
+          </Badge>
+        );
+      case 'onaylandı':
+        return (
+          <Badge
+            variant="outline"
+            className="border-blue-200 bg-blue-50 px-2 py-1 text-xs text-blue-700"
+          >
+            Onaylandı
+          </Badge>
+        );
+      case 'tamamlandı':
+        return (
+          <Badge
+            variant="outline"
+            className="border-green-200 bg-green-50 px-2 py-1 text-xs text-green-700"
+          >
+            Tamamlandı
+          </Badge>
+        );
+      case 'iptal':
+        return (
+          <Badge
+            variant="outline"
+            className="border-red-200 bg-red-50 px-2 py-1 text-xs text-red-700"
+          >
+            İptal
+          </Badge>
+        );
+      case 'ertelendi':
+        return (
+          <Badge
+            variant="outline"
+            className="border-orange-200 bg-orange-50 px-2 py-1 text-xs text-orange-700"
+          >
+            Ertelendi
+          </Badge>
+        );
+      default:
+        return (
+          <Badge
+            variant="outline"
+            className="border-gray-200 bg-gray-50 px-2 py-1 text-xs text-gray-700"
+          >
+            Bilinmiyor
+          </Badge>
+        );
+    }
   };
 
   const getPriorityBadge = (priority: Appointment['priority']) => {
-    const config = {
-      düşük: { label: 'Düşük', className: 'bg-gray-50 text-gray-700' },
-      normal: { label: 'Normal', className: 'bg-blue-50 text-blue-700' },
-      yüksek: { label: 'Yüksek', className: 'bg-orange-50 text-orange-700' },
-      acil: { label: 'Acil', className: 'bg-red-50 text-red-700' },
-    };
-
-    const { label, className } = config[priority];
-    return <Badge className={`${className} text-xs px-2 py-1 border-0`}>{label}</Badge>;
+    switch (priority) {
+      case 'düşük':
+        return <Badge className="border-0 bg-gray-50 px-2 py-1 text-xs text-gray-700">Düşük</Badge>;
+      case 'normal':
+        return (
+          <Badge className="border-0 bg-blue-50 px-2 py-1 text-xs text-blue-700">Normal</Badge>
+        );
+      case 'yüksek':
+        return (
+          <Badge className="border-0 bg-orange-50 px-2 py-1 text-xs text-orange-700">Yüksek</Badge>
+        );
+      case 'acil':
+        return <Badge className="border-0 bg-red-50 px-2 py-1 text-xs text-red-700">Acil</Badge>;
+      default:
+        return (
+          <Badge className="border-0 bg-gray-50 px-2 py-1 text-xs text-gray-700">Bilinmiyor</Badge>
+        );
+    }
   };
 
   const getTypeBadge = (type: Appointment['appointmentType']) => {
-    const config = {
-      görüşme: { label: 'Görüşme', className: 'bg-blue-50 text-blue-700' },
-      'belge-teslim': { label: 'Belge Teslim', className: 'bg-green-50 text-green-700' },
-      değerlendirme: { label: 'Değerlendirme', className: 'bg-purple-50 text-purple-700' },
-      takip: { label: 'Takip', className: 'bg-orange-50 text-orange-700' },
-      danışmanlık: { label: 'Danışmanlık', className: 'bg-indigo-50 text-indigo-700' },
-    };
-
-    const { label, className } = config[type];
-    return <Badge className={`${className} text-xs px-2 py-1 border-0`}>{label}</Badge>;
+    switch (type) {
+      case 'görüşme':
+        return (
+          <Badge className="border-0 bg-blue-50 px-2 py-1 text-xs text-blue-700">Görüşme</Badge>
+        );
+      case 'belge-teslim':
+        return (
+          <Badge className="border-0 bg-green-50 px-2 py-1 text-xs text-green-700">
+            Belge Teslim
+          </Badge>
+        );
+      case 'değerlendirme':
+        return (
+          <Badge className="border-0 bg-purple-50 px-2 py-1 text-xs text-purple-700">
+            Değerlendirme
+          </Badge>
+        );
+      case 'takip':
+        return (
+          <Badge className="border-0 bg-orange-50 px-2 py-1 text-xs text-orange-700">Takip</Badge>
+        );
+      case 'danışmanlık':
+        return (
+          <Badge className="border-0 bg-indigo-50 px-2 py-1 text-xs text-indigo-700">
+            Danışmanlık
+          </Badge>
+        );
+      default:
+        return (
+          <Badge className="border-0 bg-gray-50 px-2 py-1 text-xs text-gray-700">Bilinmiyor</Badge>
+        );
+    }
   };
 
   const handleViewDetails = useCallback((appointment: Appointment) => {
@@ -295,29 +361,29 @@ export function AppointmentSchedulingPage() {
   return (
     <div className="flex-1 space-y-4 p-4 sm:space-y-6 sm:p-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-medium">Randevu Planlama</h1>
           <p className="text-muted-foreground mt-1">
             Yararlanıcı randevularını planlayın ve yönetin
           </p>
         </div>
-        <Button className="gap-2 w-full sm:w-auto">
-          <Plus className="w-4 h-4" />
+        <Button className="w-full gap-2 sm:w-auto">
+          <Plus className="h-4 w-4" />
           Yeni Randevu
         </Button>
       </div>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Bugün</p>
+                <p className="text-muted-foreground text-sm">Bugün</p>
                 <p className="text-2xl font-medium">{todayAppointments}</p>
               </div>
-              <CalendarDays className="w-5 h-5 text-muted-foreground" />
+              <CalendarDays className="text-muted-foreground h-5 w-5" />
             </div>
           </CardContent>
         </Card>
@@ -326,10 +392,10 @@ export function AppointmentSchedulingPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Beklemede</p>
+                <p className="text-muted-foreground text-sm">Beklemede</p>
                 <p className="text-2xl font-medium text-yellow-600">{pendingAppointments}</p>
               </div>
-              <AlertCircle className="w-5 h-5 text-yellow-600" />
+              <AlertCircle className="h-5 w-5 text-yellow-600" />
             </div>
           </CardContent>
         </Card>
@@ -338,10 +404,10 @@ export function AppointmentSchedulingPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Onaylandı</p>
+                <p className="text-muted-foreground text-sm">Onaylandı</p>
                 <p className="text-2xl font-medium text-blue-600">{confirmedAppointments}</p>
               </div>
-              <CheckCircle className="w-5 h-5 text-blue-600" />
+              <CheckCircle className="h-5 w-5 text-blue-600" />
             </div>
           </CardContent>
         </Card>
@@ -350,19 +416,19 @@ export function AppointmentSchedulingPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Tamamlandı</p>
+                <p className="text-muted-foreground text-sm">Tamamlandı</p>
                 <p className="text-2xl font-medium text-green-600">{completedAppointments}</p>
               </div>
-              <CheckCircle className="w-5 h-5 text-green-600" />
+              <CheckCircle className="h-5 w-5 text-green-600" />
             </div>
           </CardContent>
         </Card>
       </div>
 
       {/* Search and Filters */}
-      <div className="flex flex-col sm:flex-row gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+          <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
           <Input
             placeholder="Randevu ara..."
             value={searchTerm}
@@ -429,9 +495,9 @@ export function AppointmentSchedulingPage() {
           {filteredAppointments.length === 0 ? (
             <Card>
               <CardContent className="flex flex-col items-center justify-center py-12">
-                <Calendar className="w-12 h-12 text-muted-foreground mb-4" />
-                <h3 className="text-lg font-medium mb-2">Randevu bulunamadı</h3>
-                <p className="text-muted-foreground text-center mb-4">
+                <Calendar className="text-muted-foreground mb-4 h-12 w-12" />
+                <h3 className="mb-2 text-lg font-medium">Randevu bulunamadı</h3>
+                <p className="text-muted-foreground mb-4 text-center">
                   Arama kriterlerinize uygun randevu bulunmuyor.
                 </p>
                 <Button onClick={clearFilters}>Filtreleri Temizle</Button>
@@ -440,14 +506,14 @@ export function AppointmentSchedulingPage() {
           ) : (
             <div className="grid gap-4">
               {filteredAppointments.map((appointment) => (
-                <Card key={appointment.id} className="hover:shadow-md transition-shadow">
+                <Card key={appointment.id} className="transition-shadow hover:shadow-md">
                   <CardHeader className="pb-3">
-                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-                      <div className="flex-1 min-w-0">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                      <div className="min-w-0 flex-1">
                         <CardTitle className="text-lg font-medium">
                           {appointment.beneficiaryName}
                         </CardTitle>
-                        <div className="flex flex-wrap items-center gap-2 mt-2">
+                        <div className="mt-2 flex flex-wrap items-center gap-2">
                           {getStatusBadge(appointment.status)}
                           {getTypeBadge(appointment.appointmentType)}
                           {getPriorityBadge(appointment.priority)}
@@ -457,7 +523,7 @@ export function AppointmentSchedulingPage() {
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" size="icon" className="h-8 w-8">
-                            <Eye className="w-4 h-4" />
+                            <Eye className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
@@ -466,7 +532,7 @@ export function AppointmentSchedulingPage() {
                               handleViewDetails(appointment);
                             }}
                           >
-                            <Eye className="w-4 h-4 mr-2" />
+                            <Eye className="mr-2 h-4 w-4" />
                             Detayları Görüntüle
                           </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -475,37 +541,37 @@ export function AppointmentSchedulingPage() {
                   </CardHeader>
 
                   <CardContent className="pt-0">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+                    <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                       <div className="flex items-center gap-2 text-sm">
-                        <Calendar className="w-4 h-4 text-muted-foreground" />
+                        <Calendar className="text-muted-foreground h-4 w-4" />
                         <span>{new Date(appointment.date).toLocaleDateString('tr-TR')}</span>
                       </div>
                       <div className="flex items-center gap-2 text-sm">
-                        <Clock className="w-4 h-4 text-muted-foreground" />
+                        <Clock className="text-muted-foreground h-4 w-4" />
                         <span>
                           {appointment.time} ({appointment.duration} dk)
                         </span>
                       </div>
                       <div className="flex items-center gap-2 text-sm">
-                        <Phone className="w-4 h-4 text-muted-foreground" />
+                        <Phone className="text-muted-foreground h-4 w-4" />
                         <span className="truncate">{appointment.beneficiaryPhone}</span>
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                       <div className="flex items-center gap-2 text-sm">
-                        <User className="w-4 h-4 text-muted-foreground" />
+                        <User className="text-muted-foreground h-4 w-4" />
                         <span className="font-medium">{appointment.assignedStaff}</span>
                       </div>
                       <div className="flex items-center gap-2 text-sm">
-                        <MapPin className="w-4 h-4 text-muted-foreground" />
+                        <MapPin className="text-muted-foreground h-4 w-4" />
                         <span className="truncate">{appointment.location}</span>
                       </div>
                     </div>
 
                     {appointment.notes && (
                       <div className="mt-4">
-                        <p className="text-sm text-muted-foreground">{appointment.notes}</p>
+                        <p className="text-muted-foreground text-sm">{appointment.notes}</p>
                       </div>
                     )}
                   </CardContent>
@@ -518,34 +584,34 @@ export function AppointmentSchedulingPage() {
 
       {/* Appointment Detail Dialog */}
       <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Calendar className="w-5 h-5" />
+              <Calendar className="h-5 w-5" />
               Randevu Detayları
             </DialogTitle>
           </DialogHeader>
 
           {selectedAppointment && (
             <div className="space-y-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="space-y-3">
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">Yararlanıcı</label>
+                    <label className="text-muted-foreground text-sm font-medium">Yararlanıcı</label>
                     <p className="font-medium">{selectedAppointment.beneficiaryName}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">Telefon</label>
+                    <label className="text-muted-foreground text-sm font-medium">Telefon</label>
                     <p>{selectedAppointment.beneficiaryPhone}</p>
                   </div>
                   {selectedAppointment.beneficiaryEmail && (
                     <div>
-                      <label className="text-sm font-medium text-muted-foreground">E-posta</label>
+                      <label className="text-muted-foreground text-sm font-medium">E-posta</label>
                       <p>{selectedAppointment.beneficiaryEmail}</p>
                     </div>
                   )}
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">
+                    <label className="text-muted-foreground text-sm font-medium">
                       Randevu Türü
                     </label>
                     <div className="mt-1">{getTypeBadge(selectedAppointment.appointmentType)}</div>
@@ -554,7 +620,7 @@ export function AppointmentSchedulingPage() {
 
                 <div className="space-y-3">
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">
+                    <label className="text-muted-foreground text-sm font-medium">
                       Tarih & Saat
                     </label>
                     <p>
@@ -563,47 +629,47 @@ export function AppointmentSchedulingPage() {
                     </p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">Süre</label>
+                    <label className="text-muted-foreground text-sm font-medium">Süre</label>
                     <p>{selectedAppointment.duration} dakika</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">Durum</label>
+                    <label className="text-muted-foreground text-sm font-medium">Durum</label>
                     <div className="mt-1">{getStatusBadge(selectedAppointment.status)}</div>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">Öncelik</label>
+                    <label className="text-muted-foreground text-sm font-medium">Öncelik</label>
                     <div className="mt-1">{getPriorityBadge(selectedAppointment.priority)}</div>
                   </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
-                  <label className="text-sm font-medium text-muted-foreground">
+                  <label className="text-muted-foreground text-sm font-medium">
                     Sorumlu Personel
                   </label>
                   <p>{selectedAppointment.assignedStaff}</p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-muted-foreground">Konum</label>
+                  <label className="text-muted-foreground text-sm font-medium">Konum</label>
                   <p>{selectedAppointment.location}</p>
                 </div>
               </div>
 
               {selectedAppointment.notes && (
                 <div>
-                  <label className="text-sm font-medium text-muted-foreground">Notlar</label>
+                  <label className="text-muted-foreground text-sm font-medium">Notlar</label>
                   <p className="mt-1">{selectedAppointment.notes}</p>
                 </div>
               )}
 
-              <div className="flex items-center justify-between pt-4 border-t">
+              <div className="flex items-center justify-between border-t pt-4">
                 <div>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-muted-foreground text-sm">
                     Oluşturulma:{' '}
                     {new Date(selectedAppointment.createdAt).toLocaleDateString('tr-TR')}
                   </p>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-muted-foreground text-sm">
                     Hatırlatma: {selectedAppointment.reminderSent ? 'Gönderildi' : 'Gönderilmedi'}
                   </p>
                 </div>

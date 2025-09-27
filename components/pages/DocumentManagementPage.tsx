@@ -1,6 +1,6 @@
 /**
  * @fileoverview DocumentManagementPage Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -174,12 +174,11 @@ const sponsors: SponsorOrganization[] = [
 
 /**
  * PartnerSponsorsPage function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
 export default function PartnerSponsorsPage() {
-  const [sponsorsList] = useState<SponsorOrganization[]>(sponsors);
   const [filteredSponsors, setFilteredSponsors] = useState<SponsorOrganization[]>(sponsors);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<string>('all');
@@ -234,48 +233,102 @@ export default function PartnerSponsorsPage() {
     }
 
     setFilteredSponsors(filtered);
-  }, [sponsors, searchTerm, filterType, filterSponsorshipType, filterStatus, activeTab]);
+  }, [searchTerm, filterType, filterSponsorshipType, filterStatus, activeTab]);
 
   const getStatusBadge = (status: SponsorOrganization['status']) => {
-    const config = {
-      aktif: { label: 'Aktif', className: 'bg-green-50 text-green-700 border-green-200' },
-      pasif: { label: 'Pasif', className: 'bg-gray-50 text-gray-700 border-gray-200' },
-      müzakere: { label: 'Müzakere', className: 'bg-yellow-50 text-yellow-700 border-yellow-200' },
-    };
+    let label: string;
+    let className: string;
 
-    const { label, className } = config[status];
+    switch (status) {
+      case 'aktif':
+        label = 'Aktif';
+        className = 'bg-green-50 text-green-700 border-green-200';
+        break;
+      case 'pasif':
+        label = 'Pasif';
+        className = 'bg-gray-50 text-gray-700 border-gray-200';
+        break;
+      case 'müzakere':
+        label = 'Müzakere';
+        className = 'bg-yellow-50 text-yellow-700 border-yellow-200';
+        break;
+      default:
+        label = 'Bilinmeyen';
+        className = 'bg-gray-50 text-gray-700 border-gray-200';
+    }
+
     return (
-      <Badge variant="outline" className={`${className} text-xs px-2 py-1`}>
+      <Badge variant="outline" className={`${className} px-2 py-1 text-xs`}>
         {label}
       </Badge>
     );
   };
 
   const getTypeBadge = (type: SponsorOrganization['type']) => {
-    const config = {
-      kurumsal: { label: 'Kurumsal', className: 'bg-blue-50 text-blue-700' },
-      bireysel: { label: 'Bireysel', className: 'bg-green-50 text-green-700' },
-      vakif: { label: 'Vakıf', className: 'bg-purple-50 text-purple-700' },
-      kamu: { label: 'Kamu', className: 'bg-orange-50 text-orange-700' },
-      uluslararasi: { label: 'Uluslararası', className: 'bg-indigo-50 text-indigo-700' },
-    };
+    let label: string;
+    let className: string;
 
-    const { label, className } = config[type];
-    return <Badge className={`${className} text-xs px-2 py-1 border-0`}>{label}</Badge>;
+    switch (type) {
+      case 'kurumsal':
+        label = 'Kurumsal';
+        className = 'bg-blue-50 text-blue-700';
+        break;
+      case 'bireysel':
+        label = 'Bireysel';
+        className = 'bg-green-50 text-green-700';
+        break;
+      case 'vakif':
+        label = 'Vakıf';
+        className = 'bg-purple-50 text-purple-700';
+        break;
+      case 'kamu':
+        label = 'Kamu';
+        className = 'bg-orange-50 text-orange-700';
+        break;
+      case 'uluslararasi':
+        label = 'Uluslararası';
+        className = 'bg-indigo-50 text-indigo-700';
+        break;
+      default:
+        label = 'Bilinmeyen';
+        className = 'bg-gray-50 text-gray-700';
+    }
+
+    return <Badge className={`${className} border-0 px-2 py-1 text-xs`}>{label}</Badge>;
   };
 
   const getSponsorshipTypeBadge = (type: SponsorOrganization['sponsorshipType']) => {
-    const config = {
-      etkinlik: { label: 'Etkinlik', className: 'bg-cyan-50 text-cyan-700' },
-      proje: { label: 'Proje', className: 'bg-blue-50 text-blue-700' },
-      sürekli: { label: 'Sürekli', className: 'bg-green-50 text-green-700' },
-      kampanya: { label: 'Kampanya', className: 'bg-orange-50 text-orange-700' },
-      altyapi: { label: 'Altyapı', className: 'bg-purple-50 text-purple-700' },
-    };
+    let label: string;
+    let className: string;
 
-    const { label, className } = config[type];
+    switch (type) {
+      case 'etkinlik':
+        label = 'Etkinlik';
+        className = 'bg-cyan-50 text-cyan-700';
+        break;
+      case 'proje':
+        label = 'Proje';
+        className = 'bg-blue-50 text-blue-700';
+        break;
+      case 'sürekli':
+        label = 'Sürekli';
+        className = 'bg-green-50 text-green-700';
+        break;
+      case 'kampanya':
+        label = 'Kampanya';
+        className = 'bg-orange-50 text-orange-700';
+        break;
+      case 'altyapi':
+        label = 'Altyapı';
+        className = 'bg-purple-50 text-purple-700';
+        break;
+      default:
+        label = 'Bilinmeyen';
+        className = 'bg-gray-50 text-gray-700';
+    }
+
     return (
-      <Badge variant="outline" className={`${className} text-xs px-2 py-1`}>
+      <Badge variant="outline" className={`${className} px-2 py-1 text-xs`}>
         {label}
       </Badge>
     );
@@ -311,31 +364,31 @@ export default function PartnerSponsorsPage() {
   return (
     <div className="flex-1 space-y-4 p-4 sm:space-y-6 sm:p-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-medium">Sponsor Kuruluşlar</h1>
           <p className="text-muted-foreground mt-1">
             Sponsorluk ilişkileri ve proje destekleri yönetimi
           </p>
         </div>
-        <Button className="gap-2 w-full sm:w-auto">
-          <Plus className="w-4 h-4" />
+        <Button className="w-full gap-2 sm:w-auto">
+          <Plus className="h-4 w-4" />
           Yeni Sponsor
         </Button>
       </div>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Toplam Sponsorluk</p>
+                <p className="text-muted-foreground text-sm">Toplam Sponsorluk</p>
                 <p className="text-xl font-medium text-green-600">
                   {formatCurrency(totalSponsorship)}
                 </p>
               </div>
-              <DollarSign className="w-5 h-5 text-green-600" />
+              <DollarSign className="h-5 w-5 text-green-600" />
             </div>
           </CardContent>
         </Card>
@@ -344,10 +397,10 @@ export default function PartnerSponsorsPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Aktif Sponsor</p>
+                <p className="text-muted-foreground text-sm">Aktif Sponsor</p>
                 <p className="text-2xl font-medium text-blue-600">{activeSponsors}</p>
               </div>
-              <Award className="w-5 h-5 text-blue-600" />
+              <Award className="h-5 w-5 text-blue-600" />
             </div>
           </CardContent>
         </Card>
@@ -356,10 +409,10 @@ export default function PartnerSponsorsPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Büyük Sponsor</p>
+                <p className="text-muted-foreground text-sm">Büyük Sponsor</p>
                 <p className="text-2xl font-medium text-purple-600">{majorSponsors}</p>
               </div>
-              <Star className="w-5 h-5 text-purple-600" />
+              <Star className="h-5 w-5 text-purple-600" />
             </div>
           </CardContent>
         </Card>
@@ -368,19 +421,19 @@ export default function PartnerSponsorsPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Aktif Proje</p>
+                <p className="text-muted-foreground text-sm">Aktif Proje</p>
                 <p className="text-2xl font-medium text-orange-600">{totalProjects}</p>
               </div>
-              <Target className="w-5 h-5 text-orange-600" />
+              <Target className="h-5 w-5 text-orange-600" />
             </div>
           </CardContent>
         </Card>
       </div>
 
       {/* Search and Filters */}
-      <div className="flex flex-col sm:flex-row gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+          <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
           <Input
             placeholder="Sponsor ara..."
             value={searchTerm}
@@ -447,9 +500,9 @@ export default function PartnerSponsorsPage() {
           {filteredSponsors.length === 0 ? (
             <Card>
               <CardContent className="flex flex-col items-center justify-center py-12">
-                <Award className="w-12 h-12 text-muted-foreground mb-4" />
-                <h3 className="text-lg font-medium mb-2">Sponsor bulunamadı</h3>
-                <p className="text-muted-foreground text-center mb-4">
+                <Award className="text-muted-foreground mb-4 h-12 w-12" />
+                <h3 className="mb-2 text-lg font-medium">Sponsor bulunamadı</h3>
+                <p className="text-muted-foreground mb-4 text-center">
                   Arama kriterlerinize uygun sponsor kuruluş bulunmuyor.
                 </p>
                 <Button onClick={clearFilters}>Filtreleri Temizle</Button>
@@ -458,18 +511,18 @@ export default function PartnerSponsorsPage() {
           ) : (
             <div className="grid gap-4">
               {filteredSponsors.map((sponsor) => (
-                <Card key={sponsor.id} className="hover:shadow-md transition-shadow">
+                <Card key={sponsor.id} className="transition-shadow hover:shadow-md">
                   <CardHeader className="pb-3">
-                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-                      <div className="flex-1 min-w-0">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                      <div className="min-w-0 flex-1">
                         <CardTitle className="text-lg font-medium">{sponsor.name}</CardTitle>
-                        <div className="flex flex-wrap items-center gap-2 mt-2">
+                        <div className="mt-2 flex flex-wrap items-center gap-2">
                           {getStatusBadge(sponsor.status)}
                           {getTypeBadge(sponsor.type)}
                           {getSponsorshipTypeBadge(sponsor.sponsorshipType)}
                           <div className="flex items-center gap-1">
-                            <Star className="w-3 h-3 text-yellow-500 fill-current" />
-                            <span className="text-xs text-muted-foreground">{sponsor.rating}</span>
+                            <Star className="h-3 w-3 fill-current text-yellow-500" />
+                            <span className="text-muted-foreground text-xs">{sponsor.rating}</span>
                           </div>
                         </div>
                       </div>
@@ -477,7 +530,7 @@ export default function PartnerSponsorsPage() {
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" size="icon" className="h-8 w-8">
-                            <Eye className="w-4 h-4" />
+                            <Eye className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
@@ -486,7 +539,7 @@ export default function PartnerSponsorsPage() {
                               handleViewDetails(sponsor);
                             }}
                           >
-                            <Eye className="w-4 h-4 mr-2" />
+                            <Eye className="mr-2 h-4 w-4" />
                             Detayları Görüntüle
                           </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -495,44 +548,44 @@ export default function PartnerSponsorsPage() {
                   </CardHeader>
 
                   <CardContent className="pt-0">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+                    <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                       <div className="flex items-center gap-2 text-sm">
-                        <Phone className="w-4 h-4 text-muted-foreground" />
+                        <Phone className="text-muted-foreground h-4 w-4" />
                         <span className="truncate">{sponsor.phone}</span>
                       </div>
                       <div className="flex items-center gap-2 text-sm">
-                        <Mail className="w-4 h-4 text-muted-foreground" />
+                        <Mail className="text-muted-foreground h-4 w-4" />
                         <span className="truncate">{sponsor.email}</span>
                       </div>
                       <div className="flex items-center gap-2 text-sm">
-                        <MapPin className="w-4 h-4 text-muted-foreground" />
+                        <MapPin className="text-muted-foreground h-4 w-4" />
                         <span className="truncate">{sponsor.address}</span>
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
-                      <div className="text-center p-3 bg-green-50 rounded-lg">
+                    <div className="mb-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
+                      <div className="rounded-lg bg-green-50 p-3 text-center">
                         <div className="text-sm font-medium text-green-800">
                           {formatCurrency(sponsor.totalSponsorship)}
                         </div>
                         <div className="text-xs text-green-600">Toplam Sponsorluk</div>
                       </div>
 
-                      <div className="text-center p-3 bg-blue-50 rounded-lg">
+                      <div className="rounded-lg bg-blue-50 p-3 text-center">
                         <div className="text-sm font-medium text-blue-800">
                           {sponsor.currentProjects}
                         </div>
                         <div className="text-xs text-blue-600">Aktif Proje</div>
                       </div>
 
-                      <div className="text-center p-3 bg-purple-50 rounded-lg">
+                      <div className="rounded-lg bg-purple-50 p-3 text-center">
                         <div className="text-sm font-medium text-purple-800">
                           {sponsor.completedProjects}
                         </div>
                         <div className="text-xs text-purple-600">Tamamlanan</div>
                       </div>
 
-                      <div className="text-center p-3 bg-orange-50 rounded-lg">
+                      <div className="rounded-lg bg-orange-50 p-3 text-center">
                         <div className="text-sm font-medium text-orange-800">
                           {new Date(sponsor.lastSponsorshipDate).toLocaleDateString('tr-TR')}
                         </div>
@@ -542,7 +595,7 @@ export default function PartnerSponsorsPage() {
 
                     {sponsor.contractStart && sponsor.contractEnd && (
                       <div className="mb-4">
-                        <div className="flex justify-between text-sm mb-2">
+                        <div className="mb-2 flex justify-between text-sm">
                           <span>Sözleşme Süresi</span>
                           <span>
                             {new Date(sponsor.contractStart).toLocaleDateString('tr-TR')} -{' '}
@@ -555,7 +608,7 @@ export default function PartnerSponsorsPage() {
 
                     {sponsor.sponsorshipAreas.length > 0 && (
                       <div>
-                        <p className="text-sm text-muted-foreground mb-2">Sponsorluk Alanları:</p>
+                        <p className="text-muted-foreground mb-2 text-sm">Sponsorluk Alanları:</p>
                         <div className="flex flex-wrap gap-1">
                           {sponsor.sponsorshipAreas.slice(0, 4).map((area, index) => (
                             <Badge key={index} variant="secondary" className="text-xs">
@@ -580,74 +633,74 @@ export default function PartnerSponsorsPage() {
 
       {/* Sponsor Detail Dialog */}
       <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Award className="w-5 h-5" />
+              <Award className="h-5 w-5" />
               {selectedSponsor?.name}
             </DialogTitle>
           </DialogHeader>
 
           {selectedSponsor && (
             <div className="space-y-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="space-y-3">
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">
+                    <label className="text-muted-foreground text-sm font-medium">
                       İletişim Kişisi
                     </label>
                     <p>{selectedSponsor.contactPerson}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">Telefon</label>
+                    <label className="text-muted-foreground text-sm font-medium">Telefon</label>
                     <p>{selectedSponsor.phone}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">E-posta</label>
+                    <label className="text-muted-foreground text-sm font-medium">E-posta</label>
                     <p>{selectedSponsor.email}</p>
                   </div>
                 </div>
 
                 <div className="space-y-3">
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">Adres</label>
+                    <label className="text-muted-foreground text-sm font-medium">Adres</label>
                     <p>{selectedSponsor.address}</p>
                   </div>
                   {selectedSponsor.website && (
                     <div>
-                      <label className="text-sm font-medium text-muted-foreground">Website</label>
+                      <label className="text-muted-foreground text-sm font-medium">Website</label>
                       <p>{selectedSponsor.website}</p>
                     </div>
                   )}
                   {selectedSponsor.taxNumber && (
                     <div>
-                      <label className="text-sm font-medium text-muted-foreground">Vergi No</label>
+                      <label className="text-muted-foreground text-sm font-medium">Vergi No</label>
                       <p>{selectedSponsor.taxNumber}</p>
                     </div>
                   )}
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                <div className="text-center p-4 bg-green-50 rounded-lg">
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+                <div className="rounded-lg bg-green-50 p-4 text-center">
                   <div className="text-lg font-bold text-green-800">
                     {formatCurrency(selectedSponsor.totalSponsorship)}
                   </div>
                   <div className="text-sm text-green-600">Toplam Sponsorluk</div>
                 </div>
-                <div className="text-center p-4 bg-blue-50 rounded-lg">
+                <div className="rounded-lg bg-blue-50 p-4 text-center">
                   <div className="text-lg font-bold text-blue-800">
                     {selectedSponsor.currentProjects}
                   </div>
                   <div className="text-sm text-blue-600">Aktif Proje</div>
                 </div>
-                <div className="text-center p-4 bg-purple-50 rounded-lg">
+                <div className="rounded-lg bg-purple-50 p-4 text-center">
                   <div className="text-lg font-bold text-purple-800">
                     {selectedSponsor.completedProjects}
                   </div>
                   <div className="text-sm text-purple-600">Tamamlanan</div>
                 </div>
-                <div className="text-center p-4 bg-orange-50 rounded-lg">
+                <div className="rounded-lg bg-orange-50 p-4 text-center">
                   <div className="text-lg font-bold text-orange-800">{selectedSponsor.rating}</div>
                   <div className="text-sm text-orange-600">Değerlendirme</div>
                 </div>
@@ -655,16 +708,16 @@ export default function PartnerSponsorsPage() {
 
               {selectedSponsor.description && (
                 <div>
-                  <label className="text-sm font-medium text-muted-foreground">Açıklama</label>
+                  <label className="text-muted-foreground text-sm font-medium">Açıklama</label>
                   <p className="mt-1">{selectedSponsor.description}</p>
                 </div>
               )}
 
               <div>
-                <label className="text-sm font-medium text-muted-foreground">
+                <label className="text-muted-foreground text-sm font-medium">
                   Sponsorluk Alanları
                 </label>
-                <div className="flex flex-wrap gap-2 mt-2">
+                <div className="mt-2 flex flex-wrap gap-2">
                   {selectedSponsor.sponsorshipAreas.map((area, index) => (
                     <Badge key={index} variant="secondary" className="text-xs">
                       {area}

@@ -4,24 +4,24 @@
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "allowImportingTsExtensions": true,
-    "strict": false,
+    "strict": true,
     "strictNullChecks": true,
     "noFallthroughCasesInSwitch": false,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./*"
-      ]
+      "@/*": ["./*"]
     },
     /* React & Bundler specific */
     "jsx": "react-jsx",
     "resolveJsonModule": true,
     "isolatedModules": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
     "types": ["vite/client"],
     "noEmit": true,
-    
+
     /* Enhanced TypeScript strict mode settings */
     "noImplicitAny": false,
     "noImplicitReturns": false,
@@ -34,12 +34,12 @@
     "noUncheckedIndexedAccess": false,
     "allowUnusedLabels": true,
     "allowUnreachableCode": true,
-    
+
     /* Performance and optimization */
     "incremental": true,
     "tsBuildInfoFile": ".tsbuildinfo",
     "assumeChangesOnlyAffectDirectDependencies": true,
-    
+
     /* Code generation */
     "declaration": false,
     "declarationMap": false,
@@ -50,12 +50,7 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    "**/*.js",
-    "**/*.jsx"
-  ],
+  "include": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"],
   "exclude": [
     "node_modules/**",
     "dist/**",

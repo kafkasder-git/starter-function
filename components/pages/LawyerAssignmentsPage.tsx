@@ -1,18 +1,17 @@
 /**
  * @fileoverview LawyerAssignmentsPage Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
 
-
-
 import { useState, useMemo } from 'react';
 
+import { useSearch } from '@/hooks/useSearch';
+import type { Lawyer } from '@/types/lawyer';
+import type { SearchConfig, FilterValue } from '@/types/search';
 
-import { useSearch } from '../../hooks/useSearch';
-import type { Lawyer } from '../../types/lawyer';
-import type { SearchConfig } from '../../types/search';
+type TabKey = 'all' | 'available' | 'busy' | 'top';
 
 // Search configuration for lawyers
 const LAWYER_SEARCH_CONFIG: SearchConfig = {
@@ -26,32 +25,7 @@ const LAWYER_SEARCH_CONFIG: SearchConfig = {
   debounceMs: 300,
 };
 
-interface Lawyer {
-  id: number;
-  name: string;
-  barNumber: string;
-  barAssociation: string;
-  phone: string;
-  email: string;
-  specializations: string[];
-  experience: number;
-  rating: number;
-  totalCases: number;
-  activeCases: number;
-  successRate: number;
-  status: 'musait' | 'dolu' | 'izinli';
-  office: string;
-  consultationFee?: number;
-  languages: string[];
-  education: string;
-  notes?: string;
-}
-
-// Lawyer data will be fetched from API
-const getLawyers = async (): Promise<Lawyer[]> => {
-  // TODO: Implement real API call to fetch lawyers
-  return [];
-};
+// Lawyer data - will be fetched from API in the future
 
 const lawyers: Lawyer[] = [
   {
@@ -115,55 +89,40 @@ const lawyers: Lawyer[] = [
 ];
 
 /**
- * LawyerAssignmentsPage function
- * 
- * @param {Object} params - Function parameters
- * @returns {void} Nothing
+ * LawyerAssignmentsPage component
  */
 export function LawyerAssignmentsPage() {
   const [selectedLawyer, setSelectedLawyer] = useState<Lawyer | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState('all');
+  const [activeTab, setActiveTab] = useState<TabKey>('all');
 
   // Use the optimized search hook
-  const {
-    searchState,
-    setQuery,
-    setFilters,
-    clearFilters,
-    hasResults,
-    isEmpty,
-  } = useSearch<Lawyer>({
+  const { searchState, setQuery, setFilters, clearFilters, isEmpty } = useSearch<Lawyer>({
     config: LAWYER_SEARCH_CONFIG,
     data: lawyers,
     initialFilters: [],
   });
 
-  // Memoized filter transformations
-  const filterConfig = useMemo(() => ({
-    tabs: {
-      all: {},
-      available: { status: 'musait' },
-      busy: { status: 'dolu' },
-      top: { minRating: 4.7 },
-    },
-  }), []);
-
   // Memoized filtered lawyers based on active tab
   const filteredLawyers = useMemo(() => {
-    const tabFilters = filterConfig.tabs[activeTab as keyof typeof filterConfig.tabs] || {};
-    
-    return searchState.results.filter((lawyer) => {
+    return searchState.results.filter((lawyer: Lawyer) => {
       // Apply tab-specific filters
-      if (tabFilters.status && lawyer.status !== tabFilters.status) return false;
-      if (tabFilters.minRating && lawyer.rating < tabFilters.minRating) return false;
-      
-      return true;
+      switch (activeTab) {
+        case 'available':
+          return lawyer.status === 'musait';
+        case 'busy':
+          return lawyer.status === 'dolu';
+        case 'top':
+          return lawyer.rating >= 4.7;
+        case 'all':
+        default:
+          return true;
+      }
     });
-  }, [searchState.results, activeTab, filterConfig.tabs]);
+  }, [searchState.results, activeTab]);
 
   // Handler for tab changes
-  const handleTabChange = (tab: string) => {
+  const handleTabChange = (tab: TabKey) => {
     setActiveTab(tab);
     clearFilters(); // Clear existing filters when changing tabs
   };
@@ -174,25 +133,33 @@ export function LawyerAssignmentsPage() {
       <div className="tabs">
         <button
           className={activeTab === 'all' ? 'active' : ''}
-          onClick={() => { handleTabChange('all'); }}
+          onClick={() => {
+            handleTabChange('all');
+          }}
         >
           Tüm Avukatlar
         </button>
         <button
           className={activeTab === 'available' ? 'active' : ''}
-          onClick={() => { handleTabChange('available'); }}
+          onClick={() => {
+            handleTabChange('available');
+          }}
         >
           Müsait
         </button>
         <button
           className={activeTab === 'busy' ? 'active' : ''}
-          onClick={() => { handleTabChange('busy'); }}
+          onClick={() => {
+            handleTabChange('busy');
+          }}
         >
           Dolu
         </button>
         <button
           className={activeTab === 'top' ? 'active' : ''}
-          onClick={() => { handleTabChange('top'); }}
+          onClick={() => {
+            handleTabChange('top');
+          }}
         >
           En İyiler
         </button>
@@ -204,11 +171,17 @@ export function LawyerAssignmentsPage() {
           type="text"
           placeholder="Avukat ara..."
           value={searchState.query}
-          onChange={(e) => { setQuery(e.target.value); }}
+          onChange={(e) => {
+            setQuery(e.target.value);
+          }}
         />
         <select
-          value={searchState.filters.find((f) => f.field === 'specialization')?.value ?? ''}
-          onChange={(e) => { setFilters([{ field: 'specialization', value: e.target.value }]); }}
+          value={
+            searchState.filters.find((f: FilterValue) => f.field === 'specialization')?.value ?? ''
+          }
+          onChange={(e) => {
+            setFilters([{ field: 'specialization', value: e.target.value }]);
+          }}
           title="Uzmanlık alanı seçin"
           aria-label="Uzmanlık alanı filtresi"
         >
@@ -224,7 +197,7 @@ export function LawyerAssignmentsPage() {
         <div>Sonuç bulunamadı</div>
       ) : (
         <div className="lawyers-grid">
-          {filteredLawyers.map((lawyer) => (
+          {filteredLawyers.map((lawyer: Lawyer) => (
             <div
               key={lawyer.id}
               className="lawyer-card"
@@ -250,7 +223,13 @@ export function LawyerAssignmentsPage() {
       {isDetailOpen && selectedLawyer && (
         <div className="modal">
           <div className="modal-content">
-            <button onClick={() => { setIsDetailOpen(false); }}>Kapat</button>
+            <button
+              onClick={() => {
+                setIsDetailOpen(false);
+              }}
+            >
+              Kapat
+            </button>
             <h2>{selectedLawyer.name}</h2>
             {/* Add more lawyer details */}
           </div>

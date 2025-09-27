@@ -1,6 +1,6 @@
 /**
  * @fileoverview InventoryManagementPage Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -81,11 +81,7 @@ interface AssociationPartner {
   tags: string[];
 }
 
-// Association data will be fetched from API
-const getAssociations = async (): Promise<AssociationPartner[]> => {
-  // TODO: Implement real API call to fetch associations
-  return [];
-};
+// TODO: Implement API call to fetch associations
 
 const associations: AssociationPartner[] = [
   {
@@ -242,12 +238,12 @@ const associations: AssociationPartner[] = [
 
 /**
  * PartnerAssociationsPage function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
 export default function PartnerAssociationsPage() {
-  const [associationsList, setAssociationsList] = useState<AssociationPartner[]>(associations);
+  const [associationsList] = useState<AssociationPartner[]>(associations);
   const [filteredAssociations, setFilteredAssociations] =
     useState<AssociationPartner[]>(associations);
   const [searchTerm, setSearchTerm] = useState('');
@@ -304,55 +300,118 @@ export default function PartnerAssociationsPage() {
     }
 
     setFilteredAssociations(filtered);
-  }, [associations, searchTerm, filterType, filterFocusArea, filterStatus, activeTab]);
+  }, [searchTerm, filterType, filterFocusArea, filterStatus, activeTab]);
 
   const getStatusBadge = (status: AssociationPartner['status']) => {
-    const config = {
-      aktif: { label: 'Aktif', className: 'bg-green-50 text-green-700 border-green-200' },
-      pasif: { label: 'Pasif', className: 'bg-gray-50 text-gray-700 border-gray-200' },
-      'işbirliği-arayışı': {
-        label: 'İşbirliği Arayışı',
-        className: 'bg-blue-50 text-blue-700 border-blue-200',
-      },
-    };
+    let label: string;
+    let className: string;
 
-    const { label, className } = config[status];
+    switch (status) {
+      case 'aktif':
+        label = 'Aktif';
+        className = 'bg-green-50 text-green-700 border-green-200';
+        break;
+      case 'pasif':
+        label = 'Pasif';
+        className = 'bg-gray-50 text-gray-700 border-gray-200';
+        break;
+      case 'işbirliği-arayışı':
+        label = 'İşbirliği Arayışı';
+        className = 'bg-blue-50 text-blue-700 border-blue-200';
+        break;
+      default:
+        label = 'Bilinmiyor';
+        className = 'bg-gray-50 text-gray-700 border-gray-200';
+    }
+
     return (
-      <Badge variant="outline" className={`${className} text-xs px-2 py-1`}>
+      <Badge variant="outline" className={`${className} px-2 py-1 text-xs`}>
         {label}
       </Badge>
     );
   };
 
   const getTypeBadge = (type: AssociationPartner['type']) => {
-    const config = {
-      dernek: { label: 'Dernek', className: 'bg-blue-50 text-blue-700' },
-      vakıf: { label: 'Vakıf', className: 'bg-purple-50 text-purple-700' },
-      platform: { label: 'Platform', className: 'bg-green-50 text-green-700' },
-      federasyon: { label: 'Federasyon', className: 'bg-orange-50 text-orange-700' },
-      birlik: { label: 'Birlik', className: 'bg-indigo-50 text-indigo-700' },
-    };
+    let label: string;
+    let className: string;
 
-    const { label, className } = config[type];
-    return <Badge className={`${className} text-xs px-2 py-1 border-0`}>{label}</Badge>;
+    switch (type) {
+      case 'dernek':
+        label = 'Dernek';
+        className = 'bg-blue-50 text-blue-700';
+        break;
+      case 'vakıf':
+        label = 'Vakıf';
+        className = 'bg-purple-50 text-purple-700';
+        break;
+      case 'platform':
+        label = 'Platform';
+        className = 'bg-green-50 text-green-700';
+        break;
+      case 'federasyon':
+        label = 'Federasyon';
+        className = 'bg-orange-50 text-orange-700';
+        break;
+      case 'birlik':
+        label = 'Birlik';
+        className = 'bg-indigo-50 text-indigo-700';
+        break;
+      default:
+        label = 'Bilinmiyor';
+        className = 'bg-gray-50 text-gray-700';
+    }
+
+    return <Badge className={`${className} border-0 px-2 py-1 text-xs`}>{label}</Badge>;
   };
 
   const getFocusAreaBadge = (area: AssociationPartner['focusArea']) => {
-    const config = {
-      'sosyal-yardım': { label: 'Sosyal Yardım', className: 'bg-red-50 text-red-700' },
-      eğitim: { label: 'Eğitim', className: 'bg-blue-50 text-blue-700' },
-      sağlık: { label: 'Sağlık', className: 'bg-green-50 text-green-700' },
-      çevre: { label: 'Çevre', className: 'bg-emerald-50 text-emerald-700' },
-      kadın: { label: 'Kadın', className: 'bg-pink-50 text-pink-700' },
-      gençlik: { label: 'Gençlik', className: 'bg-orange-50 text-orange-700' },
-      yaşlı: { label: 'Yaşlı', className: 'bg-purple-50 text-purple-700' },
-      engelli: { label: 'Engelli', className: 'bg-cyan-50 text-cyan-700' },
-      genel: { label: 'Genel', className: 'bg-gray-50 text-gray-700' },
-    };
+    let label: string;
+    let className: string;
 
-    const { label, className } = config[area];
+    switch (area) {
+      case 'sosyal-yardım':
+        label = 'Sosyal Yardım';
+        className = 'bg-red-50 text-red-700';
+        break;
+      case 'eğitim':
+        label = 'Eğitim';
+        className = 'bg-blue-50 text-blue-700';
+        break;
+      case 'sağlık':
+        label = 'Sağlık';
+        className = 'bg-green-50 text-green-700';
+        break;
+      case 'çevre':
+        label = 'Çevre';
+        className = 'bg-emerald-50 text-emerald-700';
+        break;
+      case 'kadın':
+        label = 'Kadın';
+        className = 'bg-pink-50 text-pink-700';
+        break;
+      case 'gençlik':
+        label = 'Gençlik';
+        className = 'bg-orange-50 text-orange-700';
+        break;
+      case 'yaşlı':
+        label = 'Yaşlı';
+        className = 'bg-purple-50 text-purple-700';
+        break;
+      case 'engelli':
+        label = 'Engelli';
+        className = 'bg-cyan-50 text-cyan-700';
+        break;
+      case 'genel':
+        label = 'Genel';
+        className = 'bg-gray-50 text-gray-700';
+        break;
+      default:
+        label = 'Bilinmiyor';
+        className = 'bg-gray-50 text-gray-700';
+    }
+
     return (
-      <Badge variant="outline" className={`${className} text-xs px-2 py-1`}>
+      <Badge variant="outline" className={`${className} px-2 py-1 text-xs`}>
         {label}
       </Badge>
     );
@@ -382,7 +441,9 @@ export default function PartnerAssociationsPage() {
 
   const activeAssociations = associationsList.filter((a) => a.status === 'aktif').length;
   const totalMembers = associationsList.reduce((sum, a) => sum + (a.memberCount ?? 0), 0);
-  const collaborativeAssociations = associationsList.filter((a) => a.sharedProjects.length > 0).length;
+  const collaborativeAssociations = associationsList.filter(
+    (a) => a.sharedProjects.length > 0,
+  ).length;
   const largeAssociations = associationsList.filter(
     (a) => a.memberCount && a.memberCount >= 100,
   ).length;
@@ -390,27 +451,27 @@ export default function PartnerAssociationsPage() {
   return (
     <div className="flex-1 space-y-4 p-4 sm:space-y-6 sm:p-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-medium">Diğer Dernekler</h1>
           <p className="text-muted-foreground mt-1">Dernek ağı ve işbirliği ilişkileri</p>
         </div>
-        <Button className="gap-2 w-full sm:w-auto">
-          <Plus className="w-4 h-4" />
+        <Button className="w-full gap-2 sm:w-auto">
+          <Plus className="h-4 w-4" />
           Yeni Dernek Ekle
         </Button>
       </div>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Aktif Dernek</p>
+                <p className="text-muted-foreground text-sm">Aktif Dernek</p>
                 <p className="text-2xl font-medium text-green-600">{activeAssociations}</p>
               </div>
-              <Building2 className="w-5 h-5 text-green-600" />
+              <Building2 className="h-5 w-5 text-green-600" />
             </div>
           </CardContent>
         </Card>
@@ -419,12 +480,12 @@ export default function PartnerAssociationsPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Toplam Üye</p>
+                <p className="text-muted-foreground text-sm">Toplam Üye</p>
                 <p className="text-2xl font-medium text-blue-600">
                   {totalMembers.toLocaleString()}
                 </p>
               </div>
-              <Users className="w-5 h-5 text-blue-600" />
+              <Users className="h-5 w-5 text-blue-600" />
             </div>
           </CardContent>
         </Card>
@@ -433,10 +494,10 @@ export default function PartnerAssociationsPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">İşbirlikçi</p>
+                <p className="text-muted-foreground text-sm">İşbirlikçi</p>
                 <p className="text-2xl font-medium text-purple-600">{collaborativeAssociations}</p>
               </div>
-              <Heart className="w-5 h-5 text-purple-600" />
+              <Heart className="h-5 w-5 text-purple-600" />
             </div>
           </CardContent>
         </Card>
@@ -445,19 +506,19 @@ export default function PartnerAssociationsPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Büyük Dernek</p>
+                <p className="text-muted-foreground text-sm">Büyük Dernek</p>
                 <p className="text-2xl font-medium text-orange-600">{largeAssociations}</p>
               </div>
-              <Award className="w-5 h-5 text-orange-600" />
+              <Award className="h-5 w-5 text-orange-600" />
             </div>
           </CardContent>
         </Card>
       </div>
 
       {/* Search and Filters */}
-      <div className="flex flex-col sm:flex-row gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+          <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
           <Input
             placeholder="Dernek ara..."
             value={searchTerm}
@@ -527,9 +588,9 @@ export default function PartnerAssociationsPage() {
           {filteredAssociations.length === 0 ? (
             <Card>
               <CardContent className="flex flex-col items-center justify-center py-12">
-                <Building2 className="w-12 h-12 text-muted-foreground mb-4" />
-                <h3 className="text-lg font-medium mb-2">Dernek bulunamadı</h3>
-                <p className="text-muted-foreground text-center mb-4">
+                <Building2 className="text-muted-foreground mb-4 h-12 w-12" />
+                <h3 className="mb-2 text-lg font-medium">Dernek bulunamadı</h3>
+                <p className="text-muted-foreground mb-4 text-center">
                   Arama kriterlerinize uygun dernek bulunmuyor.
                 </p>
                 <Button onClick={clearFilters}>Filtreleri Temizle</Button>
@@ -538,22 +599,22 @@ export default function PartnerAssociationsPage() {
           ) : (
             <div className="grid gap-4">
               {filteredAssociations.map((association) => (
-                <Card key={association.id} className="hover:shadow-md transition-shadow">
+                <Card key={association.id} className="transition-shadow hover:shadow-md">
                   <CardHeader className="pb-3">
-                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-                      <div className="flex-1 min-w-0">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                      <div className="min-w-0 flex-1">
                         <CardTitle className="text-lg font-medium">{association.name}</CardTitle>
                         <p className="text-muted-foreground mt-1">
                           {association.location} • {association.position}:{' '}
                           {association.contactPerson}
                         </p>
-                        <div className="flex flex-wrap items-center gap-2 mt-2">
+                        <div className="mt-2 flex flex-wrap items-center gap-2">
                           {getStatusBadge(association.status)}
                           {getTypeBadge(association.type)}
                           {getFocusAreaBadge(association.focusArea)}
                           <div className="flex items-center gap-1">
-                            <Star className="w-3 h-3 text-yellow-500 fill-current" />
-                            <span className="text-xs text-muted-foreground">
+                            <Star className="h-3 w-3 fill-current text-yellow-500" />
+                            <span className="text-muted-foreground text-xs">
                               {association.rating}
                             </span>
                           </div>
@@ -563,7 +624,7 @@ export default function PartnerAssociationsPage() {
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" size="icon" className="h-8 w-8">
-                            <Eye className="w-4 h-4" />
+                            <Eye className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
@@ -572,7 +633,7 @@ export default function PartnerAssociationsPage() {
                               handleViewDetails(association);
                             }}
                           >
-                            <Eye className="w-4 h-4 mr-2" />
+                            <Eye className="mr-2 h-4 w-4" />
                             Detayları Görüntüle
                           </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -581,26 +642,26 @@ export default function PartnerAssociationsPage() {
                   </CardHeader>
 
                   <CardContent className="pt-0">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+                    <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                       <div className="flex items-center gap-2 text-sm">
-                        <Phone className="w-4 h-4 text-muted-foreground" />
+                        <Phone className="text-muted-foreground h-4 w-4" />
                         <span className="truncate">{association.phone}</span>
                       </div>
                       <div className="flex items-center gap-2 text-sm">
-                        <Mail className="w-4 h-4 text-muted-foreground" />
+                        <Mail className="text-muted-foreground h-4 w-4" />
                         <span className="truncate">{association.email}</span>
                       </div>
                       <div className="flex items-center gap-2 text-sm">
-                        <Calendar className="w-4 h-4 text-muted-foreground" />
+                        <Calendar className="text-muted-foreground h-4 w-4" />
                         <span className="truncate">
                           Kuruluş: {new Date(association.establishedDate).getFullYear()}
                         </span>
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-4">
+                    <div className="mb-4 grid grid-cols-2 gap-4 sm:grid-cols-3">
                       {association.memberCount && (
-                        <div className="text-center p-3 bg-blue-50 rounded-lg">
+                        <div className="rounded-lg bg-blue-50 p-3 text-center">
                           <div className="text-sm font-medium text-blue-800">
                             {association.memberCount}
                           </div>
@@ -609,7 +670,7 @@ export default function PartnerAssociationsPage() {
                       )}
 
                       {association.budget && (
-                        <div className="text-center p-3 bg-green-50 rounded-lg">
+                        <div className="rounded-lg bg-green-50 p-3 text-center">
                           <div className="text-sm font-medium text-green-800">
                             {formatCurrency(association.budget)}
                           </div>
@@ -617,7 +678,7 @@ export default function PartnerAssociationsPage() {
                         </div>
                       )}
 
-                      <div className="text-center p-3 bg-purple-50 rounded-lg">
+                      <div className="rounded-lg bg-purple-50 p-3 text-center">
                         <div className="text-sm font-medium text-purple-800">
                           {association.sharedProjects.length}
                         </div>
@@ -627,7 +688,7 @@ export default function PartnerAssociationsPage() {
 
                     {association.specialties.length > 0 && (
                       <div>
-                        <p className="text-sm text-muted-foreground mb-2">Uzmanlık Alanları:</p>
+                        <p className="text-muted-foreground mb-2 text-sm">Uzmanlık Alanları:</p>
                         <div className="flex flex-wrap gap-1">
                           {association.specialties.slice(0, 3).map((specialty, index) => (
                             <Badge key={index} variant="secondary" className="text-xs">
@@ -652,48 +713,48 @@ export default function PartnerAssociationsPage() {
 
       {/* Association Detail Dialog */}
       <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Building2 className="w-5 h-5" />
+              <Building2 className="h-5 w-5" />
               {selectedAssociation?.name}
             </DialogTitle>
           </DialogHeader>
 
           {selectedAssociation && (
             <div className="space-y-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="space-y-3">
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">
+                    <label className="text-muted-foreground text-sm font-medium">
                       İletişim Kişisi
                     </label>
                     <p>{selectedAssociation.contactPerson}</p>
-                    <p className="text-sm text-muted-foreground">{selectedAssociation.position}</p>
+                    <p className="text-muted-foreground text-sm">{selectedAssociation.position}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">Telefon</label>
+                    <label className="text-muted-foreground text-sm font-medium">Telefon</label>
                     <p>{selectedAssociation.phone}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">E-posta</label>
+                    <label className="text-muted-foreground text-sm font-medium">E-posta</label>
                     <p>{selectedAssociation.email}</p>
                   </div>
                 </div>
 
                 <div className="space-y-3">
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">Adres</label>
+                    <label className="text-muted-foreground text-sm font-medium">Adres</label>
                     <p>{selectedAssociation.address}</p>
                   </div>
                   {selectedAssociation.website && (
                     <div>
-                      <label className="text-sm font-medium text-muted-foreground">Website</label>
+                      <label className="text-muted-foreground text-sm font-medium">Website</label>
                       <p>{selectedAssociation.website}</p>
                     </div>
                   )}
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">
+                    <label className="text-muted-foreground text-sm font-medium">
                       Kuruluş Tarihi
                     </label>
                     <p>
@@ -703,9 +764,9 @@ export default function PartnerAssociationsPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
                 {selectedAssociation.memberCount && (
-                  <div className="text-center p-4 bg-blue-50 rounded-lg">
+                  <div className="rounded-lg bg-blue-50 p-4 text-center">
                     <div className="text-lg font-bold text-blue-800">
                       {selectedAssociation.memberCount}
                     </div>
@@ -713,14 +774,14 @@ export default function PartnerAssociationsPage() {
                   </div>
                 )}
                 {selectedAssociation.budget && (
-                  <div className="text-center p-4 bg-green-50 rounded-lg">
+                  <div className="rounded-lg bg-green-50 p-4 text-center">
                     <div className="text-lg font-bold text-green-800">
                       {formatCurrency(selectedAssociation.budget)}
                     </div>
                     <div className="text-sm text-green-600">Yıllık Bütçe</div>
                   </div>
                 )}
-                <div className="text-center p-4 bg-purple-50 rounded-lg">
+                <div className="rounded-lg bg-purple-50 p-4 text-center">
                   <div className="text-lg font-bold text-purple-800">
                     {selectedAssociation.sharedProjects.length}
                   </div>
@@ -730,16 +791,16 @@ export default function PartnerAssociationsPage() {
 
               {selectedAssociation.description && (
                 <div>
-                  <label className="text-sm font-medium text-muted-foreground">Açıklama</label>
+                  <label className="text-muted-foreground text-sm font-medium">Açıklama</label>
                   <p className="mt-1">{selectedAssociation.description}</p>
                 </div>
               )}
 
               <div>
-                <label className="text-sm font-medium text-muted-foreground">
+                <label className="text-muted-foreground text-sm font-medium">
                   Uzmanlık Alanları
                 </label>
-                <div className="flex flex-wrap gap-2 mt-2">
+                <div className="mt-2 flex flex-wrap gap-2">
                   {selectedAssociation.specialties.map((specialty, index) => (
                     <Badge key={index} variant="secondary" className="text-xs">
                       {specialty}
@@ -750,18 +811,18 @@ export default function PartnerAssociationsPage() {
 
               {selectedAssociation.sharedProjects.length > 0 && (
                 <div>
-                  <label className="text-sm font-medium text-muted-foreground">
+                  <label className="text-muted-foreground text-sm font-medium">
                     Ortak Projeler
                   </label>
                   <div className="mt-2 space-y-2">
                     {selectedAssociation.sharedProjects.map((project, index) => (
                       <div
                         key={index}
-                        className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                        className="flex items-center justify-between rounded-lg bg-gray-50 p-3"
                       >
                         <div>
                           <p className="font-medium">{project.name}</p>
-                          <p className="text-sm text-muted-foreground">{project.year}</p>
+                          <p className="text-muted-foreground text-sm">{project.year}</p>
                         </div>
                         <Badge
                           variant={

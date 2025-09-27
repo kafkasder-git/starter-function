@@ -1,6 +1,6 @@
 /**
  * @fileoverview DistributionTrackingPage Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -282,12 +282,11 @@ const agreements: Agreement[] = [
 
 /**
  * PartnerAgreementsPage function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
 export default function PartnerAgreementsPage() {
-  const [agreementsList, setAgreementsList] = useState<Agreement[]>(agreements);
   const [filteredAgreements, setFilteredAgreements] = useState<Agreement[]>(agreements);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<string>('all');
@@ -344,42 +343,54 @@ export default function PartnerAgreementsPage() {
     }
 
     setFilteredAgreements(filtered);
-  }, [agreements, searchTerm, filterType, filterStatus, filterPartnerType, activeTab]);
+  }, [searchTerm, filterType, filterStatus, filterPartnerType, activeTab]);
 
   const getStatusBadge = (status: Agreement['status']) => {
-    const config = {
-      aktif: { label: 'Aktif', className: 'bg-green-50 text-green-700 border-green-200' },
-      'süresi-dolmuş': {
-        label: 'Süresi Dolmuş',
-        className: 'bg-red-50 text-red-700 border-red-200',
-      },
-      'yenileme-bekliyor': {
-        label: 'Yenileme Bekliyor',
-        className: 'bg-yellow-50 text-yellow-700 border-yellow-200',
-      },
-      iptal: { label: 'İptal', className: 'bg-gray-50 text-gray-700 border-gray-200' },
-      taslak: { label: 'Taslak', className: 'bg-blue-50 text-blue-700 border-blue-200' },
-    };
+    const statusConfig = new Map<Agreement['status'], { label: string; className: string }>([
+      ['aktif', { label: 'Aktif', className: 'bg-green-50 text-green-700 border-green-200' }],
+      [
+        'süresi-dolmuş',
+        {
+          label: 'Süresi Dolmuş',
+          className: 'bg-red-50 text-red-700 border-red-200',
+        },
+      ],
+      [
+        'yenileme-bekliyor',
+        {
+          label: 'Yenileme Bekliyor',
+          className: 'bg-yellow-50 text-yellow-700 border-yellow-200',
+        },
+      ],
+      ['iptal', { label: 'İptal', className: 'bg-gray-50 text-gray-700 border-gray-200' }],
+      ['taslak', { label: 'Taslak', className: 'bg-blue-50 text-blue-700 border-blue-200' }],
+    ]);
 
-    const { label, className } = config[status];
+    const config = statusConfig.get(status);
+    if (!config) return null;
+
+    const { label, className } = config;
     return (
-      <Badge variant="outline" className={`${className} text-xs px-2 py-1`}>
+      <Badge variant="outline" className={`${className} px-2 py-1 text-xs`}>
         {label}
       </Badge>
     );
   };
 
   const getTypeBadge = (type: Agreement['type']) => {
-    const config = {
-      mou: { label: 'MOU', className: 'bg-purple-50 text-purple-700' },
-      protokol: { label: 'Protokol', className: 'bg-blue-50 text-blue-700' },
-      sözleşme: { label: 'Sözleşme', className: 'bg-green-50 text-green-700' },
-      anlaşma: { label: 'Anlaşma', className: 'bg-orange-50 text-orange-700' },
-      işbirliği: { label: 'İşbirliği', className: 'bg-indigo-50 text-indigo-700' },
-    };
+    const typeConfig = new Map<Agreement['type'], { label: string; className: string }>([
+      ['mou', { label: 'MOU', className: 'bg-purple-50 text-purple-700' }],
+      ['protokol', { label: 'Protokol', className: 'bg-blue-50 text-blue-700' }],
+      ['sözleşme', { label: 'Sözleşme', className: 'bg-green-50 text-green-700' }],
+      ['anlaşma', { label: 'Anlaşma', className: 'bg-orange-50 text-orange-700' }],
+      ['işbirliği', { label: 'İşbirliği', className: 'bg-indigo-50 text-indigo-700' }],
+    ]);
 
-    const { label, className } = config[type];
-    return <Badge className={`${className} text-xs px-2 py-1 border-0`}>{label}</Badge>;
+    const config = typeConfig.get(type);
+    if (!config) return null;
+
+    const { label, className } = config;
+    return <Badge className={`${className} border-0 px-2 py-1 text-xs`}>{label}</Badge>;
   };
 
   const getRemainingTime = (endDate: string) => {
@@ -436,27 +447,27 @@ export default function PartnerAgreementsPage() {
   return (
     <div className="flex-1 space-y-4 p-4 sm:space-y-6 sm:p-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-medium">İş Birliği Anlaşmaları</h1>
           <p className="text-muted-foreground mt-1">Protokol, sözleşme ve anlaşma yönetimi</p>
         </div>
-        <Button className="gap-2 w-full sm:w-auto">
-          <Plus className="w-4 h-4" />
+        <Button className="w-full gap-2 sm:w-auto">
+          <Plus className="h-4 w-4" />
           Yeni Anlaşma
         </Button>
       </div>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Toplam Anlaşma</p>
+                <p className="text-muted-foreground text-sm">Toplam Anlaşma</p>
                 <p className="text-2xl font-medium">{agreements.length}</p>
               </div>
-              <FileText className="w-5 h-5 text-muted-foreground" />
+              <FileText className="text-muted-foreground h-5 w-5" />
             </div>
           </CardContent>
         </Card>
@@ -465,10 +476,10 @@ export default function PartnerAgreementsPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Aktif</p>
+                <p className="text-muted-foreground text-sm">Aktif</p>
                 <p className="text-2xl font-medium text-green-600">{activeAgreements}</p>
               </div>
-              <CheckCircle className="w-5 h-5 text-green-600" />
+              <CheckCircle className="h-5 w-5 text-green-600" />
             </div>
           </CardContent>
         </Card>
@@ -477,10 +488,10 @@ export default function PartnerAgreementsPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Süresi Yaklaşan</p>
+                <p className="text-muted-foreground text-sm">Süresi Yaklaşan</p>
                 <p className="text-2xl font-medium text-orange-600">{expiringAgreements}</p>
               </div>
-              <Clock className="w-5 h-5 text-orange-600" />
+              <Clock className="h-5 w-5 text-orange-600" />
             </div>
           </CardContent>
         </Card>
@@ -489,19 +500,19 @@ export default function PartnerAgreementsPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Yenileme</p>
+                <p className="text-muted-foreground text-sm">Yenileme</p>
                 <p className="text-2xl font-medium text-blue-600">{renewalAgreements}</p>
               </div>
-              <AlertTriangle className="w-5 h-5 text-blue-600" />
+              <AlertTriangle className="h-5 w-5 text-blue-600" />
             </div>
           </CardContent>
         </Card>
       </div>
 
       {/* Search and Filters */}
-      <div className="flex flex-col sm:flex-row gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+          <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
           <Input
             placeholder="Anlaşma ara..."
             value={searchTerm}
@@ -570,9 +581,9 @@ export default function PartnerAgreementsPage() {
           {filteredAgreements.length === 0 ? (
             <Card>
               <CardContent className="flex flex-col items-center justify-center py-12">
-                <FileText className="w-12 h-12 text-muted-foreground mb-4" />
-                <h3 className="text-lg font-medium mb-2">Anlaşma bulunamadı</h3>
-                <p className="text-muted-foreground text-center mb-4">
+                <FileText className="text-muted-foreground mb-4 h-12 w-12" />
+                <h3 className="mb-2 text-lg font-medium">Anlaşma bulunamadı</h3>
+                <p className="text-muted-foreground mb-4 text-center">
                   Arama kriterlerinize uygun anlaşma bulunmuyor.
                 </p>
                 <Button onClick={clearFilters}>Filtreleri Temizle</Button>
@@ -581,13 +592,13 @@ export default function PartnerAgreementsPage() {
           ) : (
             <div className="grid gap-4">
               {filteredAgreements.map((agreement) => (
-                <Card key={agreement.id} className="hover:shadow-md transition-shadow">
+                <Card key={agreement.id} className="transition-shadow hover:shadow-md">
                   <CardHeader className="pb-3">
-                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-                      <div className="flex-1 min-w-0">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                      <div className="min-w-0 flex-1">
                         <CardTitle className="text-lg font-medium">{agreement.title}</CardTitle>
                         <p className="text-muted-foreground mt-1">{agreement.partnerName}</p>
-                        <div className="flex flex-wrap items-center gap-2 mt-2">
+                        <div className="mt-2 flex flex-wrap items-center gap-2">
                           {getStatusBadge(agreement.status)}
                           {getTypeBadge(agreement.type)}
                         </div>
@@ -596,7 +607,7 @@ export default function PartnerAgreementsPage() {
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" size="icon" className="h-8 w-8">
-                            <Eye className="w-4 h-4" />
+                            <Eye className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
@@ -605,7 +616,7 @@ export default function PartnerAgreementsPage() {
                               handleViewDetails(agreement);
                             }}
                           >
-                            <Eye className="w-4 h-4 mr-2" />
+                            <Eye className="mr-2 h-4 w-4" />
                             Detayları Görüntüle
                           </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -614,38 +625,38 @@ export default function PartnerAgreementsPage() {
                   </CardHeader>
 
                   <CardContent className="pt-0">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+                    <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                       <div className="flex items-center gap-2 text-sm">
-                        <Calendar className="w-4 h-4 text-muted-foreground" />
+                        <Calendar className="text-muted-foreground h-4 w-4" />
                         <span className="truncate">
                           {new Date(agreement.startDate).toLocaleDateString('tr-TR')} -{' '}
                           {new Date(agreement.endDate).toLocaleDateString('tr-TR')}
                         </span>
                       </div>
                       <div className="flex items-center gap-2 text-sm">
-                        <Clock className="w-4 h-4 text-muted-foreground" />
+                        <Clock className="text-muted-foreground h-4 w-4" />
                         <span className="truncate">{getRemainingTime(agreement.endDate)}</span>
                       </div>
                       <div className="flex items-center gap-2 text-sm">
-                        <Users className="w-4 h-4 text-muted-foreground" />
+                        <Users className="text-muted-foreground h-4 w-4" />
                         <span className="truncate">{agreement.responsiblePerson}</span>
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                    <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
                       <div className="flex items-center gap-2 text-sm">
-                        <Phone className="w-4 h-4 text-muted-foreground" />
+                        <Phone className="text-muted-foreground h-4 w-4" />
                         <span className="truncate">{agreement.phone}</span>
                       </div>
                       <div className="flex items-center gap-2 text-sm">
-                        <Mail className="w-4 h-4 text-muted-foreground" />
+                        <Mail className="text-muted-foreground h-4 w-4" />
                         <span className="truncate">{agreement.email}</span>
                       </div>
                     </div>
 
                     {agreement.milestones.length > 0 && (
                       <div className="mb-4">
-                        <div className="flex justify-between text-sm mb-2">
+                        <div className="mb-2 flex justify-between text-sm">
                           <span>İlerleme</span>
                           <span>{getMilestoneProgress(agreement.milestones)}%</span>
                         </div>
@@ -657,7 +668,7 @@ export default function PartnerAgreementsPage() {
                     )}
 
                     {agreement.budget && (
-                      <div className="mb-4 p-3 bg-green-50 rounded-lg">
+                      <div className="mb-4 rounded-lg bg-green-50 p-3">
                         <div className="flex items-center justify-between">
                           <span className="text-sm text-green-700">Bütçe</span>
                           <span className="font-medium text-green-800">
@@ -669,7 +680,7 @@ export default function PartnerAgreementsPage() {
 
                     {agreement.scope.length > 0 && (
                       <div>
-                        <p className="text-sm text-muted-foreground mb-2">Kapsam:</p>
+                        <p className="text-muted-foreground mb-2 text-sm">Kapsam:</p>
                         <div className="flex flex-wrap gap-1">
                           {agreement.scope.slice(0, 3).map((scope, index) => (
                             <Badge key={index} variant="secondary" className="text-xs">
@@ -694,30 +705,30 @@ export default function PartnerAgreementsPage() {
 
       {/* Agreement Detail Dialog */}
       <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <FileText className="w-5 h-5" />
+              <FileText className="h-5 w-5" />
               {selectedAgreement?.title}
             </DialogTitle>
           </DialogHeader>
 
           {selectedAgreement && (
             <div className="space-y-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="space-y-3">
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">Partner</label>
+                    <label className="text-muted-foreground text-sm font-medium">Partner</label>
                     <p>{selectedAgreement.partnerName}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">
+                    <label className="text-muted-foreground text-sm font-medium">
                       İletişim Kişisi
                     </label>
                     <p>{selectedAgreement.contactPerson}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">
+                    <label className="text-muted-foreground text-sm font-medium">
                       Sorumlu Kişi
                     </label>
                     <p>{selectedAgreement.responsiblePerson}</p>
@@ -726,15 +737,15 @@ export default function PartnerAgreementsPage() {
 
                 <div className="space-y-3">
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">Başlangıç</label>
+                    <label className="text-muted-foreground text-sm font-medium">Başlangıç</label>
                     <p>{new Date(selectedAgreement.startDate).toLocaleDateString('tr-TR')}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">Bitiş</label>
+                    <label className="text-muted-foreground text-sm font-medium">Bitiş</label>
                     <p>{new Date(selectedAgreement.endDate).toLocaleDateString('tr-TR')}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">Yenileme</label>
+                    <label className="text-muted-foreground text-sm font-medium">Yenileme</label>
                     <p>{selectedAgreement.renewalStatus}</p>
                   </div>
                 </div>
@@ -742,13 +753,13 @@ export default function PartnerAgreementsPage() {
 
               {selectedAgreement.description && (
                 <div>
-                  <label className="text-sm font-medium text-muted-foreground">Açıklama</label>
+                  <label className="text-muted-foreground text-sm font-medium">Açıklama</label>
                   <p className="mt-1">{selectedAgreement.description}</p>
                 </div>
               )}
 
               <div>
-                <label className="text-sm font-medium text-muted-foreground">Hedefler</label>
+                <label className="text-muted-foreground text-sm font-medium">Hedefler</label>
                 <ul className="mt-2 space-y-1">
                   {selectedAgreement.objectives.map((objective, index) => (
                     <li key={index} className="text-sm">
@@ -759,16 +770,16 @@ export default function PartnerAgreementsPage() {
               </div>
 
               <div>
-                <label className="text-sm font-medium text-muted-foreground">Aşamalar</label>
+                <label className="text-muted-foreground text-sm font-medium">Aşamalar</label>
                 <div className="mt-2 space-y-2">
                   {selectedAgreement.milestones.map((milestone, index) => (
                     <div
                       key={index}
-                      className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                      className="flex items-center justify-between rounded-lg bg-gray-50 p-3"
                     >
                       <div>
                         <p className="font-medium">{milestone.title}</p>
-                        <p className="text-sm text-muted-foreground">{milestone.description}</p>
+                        <p className="text-muted-foreground text-sm">{milestone.description}</p>
                       </div>
                       <div className="text-right">
                         <Badge
@@ -785,7 +796,7 @@ export default function PartnerAgreementsPage() {
                         >
                           {milestone.status}
                         </Badge>
-                        <p className="text-xs text-muted-foreground mt-1">
+                        <p className="text-muted-foreground mt-1 text-xs">
                           {new Date(milestone.deadline).toLocaleDateString('tr-TR')}
                         </p>
                       </div>
