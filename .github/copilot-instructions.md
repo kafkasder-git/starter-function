@@ -30,6 +30,8 @@ members, donations, beneficiaries, campaigns, and more.
   `membersService.ts`, `donationsService.ts`)
 - **API Pattern**: Services return `ApiResponse<T>` or `PaginatedResponse<T>`
   types
+- **Direct Supabase Usage**: Some services like `MembersService` use Supabase
+  directly instead of extending BaseService for specific query optimizations
 
 ### Supabase Integration
 
@@ -62,6 +64,8 @@ members, donations, beneficiaries, campaigns, and more.
 - **Build**: `npm run build` (production optimized with tree shaking)
 - **Quality Checks**: `npm run quality:check` (lint + type-check + format)
 - **PWA**: Configured with VitePWA plugin for offline support
+- **Bundle Analysis**: `npm run analyze` generates `dist/bundle-analysis.html`
+- **Performance Monitoring**: Core Web Vitals tracking enabled
 
 ## Project-Specific Conventions
 
@@ -74,8 +78,9 @@ members, donations, beneficiaries, campaigns, and more.
 
 ### TypeScript Patterns
 
-- **Strict Config**: Strict mode enabled with selective relaxation for
-  pragmatism
+- **Pragmatic Strict Mode**: Strict mode enabled but selectively relaxed:
+  `noImplicitAny: false`, `noUnusedLocals: false`, `noUnusedParameters: false`
+  for development productivity while maintaining type safety
 - **Interface Naming**: Entity interfaces match database table names
 - **Generic Services**: Heavily typed service layer with generics for
   reusability
@@ -86,6 +91,7 @@ members, donations, beneficiaries, campaigns, and more.
   components
 - **Code Splitting**: Route-based and component-based lazy loading
 - **Bundle Analysis**: `npm run analyze` for bundle size monitoring
+- **Chunk Splitting**: Manual chunks in `vite.config.ts` for vendor separation
 
 ### Turkish Language Support
 
@@ -93,12 +99,105 @@ members, donations, beneficiaries, campaigns, and more.
 - **Database**: Turkish field names and content
 - **Comments**: Mix of English (technical) and Turkish (business logic)
 
+### Environment & Security
+
+- **Environment Validation**: `lib/environment.ts` includes comprehensive
+  validation with hardcoded credential detection
+- **Security Checks**: CSRF protection, XSS prevention, input sanitization
+- **RLS Enforcement**: All Supabase tables use Row Level Security
+
+## Development Commands & Workflows
+
+### Essential Commands
+```bash
+# Development
+npm run dev              # Start dev server with hot reload
+npm run build           # Production build with optimizations
+npm run preview         # Preview production build locally
+
+# Quality & Testing
+npm run quality:check   # Run lint + type-check + format check
+npm run lint           # ESLint check only
+npm run type-check     # TypeScript check only
+npm run test           # Run all tests
+npm run test:coverage  # Tests with coverage report
+
+# Analysis & Monitoring
+npm run analyze         # Generate bundle analysis report
+```
+
+### Build Configuration Details
+
+- **Vite + SWC**: Fast compilation with SWC instead of Babel
+- **PWA Manifest**: Includes Turkish shortcuts for key features
+- **Terser Optimization**: Aggressive minification with console/debugger removal
+- **Asset Optimization**: 4KB inlining limit, hashed filenames
+
+### ESLint Configuration
+
+- **Strict Rules**: Security, React hooks, TypeScript strict checks
+- **Test File Relaxation**: Looser rules for test files (no console warnings)
+- **Import Optimization**: Unused imports auto-removal
+- **Performance Rules**: Bundle size warnings, dependency checks
+
+## State Management Patterns
+
+### Auth Store (`stores/authStore.ts`)
+- **Session Management**: Auto-refresh, expiry checking every 60 seconds
+- **Rate Limiting**: 5 login attempts, 15-minute cooldown
+- **Persist Strategy**: Only `rememberMe`, `loginAttempts`, `lastLoginAttempt`
+- **Permission System**: Role-based with granular permissions
+
+### UI Store (`stores/uiStore.ts`)
+- **Comprehensive State**: Theme, mobile, modals, navigation, accessibility
+- **Theme System**: Light/dark/system with CSS variable updates
+- **Mobile Detection**: Auto-sidebar collapse, keyboard height tracking
+- **Modal Stack**: Multiple modal support with overlay management
+
+### Notification Store (`stores/notificationStore.ts`)
+- **Persistence**: LocalStorage with JSON serialization
+- **Categories**: member, donation, aid, campaign, system, general
+- **Priority Levels**: low, medium, high, urgent
+- **Realtime Ready**: Subscription infrastructure prepared
+
+## Service Layer Patterns
+
+### BaseService Extension
+```typescript
+class MyService extends BaseService<Entity, InsertType, UpdateType, Filters> {
+  // Automatic pagination, filtering, search implementation
+  async getAll(page, pageSize, filters) {
+    // Apply search, date range, custom filters automatically
+  }
+}
+```
+
+### Direct Supabase Services
+- **MembersService**: Complex queries with multiple OR conditions
+- **Performance**: Direct Supabase calls for optimized queries
+- **Logging**: Comprehensive error logging with context
+
+## Component Architecture
+
+### Page Components (`components/pages/`)
+- **Domain Organization**: 25+ specialized pages (MembersPage, DonationsPage, etc.)
+- **Layout Wrapper**: `PageLayout` component for consistent structure
+- **Mobile Responsive**: Touch-optimized interactions
+
+### Hook Patterns (`hooks/`)
+- **Domain Hooks**: `useMembers`, `useDonations`, `useBeneficiaries`
+- **Performance Hooks**: `useDebounce`, `useInfiniteScroll`, `usePagination`
+- **Mobile Hooks**: `useTouchDevice`, `useMobilePerformance`
+- **Data Hooks**: `useSupabaseData`, `useSupabaseConnection`
+
 ## Security Considerations
 
 - **RLS**: All Supabase tables use Row Level Security
 - **Auth Context**: `SupabaseAuthContext` for authentication state
 - **CSRF Protection**: Middleware in `middleware/csrf.ts`
 - **Rate Limiting**: Implemented in `middleware/rateLimit.ts`
+- **Input Validation**: Client and server-side validation
+- **Environment Security**: Hardcoded credential detection in build
 
 ## Integration Points
 
@@ -122,4 +221,6 @@ members, donations, beneficiaries, campaigns, and more.
 - `services/baseService.ts` - Service layer patterns
 - `stores/authStore.ts` - Complex Zustand store example
 - `lib/supabase.ts` - Database client configuration
+- `lib/environment.ts` - Environment validation and configuration
 - `vite.config.ts` - Build configuration and optimizations
+- `tsconfig.json` - Pragmatic TypeScript strict mode settings
