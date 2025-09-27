@@ -1,15 +1,18 @@
 # 🏛️ Dernek Yönetim Sistemi
 
-Modern, güvenli ve ölçeklenebilir dernek yönetim sistemi. React, TypeScript ve Supabase ile geliştirilmiştir.
+Modern, güvenli ve ölçeklenebilir dernek yönetim sistemi. React, TypeScript ve
+Supabase ile geliştirilmiştir.
 
 ## 🚀 Hızlı Başlangıç
 
 ### Gereksinimler
+
 - Node.js 18+
 - npm veya yarn
 - Supabase hesabı
 
 ### Kurulum
+
 ```bash
 # Repository'yi klonlayın
 git clone <repository-url>
@@ -29,6 +32,7 @@ npm run dev
 ## 🏗️ Teknoloji Stack
 
 ### Frontend
+
 - **React 18** - Modern React hooks ve concurrent features
 - **TypeScript** - Strict mode ile tip güvenliği
 - **Vite** - Hızlı build ve development server
@@ -37,11 +41,13 @@ npm run dev
 - **Zustand** - Lightweight state management
 
 ### Backend & Database
+
 - **Supabase** - Backend-as-a-Service
 - **PostgreSQL** - Relational database
 - **Row Level Security (RLS)** - Database-level security
 
 ### Development Tools
+
 - **ESLint** - Code linting ve quality
 - **Prettier** - Code formatting
 - **Vitest** - Unit testing
@@ -49,16 +55,14 @@ npm run dev
 
 ## 📁 Proje Yapısı
 
-```
+```text
 src/
 ├── components/          # React components
-│   ├── ai/             # AI integration
 │   ├── auth/           # Authentication
 │   ├── forms/          # Form components
 │   ├── pages/          # Page components
 │   └── ui/             # UI components
 ├── services/           # Business logic
-│   ├── aiSystemController.ts
 │   ├── beneficiariesService.ts
 │   ├── donationsService.ts
 │   └── ...
@@ -72,30 +76,35 @@ src/
 ## 🎯 Ana Özellikler
 
 ### 👥 Üye Yönetimi
+
 - Üye kayıt ve güncelleme
 - Üye arama ve filtreleme
 - Üye istatistikleri
 - Toplu işlemler
 
 ### 💰 Bağış Yönetimi
+
 - Bağış kayıt sistemi
 - Bağışçı takibi
 - Raporlama ve analiz
 - Otomatik bildirimler
 
 ### 🤝 İhtiyaç Sahipleri
+
 - Yardım başvuru sistemi
 - Durum takibi
 - Aile bilgileri
 - Belge yönetimi
 
 ### 📊 Raporlama
+
 - Detaylı analizler
 - Grafik ve tablolar
 - Excel/PDF export
 - Otomatik raporlar
 
 ### 🔐 Güvenlik
+
 - XSS koruması
 - SQL Injection koruması
 - CSRF koruması
@@ -105,6 +114,7 @@ src/
 ## 🛠️ Geliştirme
 
 ### Komutlar
+
 ```bash
 # Development
 npm run dev          # Development server
@@ -124,13 +134,16 @@ npm run format       # Prettier format
 ```
 
 ### GitHub Copilot Kullanımı
+
 Bu proje GitHub Copilot ile optimize edilmiştir. Detaylı kullanım için:
+
 - [Copilot Integration Guide](./COPILOT_INTEGRATION_GUIDE.md)
 - [Project Status Report](./PROJECT_STATUS_REPORT.md)
 
 ## 🚀 Deployment
 
 ### Vercel (Önerilen)
+
 ```bash
 # Vercel CLI ile
 npm i -g vercel
@@ -141,6 +154,7 @@ git push origin main
 ```
 
 ### Environment Variables
+
 ```env
 # Supabase
 VITE_SUPABASE_URL=your_supabase_url
@@ -157,12 +171,14 @@ VITE_APP_VERSION=1.0.0
 ## 📊 Performans
 
 ### Metrikler
+
 - **Build Time:** < 2 dakika
 - **Bundle Size:** Optimize edildi
 - **Lighthouse Score:** 90+
 - **Test Coverage:** 80%+
 
 ### Optimizasyonlar
+
 - React memo, useMemo, useCallback
 - Lazy loading
 - Code splitting
@@ -172,6 +188,7 @@ VITE_APP_VERSION=1.0.0
 ## 🔒 Güvenlik
 
 ### Uygulanan Güvenlik Önlemleri
+
 - **XSS Protection** - Input sanitization
 - **SQL Injection Protection** - Parameterized queries
 - **CSRF Protection** - Token validation
@@ -179,6 +196,7 @@ VITE_APP_VERSION=1.0.0
 - **Input Validation** - Client ve server-side
 
 ### Güvenlik Kontrolleri
+
 ```bash
 # Security audit
 npm audit
@@ -190,12 +208,14 @@ npm run security:check
 ## 🧪 Testing
 
 ### Test Stratejisi
+
 - **Unit Tests** - Vitest ile
 - **Integration Tests** - Service layer
 - **E2E Tests** - Playwright ile
 - **Visual Tests** - Component testing
 
 ### Test Coverage
+
 ```bash
 # Coverage raporu
 npm run test:coverage
@@ -206,10 +226,12 @@ npm run test:coverage
 ## 📈 Monitoring
 
 ### Error Tracking
+
 - **Console Logging** - Structured logging
 - **Performance Monitoring** - Core Web Vitals
 
 ### Analytics
+
 - **User Behavior** - Page views, interactions
 - **Performance Metrics** - Load times, errors
 - **Business Metrics** - Donations, members
@@ -217,6 +239,7 @@ npm run test:coverage
 ## 🤝 Katkıda Bulunma
 
 ### Geliştirme Süreci
+
 1. Fork yapın
 2. Feature branch oluşturun (`git checkout -b feature/amazing-feature`)
 3. Commit yapın (`git commit -m 'Add amazing feature'`)
@@ -224,6 +247,7 @@ npm run test:coverage
 5. Pull Request oluşturun
 
 ### Kod Standartları
+
 - TypeScript strict mode
 - ESLint kuralları
 - Prettier formatting
@@ -233,12 +257,15 @@ npm run test:coverage
 ## 📚 Dokümantasyon
 
 ### Ana Dokümantasyonlar
+
 - [Project Status Report](./PROJECT_STATUS_REPORT.md) - Proje durumu
-- [Copilot Integration Guide](./COPILOT_INTEGRATION_GUIDE.md) - Copilot kullanımı
+- [Copilot Integration Guide](./COPILOT_INTEGRATION_GUIDE.md) - Copilot
+  kullanımı
 - [API Documentation](./docs/api.md) - API referansı
 - [Component Library](./docs/components.md) - Component rehberi
 
 ### GitHub Copilot Dokümantasyonları
+
 - [Copilot Instructions](.github/copilot-instructions.md)
 - [Copilot Workflow](.github/copilot-workflow.md)
 - [Copilot Prompts](.github/copilot-prompts.md)
@@ -250,6 +277,7 @@ npm run test:coverage
 ### Yaygın Sorunlar
 
 #### Build Hataları
+
 ```bash
 # Dependencies temizle
 rm -rf node_modules package-lock.json
@@ -260,6 +288,7 @@ npm run type-check
 ```
 
 #### Supabase Bağlantı Sorunları
+
 ```bash
 # Environment variables kontrol et
 echo $VITE_SUPABASE_URL
@@ -270,6 +299,7 @@ curl https://status.supabase.com/
 ```
 
 #### Performance Sorunları
+
 ```bash
 # Bundle analizi
 npm run build:analyze
@@ -281,17 +311,20 @@ npm run lighthouse
 ## 📞 Destek
 
 ### İletişim
+
 - **GitHub Issues** - Bug reports ve feature requests
 - **GitHub Discussions** - Genel sorular
 - **Email** - [your-email@domain.com]
 
 ### Acil Durumlar
+
 - **Security Issues** - Hemen bildirin
 - **Production Issues** - GitHub Issues'da "urgent" label'ı
 
 ## 📄 Lisans
 
-Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için [LICENSE](LICENSE) dosyasına bakın.
+Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için [LICENSE](LICENSE)
+dosyasına bakın.
 
 ## 🙏 Teşekkürler
 

@@ -1,6 +1,32 @@
-/**
- * @fileoverview Environment Service Unit Tests
- * @description Tests for environment configuration and validation
+/**    it('should throw error for missing required variables', () => {
+      // Create a copy without the required variable
+      const { VITE_SUPABASE_URL: _removedUrl, ..._envWithoutUrl } = mockEnv;
+
+      // Mock import.meta.env without required variable
+      vi.stubGlobal('import', {
+        meta: {
+          env: _envWithoutUrl,
+        },
+      });overview Environment Service Unit Tests
+ * @description Tests   describe('Environment Validation', () => {
+    it('should throw error for missing required variables', () => {
+      // Create a copy without the required variable
+      const { VITE_SUPABASE_URL: _removed, ...envWithoutUrl } = mockEnv;
+
+      // Mock import.meta.env without required variable
+      vi.stubGlobal('import', {
+        meta: {
+          env: envWithoutUrl,
+        },
+      });
+
+      // Re-import environment module to test validation
+      expect(() => {
+        const envModule = require('../../lib/environment');
+        // Access the environment to trigger validation
+        const { environment: env } = envModule;
+        expect(env).toBeDefined(); // This will trigger the validation
+      }).toThrow();onfiguration and validation
  */
 
 import { describe, expect, it, vi } from 'vitest';
@@ -18,7 +44,6 @@ const mockEnv = {
   VITE_APP_DEBUG: 'false',
   VITE_ENABLE_PWA: 'true',
   VITE_ENABLE_ANALYTICS: 'false',
-  VITE_ENABLE_AI: 'true',
   VITE_ENABLE_OCR: 'true',
   VITE_ENABLE_MOCK_DATA: 'false',
   VITE_ENABLE_OFFLINE_MODE: 'true',
@@ -55,7 +80,6 @@ describe('Environment Service', () => {
     it('should have valid feature flags', () => {
       expect(environment.features.pwa).toBe(true);
       expect(environment.features.analytics).toBe(false);
-      expect(environment.features.ai).toBe(true);
       expect(environment.features.monitoring).toBe(true);
       expect(environment.features.mockData).toBe(false);
       expect(environment.features.offlineMode).toBe(true);
@@ -78,10 +102,9 @@ describe('Environment Service', () => {
 
   describe('Environment Validation', () => {
     it('should throw error for missing required variables', () => {
-      const originalEnv = { ...mockEnv };
-
-      // Remove required variable
-      delete mockEnv.VITE_SUPABASE_URL;
+      // Create a copy without the required variable
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { VITE_SUPABASE_URL: _removedUrl, ..._envWithoutUrl } = mockEnv;
 
       // Mock import.meta.env without required variable
       vi.stubGlobal('import', {
@@ -93,7 +116,9 @@ describe('Environment Service', () => {
       // This should throw an error
       expect(() => {
         const envModule = require('../../lib/environment');
-        envModule.environment;
+        // Access the environment to trigger validation
+        const { environment: env } = envModule;
+        expect(env).toBeDefined(); // This will trigger the validation
       }).toThrow();
     });
 
@@ -113,7 +138,9 @@ describe('Environment Service', () => {
       // This should throw an error
       expect(() => {
         const envModule = require('../../lib/environment');
-        envModule.environment;
+        // Access the environment to trigger validation
+        const { environment: env } = envModule;
+        expect(env).toBeDefined(); // This will trigger the validation
       }).toThrow('KRİTİK GÜVENLİK AÇIĞI');
     });
   });
@@ -131,7 +158,6 @@ describe('Environment Service', () => {
 
       expect(typeof environment.features.pwa).toBe('boolean');
       expect(typeof environment.features.analytics).toBe('boolean');
-      expect(typeof environment.features.ai).toBe('boolean');
       expect(typeof environment.features.monitoring).toBe('boolean');
 
       expect(typeof environment.security.csp).toBe('boolean');
@@ -150,7 +176,6 @@ describe('Environment Service', () => {
     it('should correctly parse boolean environment variables', () => {
       expect(environment.features.pwa).toBe(true);
       expect(environment.features.analytics).toBe(false);
-      expect(environment.features.ai).toBe(true);
       expect(environment.features.mockData).toBe(false);
     });
 
@@ -159,7 +184,6 @@ describe('Environment Service', () => {
       const stringEnv = {
         ...mockEnv,
         VITE_ENABLE_PWA: 'false',
-        VITE_ENABLE_AI: '1',
         VITE_APP_DEBUG: 'true',
       };
 
@@ -172,7 +196,6 @@ describe('Environment Service', () => {
       // Re-import to test string parsing
       const envModule = require('../../lib/environment');
       expect(envModule.environment.features.pwa).toBe(false);
-      expect(envModule.environment.features.ai).toBe(true);
       expect(envModule.environment.app.debug).toBe(true);
     });
   });

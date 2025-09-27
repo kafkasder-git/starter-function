@@ -1,6 +1,6 @@
 /**
  * @fileoverview environment Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -31,7 +31,6 @@ interface EnvironmentConfig {
   features: {
     pwa: boolean;
     analytics: boolean;
-    ai: boolean;
     monitoring: boolean;
     mockData: boolean;
     offlineMode: boolean;
@@ -81,19 +80,20 @@ interface EnvironmentConfig {
 // Environment variable getter with type safety
 function getEnvVar(key: string, defaultValue?: string): string {
   // Check if we're in a browser environment (Vite)
-  const isBrowser = typeof window !== 'undefined' && typeof import.meta !== 'undefined' && import.meta.env;
-  const isNode = typeof process !== 'undefined' && process.env;
+  const isBrowser = typeof window !== 'undefined' && typeof import.meta !== 'undefined';
+  const isNode = typeof process !== 'undefined';
 
   let value: string | undefined;
 
-  if (isBrowser && typeof import.meta !== 'undefined' && import.meta.env) {
+  if (isBrowser) {
     value = import.meta.env[key as keyof ImportMetaEnv] as string;
-  } else if (isNode && process.env) {
+  } else if (isNode) {
+    // eslint-disable-next-line security/detect-object-injection
     value = process.env[key];
   }
 
   // If no environment variable is set, use default value
-    if (!value || value === '') {
+  if (!value || value === '') {
     if (defaultValue === undefined) {
       logger.warn(`Environment variable ${key} is not defined and no default provided`);
       return '';
@@ -124,7 +124,7 @@ function validateEnvironment(): void {
   // In test mode, use default values for missing environment variables
   if (mode === 'test') {
     // Set default test values for required variables if not provided
-    if (typeof process !== 'undefined' && process.env) {
+    if (typeof process !== 'undefined') {
       process.env.VITE_SUPABASE_URL ??= 'https://test.supabase.co';
       process.env.VITE_SUPABASE_ANON_KEY ??= 'test-anon-key';
       process.env.VITE_CSRF_SECRET ??= generateTestSecret('csrf');
@@ -202,7 +202,7 @@ let environmentValidated = false;
 
 /**
  * validateEnvironmentIfNeeded function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -250,7 +250,6 @@ export const environment: EnvironmentConfig = {
   features: {
     pwa: getEnvBool('VITE_ENABLE_PWA', true),
     analytics: getEnvBool('VITE_ENABLE_ANALYTICS', false),
-    ai: getEnvBool('VITE_ENABLE_AI', true),
     monitoring: getEnvBool('VITE_ENABLE_MONITORING', true),
     mockData: getEnvBool('VITE_ENABLE_MOCK_DATA', true),
     offlineMode: getEnvBool('VITE_ENABLE_OFFLINE_MODE', true),
@@ -296,7 +295,7 @@ export const environment: EnvironmentConfig = {
 // Environment info for debugging
 /**
  * getEnvironmentInfo function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -319,8 +318,12 @@ export function getEnvironmentInfo() {
 }
 
 // Feature flag helpers
-export const isFeatureEnabled = (feature: keyof EnvironmentConfig['features']): boolean => {
-  return environment.features[feature];
+export const isFeatureEnabled = (
+  feature: keyof Omit<EnvironmentConfig['features'], 'security'>,
+): boolean => {
+  // eslint-disable-next-line security/detect-object-injection
+  const featureValue = environment.features[feature];
+  return typeof featureValue === 'boolean' ? featureValue : false;
 };
 
 export const isProduction = (): boolean => {
@@ -341,7 +344,7 @@ export const log = {
 
   info: (...args: unknown[]) => {
     if (environment.logging.console && ['debug', 'info'].includes(environment.logging.level)) {
-      console.info('[INFO]', ...args);
+      logger.info('[INFO]', ...args);
     }
   },
 
