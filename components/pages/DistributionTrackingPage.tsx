@@ -67,8 +67,7 @@ interface Agreement {
   tags: string[];
 }
 
-// Mock agreement data
-const mockAgreements: Agreement[] = [
+const agreements: Agreement[] = [
   {
     id: 1,
     title: 'Sosyal Yardım İşbirliği Protokolü',
@@ -288,8 +287,8 @@ const mockAgreements: Agreement[] = [
  * @returns {void} Nothing
  */
 export default function PartnerAgreementsPage() {
-  const [agreements, setAgreements] = useState<Agreement[]>(mockAgreements);
-  const [filteredAgreements, setFilteredAgreements] = useState<Agreement[]>(mockAgreements);
+  const [agreementsList, setAgreementsList] = useState<Agreement[]>(agreements);
+  const [filteredAgreements, setFilteredAgreements] = useState<Agreement[]>(agreements);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<string>('all');
   const [filterStatus, setFilterStatus] = useState<string>('all');

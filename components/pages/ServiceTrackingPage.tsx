@@ -52,7 +52,13 @@ interface ServiceTracking {
   location: string;
 }
 
-const mockServices: ServiceTracking[] = [
+// Service data will be fetched from API
+const getServices = async (): Promise<ServiceTracking[]> => {
+  // TODO: Implement real API call to fetch services
+  return [];
+};
+
+const services: ServiceTracking[] = [
   {
     id: 1,
     serviceNumber: 'HZT-2024-001',
@@ -151,7 +157,7 @@ const mockServices: ServiceTracking[] = [
  * @returns {void} Nothing
  */
 export function ServiceTrackingPage() {
-  const [services, setServices] = useState<ServiceTracking[]>(mockServices);
+  const [servicesList, setServicesList] = useState<ServiceTracking[]>(services);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
@@ -206,7 +212,7 @@ export function ServiceTrackingPage() {
     return icons[status];
   };
 
-  const filteredServices = services.filter((service) => {
+  const filteredServices = servicesList.filter((service) => {
     const matchesSearch =
       service.recipientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       service.recipientId.includes(searchTerm) ||
@@ -220,11 +226,11 @@ export function ServiceTrackingPage() {
   });
 
   const stats = {
-    total: services.length,
-    requested: services.filter((s) => s.status === 'requested').length,
-    inProgress: services.filter((s) => s.status === 'in_progress').length,
-    completed: services.filter((s) => s.status === 'completed').length,
-    totalCost: services
+    total: servicesList.length,
+    requested: servicesList.filter((s) => s.status === 'requested').length,
+    inProgress: servicesList.filter((s) => s.status === 'in_progress').length,
+    completed: servicesList.filter((s) => s.status === 'completed').length,
+    totalCost: servicesList
       .filter((s) => s.actualCost ?? s.estimatedCost)
       .reduce((sum, s) => sum + (s.actualCost ?? s.estimatedCost), 0),
   };

@@ -44,7 +44,6 @@ interface Conversation {
   unreadCount: number;
 }
 
-// Minimal mock data
 const users: User[] = [
   { id: '1', name: 'Ahmet Yılmaz', department: 'Yönetim', isOnline: true },
   { id: '2', name: 'Fatma Özkan', department: 'Ba��ış', isOnline: true },

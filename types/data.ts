@@ -65,27 +65,6 @@ export interface ImportWarning {
   code: string;
 }
 
-export interface BulkOperation {
-  id: string;
-  type: 'update' | 'delete' | 'export' | 'import';
-  status: 'pending' | 'running' | 'completed' | 'failed' | 'cancelled';
-  progress: number;
-  totalItems: number;
-  processedItems: number;
-  successItems: number;
-  errorItems: number;
-  startTime: Date;
-  endTime?: Date;
-  errors: BulkError[];
-  result?: ExportResult | ImportResult | { affectedRows: number };
-}
-
-export interface BulkError {
-  itemId: string | number;
-  message: string;
-  code: string;
-  data?: Record<string, unknown>;
-}
 
 export interface DataSyncConfig {
   endpoint: string;
@@ -271,27 +250,6 @@ export const IMPORT_VALIDATION_RULES = {
   },
 };
 
-// Bulk operation types
-export const BULK_OPERATIONS = {
-  member: {
-    update: ['status', 'membershipType', 'tags'],
-    delete: ['soft', 'hard'],
-    export: ['selected', 'filtered', 'all'],
-    import: ['csv', 'excel'],
-  },
-  donation: {
-    update: ['status', 'paymentMethod', 'campaign'],
-    delete: ['soft'],
-    export: ['selected', 'filtered', 'all'],
-    import: ['csv', 'excel'],
-  },
-  aid: {
-    update: ['status', 'urgency', 'assignedTo'],
-    delete: ['soft'],
-    export: ['selected', 'filtered', 'all'],
-    import: ['csv', 'excel'],
-  },
-};
 
 // Data formatting utilities
 export const DATA_FORMATTERS = {

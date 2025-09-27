@@ -7,8 +7,6 @@
 
 import React, { lazy, Suspense } from 'react';
 import { SkeletonLoader } from './LoadingSpinner';
-
-import { logger } from '../lib/logging/logger';
 // 🚀 LAZY LOADING OPTIMIZATION
 // Heavy components için performance optimization
 
@@ -39,9 +37,6 @@ export const InteractiveChart = lazy(() =>
 // BeneficiaryOptimized removed - unused component
 
 // Heavy Pages - Additional lazy loading
-export const BulkDataImportPage = lazy(() =>
-  import('./pages/BulkDataImportPage').then((m) => ({ default: m.BulkDataImportPage })),
-);
 
 // AI Assistant page removed
 
@@ -131,139 +126,31 @@ export const LazyChartWrapper = ({
 }: {
   children: React.ReactNode;
   height?: number;
-}) => (
-  <div style={{ height }}>
-    <Suspense
-      fallback={
-        <div className="animate-pulse bg-gray-200 rounded-lg" style={{ height }}>
-          <div className="flex items-center justify-center h-full">
-            <div className="text-gray-400">Grafik yükleniyor...</div>
+}) => {
+  // Map height to appropriate CSS class
+  const getHeightClass = (h: number) => {
+    if (h <= 200) return 'lazy-chart-wrapper-sm';
+    if (h <= 300) return 'lazy-chart-wrapper-md';
+    if (h <= 400) return 'lazy-chart-wrapper-lg';
+    return 'lazy-chart-wrapper-xl';
+  };
+
+  const heightClass = getHeightClass(height);
+
+  return (
+    <div className={heightClass}>
+      <Suspense
+        fallback={
+          <div className={`animate-pulse bg-gray-200 rounded-lg ${heightClass}`}>
+            <div className="flex items-center justify-center h-full">
+              <div className="text-gray-400">Grafik yükleniyor...</div>
+            </div>
           </div>
-        </div>
-      }
-    >
-      {children}
-    </Suspense>
-  </div>
-);
-
-// Hook for conditional lazy loading
-export const useLazyLoading = (condition = true) => {
-  return {
-    shouldLazyLoad: condition,
-    LazyWrapper: condition
-      ? LazyWrapper
-      : ({ children }: { children: React.ReactNode }) => <>{children}</>,
-  };
-};
-
-// Performance monitoring for lazy components
-export const withLazyPerformance = <P extends Record<string, any>>(
-  Component: React.ComponentType<P>,
-  componentName: string,
-) => {
-  const WrappedComponent = (props: P) => {
-    React.useEffect(() => {
-      const startTime = performance.now();
-
-      return () => {
-        const loadTime = performance.now() - startTime;
-        logger.info(`[Lazy Loading] ${componentName} loaded in ${loadTime.toFixed(2)}ms`);
-
-        // Send to analytics in production
-        if (process.env.NODE_ENV === 'production') {
-          // Analytics tracking code here
         }
-      };
-    }, []);
-
-    return <Component {...props} />;
-  };
-
-  WrappedComponent.displayName = `withLazyPerformance(${componentName})`;
-  return WrappedComponent;
+      >
+        {children}
+      </Suspense>
+    </div>
+  );
 };
 
-// Gelişmiş lazy loading hook'u
-export const useAdvancedLazyLoading = () => {
-  const [loadedComponents, setLoadedComponents] = React.useState<Set<string>>(new Set());
-  const [loadingComponents, setLoadingComponents] = React.useState<Set<string>>(new Set());
-
-  const preloadComponent = React.useCallback(
-    (componentName: string, importFn: () => Promise<any>) => {
-      if (loadedComponents.has(componentName) || loadingComponents.has(componentName)) {
-        return Promise.resolve();
-      }
-
-      setLoadingComponents((prev) => new Set(prev).add(componentName));
-
-      return importFn()
-        .then(() => {
-          setLoadedComponents((prev) => new Set(prev).add(componentName));
-          setLoadingComponents((prev) => {
-            const newSet = new Set(prev);
-            newSet.delete(componentName);
-            return newSet;
-          });
-        })
-        .catch((error) => {
-          logger.error(`Failed to preload ${componentName}:`, error);
-          setLoadingComponents((prev) => {
-            const newSet = new Set(prev);
-            newSet.delete(componentName);
-            return newSet;
-          });
-        });
-    },
-    [loadedComponents, loadingComponents],
-  );
-
-  const isComponentLoaded = React.useCallback(
-    (componentName: string) => {
-      return loadedComponents.has(componentName);
-    },
-    [loadedComponents],
-  );
-
-  const isComponentLoading = React.useCallback(
-    (componentName: string) => {
-      return loadingComponents.has(componentName);
-    },
-    [loadingComponents],
-  );
-
-  return {
-    preloadComponent,
-    isComponentLoaded,
-    isComponentLoading,
-    loadedComponents: Array.from(loadedComponents),
-    loadingComponents: Array.from(loadingComponents),
-  };
-};
-
-// Intersection Observer ile otomatik lazy loading
-export const useIntersectionLazyLoading = (threshold = 0.1) => {
-  const [isIntersecting, setIsIntersecting] = React.useState(false);
-  const ref = React.useRef<HTMLDivElement>(null);
-
-  React.useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsIntersecting(entry.isIntersecting);
-      },
-      { threshold },
-    );
-
-    if (ref.current) {
-      observer.observe(ref.current);
-    }
-
-    return () => {
-      if (ref.current) {
-        observer.unobserve(ref.current);
-      }
-    };
-  }, [threshold]);
-
-  return { ref, isIntersecting };
-};

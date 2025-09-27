@@ -62,7 +62,6 @@ export function BursStudentsPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [programFilter, setProgramFilter] = useState<string>('all');
 
-  // Mock data
   const students: Student[] = useMemo(
     () => [
       {

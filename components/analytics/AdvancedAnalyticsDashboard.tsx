@@ -5,7 +5,7 @@
  * @version 1.0.0
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion } from 'motion/react';
 import {
   TrendingUp,
@@ -30,75 +30,37 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { LazyChartWrapper } from '../LazyComponents';
 
-// Mock data - gerçek veriler API'den gelecek
-const mockAnalyticsData = {
-  overview: {
-    totalBeneficiaries: 1250,
-    totalDonations: 2450000,
-    totalMembers: 450,
-    totalEvents: 89,
-    growthRates: {
-      beneficiaries: 12.5,
-      donations: 8.3,
-      members: 15.7,
-      events: 22.1,
+// Analytics data will be fetched from API
+const getAnalyticsData = async () => {
+  // TODO: Implement real API calls to fetch analytics data
+  return {
+    overview: {
+      totalBeneficiaries: 0,
+      totalDonations: 0,
+      totalMembers: 0,
+      totalEvents: 0,
+      growthRates: {
+        beneficiaries: 0,
+        donations: 0,
+        members: 0,
+        events: 0,
+      },
     },
-  },
-  trends: {
-    monthly: [
-      { month: 'Ocak', beneficiaries: 120, donations: 180000, events: 8 },
-      { month: 'Şubat', beneficiaries: 135, donations: 195000, events: 12 },
-      { month: 'Mart', beneficiaries: 142, donations: 210000, events: 15 },
-      { month: 'Nisan', beneficiaries: 158, donations: 225000, events: 18 },
-      { month: 'Mayıs', beneficiaries: 165, donations: 240000, events: 22 },
-      { month: 'Haziran', beneficiaries: 172, donations: 255000, events: 25 },
-    ],
-    weekly: [
-      { week: '1. Hafta', beneficiaries: 28, donations: 45000, events: 4 },
-      { week: '2. Hafta', beneficiaries: 32, donations: 52000, events: 6 },
-      { week: '3. Hafta', beneficiaries: 35, donations: 48000, events: 5 },
-      { week: '4. Hafta', beneficiaries: 38, donations: 55000, events: 7 },
-    ],
-  },
-  geographic: {
-    cities: [
-      { name: 'İstanbul', beneficiaries: 450, donations: 850000, percentage: 36 },
-      { name: 'Ankara', beneficiaries: 320, donations: 620000, percentage: 25 },
-      { name: 'İzmir', beneficiaries: 280, donations: 480000, percentage: 20 },
-      { name: 'Bursa', beneficiaries: 200, donations: 500000, percentage: 19 },
-    ],
-  },
-  categories: {
-    aidTypes: [
-      { name: 'Gıda Yardımı', count: 450, amount: 1200000, color: '#FF6B6B' },
-      { name: 'Nakdi Yardım', count: 320, amount: 800000, color: '#4ECDC4' },
-      { name: 'Eğitim Desteği', count: 280, amount: 350000, color: '#45B7D1' },
-      { name: 'Sağlık Yardımı', count: 200, amount: 100000, color: '#96CEB4' },
-    ],
-  },
-  performance: {
-    kpis: [
-      { name: 'Ortalama Yardım Süresi', value: '3.2 gün', target: '2 gün', status: 'warning' },
-      { name: 'Başvuru Onay Oranı', value: '87%', target: '90%', status: 'good' },
-      { name: 'Üye Memnuniyeti', value: '4.6/5', target: '4.5/5', status: 'excellent' },
-      { name: 'Gönüllü Katılımı', value: '92%', target: '85%', status: 'excellent' },
-    ],
-  },
-  alerts: [
-    {
-      id: 1,
-      type: 'warning',
-      message: 'İstanbul bölgesinde başvuru yoğunluğu yüksek',
-      priority: 'high',
+    trends: {
+      monthly: [],
+      weekly: [],
     },
-    { id: 2, type: 'info', message: 'Yeni gönüllü eğitimi tamamlandı', priority: 'medium' },
-    {
-      id: 3,
-      type: 'success',
-      message: 'Aylık hedefler %105 oranında gerçekleşti',
-      priority: 'low',
+    geographic: {
+      cities: [],
     },
-  ],
+    categories: {
+      aidTypes: [],
+    },
+    performance: {
+      kpis: [],
+    },
+    alerts: [],
+  };
 };
 
 interface AdvancedAnalyticsDashboardProps {
@@ -119,12 +81,30 @@ export function AdvancedAnalyticsDashboard({
   const [activeTab, setActiveTab] = useState('overview');
   const [timeRange, setTimeRange] = useState('monthly');
   const [selectedMetric, setSelectedMetric] = useState('all');
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [analyticsData, setAnalyticsData] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const data = await getAnalyticsData();
+        setAnalyticsData(data);
+      } catch (error) {
+        console.error('Failed to fetch analytics data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   // Veri filtreleme
   const filteredData = useMemo(() => {
+    if (!analyticsData) return [];
     const data =
-      timeRange === 'monthly' ? mockAnalyticsData.trends.monthly : mockAnalyticsData.trends.weekly;
+      timeRange === 'monthly' ? analyticsData.trends.monthly : analyticsData.trends.weekly;
 
     if (selectedMetric === 'all') return data;
 
@@ -138,32 +118,32 @@ export function AdvancedAnalyticsDashboard({
   const kpiCards = [
     {
       title: 'Toplam İhtiyaç Sahibi',
-      value: mockAnalyticsData.overview.totalBeneficiaries.toLocaleString('tr-TR'),
-      change: mockAnalyticsData.overview.growthRates.beneficiaries,
+      value: analyticsData?.overview.totalBeneficiaries.toLocaleString('tr-TR') || '0',
+      change: analyticsData?.overview.growthRates.beneficiaries || 0,
       icon: Users,
       color: 'blue',
       trend: 'up',
     },
     {
       title: 'Toplam Bağış',
-      value: `₺${mockAnalyticsData.overview.totalDonations.toLocaleString('tr-TR')}`,
-      change: mockAnalyticsData.overview.growthRates.donations,
+      value: `₺${analyticsData?.overview.totalDonations.toLocaleString('tr-TR') || '0'}`,
+      change: analyticsData?.overview.growthRates.donations || 0,
       icon: Heart,
       color: 'green',
       trend: 'up',
     },
     {
       title: 'Aktif Üye',
-      value: mockAnalyticsData.overview.totalMembers.toLocaleString('tr-TR'),
-      change: mockAnalyticsData.overview.growthRates.members,
+      value: analyticsData?.overview.totalMembers.toLocaleString('tr-TR') || '0',
+      change: analyticsData?.overview.growthRates.members || 0,
       icon: Users,
       color: 'purple',
       trend: 'up',
     },
     {
       title: 'Toplam Etkinlik',
-      value: mockAnalyticsData.overview.totalEvents.toLocaleString('tr-TR'),
-      change: mockAnalyticsData.overview.growthRates.events,
+      value: analyticsData?.overview.totalEvents.toLocaleString('tr-TR') || '0',
+      change: analyticsData?.overview.growthRates.events || 0,
       icon: Calendar,
       color: 'orange',
       trend: 'up',
@@ -201,6 +181,19 @@ export function AdvancedAnalyticsDashboard({
         return { color: 'text-gray-600', bg: 'bg-gray-50', border: 'border-gray-200' };
     }
   };
+
+  if (loading) {
+    return (
+      <div className={`space-y-6 ${className}`}>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Analitik veriler yükleniyor...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -335,7 +328,7 @@ export function AdvancedAnalyticsDashboard({
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {mockAnalyticsData.categories.aidTypes.map((category, index) => (
+                    {(analyticsData?.categories.aidTypes || []).map((category, index) => (
                       <motion.div
                         key={category.name}
                         initial={{ opacity: 0, x: -20 }}
@@ -346,7 +339,7 @@ export function AdvancedAnalyticsDashboard({
                         <div className="flex items-center gap-3">
                           <div
                             className="w-4 h-4 rounded-full"
-                            style={{ backgroundColor: category.color }}
+                            data-category-color={category.color}
                           />
                           <span className="font-medium text-gray-900">{category.name}</span>
                         </div>
@@ -373,7 +366,7 @@ export function AdvancedAnalyticsDashboard({
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {mockAnalyticsData.alerts.map((alert, index) => {
+                  {(analyticsData?.alerts || []).map((alert, index) => {
                     const alertStyle = getAlertType(alert.type);
                     return (
                       <motion.div
@@ -446,7 +439,7 @@ export function AdvancedAnalyticsDashboard({
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {mockAnalyticsData.performance.kpis.map((kpi, index) => {
+                    {(analyticsData?.performance.kpis || []).map((kpi, index) => {
                       const status = getPerformanceStatus(kpi.status);
                       return (
                         <motion.div
@@ -507,7 +500,7 @@ export function AdvancedAnalyticsDashboard({
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {mockAnalyticsData.geographic.cities.map((city, index) => (
+                  {(analyticsData?.geographic.cities || []).map((city, index) => (
                     <motion.div
                       key={city.name}
                       initial={{ opacity: 0, y: 20 }}
@@ -533,7 +526,7 @@ export function AdvancedAnalyticsDashboard({
                         <div className="w-full bg-gray-200 rounded-full h-2 mt-3">
                           <div
                             className="bg-blue-600 h-2 rounded-full transition-all duration-500"
-                            style={{ width: `${city.percentage}%` }}
+                            data-progress-width={`${city.percentage}%`}
                           />
                         </div>
                       </div>

@@ -12,7 +12,19 @@ import { useState, useMemo } from 'react';
 
 import { useSearch } from '../../hooks/useSearch';
 import type { Lawyer } from '../../types/lawyer';
-// Search config removed
+import type { SearchConfig } from '../../types/search';
+
+// Search configuration for lawyers
+const LAWYER_SEARCH_CONFIG: SearchConfig = {
+  searchableFields: ['name', 'barNumber', 'barAssociation', 'specializations'],
+  filterableFields: ['specializations', 'barAssociation', 'experience', 'rating'],
+  sortableFields: ['name', 'rating', 'experience', 'totalCases', 'successRate'],
+  defaultSort: { field: 'rating', direction: 'desc' },
+  itemsPerPage: 12,
+  enableFuzzySearch: true,
+  enableTurkishSearch: true,
+  debounceMs: 300,
+};
 
 interface Lawyer {
   id: number;
@@ -35,7 +47,13 @@ interface Lawyer {
   notes?: string;
 }
 
-const mockLawyers: Lawyer[] = [
+// Lawyer data will be fetched from API
+const getLawyers = async (): Promise<Lawyer[]> => {
+  // TODO: Implement real API call to fetch lawyers
+  return [];
+};
+
+const lawyers: Lawyer[] = [
   {
     id: 1,
     name: 'Av. Fatma Demir',
@@ -117,7 +135,7 @@ export function LawyerAssignmentsPage() {
     isEmpty,
   } = useSearch<Lawyer>({
     config: LAWYER_SEARCH_CONFIG,
-    data: mockLawyers,
+    data: lawyers,
     initialFilters: [],
   });
 
@@ -191,6 +209,8 @@ export function LawyerAssignmentsPage() {
         <select
           value={searchState.filters.find((f) => f.field === 'specialization')?.value ?? ''}
           onChange={(e) => { setFilters([{ field: 'specialization', value: e.target.value }]); }}
+          title="Uzmanlık alanı seçin"
+          aria-label="Uzmanlık alanı filtresi"
         >
           <option value="">Tüm Uzmanlıklar</option>
           {/* Add specialization options */}

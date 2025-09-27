@@ -34,11 +34,25 @@ interface LegalConsultation {
 import { useState, useMemo } from 'react';
 import { useSearch } from '../../hooks/useSearch';
 import type { Consultation } from '../../types/consultation';
-// Search config removed
+import type { SearchConfig } from '../../types/search';
 
-const mockConsultations: Consultation[] = [
-  // ... existing mock data ...
-];
+// Search configuration for consultations
+const CONSULTATION_SEARCH_CONFIG: SearchConfig = {
+  searchableFields: ['clientName', 'subject', 'description', 'category', 'assignedLawyer'],
+  filterableFields: ['category', 'urgency', 'status', 'assignedLawyer'],
+  sortableFields: ['createdDate', 'consultationDate', 'clientName', 'urgency'],
+  defaultSort: { field: 'createdDate', direction: 'desc' },
+  itemsPerPage: 10,
+  enableFuzzySearch: true,
+  enableTurkishSearch: true,
+  debounceMs: 300,
+};
+
+// Consultation data will be fetched from API
+const getConsultations = async (): Promise<Consultation[]> => {
+  // TODO: Implement real API call to fetch consultations
+  return [];
+};
 
 /**
  * LegalConsultationPage function
@@ -61,7 +75,7 @@ export function LegalConsultationPage() {
     isEmpty,
   } = useSearch<Consultation>({
     config: CONSULTATION_SEARCH_CONFIG,
-    data: mockConsultations,
+    data: [], // TODO: Replace with real data from getConsultations()
     initialFilters: [],
   });
 
@@ -142,6 +156,8 @@ export function LegalConsultationPage() {
         <select
           value={searchState.filters.find((f) => f.field === 'category')?.value ?? ''}
           onChange={(e) => { setFilters([{ field: 'category', value: e.target.value }]); }}
+          title="Kategori seçin"
+          aria-label="Kategori filtresi"
         >
           <option value="">Tüm Kategoriler</option>
           {/* Add category options */}

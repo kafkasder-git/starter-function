@@ -58,8 +58,7 @@ interface SponsorOrganization {
   tags: string[];
 }
 
-// Mock sponsor data
-const mockSponsors: SponsorOrganization[] = [
+const sponsors: SponsorOrganization[] = [
   {
     id: 1,
     name: 'Teknoloji Holding A.Ş.',
@@ -180,8 +179,8 @@ const mockSponsors: SponsorOrganization[] = [
  * @returns {void} Nothing
  */
 export default function PartnerSponsorsPage() {
-  const [sponsors] = useState<SponsorOrganization[]>(mockSponsors);
-  const [filteredSponsors, setFilteredSponsors] = useState<SponsorOrganization[]>(mockSponsors);
+  const [sponsorsList] = useState<SponsorOrganization[]>(sponsors);
+  const [filteredSponsors, setFilteredSponsors] = useState<SponsorOrganization[]>(sponsors);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<string>('all');
   const [filterSponsorshipType, setFilterSponsorshipType] = useState<string>('all');

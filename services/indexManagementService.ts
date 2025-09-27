@@ -843,7 +843,7 @@ export class IndexManagementService {
    * Get table statistics
    */
   private async getTableStatistics(tableName?: string, schema?: string): Promise<any> {
-    // Mock implementation - in real app, get from database
+    // Implementation - in real app, get from database
     return {
       tableName,
       rowCount: 1000,

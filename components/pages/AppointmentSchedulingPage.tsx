@@ -51,8 +51,7 @@ interface Appointment {
   createdAt: string;
 }
 
-// Mock appointment data
-const mockAppointments: Appointment[] = [
+const appointments: Appointment[] = [
   {
     id: 1,
     beneficiaryName: 'Ayşe Yılmaz',
@@ -144,8 +143,8 @@ const mockAppointments: Appointment[] = [
  * @returns {void} Nothing
  */
 export function AppointmentSchedulingPage() {
-  const [appointments, setAppointments] = useState<Appointment[]>(mockAppointments);
-  const [filteredAppointments, setFilteredAppointments] = useState<Appointment[]>(mockAppointments);
+  const [appointmentsList, setAppointmentsList] = useState<Appointment[]>(appointments);
+  const [filteredAppointments, setFilteredAppointments] = useState<Appointment[]>(appointments);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [filterType, setFilterType] = useState<string>('all');

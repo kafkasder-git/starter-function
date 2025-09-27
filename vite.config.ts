@@ -10,6 +10,9 @@ export default defineConfig({
     drop: ['console', 'debugger'],
     legalComments: 'none',
   },
+  css: {
+    postcss: './postcss.config.js',
+  },
   plugins: [
     react({
       // SWC plugin with proper configuration

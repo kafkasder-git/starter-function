@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 @custom-variant dark (&:is(.dark *));
 
 :root {
@@ -162,90 +164,208 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-    transition-property: color, background-color, border-color;
-    transition-duration: 0.2s;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  }
+/* Safari iOS < 15.4 fallback - moved @layer content to regular CSS */
+* {
+  @apply border-border outline-ring/50;
+  transition-property: color, background-color, border-color;
+  transition-duration: 0.2s;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
 
-  body {
-    @apply bg-background text-foreground;
-  }
+body {
+  @apply bg-background text-foreground;
+}
 
-  /* Dark mode smooth transitions */
-  html {
-    transition:
-      background-color 0.3s ease,
-      color 0.3s ease;
-  }
+/* Dark mode smooth transitions */
+html {
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
 
-  /* Enhanced dark mode readability */
+/* Enhanced dark mode readability with Safari iOS < 13 fallback */
+.dark {
+  /* Only apply color-scheme for browsers that support it */
+}
+
+/* Apply color-scheme only for browsers that support it */
+@supports (color-scheme: dark) {
   .dark {
+    /* stylelint-disable-next-line property-no-unknown */
     color-scheme: dark;
   }
+}
 
-  .dark img {
-    opacity: 0.9;
+/* Fallback for browsers that don't support color-scheme */
+@supports not (color-scheme: dark) {
+  .dark {
+    /* Fallback styling for older browsers */
   }
+}
 
-  .dark svg {
-    filter: brightness(0.9);
+.dark img {
+  opacity: 0.9;
+}
+
+.dark svg {
+  filter: brightness(0.9);
+}
+
+/* Modern browsers with @layer support */
+@supports (selector(:where(*))) {
+  @layer base {
+    * {
+      @apply border-border outline-ring/50;
+      transition-property: color, background-color, border-color;
+      transition-duration: 0.2s;
+      transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body {
+      @apply bg-background text-foreground;
+    }
+
+    /* Dark mode smooth transitions */
+    html {
+      transition:
+        background-color 0.3s ease,
+        color 0.3s ease;
+    }
+
+    /* Enhanced dark mode readability with Safari iOS < 13 fallback */
+    .dark {
+      /* Only apply color-scheme for browsers that support it */
+    }
+
+    /* Apply color-scheme only for browsers that support it */
+    @supports (color-scheme: dark) {
+      .dark {
+        color-scheme: dark;
+      }
+    }
+
+    /* Fallback for browsers that don't support color-scheme */
+    @supports not (color-scheme: dark) {
+      .dark {
+        /* Fallback styling for older browsers */
+      }
+    }
+
+    .dark img {
+      opacity: 0.9;
+    }
+
+    .dark svg {
+      filter: brightness(0.9);
+    }
   }
 }
 
 /**
  * Base typography. This is not applied to elements which have an ancestor with a Tailwind text class.
  */
-@layer base {
-  :where(:not(:has([class*=' text-']), :not(:has([class^='text-'])))) {
-    h1 {
-      font-size: var(--text-2xl);
-      font-weight: var(--font-weight-medium);
-      line-height: 1.5;
-    }
+/* Safari iOS < 15.4 fallback - moved @layer content to regular CSS */
+:where(:not(:has([class*=' text-']), :not(:has([class^='text-'])))) {
+  h1 {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
 
-    h2 {
-      font-size: var(--text-xl);
-      font-weight: var(--font-weight-medium);
-      line-height: 1.5;
-    }
+  h2 {
+    font-size: var(--text-xl);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
 
-    h3 {
-      font-size: var(--text-lg);
-      font-weight: var(--font-weight-medium);
-      line-height: 1.5;
-    }
+  h3 {
+    font-size: var(--text-lg);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
 
-    h4 {
-      font-size: var(--text-base);
-      font-weight: var(--font-weight-medium);
-      line-height: 1.5;
-    }
+  h4 {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
 
-    p {
-      font-size: var(--text-base);
-      font-weight: var(--font-weight-normal);
-      line-height: 1.5;
-    }
+  p {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-normal);
+    line-height: 1.5;
+  }
 
-    label {
-      font-size: var(--text-base);
-      font-weight: var(--font-weight-medium);
-      line-height: 1.5;
-    }
+  label {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
 
-    button {
-      font-size: var(--text-base);
-      font-weight: var(--font-weight-medium);
-      line-height: 1.5;
-    }
+  button {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
 
-    input {
-      font-size: var(--text-base);
-      font-weight: var(--font-weight-normal);
-      line-height: 1.5;
+  input {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-normal);
+    line-height: 1.5;
+  }
+}
+
+/* Modern browsers with @layer support */
+@supports (selector(:where(*))) {
+  @layer base {
+    :where(:not(:has([class*=' text-']), :not(:has([class^='text-'])))) {
+      h1 {
+        font-size: var(--text-2xl);
+        font-weight: var(--font-weight-medium);
+        line-height: 1.5;
+      }
+
+      h2 {
+        font-size: var(--text-xl);
+        font-weight: var(--font-weight-medium);
+        line-height: 1.5;
+      }
+
+      h3 {
+        font-size: var(--text-lg);
+        font-weight: var(--font-weight-medium);
+        line-height: 1.5;
+      }
+
+      h4 {
+        font-size: var(--text-base);
+        font-weight: var(--font-weight-medium);
+        line-height: 1.5;
+      }
+
+      p {
+        font-size: var(--text-base);
+        font-weight: var(--font-weight-normal);
+        line-height: 1.5;
+      }
+
+      label {
+        font-size: var(--text-base);
+        font-weight: var(--font-weight-medium);
+        line-height: 1.5;
+      }
+
+      button {
+        font-size: var(--text-base);
+        font-weight: var(--font-weight-medium);
+        line-height: 1.5;
+      }
+
+      input {
+        font-size: var(--text-base);
+        font-weight: var(--font-weight-normal);
+        line-height: 1.5;
+      }
     }
   }
 }
@@ -255,340 +375,894 @@ html {
 }
 
 /* Desktop-Only Layout System */
-@layer base {
-  /* Desktop layout variables */
-  :root {
-    --font-base: 16px;
-    --font-sm: 14px;
-    --font-lg: 18px;
-    --font-xl: 24px;
+/* Safari iOS < 15.4 fallback - moved @layer content to regular CSS */
+/* Desktop layout variables */
+:root {
+  --font-base: 16px;
+  --font-sm: 14px;
+  --font-lg: 18px;
+  --font-xl: 24px;
 
-    /* Desktop spacing system */
-    --space-unit: 0.25rem; /* 4px base unit */
-    --space-xs: calc(var(--space-unit) * 2); /* 8px */
-    --space-sm: calc(var(--space-unit) * 3); /* 12px */
-    --space-md: calc(var(--space-unit) * 4); /* 16px */
-    --space-lg: calc(var(--space-unit) * 6); /* 24px */
-    --space-xl: calc(var(--space-unit) * 8); /* 32px */
+  /* Desktop spacing system */
+  --space-unit: 0.25rem; /* 4px base unit */
+  --space-xs: calc(var(--space-unit) * 2); /* 8px */
+  --space-sm: calc(var(--space-unit) * 3); /* 12px */
+  --space-md: calc(var(--space-unit) * 4); /* 16px */
+  --space-lg: calc(var(--space-unit) * 6); /* 24px */
+  --space-xl: calc(var(--space-unit) * 8); /* 32px */
 
-    /* Desktop layout dimensions */
-    --header-height: 64px;
-    --sidebar-width: 280px;
-    --content-max-width: 1400px;
-  }
+  /* Desktop layout dimensions */
+  --header-height: 64px;
+  --sidebar-width: 280px;
+  --content-max-width: 1400px;
+}
 
-  /* Enhanced desktop typography */
-  h1 {
-    font-size: var(--font-xl);
-  }
-  h2 {
-    font-size: var(--font-lg);
-  }
-  h3 {
-    font-size: var(--font-base);
-  }
-  p,
-  span,
-  div {
-    font-size: var(--font-base);
-  }
-  small {
-    font-size: var(--font-sm);
-  }
+/* Enhanced desktop typography */
+h1 {
+  font-size: var(--font-xl);
+}
+h2 {
+  font-size: var(--font-lg);
+}
+h3 {
+  font-size: var(--font-base);
+}
+p,
+span,
+div {
+  font-size: var(--font-base);
+}
+small {
+  font-size: var(--font-sm);
+}
 
-  /* Desktop-optimized scrolling */
+/* Desktop-optimized scrolling with Safari iOS < 15.4 fallback */
+/* Only apply smooth scrolling if supported */
+@supports (scroll-behavior: smooth) {
   html {
     scroll-behavior: smooth;
   }
+}
 
-  body {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
-
-  /* Reduce motion for users who prefer it */
-  @media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
+  
+  /* Disable smooth scrolling for reduced motion */
+  @supports (scroll-behavior: auto) {
+    * {
       scroll-behavior: auto !important;
     }
   }
+}
 
-  /* High contrast support */
-  @media (prefers-contrast: high) {
-    .border {
-      border-width: 2px;
+
+/* High contrast support */
+@media (prefers-contrast: high) {
+  .border {
+    border-width: 2px;
+  }
+
+  button,
+  .button {
+    border-width: 2px;
+  }
+}
+
+/* Modern browsers with @layer support */
+@supports (selector(:where(*))) {
+  @layer base {
+    /* Desktop layout variables */
+    :root {
+      --font-base: 16px;
+      --font-sm: 14px;
+      --font-lg: 18px;
+      --font-xl: 24px;
+
+      /* Desktop spacing system */
+      --space-unit: 0.25rem; /* 4px base unit */
+      --space-xs: calc(var(--space-unit) * 2); /* 8px */
+      --space-sm: calc(var(--space-unit) * 3); /* 12px */
+      --space-md: calc(var(--space-unit) * 4); /* 16px */
+      --space-lg: calc(var(--space-unit) * 6); /* 24px */
+      --space-xl: calc(var(--space-unit) * 8); /* 32px */
+
+      /* Desktop layout dimensions */
+      --header-height: 64px;
+      --sidebar-width: 280px;
+      --content-max-width: 1400px;
     }
 
-    button,
-    .button {
-      border-width: 2px;
+    /* Enhanced desktop typography */
+    h1 {
+      font-size: var(--font-xl);
+    }
+    h2 {
+      font-size: var(--font-lg);
+    }
+    h3 {
+      font-size: var(--font-base);
+    }
+    p,
+    span,
+    div {
+      font-size: var(--font-base);
+    }
+    small {
+      font-size: var(--font-sm);
+    }
+
+    /* Desktop-optimized scrolling with Safari iOS < 15.4 fallback */
+    /* Only apply smooth scrolling if supported */
+    @supports (scroll-behavior: smooth) {
+      html {
+        scroll-behavior: smooth;
+      }
+    }
+
+    body {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Reduce motion for users who prefer it */
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+      
+      /* Disable smooth scrolling for reduced motion */
+      @supports (scroll-behavior: auto) {
+        * {
+          scroll-behavior: auto !important;
+        }
+      }
+    }
+
+
+    /* High contrast support */
+    @media (prefers-contrast: high) {
+      .border {
+        border-width: 2px;
+      }
+
+      button,
+      .button {
+        border-width: 2px;
+      }
     }
   }
 }
 
 /* Desktop scrollbar styling */
-@layer utilities {
+/* Safari iOS < 15.4 fallback - moved @layer content to regular CSS */
+.scrollbar-thin {
+  /* Only apply scrollbar-width for browsers that support it (Firefox) */
+}
+
+/* Apply scrollbar-width only for Firefox */
+@supports (scrollbar-width: thin) {
   .scrollbar-thin {
     scrollbar-width: thin;
     scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
   }
+}
 
-  .scrollbar-thin::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
+.scrollbar-thin::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
 
-  .scrollbar-thin::-webkit-scrollbar-track {
-    background: transparent;
-  }
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
 
-  .scrollbar-thin::-webkit-scrollbar-thumb {
-    background-color: rgba(156, 163, 175, 0.5);
-    border-radius: 4px;
-  }
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: rgba(156, 163, 175, 0.5);
+  border-radius: 4px;
+}
 
-  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-    background-color: rgba(156, 163, 175, 0.7);
-  }
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(156, 163, 175, 0.7);
+}
 
-  /* Enhanced Corporate Design Utilities */
-  .corporate-gradient {
-    background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
-  }
+/* Modern browsers with @layer support */
+@supports (selector(:where(*))) {
+  @layer utilities {
+    .scrollbar-thin {
+      /* Only apply scrollbar-width for browsers that support it (Firefox) */
+    }
 
-  .glass-morphism {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-  }
+    /* Apply scrollbar-width only for Firefox */
+    @supports (scrollbar-width: thin) {
+      .scrollbar-thin {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+      }
+    }
 
-  .dark .glass-morphism {
-    background: rgba(30, 41, 59, 0.95);
-    border: 1px solid rgba(71, 85, 105, 0.3);
-  }
+    .scrollbar-thin::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
 
-  /* Desktop Layout Classes */
-  .desktop-container {
-    width: 100%;
-    max-width: var(--content-max-width);
-    margin: 0 auto;
-    padding: var(--space-lg);
-  }
+    .scrollbar-thin::-webkit-scrollbar-track {
+      background: transparent;
+    }
 
-  .desktop-header {
-    height: var(--header-height);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 var(--space-lg);
-    background: white;
-    border-bottom: 1px solid #e2e8f0;
-  }
+    .scrollbar-thin::-webkit-scrollbar-thumb {
+      background-color: rgba(156, 163, 175, 0.5);
+      border-radius: 4px;
+    }
 
-  .desktop-content {
-    padding: var(--space-lg);
-    min-height: calc(100vh - var(--header-height));
-    margin-left: var(--sidebar-width);
+    .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+      background-color: rgba(156, 163, 175, 0.7);
+    }
   }
+}
 
-  /* Desktop spacing utilities */
-  .spacing-xs {
-    margin: var(--space-xs);
-  }
-  .spacing-sm {
-    margin: var(--space-sm);
-  }
-  .spacing-md {
-    margin: var(--space-md);
-  }
-  .spacing-lg {
-    margin: var(--space-lg);
-  }
-  .spacing-xl {
-    margin: var(--space-xl);
-  }
+/* Enhanced Corporate Design Utilities */
+/* Safari iOS < 15.4 fallback - moved @layer content to regular CSS */
+.corporate-gradient {
+  background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+}
 
-  .gap-desktop {
-    gap: var(--space-lg);
-  }
+.glass-morphism {
+  background: rgba(255, 255, 255, 0.95);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
 
-  .professional-card {
-    @apply bg-white rounded-lg shadow-md border border-gray-100/50;
-  }
+.dark .glass-morphism {
+  background: rgba(30, 41, 59, 0.95);
+  border: 1px solid rgba(71, 85, 105, 0.3);
+}
 
-  .dark .professional-card {
-    @apply bg-slate-800 border-slate-700/50;
-  }
+/* Desktop Layout Classes */
+.desktop-container {
+  width: 100%;
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  padding: var(--space-lg);
+}
 
-  .status-success {
-    @apply bg-emerald-50 text-emerald-700 border-emerald-200;
-  }
+.desktop-header {
+  height: var(--header-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-lg);
+  background: white;
+  border-bottom: 1px solid #e2e8f0;
+}
 
-  .status-warning {
-    @apply bg-amber-50 text-amber-700 border-amber-200;
-  }
+.desktop-content {
+  padding: var(--space-lg);
+  min-height: calc(100vh - var(--header-height));
+  margin-left: var(--sidebar-width);
+}
 
-  .status-error {
-    @apply bg-red-50 text-red-700 border-red-200;
-  }
+/* Desktop spacing utilities */
+.spacing-xs {
+  margin: var(--space-xs);
+}
+.spacing-sm {
+  margin: var(--space-sm);
+}
+.spacing-md {
+  margin: var(--space-md);
+}
+.spacing-lg {
+  margin: var(--space-lg);
+}
+.spacing-xl {
+  margin: var(--space-xl);
+}
 
-  .status-info {
-    @apply bg-blue-50 text-blue-700 border-blue-200;
-  }
+.gap-desktop {
+  gap: var(--space-lg);
+}
 
-  /* Desktop focus states */
-  .focus-desktop {
-    @apply focus:outline-none focus:ring-2 focus:ring-primary/20 focus:ring-offset-2;
-  }
+.professional-card {
+  @apply bg-white rounded-lg shadow-md border border-gray-100/50;
+}
 
-  .micro-interaction {
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    will-change: transform, box-shadow;
-  }
+.dark .professional-card {
+  @apply bg-slate-800 border-slate-700/50;
+}
 
-  .micro-interaction:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 8px 25px -8px rgba(0, 0, 0, 0.15);
-  }
+.status-success {
+  @apply bg-emerald-50 text-emerald-700 border-emerald-200;
+}
 
-  /* Performance optimizations */
-  .gpu-accelerated {
-    transform: translateZ(0);
-    will-change: transform;
-  }
+.status-warning {
+  @apply bg-amber-50 text-amber-700 border-amber-200;
+}
 
+.status-error {
+  @apply bg-red-50 text-red-700 border-red-200;
+}
+
+.status-info {
+  @apply bg-blue-50 text-blue-700 border-blue-200;
+}
+
+/* Desktop focus states */
+.focus-desktop {
+  @apply focus:outline-none focus:ring-2 focus:ring-primary/20 focus:ring-offset-2;
+}
+
+.micro-interaction {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform, box-shadow;
+}
+
+.micro-interaction:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 25px -8px rgba(0, 0, 0, 0.15);
+}
+
+/* Performance optimizations */
+.gpu-accelerated {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Only apply smooth scrolling if supported */
+@supports (scroll-behavior: smooth) {
   .smooth-scroll {
     scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
   }
+}
 
-  /* Corporate loading states */
-  .corporate-pulse {
-    animation: corporate-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+/* Corporate loading states */
+.corporate-pulse {
+  animation: corporate-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes corporate-pulse {
+  0%,
+  100% {
+    opacity: 1;
   }
+  50% {
+    opacity: 0.7;
+  }
+}
 
-  @keyframes corporate-pulse {
-    0%,
-    100% {
-      opacity: 1;
+.corporate-fade-in {
+  animation: corporate-fade-in 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes corporate-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Enhanced focus states for corporate design */
+.focus-corporate {
+  @apply focus:outline-none focus:ring-2 focus:ring-primary/30 focus:ring-offset-2 focus:ring-offset-white;
+}
+
+/* Modern form styling */
+.modern-form-card {
+  @apply bg-white rounded-xl border border-border/50 shadow-sm p-6;
+}
+
+.dark .modern-form-card {
+  @apply bg-slate-800 border-slate-700/50;
+}
+
+.modern-form-grid {
+  @apply grid grid-cols-12 gap-4;
+}
+
+.modern-input-group {
+  @apply space-y-1;
+}
+
+.modern-label {
+  @apply text-xs font-medium text-muted-foreground;
+}
+
+.modern-compact-input {
+  @apply h-9 text-sm;
+}
+
+/* Compact checkbox styling for health conditions */
+.health-conditions-grid {
+  @apply grid grid-cols-2 md:grid-cols-3 gap-y-2 gap-x-6 max-h-80 overflow-y-auto border rounded-lg p-4 bg-muted/30;
+}
+
+.dark .health-conditions-grid {
+  @apply bg-slate-700/30 border-slate-600;
+}
+
+/* Connected records sidebar styling */
+.connected-records-grid {
+  @apply grid grid-cols-2 gap-2;
+}
+
+.connected-record-button {
+  @apply h-auto p-3 text-left justify-start text-xs hover:bg-primary/5 transition-colors;
+}
+
+/* Inline link styling */
+.inline-action-link {
+  @apply text-xs text-primary underline hover:text-primary/80 cursor-pointer;
+}
+
+/* Photo upload area */
+.photo-upload-area {
+  @apply aspect-[3/4] w-full rounded-lg border-2 border-dashed border-muted-foreground/30 bg-muted/30 flex items-center justify-center;
+}
+
+.dark .photo-upload-area {
+  @apply border-slate-600 bg-slate-700/30;
+}
+
+/* All corporate button styles should be used as inline Tailwind classes */
+
+/* Lazy loading chart wrapper styles */
+.lazy-chart-wrapper {
+  height: 300px; /* default height */
+}
+
+.lazy-chart-wrapper-sm {
+  height: 200px;
+}
+
+.lazy-chart-wrapper-md {
+  height: 300px;
+}
+
+.lazy-chart-wrapper-lg {
+  height: 400px;
+}
+
+.lazy-chart-wrapper-xl {
+  height: 500px;
+}
+
+/* Progress bar styles */
+.progress-bar {
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+.progress-bar-25 { width: 25%; }
+.progress-bar-50 { width: 50%; }
+.progress-bar-75 { width: 75%; }
+.progress-bar-100 { width: 100%; }
+
+/* Animation delay classes for sidebar items */
+.animate-delay-0 { animation-delay: 0ms; }
+.animate-delay-50 { animation-delay: 50ms; }
+.animate-delay-100 { animation-delay: 100ms; }
+.animate-delay-150 { animation-delay: 150ms; }
+.animate-delay-200 { animation-delay: 200ms; }
+.animate-delay-250 { animation-delay: 250ms; }
+.animate-delay-300 { animation-delay: 300ms; }
+.animate-delay-350 { animation-delay: 350ms; }
+.animate-delay-400 { animation-delay: 400ms; }
+.animate-delay-450 { animation-delay: 450ms; }
+.animate-delay-500 { animation-delay: 500ms; }
+
+.animate-fill-both {
+  animation-fill-mode: both;
+}
+
+/* Modern browsers with @layer support */
+@supports (selector(:where(*))) {
+  @layer utilities {
+    /* Enhanced Corporate Design Utilities */
+    .corporate-gradient {
+      background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
     }
-    50% {
-      opacity: 0.7;
+
+    .glass-morphism {
+      background: rgba(255, 255, 255, 0.95);
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .dark .glass-morphism {
+      background: rgba(30, 41, 59, 0.95);
+      border: 1px solid rgba(71, 85, 105, 0.3);
+    }
+
+    /* Desktop Layout Classes */
+    .desktop-container {
+      width: 100%;
+      max-width: var(--content-max-width);
+      margin: 0 auto;
+      padding: var(--space-lg);
+    }
+
+    .desktop-header {
+      height: var(--header-height);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--space-lg);
+      background: white;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .desktop-content {
+      padding: var(--space-lg);
+      min-height: calc(100vh - var(--header-height));
+      margin-left: var(--sidebar-width);
+    }
+
+    /* Desktop spacing utilities */
+    .spacing-xs {
+      margin: var(--space-xs);
+    }
+    .spacing-sm {
+      margin: var(--space-sm);
+    }
+    .spacing-md {
+      margin: var(--space-md);
+    }
+    .spacing-lg {
+      margin: var(--space-lg);
+    }
+    .spacing-xl {
+      margin: var(--space-xl);
+    }
+
+    .gap-desktop {
+      gap: var(--space-lg);
+    }
+
+    .professional-card {
+      @apply bg-white rounded-lg shadow-md border border-gray-100/50;
+    }
+
+    .dark .professional-card {
+      @apply bg-slate-800 border-slate-700/50;
+    }
+
+    .status-success {
+      @apply bg-emerald-50 text-emerald-700 border-emerald-200;
+    }
+
+    .status-warning {
+      @apply bg-amber-50 text-amber-700 border-amber-200;
+    }
+
+    .status-error {
+      @apply bg-red-50 text-red-700 border-red-200;
+    }
+
+    .status-info {
+      @apply bg-blue-50 text-blue-700 border-blue-200;
+    }
+
+    /* Desktop focus states */
+    .focus-desktop {
+      @apply focus:outline-none focus:ring-2 focus:ring-primary/20 focus:ring-offset-2;
+    }
+
+    .micro-interaction {
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      will-change: transform, box-shadow;
+    }
+
+    .micro-interaction:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 25px -8px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Performance optimizations */
+    .gpu-accelerated {
+      transform: translateZ(0);
+      will-change: transform;
+    }
+
+    /* Only apply smooth scrolling if supported */
+    @supports (scroll-behavior: smooth) {
+      .smooth-scroll {
+        scroll-behavior: smooth;
+      }
+    }
+
+    /* Corporate loading states */
+    .corporate-pulse {
+      animation: corporate-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    @keyframes corporate-pulse {
+      0%,
+      100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.7;
+      }
+    }
+
+    .corporate-fade-in {
+      animation: corporate-fade-in 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes corporate-fade-in {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Enhanced focus states for corporate design */
+    .focus-corporate {
+      @apply focus:outline-none focus:ring-2 focus:ring-primary/30 focus:ring-offset-2 focus:ring-offset-white;
+    }
+
+    /* Modern form styling */
+    .modern-form-card {
+      @apply bg-white rounded-xl border border-border/50 shadow-sm p-6;
+    }
+
+    .dark .modern-form-card {
+      @apply bg-slate-800 border-slate-700/50;
+    }
+
+    .modern-form-grid {
+      @apply grid grid-cols-12 gap-4;
+    }
+
+    .modern-input-group {
+      @apply space-y-1;
+    }
+
+    .modern-label {
+      @apply text-xs font-medium text-muted-foreground;
+    }
+
+    .modern-compact-input {
+      @apply h-9 text-sm;
+    }
+
+    /* Compact checkbox styling for health conditions */
+    .health-conditions-grid {
+      @apply grid grid-cols-2 md:grid-cols-3 gap-y-2 gap-x-6 max-h-80 overflow-y-auto border rounded-lg p-4 bg-muted/30;
+    }
+
+    .dark .health-conditions-grid {
+      @apply bg-slate-700/30 border-slate-600;
+    }
+
+    /* Connected records sidebar styling */
+    .connected-records-grid {
+      @apply grid grid-cols-2 gap-2;
+    }
+
+    .connected-record-button {
+      @apply h-auto p-3 text-left justify-start text-xs hover:bg-primary/5 transition-colors;
+    }
+
+    /* Inline link styling */
+    .inline-action-link {
+      @apply text-xs text-primary underline hover:text-primary/80 cursor-pointer;
+    }
+
+    /* Photo upload area */
+    .photo-upload-area {
+      @apply aspect-[3/4] w-full rounded-lg border-2 border-dashed border-muted-foreground/30 bg-muted/30 flex items-center justify-center;
+    }
+
+    .dark .photo-upload-area {
+      @apply border-slate-600 bg-slate-700/30;
+    }
+
+    /* All corporate button styles should be used as inline Tailwind classes */
+
+    /* Lazy loading chart wrapper styles */
+    .lazy-chart-wrapper {
+      height: 300px; /* default height */
+    }
+
+    .lazy-chart-wrapper-sm {
+      height: 200px;
+    }
+
+    .lazy-chart-wrapper-md {
+      height: 300px;
+    }
+
+    .lazy-chart-wrapper-lg {
+      height: 400px;
+    }
+
+    .lazy-chart-wrapper-xl {
+      height: 500px;
+    }
+
+    /* Progress bar styles */
+    .progress-bar {
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .progress-bar-25 { width: 25%; }
+    .progress-bar-50 { width: 50%; }
+    .progress-bar-75 { width: 75%; }
+    .progress-bar-100 { width: 100%; }
+
+    /* Animation delay classes for sidebar items */
+    .animate-delay-0 { animation-delay: 0ms; }
+    .animate-delay-50 { animation-delay: 50ms; }
+    .animate-delay-100 { animation-delay: 100ms; }
+    .animate-delay-150 { animation-delay: 150ms; }
+    .animate-delay-200 { animation-delay: 200ms; }
+    .animate-delay-250 { animation-delay: 250ms; }
+    .animate-delay-300 { animation-delay: 300ms; }
+    .animate-delay-350 { animation-delay: 350ms; }
+    .animate-delay-400 { animation-delay: 400ms; }
+    .animate-delay-450 { animation-delay: 450ms; }
+    .animate-delay-500 { animation-delay: 500ms; }
+
+    .animate-fill-both {
+      animation-fill-mode: both;
     }
   }
-
-  .corporate-fade-in {
-    animation: corporate-fade-in 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  @keyframes corporate-fade-in {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  /* Enhanced focus states for corporate design */
-  .focus-corporate {
-    @apply focus:outline-none focus:ring-2 focus:ring-primary/30 focus:ring-offset-2 focus:ring-offset-white;
-  }
-
-  /* Modern form styling */
-  .modern-form-card {
-    @apply bg-white rounded-xl border border-border/50 shadow-sm p-6;
-  }
-
-  .dark .modern-form-card {
-    @apply bg-slate-800 border-slate-700/50;
-  }
-
-  .modern-form-grid {
-    @apply grid grid-cols-12 gap-4;
-  }
-
-  .modern-input-group {
-    @apply space-y-1;
-  }
-
-  .modern-label {
-    @apply text-xs font-medium text-muted-foreground;
-  }
-
-  .modern-compact-input {
-    @apply h-9 text-sm;
-  }
-
-  /* Compact checkbox styling for health conditions */
-  .health-conditions-grid {
-    @apply grid grid-cols-2 md:grid-cols-3 gap-y-2 gap-x-6 max-h-80 overflow-y-auto border rounded-lg p-4 bg-muted/30;
-  }
-
-  .dark .health-conditions-grid {
-    @apply bg-slate-700/30 border-slate-600;
-  }
-
-  /* Connected records sidebar styling */
-  .connected-records-grid {
-    @apply grid grid-cols-2 gap-2;
-  }
-
-  .connected-record-button {
-    @apply h-auto p-3 text-left justify-start text-xs hover:bg-primary/5 transition-colors;
-  }
-
-  /* Inline link styling */
-  .inline-action-link {
-    @apply text-xs text-primary underline hover:text-primary/80 cursor-pointer;
-  }
-
-  /* Photo upload area */
-  .photo-upload-area {
-    @apply aspect-[3/4] w-full rounded-lg border-2 border-dashed border-muted-foreground/30 bg-muted/30 flex items-center justify-center;
-  }
-
-  .dark .photo-upload-area {
-    @apply border-slate-600 bg-slate-700/30;
-  }
-
-  /* All corporate button styles should be used as inline Tailwind classes */
 }
 
 /* Corporate Performance Optimizations */
-@layer utilities {
-  /* Critical performance classes */
-  .will-change-transform {
-    will-change: transform;
-  }
+/* Safari iOS < 15.4 fallback - moved @layer content to regular CSS */
+/* Critical performance classes */
+.will-change-transform {
+  will-change: transform;
+}
 
-  .will-change-auto {
-    will-change: auto;
-  }
+.will-change-auto {
+  will-change: auto;
+}
 
+/* Layout containment - only apply if supported */
+@supports (contain: layout) {
   .contain-layout {
     contain: layout;
   }
+}
 
+/* Paint containment - only apply if supported */
+@supports (contain: paint) {
   .contain-paint {
     contain: paint;
   }
+}
 
-  /* Removed problematic corporate classes - use inline Tailwind utilities instead */
-
-  /* Optimized text rendering */
-  .text-render-optimized {
-    text-rendering: optimizeSpeed;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+/* Fallback for browsers that don't support contain property */
+@supports not (contain: layout) {
+  .contain-layout {
+    /* Fallback: use isolation for similar effect */
+    isolation: isolate;
+    /* Additional fallback for layout optimization */
+    position: relative;
   }
+}
+
+@supports not (contain: paint) {
+  .contain-paint {
+    /* Fallback: use overflow hidden for similar effect */
+    overflow: hidden;
+    /* Additional fallback for paint optimization */
+    transform: translateZ(0);
+  }
+}
+
+/* Removed problematic corporate classes - use inline Tailwind utilities instead */
+
+/* Optimized text rendering */
+.text-render-optimized {
+  text-rendering: optimizeSpeed;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Modern browsers with @layer support */
+@supports (selector(:where(*))) {
+  @layer utilities {
+    /* Critical performance classes */
+    .will-change-transform {
+      will-change: transform;
+    }
+
+    .will-change-auto {
+      will-change: auto;
+    }
+
+    /* Layout containment - only apply if supported */
+    @supports (contain: layout) {
+      .contain-layout {
+        contain: layout;
+      }
+    }
+
+    /* Paint containment - only apply if supported */
+    @supports (contain: paint) {
+      .contain-paint {
+        contain: paint;
+      }
+    }
+
+    /* Fallback for browsers that don't support contain property */
+    @supports not (contain: layout) {
+      .contain-layout {
+        /* Fallback: use isolation for similar effect */
+        isolation: isolate;
+        /* Additional fallback for layout optimization */
+        position: relative;
+      }
+    }
+
+    @supports not (contain: paint) {
+      .contain-paint {
+        /* Fallback: use overflow hidden for similar effect */
+        overflow: hidden;
+        /* Additional fallback for paint optimization */
+        transform: translateZ(0);
+      }
+    }
+
+    /* Removed problematic corporate classes - use inline Tailwind utilities instead */
+
+    /* Optimized text rendering */
+    .text-render-optimized {
+      text-rendering: optimizeSpeed;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+  }
+}
+
+/* Analytics Dashboard Dynamic Styles */
+.analytics-category-color {
+  background-color: var(--category-color, #e5e7eb);
+}
+
+.analytics-progress-bar {
+  width: var(--progress-width, 0%);
+  transition: width 0.3s ease;
+}
+
+/* Dynamic styles using data attributes */
+[data-category-color] {
+  background-color: attr(data-category-color);
+}
+
+[data-progress-width] {
+  width: attr(data-progress-width);
+  transition: width 0.3s ease;
 }
 
 /* Print styles for desktop */
@@ -609,3 +1283,4 @@ html {
     padding: 1rem;
   }
 }
+

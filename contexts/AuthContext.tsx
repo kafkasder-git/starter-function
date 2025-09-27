@@ -14,61 +14,8 @@ import { ROLE_PERMISSIONS, UserRole } from '../types/auth';
 import { logger } from '../lib/logging/logger';
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Mock users for frontend-only authentication
-const MOCK_USERS: User[] = [
-  {
-    id: '1',
-    email: 'admin',
-    name: 'Ahmet Yılmaz - Sistem Yöneticisi',
-    role: UserRole.ADMIN,
-    permissions: ROLE_PERMISSIONS[UserRole.ADMIN],
-    isActive: true,
-    createdAt: new Date('2024-01-01'),
-    updatedAt: new Date(),
-    avatar: undefined,
-  },
-  {
-    id: '2',
-    email: 'manager',
-    name: 'Fatma Demir - Dernek Müdürü',
-    role: UserRole.MANAGER,
-    permissions: ROLE_PERMISSIONS[UserRole.MANAGER],
-    isActive: true,
-    createdAt: new Date('2024-01-01'),
-    updatedAt: new Date(),
-    avatar: undefined,
-  },
-  {
-    id: '3',
-    email: 'operator',
-    name: 'Mehmet Kaya - Operatör',
-    role: UserRole.OPERATOR,
-    permissions: ROLE_PERMISSIONS[UserRole.OPERATOR],
-    isActive: true,
-    createdAt: new Date('2024-01-01'),
-    updatedAt: new Date(),
-    avatar: undefined,
-  },
-  {
-    id: '4',
-    email: 'viewer',
-    name: 'Ayşe Özkan - Görüntüleyici',
-    role: UserRole.VIEWER,
-    permissions: ROLE_PERMISSIONS[UserRole.VIEWER],
-    isActive: true,
-    createdAt: new Date('2024-01-01'),
-    updatedAt: new Date(),
-    avatar: undefined,
-  },
-];
-
-// Default passwords for mock users
-const MOCK_CREDENTIALS = {
-  admin: 'admin123',
-  manager: 'manager123',
-  operator: 'operator123',
-  viewer: 'viewer123',
-};
+// Authentication will be handled by Supabase Auth
+// Removed mock users and credentials - using real authentication
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -152,36 +99,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // Simulate network delay
       await new Promise((resolve) => setTimeout(resolve, 800));
 
-      // Find mock user
-      const user = MOCK_USERS.find((u) => u.email === credentials.email);
-      const expectedPassword = MOCK_CREDENTIALS[credentials.email as keyof typeof MOCK_CREDENTIALS];
-
-        if (!user || credentials.password !== expectedPassword) {
-        throw new Error('Kullanıcı adı veya şifre hatalı');
-      }
-
-      if (!user.isActive) {
-        throw new Error('Hesabınız devre dışı bırakılmış');
-      }
-
-      // Create session
-      const sessionData = {
-        timestamp: Date.now(),
-        rememberMe: credentials.rememberMe,
-      };
-
-      // Store in localStorage
-      localStorage.setItem('auth_user', JSON.stringify(user));
-      localStorage.setItem('auth_session', JSON.stringify(sessionData));
-
-      setAuthState({
-        user,
-        isAuthenticated: true,
-        isLoading: false,
-        error: null,
-      });
-
-      toast.success(`Hoş geldiniz, ${user.name}!`, { duration: 3000 });
+      // TODO: Implement Supabase Auth login
+      // This should be replaced with actual Supabase authentication
+      throw new Error('Authentication not implemented - please use Supabase Auth');
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Giriş yapılamadı';
 
@@ -246,7 +166,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     try {
       // In a real app, this would fetch updated user data from the server
-      // For mock auth, just refresh from stored data
+      // TODO: Implement Supabase Auth refresh
       const storedUser = localStorage.getItem('auth_user');
       if (storedUser) {
         const user = JSON.parse(storedUser);
@@ -254,7 +174,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }
     } catch (error) {
       logger.error('User refresh error:', error);
-      // For mock auth, if refresh fails, just log out
+      // TODO: Handle Supabase Auth refresh failure
       await logout();
     }
   };

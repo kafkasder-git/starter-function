@@ -81,8 +81,13 @@ interface AssociationPartner {
   tags: string[];
 }
 
-// Mock association data
-const mockAssociations: AssociationPartner[] = [
+// Association data will be fetched from API
+const getAssociations = async (): Promise<AssociationPartner[]> => {
+  // TODO: Implement real API call to fetch associations
+  return [];
+};
+
+const associations: AssociationPartner[] = [
   {
     id: 1,
     name: 'Toplum Kalkınma Derneği',
@@ -242,9 +247,9 @@ const mockAssociations: AssociationPartner[] = [
  * @returns {void} Nothing
  */
 export default function PartnerAssociationsPage() {
-  const [associations, setAssociations] = useState<AssociationPartner[]>(mockAssociations);
+  const [associationsList, setAssociationsList] = useState<AssociationPartner[]>(associations);
   const [filteredAssociations, setFilteredAssociations] =
-    useState<AssociationPartner[]>(mockAssociations);
+    useState<AssociationPartner[]>(associations);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<string>('all');
   const [filterFocusArea, setFilterFocusArea] = useState<string>('all');
@@ -375,10 +380,10 @@ export default function PartnerAssociationsPage() {
     setActiveTab('all');
   }, []);
 
-  const activeAssociations = associations.filter((a) => a.status === 'aktif').length;
-  const totalMembers = associations.reduce((sum, a) => sum + (a.memberCount ?? 0), 0);
-  const collaborativeAssociations = associations.filter((a) => a.sharedProjects.length > 0).length;
-  const largeAssociations = associations.filter(
+  const activeAssociations = associationsList.filter((a) => a.status === 'aktif').length;
+  const totalMembers = associationsList.reduce((sum, a) => sum + (a.memberCount ?? 0), 0);
+  const collaborativeAssociations = associationsList.filter((a) => a.sharedProjects.length > 0).length;
+  const largeAssociations = associationsList.filter(
     (a) => a.memberCount && a.memberCount >= 100,
   ).length;
 

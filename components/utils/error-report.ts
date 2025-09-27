@@ -125,7 +125,7 @@ export const createErrorReport = ({
   return {
     errorId,
     message: error.message,
-    stack: error.stack,
+    stack: typeof error.stack === 'string' ? error.stack : undefined,
     componentStack: errorInfo.componentStack,
     timestamp: dateFactory().toISOString(),
     environment,

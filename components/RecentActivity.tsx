@@ -22,8 +22,11 @@ interface Activity {
   status?: 'success' | 'pending' | 'failed';
 }
 
-// TODO: Load from API
-const mockActivities: Activity[] = [];
+// Activity data will be fetched from API
+const getActivities = async (): Promise<Activity[]> => {
+  // TODO: Implement real API call to fetch activities
+  return [];
+};
 
 /**
  * RecentActivity function
@@ -84,7 +87,7 @@ export function RecentActivity() {
       </CardHeader>
       <CardContent className="space-y-3 lg:space-y-4 max-h-96 overflow-y-auto scrollbar-thin px-6 py-6">
         {mockActivities.length > 0 ? (
-          mockActivities.map((activity) => (
+          [].map((activity) => ( // TODO: Replace with real data from getActivities()
             <div
               key={activity.id}
               className="flex items-start gap-4 p-4 hover:bg-slate-50/80 rounded-xl transition-all duration-200 border border-transparent hover:border-slate-200/60 cursor-pointer group"

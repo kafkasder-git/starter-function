@@ -12,6 +12,7 @@ import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { PanelLeftIcon } from 'lucide-react';
 
+import { useSidebar } from '../../hooks/use-sidebar';
 import { useIsMobile } from './use-mobile';
 import { cn } from './utils';
 import { Button } from './button';

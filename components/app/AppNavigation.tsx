@@ -164,10 +164,6 @@ export const FinanceIncomePage = createLazyComponent(
 // FinanceReportsPage removed
 
 // Communication (Mesaj) Module
-export const BulkMessagePage = createLazyComponent(
-  () => import('../pages/BulkMessagePage').then((m) => ({ default: m.BulkMessagePage })),
-  'BulkMessagePage',
-);
 
 export const InternalMessagingPage = createLazyComponent(
   () =>
@@ -222,10 +218,6 @@ export const LegalDocumentsPage = createLazyComponent(
 
 // LegalReportsPage removed
 
-export const BarAssociationsPage = createLazyComponent(
-  () => import('../pages/BarAssociationsPage'),
-  'BarAssociationsPage',
-);
 
 // System Management Module
 export const ProfilePage = createLazyComponent(
@@ -242,10 +234,6 @@ export const UserManagementPage = createLazyComponent(
 );
 
 // Data Management
-export const BulkDataImportPage = createLazyComponent(
-  () => import('../pages/BulkDataImportPage').then((m) => ({ default: m.BulkDataImportPage })),
-  'BulkDataImportPage',
-);
 
 // Demo components removed
 
@@ -379,7 +367,6 @@ export const ROUTE_REGISTRY: Record<string, Record<string, RouteConfig>> = {
   },
 
   mesaj: {
-    '/mesaj/toplu': { component: BulkMessagePage, skeletonVariant: 'form' },
     '/mesaj/kurum-ici': { component: InternalMessagingPage, skeletonVariant: 'dashboard' },
     default: { component: InternalMessagingPage, skeletonVariant: 'dashboard' },
   },
@@ -396,7 +383,6 @@ export const ROUTE_REGISTRY: Record<string, Record<string, RouteConfig>> = {
     '/hukuki/avukatlar': { component: LawyerAssignmentsPage, skeletonVariant: 'table' },
     '/hukuki/davalar': { component: LawsuitTrackingPage, skeletonVariant: 'table' },
     '/hukuki/belgeler': { component: LegalDocumentsPage, skeletonVariant: 'table' },
-    '/hukuki/barolar': { component: BarAssociationsPage, skeletonVariant: 'table' },
     default: { component: LegalConsultationPage, skeletonVariant: 'dashboard' },
   },
 
@@ -413,9 +399,6 @@ export const ROUTE_REGISTRY: Record<string, Record<string, RouteConfig>> = {
     default: { component: UserManagementPage, skeletonVariant: 'table' },
   },
 
-  'bulk-import': {
-    default: { component: BulkDataImportPage, skeletonVariant: 'dashboard' },
-  },
 
   // Demo routes removed
 };

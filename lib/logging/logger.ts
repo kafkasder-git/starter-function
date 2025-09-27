@@ -1,4 +1,3 @@
-import { logger } from '../lib/logging/logger';
 /**
  * @fileoverview logger Module - Application module
  * 
@@ -103,16 +102,16 @@ class Logger {
     if (this.config.enableConsole) {
       switch (level) {
         case LogLevel.DEBUG:
-          logger.debug(formattedMessage, ...args);
+          console.debug(formattedMessage, ...args);
           break;
         case LogLevel.INFO:
           console.info(formattedMessage, ...args);
           break;
         case LogLevel.WARN:
-          logger.warn(formattedMessage, ...args);
+          console.warn(formattedMessage, ...args);
           break;
         case LogLevel.ERROR:
-          logger.error(formattedMessage, ...args);
+          console.error(formattedMessage, ...args);
           break;
       }
     }
@@ -170,9 +169,9 @@ export const logger = Logger.getInstance();
 // Convenience functions for different modules
 export const storeLogger = {
   init: (message: string, ...args: unknown[]): void => { logger.storeInit(message, ...args); },
-  error: (message: string, ...args: unknown[]): void => { logger.error(`Store: ${message}`, ...args); },
-  warn: (message: string, ...args: unknown[]): void => { logger.warn(`Store: ${message}`, ...args); },
-  info: (message: string, ...args: unknown[]): void => { logger.info(`Store: ${message}`, ...args); },
+  error: (message: string, ...args: unknown[]): void => { logger.log(LogLevel.ERROR, 'ERROR', `Store: ${message}`, ...args); },
+  warn: (message: string, ...args: unknown[]): void => { logger.log(LogLevel.WARN, 'WARN', `Store: ${message}`, ...args); },
+  info: (message: string, ...args: unknown[]): void => { logger.log(LogLevel.INFO, 'INFO', `Store: ${message}`, ...args); },
 };
 
 export const apiLogger = {
@@ -183,19 +182,19 @@ export const apiLogger = {
     logger.api(`Response ${status} from ${url}`, ...args);
   },
   error: (url: string, error: unknown, ...args: unknown[]): void => {
-    logger.error(`API Error on ${url}: ${String(error)}`, ...args);
+    logger.log(LogLevel.ERROR, 'ERROR', `API Error on ${url}: ${String(error)}`, ...args);
   },
 };
 
 export const authLogger = {
   login: (userId: string, ...args: unknown[]): void => {
-    logger.info(`User login: ${userId}`, ...args);
+    logger.log(LogLevel.INFO, 'INFO', `User login: ${userId}`, ...args);
   },
   logout: (userId: string, ...args: unknown[]): void => {
-    logger.info(`User logout: ${userId}`, ...args);
+    logger.log(LogLevel.INFO, 'INFO', `User logout: ${userId}`, ...args);
   },
   error: (action: string, error: unknown, ...args: unknown[]): void => {
-    logger.error(`Auth error on ${action}: ${String(error)}`, ...args);
+    logger.log(LogLevel.ERROR, 'ERROR', `Auth error on ${action}: ${String(error)}`, ...args);
   },
 };
 export default logger;

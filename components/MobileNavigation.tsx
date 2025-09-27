@@ -147,7 +147,6 @@ const modules: Module[] = [
       { name: 'Dava Takipleri', href: '/hukuki/davalar' },
       { name: 'Hukuki Belgeler', href: '/hukuki/belgeler' },
       { name: 'Hukuki Raporlar', href: '/hukuki/raporlar' },
-      { name: 'Barolar ile İlişkiler', href: '/hukuki/barolar' },
     ],
   },
   {

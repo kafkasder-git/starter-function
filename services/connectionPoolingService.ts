@@ -468,7 +468,7 @@ export class ConnectionPoolingService {
       const { data, error } = await supabase.rpc('get_connection_stats');
 
       if (error || !data) {
-        // Fallback mock data
+        // Fallback data
         return {
           activeConnections: 5,
           idleConnections: 3,

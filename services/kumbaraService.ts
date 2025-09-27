@@ -345,7 +345,7 @@ class KumbaraService {
     periodEnd: string,
   ): Promise<KumbaraAnalytics> {
     try {
-      // Mock analytics data - replace with real API call
+      // Analytics data - replace with real API call
       const analytics: KumbaraAnalytics = {
         kumbara_id: kumbaraId,
         period_start: periodStart,

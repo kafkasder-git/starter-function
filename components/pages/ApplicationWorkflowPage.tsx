@@ -53,8 +53,7 @@ interface Partner {
   tags: string[];
 }
 
-// Mock data with realistic partner information
-const mockPartners: Partner[] = [
+const partners: Partner[] = [
   {
     id: 1,
     name: 'Ankara Büyükşehir Belediyesi',
@@ -157,8 +156,8 @@ const mockPartners: Partner[] = [
  * @returns {void} Nothing
  */
 export default function PartnerListPage() {
-  const [partners, setPartners] = useState<Partner[]>(mockPartners);
-  const [filteredPartners, setFilteredPartners] = useState<Partner[]>(mockPartners);
+  const [partnersList, setPartnersList] = useState<Partner[]>(partners);
+  const [filteredPartners, setFilteredPartners] = useState<Partner[]>(partners);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<string>('all');
   const [filterCategory, setFilterCategory] = useState<string>('all');

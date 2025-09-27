@@ -244,7 +244,7 @@ export const environment: EnvironmentConfig = {
   supabase: {
     url: getEnvVar('VITE_SUPABASE_URL'),
     anonKey: getEnvVar('VITE_SUPABASE_ANON_KEY'),
-    serviceRoleKey: getEnvVar('VITE_SUPABASE_SERVICE_ROLE_KEY'),
+    serviceRoleKey: getEnvVar('VITE_SUPABASE_SERVICE_ROLE_KEY', ''),
   },
 
   features: {

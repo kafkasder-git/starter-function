@@ -6,7 +6,7 @@
  */
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Building, CreditCard, Heart, MapPin, Phone, Save, User, X } from 'lucide-react';
+import { Building, CreditCard, Heart, MapPin, Phone, Save, User, X, Camera } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -19,8 +19,10 @@ import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Textarea } from '../ui/textarea';
+import { CameraScanner } from '../ui/camera-scanner';
 
 import { logger } from '../lib/logging/logger';
+import type { OCRResult } from '../../services/ocrService';
 // Form validation schema
 const beneficiarySchema = z.object({
   // Temel bilgiler
@@ -122,6 +124,7 @@ export default function BeneficiaryForm({
   isLoading = false,
 }: BeneficiaryFormProps) {
   const [currentStep, setCurrentStep] = useState(1);
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
   const totalSteps = 6;
 
   const {
@@ -206,6 +209,41 @@ export default function BeneficiaryForm({
     setValue('needs', currentNeeds.filter((_, i) => i !== index));
   };
 
+  // OCR sonucunu forma doldur
+  const handleOCRResult = (result: OCRResult) => {
+    try {
+      if (result.fullName) {
+        setValue('full_name', result.fullName);
+      }
+      
+      if (result.identityNumber) {
+        setValue('identity_no', result.identityNumber);
+      }
+      
+      if (result.nationality) {
+        setValue('nationality', result.nationality);
+      }
+      
+      if (result.country) {
+        setValue('country', result.country);
+      }
+      
+      if (result.birthDate) {
+        setValue('birth_date', result.birthDate);
+      }
+      
+      if (result.gender) {
+        setValue('gender', result.gender);
+      }
+
+      toast.success('Belge bilgileri forma otomatik olarak dolduruldu');
+      logger.info('OCR sonucu forma dolduruldu', result);
+    } catch (error) {
+      toast.error('Form doldurma sırasında hata oluştu');
+      logger.error('OCR sonucu form doldurma hatası:', error);
+    }
+  };
+
   const renderStep1 = () => (
     <Card>
       <CardHeader>
@@ -215,6 +253,26 @@ export default function BeneficiaryForm({
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
+        {/* Kamera Tarama Butonu */}
+        <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <div className="flex items-center justify-between">
+            <div>
+              <h4 className="font-medium text-blue-900">Hızlı Kayıt</h4>
+              <p className="text-sm text-blue-700">
+                Kimlik veya pasaport belgenizi kameraya göstererek bilgileri otomatik doldurun
+              </p>
+            </div>
+            <Button
+              type="button"
+              onClick={() => setIsCameraOpen(true)}
+              variant="outline"
+              className="flex items-center gap-2 border-blue-300 text-blue-700 hover:bg-blue-100"
+            >
+              <Camera className="h-4 w-4" />
+              Kamera ile Tara
+            </Button>
+          </div>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <Label htmlFor="full_name">Ad Soyad *</Label>
@@ -675,8 +733,12 @@ export default function BeneficiaryForm({
         </p>
         <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
           <div
-            className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-            style={{ width: `${(currentStep / totalSteps) * 100}%` }}
+            className={`bg-blue-600 h-2 rounded-full transition-all duration-300 ${
+              (currentStep / totalSteps) * 100 <= 25 ? 'progress-bar-25' :
+              (currentStep / totalSteps) * 100 <= 50 ? 'progress-bar-50' :
+              (currentStep / totalSteps) * 100 <= 75 ? 'progress-bar-75' :
+              'progress-bar-100'
+            }`}
           />
         </div>
       </div>
@@ -722,6 +784,14 @@ export default function BeneficiaryForm({
           </div>
         </div>
       </form>
+
+      {/* Kamera Tarama Modal */}
+      <CameraScanner
+        isOpen={isCameraOpen}
+        onClose={() => setIsCameraOpen(false)}
+        onScanComplete={handleOCRResult}
+        title="Kimlik/Pasaport Tarama"
+      />
     </div>
   );
 }

@@ -207,7 +207,6 @@ export function Sidebar({
         { name: 'Dava Takipleri', href: '/hukuki/davalar' },
         { name: 'Hukuki Belgeler', href: '/hukuki/belgeler' },
         { name: 'Hukuki Raporlar', href: '/hukuki/raporlar' },
-        { name: 'Barolar ile İlişkiler', href: '/hukuki/barolar' },
       ],
       // badge: 1 removed - no fake notification
     },
@@ -219,16 +218,6 @@ export function Sidebar({
         { name: 'Kullanıcılar', href: '/user-management/users' },
         { name: 'Roller', href: '/user-management/roles' },
         { name: 'İzinler', href: '/user-management/permissions' },
-      ],
-    },
-    {
-      id: 'bulk-import',
-      name: 'Toplu Veri İçe Aktarma',
-      icon: <Database className="w-5 h-5" />,
-      subPages: [
-        { name: 'Veri İçe Aktarma', href: '/bulk-import' },
-        { name: 'İçe Aktarma Geçmişi', href: '/bulk-import/history' },
-        { name: 'Şablonlar', href: '/bulk-import/templates' },
       ],
     },
     // Conditionally show reporting module based on permissions
@@ -487,11 +476,19 @@ export function Sidebar({
                             onClick={() => {
                               handleSubPageClick(subPage.href, module.id);
                             }}
-                            className="w-full text-left px-3 py-2.5 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-all duration-200 group flex items-center justify-between animate-in fade-in-0 slide-in-from-left-1"
-                            style={{
-                              animationDelay: `${index * 50}ms`,
-                              animationFillMode: 'both',
-                            }}
+                            className={`w-full text-left px-3 py-2.5 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-all duration-200 group flex items-center justify-between animate-in fade-in-0 slide-in-from-left-1 animate-fill-both ${
+                              index === 0 ? 'animate-delay-0' :
+                              index === 1 ? 'animate-delay-50' :
+                              index === 2 ? 'animate-delay-100' :
+                              index === 3 ? 'animate-delay-150' :
+                              index === 4 ? 'animate-delay-200' :
+                              index === 5 ? 'animate-delay-250' :
+                              index === 6 ? 'animate-delay-300' :
+                              index === 7 ? 'animate-delay-350' :
+                              index === 8 ? 'animate-delay-400' :
+                              index === 9 ? 'animate-delay-450' :
+                              'animate-delay-500'
+                            }`}
                           >
                             <span className="font-medium">{subPage.name}</span>
                             <div className="w-1.5 h-1.5 rounded-full bg-gray-400 opacity-0 group-hover:opacity-100 transition-all duration-200 transform group-hover:scale-110" />
