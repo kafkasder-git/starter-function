@@ -94,14 +94,7 @@ const categoryMapping = {
   diğer: { label: 'Diğer Yardım', icon: '📦', color: 'bg-gray-100 text-gray-800' },
 } as const;
 
-// Aid type mapping
-const aidTypeMapping = {
-  'tek seferlik': { label: 'Tek Seferlik', icon: '⚡' },
-  'aylık paket': { label: 'Aylık Paket', icon: '📦' },
-  'acil yardım': { label: 'Acil Yardım', icon: '🚨' },
-  'sürekli destek': { label: 'Sürekli Destek', icon: '🔄' },
-  'proje bazlı': { label: 'Proje Bazlı', icon: '📋' },
-} as const;
+// Aid type mapping removed - not used in current implementation
 
 interface BeneficiariesPageProps {
   onNavigateToDetail?: (beneficiaryId: string) => void;
@@ -177,7 +170,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
       const result = await ihtiyacSahipleriService.getIhtiyacSahipleri(currentPage, pageSize, {
         searchTerm: filters.searchTerm,
         sehir: filters.city,
-        sortBy: sortBy,
+        sortBy,
       });
 
       if (result.error) {

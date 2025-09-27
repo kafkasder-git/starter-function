@@ -23,7 +23,6 @@ import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 // SearchInput removed - using basic search instead
 import { motion } from 'motion/react';
-import { toast } from 'sonner';
 import { useUserPreferences } from '../hooks/useLocalStorage';
 import { StoreErrorBoundary } from './StoreErrorBoundary';
 import { NotificationBell } from './notifications/NotificationBell';
