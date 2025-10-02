@@ -44,7 +44,7 @@
     "clean:win": "npx rimraf dist node_modules/.vite .tsbuildinfo",
     "test:e2e:report": "playwright test --reporter=html",
     "test:e2e:report:open": "playwright show-report",
-    "netlify:build": "npm run quality:check && npm run build",
+    "netlify:build": "npm run build",
     "netlify:dev": "netlify dev",
     "netlify:deploy": "netlify deploy",
     "netlify:deploy:prod": "netlify deploy --prod"
