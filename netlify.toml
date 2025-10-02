@@ -5,6 +5,9 @@
 [build.environment]
   NODE_VERSION = "18"
   NPM_VERSION = "9"
+  SECRETS_SCAN_ENABLED = "true"
+  SECRETS_SCAN_OMIT_PATHS = "dist/js/,dist/css/,node_modules/,.git/"
+  SECRETS_SCAN_OMIT_KEYS = "VITE_APP_NAME,VITE_APP_VERSION,VITE_APP_MODE"
 
 # SPA routing için redirect
 [[redirects]]
@@ -92,8 +95,3 @@
 [functions]
   directory = "netlify/functions"
 
-# Secrets scanning configuration
-[build.environment]
-  SECRETS_SCAN_ENABLED = "true"
-  SECRETS_SCAN_OMIT_PATHS = "dist/js/,dist/css/,node_modules/,.git/"
-  SECRETS_SCAN_OMIT_KEYS = "VITE_APP_NAME,VITE_APP_VERSION,VITE_APP_MODE"
