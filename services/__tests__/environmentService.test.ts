@@ -125,7 +125,7 @@ describe('Environment Service', () => {
     it('should throw error for hardcoded credentials', () => {
       const dangerousEnv = {
         ...mockEnv,
-        VITE_SUPABASE_URL: 'https://gyburnfaszhxcxdnwogj.supabase.co',
+        VITE_SUPABASE_URL: 'https://hardcoded-test-url.supabase.co',
         VITE_SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.test',
       };
 

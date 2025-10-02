@@ -2,54 +2,42 @@
 
 ## Project Overview
 
-This is a modern association management system (Dernek Yönetim Sistemi) built
-with React 18, TypeScript, Supabase, and Vite. It's a comprehensive
-Turkish-language system for managing non-profit associations with modules for
-members, donations, beneficiaries, campaigns, and more.
+This is a modern association management system (Dernek Yönetim Sistemi) built with React 18, TypeScript, Supabase, and Vite. It's a comprehensive Turkish-language system for managing non-profit associations with modules for members, donations, beneficiaries, campaigns, and more.
 
 ## Architecture Patterns
 
 ### State Management with Zustand
 
-- **Store Pattern**: All stores in `stores/` use Zustand with middleware:
-  `devtools`, `persist`, `subscribeWithSelector`, `immer`
-- **Store Structure**: Each store exports `useXStore`, `xSelectors`, and
-  `xStore` (see `stores/index.ts`)
-- **Key Stores**: `authStore` (authentication), `uiStore` (UI state),
-  `notificationStore` (notifications)
-- **Initialization**: Use `useStoreInitialization()` hook for proper async store
-  setup
+- **Store Pattern**: All stores in `stores/` use Zustand with middleware: `devtools`, `persist`, `subscribeWithSelector`, `immer`
+- **Store Structure**: Each store exports `useXStore`, `xSelectors`, and `xStore` (see `stores/index.ts`)
+- **Key Stores**: `authStore` (authentication), `uiStore` (UI state), `notificationStore` (notifications)
+- **Initialization**: Use `useStoreInitialization()` hook for proper async store setup with graceful error handling
 
 ### Service Layer Architecture
 
-- **Base Service Pattern**: All services extend
-  `BaseService<T, TInsert, TUpdate, TFilters>` from `services/baseService.ts`
-- **Entity Pattern**: Database entities implement `BaseEntity` interface with
-  `id`, `created_at`, `updated_at`
-- **Service Location**: Domain services in `services/` (e.g.,
-  `membersService.ts`, `donationsService.ts`)
-- **API Pattern**: Services return `ApiResponse<T>` or `PaginatedResponse<T>`
-  types
-- **Direct Supabase Usage**: Some services like `MembersService` use Supabase
-  directly instead of extending BaseService for specific query optimizations
+- **Base Service Pattern**: All services extend `BaseService<T, TInsert, TUpdate, TFilters>` from `services/baseService.ts`
+- **Entity Pattern**: Database entities implement `BaseEntity` interface with `id`, `created_at`, `updated_at`
+- **Service Location**: Domain services in `services/` (e.g., `membersService.ts`, `donationsService.ts`)
+- **API Pattern**: Services return `ApiResponse<T>` or `PaginatedResponse<T>` types
+- **Direct Supabase Usage**: Some services like `MembersService` use Supabase directly instead of extending BaseService for specific query optimizations
 
 ### Supabase Integration
 
 - **Client Setup**: Main client in `lib/supabase.ts` with auth config and RLS
 - **Admin Client**: `supabaseAdmin` for RLS bypass operations
 - **Table Constants**: Use `TABLES` constant for table names
-- **Environment**: Centralized env management in `lib/environment.ts`
+- **Environment**: Centralized env management in `lib/environment.ts` with comprehensive validation
+- **Safety**: Environment validation includes hardcoded credential detection for security
 
 ## Development Workflows
 
 ### Component Development
 
-- **Location**: Components organized by domain in `components/` (auth, forms,
-  pages, ui, charts, etc.)
-- **Patterns**: Use React.memo for performance, lazy loading for charts
-  (`components/charts/LazyCharts.tsx`)
-- **UI Components**: Radix UI + Tailwind CSS for consistent design system
-- **Mobile Support**: Mobile-specific components in `components/mobile/`
+- **Location**: Components organized by domain in `components/` (auth, forms, pages, ui, charts, etc.)
+- **Patterns**: Use React.memo for performance, lazy loading for charts (`components/charts/LazyCharts.tsx`)
+- **UI Components**: Radix UI + Tailwind CSS for consistent desktop-first design system
+- **Responsive Support**: Components in `components/mobile/` provide mobile fallbacks when needed
+- **Desktop Focus**: Primary workflows designed for desktop users with keyboard shortcuts and complex interactions
 
 ### Testing Strategy
 
@@ -78,20 +66,29 @@ members, donations, beneficiaries, campaigns, and more.
 
 ### TypeScript Patterns
 
-- **Pragmatic Strict Mode**: Strict mode enabled but selectively relaxed:
-  `noImplicitAny: false`, `noUnusedLocals: false`, `noUnusedParameters: false`
-  for development productivity while maintaining type safety
+- **Pragmatic Strict Mode**: Strict mode enabled but selectively relaxed: `noImplicitAny: false`, `noUnusedLocals: false`, `noUnusedParameters: false` for development productivity while maintaining type safety
 - **Interface Naming**: Entity interfaces match database table names
-- **Generic Services**: Heavily typed service layer with generics for
-  reusability
+- **Generic Services**: Heavily typed service layer with generics for reusability
+- **Build Performance**: Incremental compilation with `.tsbuildinfo` and `assumeChangesOnlyAffectDirectDependencies`
+
+### Web-First Architecture with Mobile Support
+
+- **Desktop-Optimized Components**: Primary focus on desktop layouts and interactions in `components/pages/` and `components/ui/`
+- **Responsive Design**: Progressive enhancement from desktop to mobile using Tailwind responsive utilities
+- **Mobile Enhancement Hooks**: Optional mobile optimizations available in `hooks/useAdvancedMobile.ts`, `hooks/useMobileFormOptimized.ts`, and `hooks/useMobilePerformance.ts`
+- **Adaptive UI**: Components adapt gracefully to smaller screens but are optimized for desktop workflows
+- **Touch Support**: Basic touch interactions for mobile users, with full desktop mouse/keyboard functionality as primary
 
 ### Performance Optimizations
 
-- **Memoization**: Strategic use of useMemo/useCallback in performance-critical
-  components
+- **Memoization**: Strategic use of useMemo/useCallback in performance-critical components
 - **Code Splitting**: Route-based and component-based lazy loading
-- **Bundle Analysis**: `npm run analyze` for bundle size monitoring
+- **Bundle Analysis**: `npm run analyze` generates `dist/bundle-analysis.html`
+- **Performance Monitoring**: Core Web Vitals tracking enabled
 - **Chunk Splitting**: Manual chunks in `vite.config.ts` for vendor separation
+- **Desktop Performance**: Optimized for desktop browsers with full feature sets
+- **Mobile Performance**: Adaptive settings based on device capability detection (`useMobilePerformance`) as enhancement
+- **Request Frame Optimization**: `usePerformanceOptimization` hook with `requestAnimationFrame` batching
 
 ### Turkish Language Support
 
@@ -101,10 +98,10 @@ members, donations, beneficiaries, campaigns, and more.
 
 ### Environment & Security
 
-- **Environment Validation**: `lib/environment.ts` includes comprehensive
-  validation with hardcoded credential detection
+- **Environment Validation**: `lib/environment.ts` includes comprehensive validation with hardcoded credential detection for security  
 - **Security Checks**: CSRF protection, XSS prevention, input sanitization
 - **RLS Enforcement**: All Supabase tables use Row Level Security
+- **Test Mode Handling**: Environment validation is relaxed in test mode with default values
 
 ## Development Commands & Workflows
 
@@ -132,6 +129,7 @@ npm run analyze         # Generate bundle analysis report
 - **PWA Manifest**: Includes Turkish shortcuts for key features
 - **Terser Optimization**: Aggressive minification with console/debugger removal
 - **Asset Optimization**: 4KB inlining limit, hashed filenames
+- **Bundle Visualization**: `npm run analyze` generates detailed bundle analysis report
 
 ### ESLint Configuration
 
@@ -182,13 +180,16 @@ class MyService extends BaseService<Entity, InsertType, UpdateType, Filters> {
 ### Page Components (`components/pages/`)
 - **Domain Organization**: 25+ specialized pages (MembersPage, DonationsPage, etc.)
 - **Layout Wrapper**: `PageLayout` component for consistent structure
-- **Mobile Responsive**: Touch-optimized interactions
+- **Desktop-First Design**: Optimized for desktop workflows with keyboard navigation and complex data tables
+- **Mobile Responsive**: Touch-optimized interactions as progressive enhancement
 
 ### Hook Patterns (`hooks/`)
 - **Domain Hooks**: `useMembers`, `useDonations`, `useBeneficiaries`
 - **Performance Hooks**: `useDebounce`, `useInfiniteScroll`, `usePagination`
-- **Mobile Hooks**: `useTouchDevice`, `useMobilePerformance`
+- **Desktop Optimization**: Primary focus on desktop workflows and keyboard interactions
+- **Mobile Enhancement**: Optional `useTouchDevice`, `useMobilePerformance`, `useAdvancedMobile`, `useMobileFormOptimized` for mobile users
 - **Data Hooks**: `useSupabaseData`, `useSupabaseConnection`
+- **Optimization Hooks**: `usePerformanceOptimization` with requestAnimationFrame batching
 
 ## Security Considerations
 

@@ -6,11 +6,12 @@
 
 
 # Environment variables (KRİTİK - GÜVENLİK!)
-.env.
-
+.env
+.env.local
 .env.development
 .env.production
 .env.test
+.env.*.local
 
 # Environment variables backup
 .env.backup

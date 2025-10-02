@@ -195,7 +195,7 @@ Bu eksiklikler giderilmezse uygulama çalışmayacaktır!
   // Test ortamında hardcoded credentials check'ini disable et
   if (mode !== 'test') {
     if (
-      supabaseUrl.includes('gyburnfaszhxcxdnwogj') ||
+      supabaseUrl.includes('hardcoded-test-url') ||
       supabaseKey.includes('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9')
     ) {
       throw new Error(`

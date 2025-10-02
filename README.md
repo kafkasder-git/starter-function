@@ -142,16 +142,25 @@ Bu proje GitHub Copilot ile optimize edilmiştir. Detaylı kullanım için:
 
 ## 🚀 Deployment
 
-### Vercel (Önerilen)
+### Netlify (Önerilen)
 
 ```bash
-# Vercel CLI ile
-npm i -g vercel
-vercel
+# 1. Environment variables ayarla (Netlify Dashboard'da)
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 
-# GitHub Actions ile otomatik
+# 2. Netlify CLI ile deploy
+npm i -g netlify-cli
+netlify login
+netlify deploy --prod
+
+# 3. GitHub Integration ile otomatik
 git push origin main
 ```
+
+**⚠️ ÖNEMLİ:** `.env` dosyalarını repository'ye commit etmeyin! Environment variables'ları Netlify Dashboard'da ayarlayın.
+
+**Detaylı Netlify deployment rehberi:** [NETLIFY_DEPLOYMENT.md](./NETLIFY_DEPLOYMENT.md)
 
 ### Environment Variables
 
@@ -329,7 +338,7 @@ dosyasına bakın.
 ## 🙏 Teşekkürler
 
 - **Supabase** - Backend infrastructure
-- **Vercel** - Deployment platform
+- **Netlify** - Deployment platform
 - **GitHub** - Version control ve CI/CD
 - **Open Source Community** - Kullanılan kütüphaneler
 
