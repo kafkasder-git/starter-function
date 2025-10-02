@@ -5,6 +5,7 @@
 [build.environment]
   NODE_VERSION = "20"
   NPM_VERSION = "10"
+  NODE_ENV = "production"
   SECRETS_SCAN_ENABLED = "true"
   SECRETS_SCAN_OMIT_PATHS = "dist/js/,dist/css/,node_modules/,.git/"
   SECRETS_SCAN_OMIT_KEYS = "VITE_APP_NAME,VITE_APP_VERSION,VITE_APP_MODE"
