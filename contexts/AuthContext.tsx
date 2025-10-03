@@ -5,8 +5,7 @@
  * @version 1.0.0
  */
 
-import type { ReactNode } from 'react';
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { toast } from 'sonner';
 import type { AuthContextType, AuthState, LoginCredentials, Permission , UserRole } from '../types/auth';
 
@@ -91,7 +90,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     };
   }, []);
 
-  const login = async (credentials: LoginCredentials): Promise<void> => {
+  const login = async (_credentials: LoginCredentials): Promise<void> => {
     setAuthState((prev) => ({ ...prev, isLoading: true, error: null }));
 
     try {

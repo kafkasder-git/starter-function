@@ -7,8 +7,7 @@
 
 // Gelişmiş Raporlama Sistemi - Export Utility Fonksiyonları
 
-import type { ChartConfig, AnalyticsData } from '../types/reporting';
-import { ExportFormat } from '../types/reporting';
+import { ExportFormat, type ChartConfig, type AnalyticsData } from '../types/reporting';
 
 import { logger } from '../lib/logging/logger';
 // Chart data interfaces
@@ -532,7 +531,7 @@ export class DataFormattingUtils {
     value: string | number | boolean | Date | null | undefined,
     options: { dateFormat?: string; numberFormat?: string },
   ): string {
-    if (value === null ?? value === undefined) {
+    if (value === null || value === undefined) {
       return '';
     }
 
@@ -549,9 +548,9 @@ export class DataFormattingUtils {
 
   private static formatExcelValue(
     value: string | number | boolean | Date | null | undefined,
-    options: { dateFormat?: string; numberFormat?: string; currencySymbol?: string },
+    _options: { dateFormat?: string; numberFormat?: string; currencySymbol?: string },
   ): string | number | Date {
-    if (value === null ?? value === undefined) {
+    if (value === null || value === undefined) {
       return '';
     }
 

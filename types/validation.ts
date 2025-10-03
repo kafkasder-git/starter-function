@@ -121,7 +121,7 @@ export const ValidationRules = {
     pattern: /^\d+$/,
     custom: (value) => {
       if (!value) return true;
-      return /^\d+$/.test(value.toString()) ?? message;
+      return /^\d+$/.test(value.toString()) || message;
     },
   }),
 
@@ -130,7 +130,7 @@ export const ValidationRules = {
     custom: (value) => {
       if (!value) return true;
       const decimalRegex = /^[0-9]{1,15}(?:\.[0-9]{1,2})?$/;
-      return decimalRegex.test(value.toString()) ?? message;
+      return decimalRegex.test(value.toString()) || message;
     },
   }),
 
@@ -140,7 +140,7 @@ export const ValidationRules = {
       if (!value) return true;
       const moneyRegex = /^[0-9]{1,15}(?:\.[0-9]{1,2})?$/;
       const numValue = parseFloat(value.toString());
-      return (moneyRegex.test(value.toString()) && !isNaN(numValue) && numValue >= 0) ?? message;
+      return (moneyRegex.test(value.toString()) && !isNaN(numValue) && numValue >= 0) || message;
     },
   }),
 
@@ -152,8 +152,8 @@ export const ValidationRules = {
       const numValue = parseFloat(value.toString());
       if (isNaN(numValue)) return 'Geçerli bir sayı girin';
       return (
-        (numValue >= min && numValue <= max) ??
-        message ??
+        (numValue >= min && numValue <= max) ||
+        message ||
         `${min} ile ${max} arasında bir değer girin`
       );
     },
@@ -164,8 +164,8 @@ export const ValidationRules = {
       if (!value) return true;
       const inputDate = new Date(value);
       return (
-        inputDate > afterDate ??
-        message ??
+        inputDate > afterDate ||
+        message ||
         `${afterDate.toLocaleDateString('tr-TR')} tarihinden sonra olmalıdır`
       );
     },
@@ -176,8 +176,8 @@ export const ValidationRules = {
       if (!value) return true;
       const inputDate = new Date(value);
       return (
-        inputDate < beforeDate ??
-        message ??
+        inputDate < beforeDate ||
+        message ||
         `${beforeDate.toLocaleDateString('tr-TR')} tarihinden önce olmalıdır`
       );
     },
