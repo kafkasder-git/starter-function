@@ -1,6 +1,6 @@
 /**
  * @fileoverview BursStudentsPage Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -55,7 +55,7 @@ interface StudentStats {
 
 /**
  * BursStudentsPage function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -197,24 +197,24 @@ export function BursStudentsPage() {
 
   const handleSubmitApplication = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.student_name || !formData.email || !formData.school) {
       toast.error('Öğrenci adı, e-posta ve okul alanları zorunludur');
       return;
     }
-    
+
     try {
       setIsSubmitting(true);
-      
+
       // TODO: Integrate with actual API
       // const result = await scholarshipService.createApplication(formData);
-      
+
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       toast.success('Burs başvurusu başarıyla oluşturuldu!');
       setShowApplicationDialog(false);
-      
+
       // Reset form
       setFormData({
         student_name: '',
@@ -227,8 +227,7 @@ export function BursStudentsPage() {
         gpa: 0,
         notes: '',
       });
-      
-    } catch (error) {
+    } catch {
       toast.error('Başvuru oluşturulurken hata oluştu');
     } finally {
       setIsSubmitting(false);
@@ -242,28 +241,28 @@ export function BursStudentsPage() {
   const programs = [...new Set(students.map((s) => s.program))];
 
   return (
-    <div className="p-3 sm:p-6 lg:p-8 space-y-6 lg:space-y-8 bg-slate-50/50 min-h-full safe-area">
+    <div className="safe-area min-h-full space-y-6 bg-slate-50/50 p-3 sm:p-6 lg:space-y-8 lg:p-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1 sm:space-y-2">
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 flex items-center gap-3">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-amber-600 to-orange-700 rounded-xl flex items-center justify-center">
-              <GraduationCap className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+          <h1 className="flex items-center gap-3 text-2xl font-bold text-slate-800 sm:text-3xl">
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-amber-600 to-orange-700 sm:h-10 sm:w-10">
+              <GraduationCap className="h-5 w-5 text-white sm:h-6 sm:w-6" />
             </div>
             Burs Öğrencileri
           </h1>
-          <p className="text-sm sm:text-base text-slate-600">
+          <p className="text-sm text-slate-600 sm:text-base">
             Burslu öğrencileri yönetin ve takip edin
           </p>
         </div>
 
         <div className="flex items-center gap-2">
           <Button onClick={handleBulkAction} variant="outline" size="sm" className="hidden sm:flex">
-            <FileText className="w-4 h-4 mr-2" />
+            <FileText className="mr-2 h-4 w-4" />
             Raporlar
           </Button>
           <Button onClick={handleNewStudent} size="sm">
-            <Plus className="w-4 h-4 mr-2" />
+            <Plus className="mr-2 h-4 w-4" />
             Yeni Öğrenci
           </Button>
         </div>
@@ -272,25 +271,25 @@ export function BursStudentsPage() {
       {/* Statistics Cards */}
       <ResponsiveCardGrid cols={{ default: 2, sm: 4 }} gap="sm">
         <MobileInfoCard
-          icon={<BookOpen className="w-5 h-5" />}
+          icon={<BookOpen className="h-5 w-5" />}
           title="Toplam Öğrenci"
           value={stats.total.toString()}
           color="text-blue-600"
         />
         <MobileInfoCard
-          icon={<Award className="w-5 h-5" />}
+          icon={<Award className="h-5 w-5" />}
           title="Aktif Öğrenci"
           value={stats.active.toString()}
           color="text-green-600"
         />
         <MobileInfoCard
-          icon={<TrendingUp className="w-5 h-5" />}
+          icon={<TrendingUp className="h-5 w-5" />}
           title="Mezun Sayısı"
           value={stats.graduated.toString()}
           color="text-purple-600"
         />
         <MobileInfoCard
-          icon={<Calendar className="w-5 h-5" />}
+          icon={<Calendar className="h-5 w-5" />}
           title="Aylık Toplam"
           value={`₺${stats.totalAmount.toLocaleString()}`}
           color="text-amber-600"
@@ -300,10 +299,10 @@ export function BursStudentsPage() {
       {/* Filters */}
       <Card>
         <CardContent className="p-4 sm:p-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <div className="sm:col-span-2 lg:col-span-2">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400" />
                 <Input
                   placeholder="Burslu öğrenci, okul veya program ara..."
                   value={searchQuery}
@@ -366,7 +365,7 @@ export function BursStudentsPage() {
                   transition={{ delay: index * 0.05 }}
                 >
                   <TouchActionCard
-                    icon={<GraduationCap className="w-5 h-5" />}
+                    icon={<GraduationCap className="h-5 w-5" />}
                     title={student.name}
                     description={`${student.program} • ${student.school}`}
                     onClick={() => {
@@ -382,13 +381,13 @@ export function BursStudentsPage() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-slate-200">
-                    <th className="text-left py-3 px-4 font-medium text-slate-700">Öğrenci</th>
-                    <th className="text-left py-3 px-4 font-medium text-slate-700">Okul</th>
-                    <th className="text-left py-3 px-4 font-medium text-slate-700">Program</th>
-                    <th className="text-left py-3 px-4 font-medium text-slate-700">Burs</th>
-                    <th className="text-left py-3 px-4 font-medium text-slate-700">GPA</th>
-                    <th className="text-left py-3 px-4 font-medium text-slate-700">Durum</th>
-                    <th className="text-left py-3 px-4 font-medium text-slate-700">İşlemler</th>
+                    <th className="px-4 py-3 text-left font-medium text-slate-700">Öğrenci</th>
+                    <th className="px-4 py-3 text-left font-medium text-slate-700">Okul</th>
+                    <th className="px-4 py-3 text-left font-medium text-slate-700">Program</th>
+                    <th className="px-4 py-3 text-left font-medium text-slate-700">Burs</th>
+                    <th className="px-4 py-3 text-left font-medium text-slate-700">GPA</th>
+                    <th className="px-4 py-3 text-left font-medium text-slate-700">Durum</th>
+                    <th className="px-4 py-3 text-left font-medium text-slate-700">İşlemler</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -400,11 +399,11 @@ export function BursStudentsPage() {
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: index * 0.05 }}
-                        className="border-b border-slate-100 hover:bg-slate-50 transition-colors"
+                        className="border-b border-slate-100 transition-colors hover:bg-slate-50"
                       >
-                        <td className="py-4 px-4">
+                        <td className="px-4 py-4">
                           <div className="flex items-center gap-3">
-                            <Avatar className="w-10 h-10">
+                            <Avatar className="h-10 w-10">
                               <AvatarImage src={student.avatar} />
                               <AvatarFallback className="bg-gradient-to-br from-amber-600 to-orange-700 text-white">
                                 {student.name
@@ -419,14 +418,14 @@ export function BursStudentsPage() {
                             </div>
                           </div>
                         </td>
-                        <td className="py-4 px-4 text-slate-700">{student.school}</td>
-                        <td className="py-4 px-4 text-slate-700">{student.program}</td>
-                        <td className="py-4 px-4">
+                        <td className="px-4 py-4 text-slate-700">{student.school}</td>
+                        <td className="px-4 py-4 text-slate-700">{student.program}</td>
+                        <td className="px-4 py-4">
                           <span className="font-semibold text-green-600">
                             ₺{student.scholarshipAmount.toLocaleString()}
                           </span>
                         </td>
-                        <td className="py-4 px-4">
+                        <td className="px-4 py-4">
                           <span
                             className={`font-medium ${
                               student.gpa >= 3.5
@@ -439,10 +438,10 @@ export function BursStudentsPage() {
                             {student.gpa.toFixed(2)}
                           </span>
                         </td>
-                        <td className="py-4 px-4">
+                        <td className="px-4 py-4">
                           <Badge variant={statusConfig.variant}>{statusConfig.label}</Badge>
                         </td>
-                        <td className="py-4 px-4">
+                        <td className="px-4 py-4">
                           <Button
                             variant="ghost"
                             size="sm"
@@ -450,7 +449,7 @@ export function BursStudentsPage() {
                               handleViewStudent(student.id);
                             }}
                           >
-                            <Eye className="w-4 h-4" />
+                            <Eye className="h-4 w-4" />
                           </Button>
                         </td>
                       </motion.tr>
@@ -465,10 +464,10 @@ export function BursStudentsPage() {
 
       {/* Application Dialog */}
       <Dialog open={showApplicationDialog} onOpenChange={setShowApplicationDialog}>
-        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[600px]">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <GraduationCap className="w-5 h-5" />
+              <GraduationCap className="h-5 w-5" />
               Yeni Burs Başvurusu
             </DialogTitle>
             <DialogDescription>
@@ -485,14 +484,16 @@ export function BursStudentsPage() {
               <Input
                 id="student_name"
                 value={formData.student_name}
-                onChange={(e) => setFormData({ ...formData, student_name: e.target.value })}
+                onChange={(e) => {
+                  setFormData({ ...formData, student_name: e.target.value });
+                }}
                 placeholder="Öğrencinin tam adı"
                 required
               />
             </div>
 
             {/* Contact Information */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="email">
                   E-posta <span className="text-red-500">*</span>
@@ -501,7 +502,9 @@ export function BursStudentsPage() {
                   id="email"
                   type="email"
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, email: e.target.value });
+                  }}
                   placeholder="ogrenci@email.com"
                   required
                 />
@@ -512,7 +515,9 @@ export function BursStudentsPage() {
                   id="phone"
                   type="tel"
                   value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, phone: e.target.value });
+                  }}
                   placeholder="05XX XXX XX XX"
                 />
               </div>
@@ -526,19 +531,23 @@ export function BursStudentsPage() {
               <Input
                 id="school"
                 value={formData.school}
-                onChange={(e) => setFormData({ ...formData, school: e.target.value })}
+                onChange={(e) => {
+                  setFormData({ ...formData, school: e.target.value });
+                }}
                 placeholder="Üniversite veya okul adı"
                 required
               />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="grade">Sınıf</Label>
                 <Input
                   id="grade"
                   value={formData.grade}
-                  onChange={(e) => setFormData({ ...formData, grade: e.target.value })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, grade: e.target.value });
+                  }}
                   placeholder="Örn: 3. Sınıf"
                 />
               </div>
@@ -547,23 +556,28 @@ export function BursStudentsPage() {
                 <Input
                   id="program"
                   value={formData.program}
-                  onChange={(e) => setFormData({ ...formData, program: e.target.value })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, program: e.target.value });
+                  }}
                   placeholder="Örn: Bilgisayar Mühendisliği"
                 />
               </div>
             </div>
 
             {/* Scholarship Details */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="scholarship_amount">Burs Tutarı (TL)</Label>
                 <Input
                   id="scholarship_amount"
                   type="number"
                   value={formData.scholarship_amount || ''}
-                  onChange={(e) =>
-                    setFormData({ ...formData, scholarship_amount: parseFloat(e.target.value) || 0 })
-                  }
+                  onChange={(e) => {
+                    setFormData({
+                      ...formData,
+                      scholarship_amount: parseFloat(e.target.value) || 0,
+                    });
+                  }}
                   placeholder="1500"
                   min="0"
                 />
@@ -575,7 +589,9 @@ export function BursStudentsPage() {
                   type="number"
                   step="0.01"
                   value={formData.gpa || ''}
-                  onChange={(e) => setFormData({ ...formData, gpa: parseFloat(e.target.value) || 0 })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, gpa: parseFloat(e.target.value) || 0 });
+                  }}
                   placeholder="3.45"
                   min="0"
                   max="4"
@@ -589,18 +605,22 @@ export function BursStudentsPage() {
               <Textarea
                 id="notes"
                 value={formData.notes}
-                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                onChange={(e) => {
+                  setFormData({ ...formData, notes: e.target.value });
+                }}
                 placeholder="Ek bilgiler ve notlar"
                 rows={3}
               />
             </div>
 
             {/* Action Buttons */}
-            <div className="flex justify-end gap-2 pt-4 border-t">
+            <div className="flex justify-end gap-2 border-t pt-4">
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => setShowApplicationDialog(false)}
+                onClick={() => {
+                  setShowApplicationDialog(false);
+                }}
                 disabled={isSubmitting}
               >
                 İptal

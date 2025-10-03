@@ -1,6 +1,6 @@
 /**
  * @fileoverview MembersPage Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -30,7 +30,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { DesktopActionButtons, DesktopFilters, DesktopStatsCard } from '../ui/desktop-table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../ui/dialog';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Textarea } from '../ui/textarea';
@@ -53,7 +53,7 @@ const membershipTypeMapping = {
 
 /**
  * MembersPage function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -73,7 +73,7 @@ export function MembersPage() {
     inactive: 0,
     suspended: 0,
   });
-  
+
   // Dialog state for creating new member
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -140,31 +140,31 @@ export function MembersPage() {
   // Handle form submission for creating new member
   const handleCreateMember = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Basic validation
     if (!formData.first_name || !formData.last_name) {
       toast.error('Ad ve soyad alanları zorunludur');
       return;
     }
-    
+
     if (!formData.email || !formData.phone) {
       toast.error('E-posta ve telefon alanları zorunludur');
       return;
     }
-    
+
     try {
       setIsSubmitting(true);
-      
+
       const result = await membersService.createMember(formData as any);
-      
+
       if (result.error) {
         toast.error(result.error);
         return;
       }
-      
+
       toast.success('Üye başarıyla oluşturuldu!');
       setShowCreateDialog(false);
-      
+
       // Reset form
       setFormData({
         first_name: '',
@@ -177,11 +177,10 @@ export function MembersPage() {
         membership_status: 'active',
         notes: '',
       });
-      
+
       // Reload members list
       await loadMembers();
       await loadStats();
-      
     } catch (error) {
       logger.error('Error creating member:', error);
       toast.error('Üye oluşturulurken hata oluştu');
@@ -250,13 +249,15 @@ export function MembersPage() {
         <DesktopActionButtons
           primaryAction={{
             label: 'Yeni Üye Ekle',
-            icon: <Plus className="w-4 h-4" />,
-            onClick: () => setShowCreateDialog(true),
+            icon: <Plus className="h-4 w-4" />,
+            onClick: () => {
+              setShowCreateDialog(true);
+            },
           }}
           secondaryActions={[
             {
               label: 'Dışa Aktar',
-              icon: <Download className="w-4 h-4" />,
+              icon: <Download className="h-4 w-4" />,
               onClick: () => toast.info('Dışa aktarma özelliği yakında eklenecek'),
               variant: 'outline',
             },
@@ -264,14 +265,14 @@ export function MembersPage() {
         />
       }
     >
-      <div className="p-6 space-y-6">
+      <div className="space-y-6 p-6">
         {/* Desktop Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
           <DesktopStatsCard
             title="Toplam Üye"
             value={stats.total}
             subtitle="Kayıtlı üye sayısı"
-            icon={<Users className="w-4 h-4" />}
+            icon={<Users className="h-4 w-4" />}
             color="blue"
             trend={{ value: '+%12 bu ay', positive: true }}
           />
@@ -280,7 +281,7 @@ export function MembersPage() {
             title="Aktif Üye"
             value={stats.active}
             subtitle="Aktif durumda"
-            icon={<UserCheck className="w-4 h-4" />}
+            icon={<UserCheck className="h-4 w-4" />}
             color="green"
             trend={{
               value: `%${Math.round((stats.active / stats.total) * 100) || 0} aktif`,
@@ -292,7 +293,7 @@ export function MembersPage() {
             title="Pasif Üye"
             value={stats.inactive}
             subtitle="Pasif durumda"
-            icon={<UserX className="w-4 h-4" />}
+            icon={<UserX className="h-4 w-4" />}
             color="gray"
             trend={{
               value: `%${Math.round((stats.inactive / stats.total) * 100) || 0} pasif`,
@@ -304,7 +305,7 @@ export function MembersPage() {
             title="Askıda"
             value={stats.suspended}
             subtitle="Askıya alınmış"
-            icon={<Clock className="w-4 h-4" />}
+            icon={<Clock className="h-4 w-4" />}
             color="yellow"
             trend={{
               value: stats.suspended > 0 ? 'Dikkat gerekli' : 'Temiz durum',
@@ -346,7 +347,7 @@ export function MembersPage() {
           </Select>
 
           <Button variant="outline" className="min-h-[44px] px-4 text-base">
-            <Filter className="w-4 h-4 mr-2" />
+            <Filter className="mr-2 h-4 w-4" />
             <span className="hidden sm:inline">Gelişmiş Filtre</span>
             <span className="sm:hidden">Filtre</span>
           </Button>
@@ -368,16 +369,16 @@ export function MembersPage() {
                   {Array.from({ length: 3 }).map((_, i) => (
                     <Card key={i} className="border border-gray-200">
                       <CardContent className="p-4">
-                        <div className="flex items-center gap-3 mb-3">
-                          <div className="w-12 h-12 bg-gray-200 rounded-full animate-pulse" />
+                        <div className="mb-3 flex items-center gap-3">
+                          <div className="h-12 w-12 animate-pulse rounded-full bg-gray-200" />
                           <div className="flex-1 space-y-2">
-                            <div className="h-4 bg-gray-200 rounded w-32 animate-pulse" />
-                            <div className="h-3 bg-gray-200 rounded w-24 animate-pulse" />
+                            <div className="h-4 w-32 animate-pulse rounded bg-gray-200" />
+                            <div className="h-3 w-24 animate-pulse rounded bg-gray-200" />
                           </div>
                         </div>
                         <div className="space-y-2">
-                          <div className="h-4 bg-gray-200 rounded w-40 animate-pulse" />
-                          <div className="h-4 bg-gray-200 rounded w-28 animate-pulse" />
+                          <div className="h-4 w-40 animate-pulse rounded bg-gray-200" />
+                          <div className="h-4 w-28 animate-pulse rounded bg-gray-200" />
                         </div>
                       </CardContent>
                     </Card>
@@ -388,13 +389,13 @@ export function MembersPage() {
                   {members.map((member) => (
                     <Card
                       key={member.id}
-                      className="border border-gray-200 hover:shadow-md transition-shadow"
+                      className="border border-gray-200 transition-shadow hover:shadow-md"
                     >
                       <CardContent className="p-4">
-                        <div className="flex justify-between items-start mb-3">
-                          <div className="flex items-center gap-3 flex-1">
-                            <Avatar className="w-12 h-12">
-                              <AvatarFallback className="bg-corporate text-white text-sm font-medium">
+                        <div className="mb-3 flex items-start justify-between">
+                          <div className="flex flex-1 items-center gap-3">
+                            <Avatar className="h-12 w-12">
+                              <AvatarFallback className="bg-corporate text-sm font-medium text-white">
                                 {member.name
                                   .split(' ')
                                   .map((n) => n[0])
@@ -402,9 +403,9 @@ export function MembersPage() {
                                   .slice(0, 2)}
                               </AvatarFallback>
                             </Avatar>
-                            <div className="flex-1 min-w-0">
-                              <h3 className="font-medium text-gray-900 truncate">{member.name}</h3>
-                              <p className="text-sm text-gray-600 truncate">{member.email}</p>
+                            <div className="min-w-0 flex-1">
+                              <h3 className="truncate font-medium text-gray-900">{member.name}</h3>
+                              <p className="truncate text-sm text-gray-600">{member.email}</p>
                               <p className="text-xs text-gray-500">
                                 {member.phone ?? 'Telefon yok'}
                               </p>
@@ -416,7 +417,7 @@ export function MembersPage() {
                           </div>
                         </div>
 
-                        <div className="flex justify-between items-center text-sm text-gray-500 mb-3">
+                        <div className="mb-3 flex items-center justify-between text-sm text-gray-500">
                           <span>{member.city ?? 'Şehir belirtilmemiş'}</span>
                           <span>{new Date(member.join_date).toLocaleDateString('tr-TR')}</span>
                         </div>
@@ -429,7 +430,7 @@ export function MembersPage() {
                             onClick={() => toast.info(`${member.name} detayları görüntüleniyor`)}
                             aria-label="Görüntüle"
                           >
-                            <Eye className="w-4 h-4" />
+                            <Eye className="h-4 w-4" />
                           </Button>
                           <Button
                             variant="ghost"
@@ -438,7 +439,7 @@ export function MembersPage() {
                             onClick={() => toast.error('Silme özelliği yakında eklenecek')}
                             aria-label="Sil"
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
                       </CardContent>
@@ -447,17 +448,17 @@ export function MembersPage() {
                 </div>
               ) : (
                 <div className="p-6 text-center">
-                  <Users className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                  <p className="text-gray-600 mb-2">Henüz üye kaydı bulunmuyor</p>
+                  <Users className="mx-auto mb-4 h-12 w-12 text-gray-300" />
+                  <p className="mb-2 text-gray-600">Henüz üye kaydı bulunmuyor</p>
                   <p className="text-sm text-gray-400">
-                    Yeni üye eklemek için "Yeni Üye" butonunu kullanın
+                    Yeni üye eklemek için &quot;Yeni Üye&quot; butonunu kullanın
                   </p>
                 </div>
               )}
             </div>
 
             {/* Desktop Table View */}
-            <div className="hidden sm:block overflow-x-auto">
+            <div className="hidden overflow-x-auto sm:block">
               <Table>
                 <TableHeader>
                   <TableRow className="bg-gray-50/50">
@@ -476,39 +477,39 @@ export function MembersPage() {
                       <TableRow key={i}>
                         <TableCell className="p-4">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-gray-200 rounded-full animate-pulse" />
+                            <div className="h-10 w-10 animate-pulse rounded-full bg-gray-200" />
                             <div className="space-y-2">
-                              <div className="h-4 bg-gray-200 rounded w-32 animate-pulse" />
-                              <div className="h-3 bg-gray-200 rounded w-24 animate-pulse" />
+                              <div className="h-4 w-32 animate-pulse rounded bg-gray-200" />
+                              <div className="h-3 w-24 animate-pulse rounded bg-gray-200" />
                             </div>
                           </div>
                         </TableCell>
                         <TableCell className="p-4">
-                          <div className="h-4 bg-gray-200 rounded w-40 animate-pulse" />
+                          <div className="h-4 w-40 animate-pulse rounded bg-gray-200" />
                         </TableCell>
                         <TableCell className="p-4">
-                          <div className="h-4 bg-gray-200 rounded w-28 animate-pulse" />
+                          <div className="h-4 w-28 animate-pulse rounded bg-gray-200" />
                         </TableCell>
                         <TableCell className="p-4">
-                          <div className="h-6 bg-gray-200 rounded w-20 animate-pulse" />
+                          <div className="h-6 w-20 animate-pulse rounded bg-gray-200" />
                         </TableCell>
                         <TableCell className="p-4">
-                          <div className="h-6 bg-gray-200 rounded w-16 animate-pulse" />
+                          <div className="h-6 w-16 animate-pulse rounded bg-gray-200" />
                         </TableCell>
                         <TableCell className="p-4">
-                          <div className="h-4 bg-gray-200 rounded w-24 animate-pulse" />
+                          <div className="h-4 w-24 animate-pulse rounded bg-gray-200" />
                         </TableCell>
                         <TableCell className="p-4">
                           <div className="flex justify-center gap-2">
-                            <div className="w-8 h-8 bg-gray-200 rounded animate-pulse" />
-                            <div className="w-8 h-8 bg-gray-200 rounded animate-pulse" />
+                            <div className="h-8 w-8 animate-pulse rounded bg-gray-200" />
+                            <div className="h-8 w-8 animate-pulse rounded bg-gray-200" />
                           </div>
                         </TableCell>
                       </TableRow>
                     ))
                   ) : (members || []).length > 0 ? (
                     (members || []).map((member) => (
-                      <TableRow key={member.id} className="hover:bg-gray-50/50 transition-colors">
+                      <TableRow key={member.id} className="transition-colors hover:bg-gray-50/50">
                         <TableCell className="p-4">
                           <div className="flex items-center gap-3">
                             <Avatar className="h-10 w-10">
@@ -519,7 +520,7 @@ export function MembersPage() {
                               </AvatarFallback>
                             </Avatar>
                             <div className="min-w-0 flex-1">
-                              <div className="font-medium truncate">
+                              <div className="truncate font-medium">
                                 {member.name ?? 'Bilinmeyen Üye'}
                               </div>
                             </div>
@@ -563,13 +564,18 @@ export function MembersPage() {
                   ) : (
                     <TableRow>
                       <TableCell colSpan={7} className="p-8 text-center">
-                        <UserPlus className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                        <p className="text-gray-600 mb-2">
-                            {(searchTerm || statusFilter !== 'all' || typeFilter !== 'all')
-                              ? 'Arama kriterlerinize uygun üye bulunamadı.'
-                              : 'Henüz hiç üye kaydı yok.'}
+                        <UserPlus className="mx-auto mb-4 h-12 w-12 text-gray-300" />
+                        <p className="mb-2 text-gray-600">
+                          {searchTerm || statusFilter !== 'all' || typeFilter !== 'all'
+                            ? 'Arama kriterlerinize uygun üye bulunamadı.'
+                            : 'Henüz hiç üye kaydı yok.'}
                         </p>
-                        <Button className="gap-2" onClick={() => setShowCreateDialog(true)}>
+                        <Button
+                          className="gap-2"
+                          onClick={() => {
+                            setShowCreateDialog(true);
+                          }}
+                        >
                           <Plus className="h-4 w-4" />
                           İlk Üyeyi Ekle
                         </Button>
@@ -598,12 +604,12 @@ export function MembersPage() {
                     onClick={() => {
                       setCurrentPage((prev) => Math.max(1, prev - 1));
                     }}
-                      disabled={currentPage === 1 || loading}
+                    disabled={currentPage === 1 || loading}
                     className="px-4"
                   >
                     Önceki
                   </Button>
-                  <span className="px-3 py-2 text-sm border rounded flex items-center bg-gray-50">
+                  <span className="flex items-center rounded border bg-gray-50 px-3 py-2 text-sm">
                     {currentPage} / {Math.ceil(totalCount / pageSize)}
                   </span>
                   <Button
@@ -626,10 +632,10 @@ export function MembersPage() {
 
       {/* Create Member Dialog */}
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[600px]">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <UserPlus className="w-5 h-5" />
+              <UserPlus className="h-5 w-5" />
               Yeni Üye Ekle
             </DialogTitle>
             <DialogDescription>
@@ -639,7 +645,7 @@ export function MembersPage() {
 
           <form onSubmit={handleCreateMember} className="space-y-4 py-4">
             {/* Name Fields */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="first_name">
                   Ad <span className="text-red-500">*</span>
@@ -647,7 +653,9 @@ export function MembersPage() {
                 <Input
                   id="first_name"
                   value={formData.first_name}
-                  onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, first_name: e.target.value });
+                  }}
                   placeholder="Üyenin adı"
                   required
                 />
@@ -659,7 +667,9 @@ export function MembersPage() {
                 <Input
                   id="last_name"
                   value={formData.last_name}
-                  onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, last_name: e.target.value });
+                  }}
                   placeholder="Üyenin soyadı"
                   required
                 />
@@ -667,7 +677,7 @@ export function MembersPage() {
             </div>
 
             {/* Contact Fields */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="email">
                   E-posta <span className="text-red-500">*</span>
@@ -676,7 +686,9 @@ export function MembersPage() {
                   id="email"
                   type="email"
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, email: e.target.value });
+                  }}
                   placeholder="ornek@email.com"
                   required
                 />
@@ -689,7 +701,9 @@ export function MembersPage() {
                   id="phone"
                   type="tel"
                   value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, phone: e.target.value });
+                  }}
                   placeholder="05XX XXX XX XX"
                   required
                 />
@@ -702,7 +716,9 @@ export function MembersPage() {
               <Textarea
                 id="address"
                 value={formData.address}
-                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                onChange={(e) => {
+                  setFormData({ ...formData, address: e.target.value });
+                }}
                 placeholder="Açık adres"
                 rows={2}
               />
@@ -713,18 +729,22 @@ export function MembersPage() {
               <Input
                 id="city"
                 value={formData.city}
-                onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                onChange={(e) => {
+                  setFormData({ ...formData, city: e.target.value });
+                }}
                 placeholder="Şehir"
               />
             </div>
 
             {/* Membership Details */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="membership_type">Üyelik Tipi</Label>
                 <Select
                   value={formData.membership_type}
-                  onValueChange={(value) => setFormData({ ...formData, membership_type: value })}
+                  onValueChange={(value) => {
+                    setFormData({ ...formData, membership_type: value });
+                  }}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Üyelik tipi seçin" />
@@ -743,7 +763,9 @@ export function MembersPage() {
                 <Label htmlFor="membership_status">Durum</Label>
                 <Select
                   value={formData.membership_status}
-                  onValueChange={(value) => setFormData({ ...formData, membership_status: value })}
+                  onValueChange={(value) => {
+                    setFormData({ ...formData, membership_status: value });
+                  }}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Durum seçin" />
@@ -763,18 +785,22 @@ export function MembersPage() {
               <Textarea
                 id="notes"
                 value={formData.notes}
-                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                onChange={(e) => {
+                  setFormData({ ...formData, notes: e.target.value });
+                }}
                 placeholder="Ek notlar veya açıklamalar"
                 rows={3}
               />
             </div>
 
             {/* Action Buttons */}
-            <div className="flex justify-end gap-2 pt-4 border-t">
+            <div className="flex justify-end gap-2 border-t pt-4">
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => setShowCreateDialog(false)}
+                onClick={() => {
+                  setShowCreateDialog(false);
+                }}
                 disabled={isSubmitting}
               >
                 İptal

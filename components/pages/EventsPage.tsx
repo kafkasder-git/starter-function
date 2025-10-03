@@ -1,6 +1,6 @@
 /**
  * @fileoverview EventsPage Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -34,12 +34,12 @@ interface Event {
 
 /**
  * EventsPage function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
 export function EventsPage() {
-  const [viewType, setViewType] = useState('list');
+  // const [viewType, setViewType] = useState('list');
   const [filterType, setFilterType] = useState('all');
   const [showEventDialog, setShowEventDialog] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -118,24 +118,24 @@ export function EventsPage() {
 
   const handleSubmitEvent = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.title || !formData.date || !formData.time || !formData.location) {
       toast.error('Etkinlik adı, tarih, saat ve lokasyon alanları zorunludur');
       return;
     }
-    
+
     try {
       setIsSubmitting(true);
-      
+
       // TODO: Integrate with actual API
       // const result = await eventsService.createEvent(formData);
-      
+
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       toast.success('Etkinlik başarıyla oluşturuldu!');
       setShowEventDialog(false);
-      
+
       // Reset form
       setFormData({
         title: '',
@@ -146,8 +146,7 @@ export function EventsPage() {
         max_attendees: 0,
         type: 'meeting',
       });
-      
-    } catch (error) {
+    } catch {
       toast.error('Etkinlik oluşturulurken hata oluştu');
     } finally {
       setIsSubmitting(false);
@@ -159,13 +158,13 @@ export function EventsPage() {
   };
 
   return (
-    <div className="p-8 space-y-6 bg-slate-50/50 min-h-full">
+    <div className="min-h-full space-y-6 bg-slate-50/50 p-8">
       {/* Desktop Header */}
       <div className="flex flex-col space-y-4">
         <div className="space-y-2">
-          <h1 className="text-3xl font-bold text-slate-800 flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-slate-600 to-gray-700 rounded-xl flex items-center justify-center">
-              <Calendar className="w-6 h-6 text-white" />
+          <h1 className="flex items-center gap-3 text-3xl font-bold text-slate-800">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-slate-600 to-gray-700">
+              <Calendar className="h-6 w-6 text-white" />
             </div>
             Etkinlik Takvimi
           </h1>
@@ -176,7 +175,7 @@ export function EventsPage() {
         <div className="flex items-center justify-between gap-4">
           <Select value={filterType} onValueChange={setFilterType}>
             <SelectTrigger className="w-48">
-              <Filter className="w-4 h-4 mr-2" />
+              <Filter className="mr-2 h-4 w-4" />
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -190,7 +189,7 @@ export function EventsPage() {
           <DesktopActionButtons
             primaryAction={{
               label: 'Yeni Etkinlik Ekle',
-              icon: <Plus className="w-4 h-4" />,
+              icon: <Plus className="h-4 w-4" />,
               onClick: handleNewEvent,
             }}
           />
@@ -198,12 +197,12 @@ export function EventsPage() {
       </div>
 
       {/* Stats Summary */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <DesktopStatsCard
           title="Toplam Etkinlik"
           value={events.length}
           subtitle="Bu ay toplam"
-          icon={<Calendar className="w-4 h-4" />}
+          icon={<Calendar className="h-4 w-4" />}
           color="blue"
         />
 
@@ -211,7 +210,7 @@ export function EventsPage() {
           title="Yaklaşan"
           value={events.filter((e) => e.status === 'upcoming').length}
           subtitle="Bu hafta"
-          icon={<Clock className="w-4 h-4" />}
+          icon={<Clock className="h-4 w-4" />}
           color="yellow"
         />
 
@@ -219,7 +218,7 @@ export function EventsPage() {
           title="Toplam Katılımcı"
           value={events.reduce((sum, e) => sum + e.attendees, 0)}
           subtitle="Tüm etkinlikler"
-          icon={<Users className="w-4 h-4" />}
+          icon={<Users className="h-4 w-4" />}
           color="green"
         />
 
@@ -233,13 +232,13 @@ export function EventsPage() {
             ) || 0
           }`}
           subtitle="Ortalama"
-          icon={<MapPin className="w-4 h-4" />}
+          icon={<MapPin className="h-4 w-4" />}
           color="purple"
         />
       </div>
 
       {/* Desktop Event Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
         {events.map((event, index) => (
           <motion.div
             key={event.id}
@@ -248,27 +247,27 @@ export function EventsPage() {
             transition={{ delay: index * 0.1 }}
           >
             <Card
-              className="hover:shadow-lg transition-all duration-200 cursor-pointer border-0 shadow-md"
+              className="cursor-pointer border-0 shadow-md transition-all duration-200 hover:shadow-lg"
               onClick={() => {
                 handleViewEvent(event.id);
               }}
             >
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between gap-3">
-                  <CardTitle className="text-lg sm:text-xl flex-1 pr-2">{event.title}</CardTitle>
+                  <CardTitle className="flex-1 pr-2 text-lg sm:text-xl">{event.title}</CardTitle>
                   <Badge className={`${getEventTypeColor(event.type)} flex-shrink-0`}>
                     {getEventTypeLabel(event.type)}
                   </Badge>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p className="text-sm text-slate-600 leading-relaxed">{event.description}</p>
+                <p className="text-sm leading-relaxed text-slate-600">{event.description}</p>
 
                 {/* Mobile-Optimized Event Details */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                <div className="grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
                   <div className="flex items-center gap-3 text-slate-600">
-                    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                      <Calendar className="w-4 h-4 text-blue-600" />
+                    <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-blue-100">
+                      <Calendar className="h-4 w-4 text-blue-600" />
                     </div>
                     <div>
                       <p className="font-medium">
@@ -279,8 +278,8 @@ export function EventsPage() {
                   </div>
 
                   <div className="flex items-center gap-3 text-slate-600">
-                    <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
-                      <Clock className="w-4 h-4 text-green-600" />
+                    <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-green-100">
+                      <Clock className="h-4 w-4 text-green-600" />
                     </div>
                     <div>
                       <p className="font-medium">{event.time}</p>
@@ -289,8 +288,8 @@ export function EventsPage() {
                   </div>
 
                   <div className="flex items-center gap-3 text-slate-600 sm:col-span-2">
-                    <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
-                      <MapPin className="w-4 h-4 text-purple-600" />
+                    <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-purple-100">
+                      <MapPin className="h-4 w-4 text-purple-600" />
                     </div>
                     <div>
                       <p className="font-medium">{event.location}</p>
@@ -299,8 +298,8 @@ export function EventsPage() {
                   </div>
 
                   <div className="flex items-center gap-3 text-slate-600 sm:col-span-2">
-                    <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
-                      <Users className="w-4 h-4 text-orange-600" />
+                    <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-orange-100">
+                      <Users className="h-4 w-4 text-orange-600" />
                     </div>
                     <div className="flex-1">
                       <p className="font-medium">
@@ -321,9 +320,9 @@ export function EventsPage() {
                       <span>Doluluk Oranı</span>
                       <span>{Math.round((event.attendees / event.maxAttendees) * 100)}%</span>
                     </div>
-                    <div className="w-full bg-slate-200 rounded-full h-2">
+                    <div className="h-2 w-full rounded-full bg-slate-200">
                       <div
-                        className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full transition-all duration-300"
+                        className="h-2 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 transition-all duration-300"
                         style={{
                           width: `${Math.min((event.attendees / event.maxAttendees) * 100, 100)}%`,
                         }}
@@ -335,7 +334,7 @@ export function EventsPage() {
                 {/* Mobile Action Button */}
                 <Button
                   variant="outline"
-                  className="w-full min-h-[44px] mt-4 border-blue-200 hover:border-blue-300 hover:bg-blue-50"
+                  className="mt-4 min-h-[44px] w-full border-blue-200 hover:border-blue-300 hover:bg-blue-50"
                   onClick={(e) => {
                     e.stopPropagation();
                     handleViewEvent(event.id);
@@ -352,13 +351,13 @@ export function EventsPage() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center py-12"
+        className="py-12 text-center"
       >
-        <div className="w-16 h-16 bg-gradient-to-br from-slate-600 to-gray-700 rounded-2xl flex items-center justify-center mx-auto shadow-lg mb-4">
-          <span className="text-white text-2xl">📅</span>
+        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-slate-600 to-gray-700 shadow-lg">
+          <span className="text-2xl text-white">📅</span>
         </div>
-        <h2 className="text-xl font-semibold text-slate-800 mb-2">Etkinlik Yönetimi</h2>
-        <p className="text-slate-600 mb-4">
+        <h2 className="mb-2 text-xl font-semibold text-slate-800">Etkinlik Yönetimi</h2>
+        <p className="mb-4 text-slate-600">
           Gelişmiş takvim özellikleri yakında kullanılabilir olacak.
         </p>
         <Badge variant="secondary">Geliştiriliyor</Badge>
@@ -366,10 +365,10 @@ export function EventsPage() {
 
       {/* Event Creation Dialog */}
       <Dialog open={showEventDialog} onOpenChange={setShowEventDialog}>
-        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[600px]">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Calendar className="w-5 h-5" />
+              <Calendar className="h-5 w-5" />
               Yeni Etkinlik Oluştur
             </DialogTitle>
             <DialogDescription>
@@ -386,7 +385,9 @@ export function EventsPage() {
               <Input
                 id="title"
                 value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                onChange={(e) => {
+                  setFormData({ ...formData, title: e.target.value });
+                }}
                 placeholder="Aylık yönetim toplantısı"
                 required
               />
@@ -398,14 +399,16 @@ export function EventsPage() {
               <Textarea
                 id="description"
                 value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                onChange={(e) => {
+                  setFormData({ ...formData, description: e.target.value });
+                }}
                 placeholder="Etkinlik hakkında detaylı bilgi"
                 rows={3}
               />
             </div>
 
             {/* Date and Time */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="date">
                   Tarih <span className="text-red-500">*</span>
@@ -414,7 +417,9 @@ export function EventsPage() {
                   id="date"
                   type="date"
                   value={formData.date}
-                  onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, date: e.target.value });
+                  }}
                   required
                 />
               </div>
@@ -426,7 +431,9 @@ export function EventsPage() {
                   id="time"
                   type="time"
                   value={formData.time}
-                  onChange={(e) => setFormData({ ...formData, time: e.target.value })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, time: e.target.value });
+                  }}
                   required
                 />
               </div>
@@ -440,19 +447,23 @@ export function EventsPage() {
               <Input
                 id="location"
                 value={formData.location}
-                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                onChange={(e) => {
+                  setFormData({ ...formData, location: e.target.value });
+                }}
                 placeholder="Dernek merkezi, konferans salonu, vb."
                 required
               />
             </div>
 
             {/* Type and Max Attendees */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="type">Etkinlik Türü</Label>
                 <Select
                   value={formData.type}
-                  onValueChange={(value: Event['type']) => setFormData({ ...formData, type: value })}
+                  onValueChange={(value: Event['type']) => {
+                    setFormData({ ...formData, type: value });
+                  }}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Tür seçin" />
@@ -471,9 +482,9 @@ export function EventsPage() {
                   id="max_attendees"
                   type="number"
                   value={formData.max_attendees || ''}
-                  onChange={(e) =>
-                    setFormData({ ...formData, max_attendees: parseInt(e.target.value) || 0 })
-                  }
+                  onChange={(e) => {
+                    setFormData({ ...formData, max_attendees: parseInt(e.target.value) || 0 });
+                  }}
                   placeholder="50"
                   min="0"
                 />
@@ -481,11 +492,13 @@ export function EventsPage() {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex justify-end gap-2 pt-4 border-t">
+            <div className="flex justify-end gap-2 border-t pt-4">
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => setShowEventDialog(false)}
+                onClick={() => {
+                  setShowEventDialog(false);
+                }}
                 disabled={isSubmitting}
               >
                 İptal

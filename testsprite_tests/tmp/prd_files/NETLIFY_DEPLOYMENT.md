@@ -1,6 +1,7 @@
 # 🚀 Netlify Deployment Guide - Kafkasder Dernek Yönetim Sistemi
 
-Bu rehber, Kafkasder Dernek Yönetim Sistemi'ni Netlify'da nasıl deploy edeceğinizi adım adım açıklar.
+Bu rehber, Kafkasder Dernek Yönetim Sistemi'ni Netlify'da nasıl deploy
+edeceğinizi adım adım açıklar.
 
 ## 📋 Gereksinimler
 
@@ -92,12 +93,14 @@ npm run quality:check        # Lint + type-check + format
 Proje `netlify.toml` dosyası aşağıdaki özellikleri içerir:
 
 ### Build Ayarları
+
 - **Build Command:** `npm run build`
 - **Publish Directory:** `dist`
 - **Node Version:** 18
 - **SPA Routing:** Tüm routes → `index.html`
 
 ### Güvenlik Headers
+
 - Content Security Policy (CSP)
 - X-Frame-Options: DENY
 - X-XSS-Protection
@@ -105,6 +108,7 @@ Proje `netlify.toml` dosyası aşağıdaki özellikleri içerir:
 - Referrer Policy
 
 ### Cache Ayarları
+
 - Static assets: 1 yıl cache
 - HTML: No cache
 - PWA files: Özel cache politikaları
@@ -112,12 +116,14 @@ Proje `netlify.toml` dosyası aşağıdaki özellikleri içerir:
 ## 🔐 Güvenlik
 
 ### Environment Variables Güvenliği
+
 - **KRİTİK:** `.env` dosyalarını asla commit etmeyin
 - Production anahtarları sadece Netlify Dashboard'da ayarlayın
 - Hardcoded credentials kullanmayın (secrets scanning engelleyecek)
 - `.env.example` dosyasında sadece placeholder değerler kullanın
 
 ### CSP (Content Security Policy)
+
 ```
 default-src 'self';
 script-src 'self' 'unsafe-inline' 'unsafe-eval';
@@ -129,6 +135,7 @@ connect-src 'self' https://*.supabase.co wss://*.supabase.co;
 ## 📱 PWA Desteği
 
 Netlify otomatik olarak PWA dosyalarını serve eder:
+
 - `manifest.json` - Web app manifest
 - `sw.js` - Service worker
 - Icon dosyları - PWA iconları
@@ -136,6 +143,7 @@ Netlify otomatik olarak PWA dosyalarını serve eder:
 ## 🌐 Domain Ayarları
 
 ### Custom Domain
+
 1. Netlify Dashboard → Domain Settings
 2. **Add custom domain** tıkla
 3. DNS ayarlarını yap:
@@ -145,6 +153,7 @@ Netlify otomatik olarak PWA dosyalarını serve eder:
    ```
 
 ### HTTPS
+
 - Netlify otomatik SSL certificate sağlar
 - Let's Encrypt kullanır
 - Otomatik yenileme
@@ -152,11 +161,13 @@ Netlify otomatik olarak PWA dosyalarını serve eder:
 ## 📊 Monitoring ve Analytics
 
 ### Build Monitoring
+
 - Build logları Netlify dashboard'da
 - Build süreleri ve başarı oranları
 - Deploy preview'ları
 
 ### Performance
+
 - Lighthouse scores
 - Core Web Vitals
 - Bundle analysis: `npm run analyze`
@@ -166,6 +177,7 @@ Netlify otomatik olarak PWA dosyalarını serve eder:
 ### Yaygın Sorunlar
 
 #### Build Hatası
+
 ```bash
 # Dependencies temizle
 npm run clean
@@ -177,6 +189,7 @@ npm run preview
 ```
 
 #### Environment Variables
+
 ```bash
 # Variables'ları kontrol et
 netlify env:list
@@ -186,6 +199,7 @@ netlify env:set VARIABLE_NAME "new_value"
 ```
 
 #### Cache Sorunları
+
 ```bash
 # Netlify cache temizle
 netlify build --clear-cache
@@ -197,11 +211,13 @@ npm run clean
 ## 📈 Performance Optimizasyonu
 
 ### Bundle Size
+
 - Vite otomatik code splitting
 - Manual chunks ayarlanmış
 - Tree shaking aktif
 
 ### CDN
+
 - Netlify global CDN
 - Otomatik asset optimization
 - Image optimization
@@ -209,16 +225,19 @@ npm run clean
 ## 🔄 Deployment Workflow
 
 1. **Development**
+
    ```bash
    npm run dev
    ```
 
 2. **Quality Check**
+
    ```bash
    npm run quality:check
    ```
 
 3. **Build Test**
+
    ```bash
    npm run build
    npm run preview
@@ -234,11 +253,13 @@ npm run clean
 ## 📞 Support
 
 ### Links
+
 - [Netlify Docs](https://docs.netlify.com/)
 - [Netlify Community](https://community.netlify.com/)
 - [Netlify Status](https://netlifystatus.com/)
 
 ### Project Issues
+
 - GitHub Issues: Repository issues tab
 - Build logs: Netlify dashboard
 
