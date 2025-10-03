@@ -1,12 +1,12 @@
 /**
  * @fileoverview security Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { supabaseAdmin } from '../lib/supabase';
 import { rateLimit } from './rateLimit';
 import { validateCSRF } from './csrf';
 import { InputSanitizer } from '../lib/security/InputSanitizer';
@@ -15,19 +15,17 @@ import { logger } from '../lib/logging/logger';
 // Security middleware for API routes
 /**
  * SecurityMiddleware Service
- * 
+ *
  * Service class for handling securitymiddleware operations
- * 
+ *
  * @class SecurityMiddleware
  */
 export class SecurityMiddleware {
   private readonly supabase;
 
   constructor() {
-    this.supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    );
+    // Use existing supabaseAdmin instance to avoid Multiple GoTrueClient warning
+    this.supabase = supabaseAdmin;
   }
 
   // Main security middleware
@@ -214,7 +212,7 @@ export class SecurityMiddleware {
   ) {
     const url = new URL(request.url);
     const path = url.pathname;
-    const {method} = request;
+    const { method } = request;
 
     // Define permission requirements for different endpoints
     const permissionMap: Record<string, { methods: string[]; permissions: string[] }> = {

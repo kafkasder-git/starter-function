@@ -1,9 +1,9 @@
 import { supabase } from '../lib/supabase';
 import { logger } from '../lib/logging/logger';
 
-// Donation interface
+// Donation interface (UUID-based)
 export interface Donation {
-  id: number;
+  id: string; // UUID
   donor_name: string;
   donor_email?: string;
   donor_phone?: string;
@@ -395,7 +395,9 @@ export class DonationsService {
         return { error: error.message };
       }
 
-      const donorTypes = [...new Set(data.map((item) => item.donor_type))].sort((a, b) => a.localeCompare(b));
+      const donorTypes = [...new Set(data.map((item) => item.donor_type))].sort((a, b) =>
+        a.localeCompare(b),
+      );
       return { data: donorTypes };
     } catch (error: any) {
       return { error: error.message || 'Bağışçı türleri getirilemedi' };
@@ -414,7 +416,9 @@ export class DonationsService {
         return { error: error.message };
       }
 
-      const donationTypes = [...new Set(data.map((item) => item.donation_type))].sort((a, b) => a.localeCompare(b));
+      const donationTypes = [...new Set(data.map((item) => item.donation_type))].sort((a, b) =>
+        a.localeCompare(b),
+      );
       return { data: donationTypes };
     } catch (error: any) {
       return { error: error.message || 'Bağış türleri getirilemedi' };
@@ -433,7 +437,9 @@ export class DonationsService {
         return { error: error.message };
       }
 
-      const paymentMethods = [...new Set(data.map((item) => item.payment_method))].sort((a, b) => a.localeCompare(b));
+      const paymentMethods = [...new Set(data.map((item) => item.payment_method))].sort((a, b) =>
+        a.localeCompare(b),
+      );
       return { data: paymentMethods };
     } catch (error: any) {
       return { error: error.message || 'Ödeme yöntemleri getirilemedi' };

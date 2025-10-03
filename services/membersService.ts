@@ -1,9 +1,9 @@
 import { supabase } from '../lib/supabase';
 import { logger } from '../lib/logging/logger';
 
-// Member types - Updated to match database schema
+// Member types - Updated to match database schema (UUID-based)
 export interface Member {
-  id: number;
+  id: string; // UUID
   name: string;
   email: string;
   phone?: string;
@@ -320,7 +320,9 @@ export class MembersService {
         return { error: error.message };
       }
 
-      const cities = [...new Set(data.map((item) => item.city))].filter(Boolean).sort((a, b) => a.localeCompare(b));
+      const cities = [...new Set(data.map((item) => item.city))]
+        .filter(Boolean)
+        .sort((a, b) => a.localeCompare(b));
       return { data: cities };
     } catch (error: any) {
       return { error: error.message || 'Şehirler getirilemedi' };
@@ -339,7 +341,9 @@ export class MembersService {
         return { error: error.message };
       }
 
-      const membershipTypes = [...new Set(data.map((item) => item.membership_type))].sort((a, b) => a.localeCompare(b));
+      const membershipTypes = [...new Set(data.map((item) => item.membership_type))].sort((a, b) =>
+        a.localeCompare(b),
+      );
       return { data: membershipTypes };
     } catch (error: any) {
       return { error: error.message || 'Üyelik türleri getirilemedi' };
@@ -358,7 +362,9 @@ export class MembersService {
         return { error: error.message };
       }
 
-      const professions = [...new Set(data.map((item) => item.profession))].filter(Boolean).sort((a, b) => a.localeCompare(b));
+      const professions = [...new Set(data.map((item) => item.profession))]
+        .filter(Boolean)
+        .sort((a, b) => a.localeCompare(b));
       return { data: professions };
     } catch (error: any) {
       return { error: error.message || 'Meslekler getirilemedi' };
