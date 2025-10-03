@@ -259,7 +259,7 @@ export class QueryOptimizationService {
 
       return result;
     } catch (error: unknown) {
-      logger.error(`Error executing optimized query:`, error);
+      logger.error("Error executing optimized query:", error);
       throw error;
     }
   }
@@ -574,7 +574,7 @@ export class QueryOptimizationService {
         suggestions.push({
           table,
           column,
-          reason: `Frequently used in WHERE clauses`,
+          reason: "Frequently used in WHERE clauses",
           impact: 'medium',
         });
       });

@@ -803,15 +803,15 @@ export function BeneficiaryDetailPageComprehensive({
       const policies = [
         {
           name: 'FamilyRelationships insert',
-          sql: `CREATE POLICY "FamilyRelationships insert" ON "public"."family_relationships" FOR INSERT TO authenticated WITH CHECK (true);`,
+          sql: 'CREATE POLICY "FamilyRelationships insert" ON "public"."family_relationships" FOR INSERT TO authenticated WITH CHECK (true);',
         },
         {
           name: 'FamilyRelationships update',
-          sql: `CREATE POLICY "FamilyRelationships update" ON "public"."family_relationships" FOR UPDATE TO authenticated USING (true) WITH CHECK (true);`,
+          sql: 'CREATE POLICY "FamilyRelationships update" ON "public"."family_relationships" FOR UPDATE TO authenticated USING (true) WITH CHECK (true);',
         },
         {
           name: 'FamilyRelationships delete',
-          sql: `CREATE POLICY "FamilyRelationships delete" ON "public"."family_relationships" FOR DELETE TO authenticated USING (true);`,
+          sql: 'CREATE POLICY "FamilyRelationships delete" ON "public"."family_relationships" FOR DELETE TO authenticated USING (true);',
         },
       ];
 

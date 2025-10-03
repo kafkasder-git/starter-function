@@ -496,7 +496,7 @@ const EnhancedDashboard = memo(
                             transition={{ delay: 0.1 + index * 0.05 }}
                             className="flex items-center gap-4 p-3 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer"
                           >
-                            <div className={`p-2 rounded-lg bg-gray-100 flex-shrink-0`}>
+                            <div className={"p-2 rounded-lg bg-gray-100 flex-shrink-0"}>
                               {activity.icon &&
                                 React.createElement(activity.icon as unknown as LucideIcon, {
                                   className: `w-4 h-4 ${activity.color ?? 'text-gray-400'}`,

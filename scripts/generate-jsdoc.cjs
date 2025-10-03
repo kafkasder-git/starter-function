@@ -258,7 +258,7 @@ function main() {
     }
   }
   
-  console.log(`\n🎉 JSDoc generation complete!`);
+  console.log("\n🎉 JSDoc generation complete!");
   console.log(`📊 Total files processed: ${totalFiles}`);
   console.log(`✅ Files documented: ${documentedFiles}`);
   console.log(`📝 Files unchanged: ${totalFiles - documentedFiles}`);

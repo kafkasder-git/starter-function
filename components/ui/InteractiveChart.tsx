@@ -254,7 +254,7 @@ export function InteractiveChart({
   const handleExport = () => {
     // Export implementation
     const csvContent =
-      `data:text/csv;charset=utf-8,` +
+      "data:text/csv;charset=utf-8," +
       `Ad,Değer\n${ 
       processedData.map((row) => `${row.name},${row.value}`).join('\n')}`;
 

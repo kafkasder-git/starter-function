@@ -132,7 +132,7 @@ function main() {
     }
   }
   
-  console.log(`\n🎉 Refactoring complete!`);
+  console.log("\n🎉 Refactoring complete!");
   console.log(`📊 Total files processed: ${totalFiles}`);
   console.log(`✅ Files refactored: ${refactoredFiles}`);
   console.log(`📝 Files unchanged: ${totalFiles - refactoredFiles}`);

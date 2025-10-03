@@ -163,7 +163,7 @@ function main() {
     }
   }
   
-  console.log(`\n🎉 ESLint fixing complete!`);
+  console.log("\n🎉 ESLint fixing complete!");
   console.log(`📊 Total files processed: ${totalFiles}`);
   console.log(`✅ Files fixed: ${fixedFiles}`);
   console.log(`📝 Files unchanged: ${totalFiles - fixedFiles}`);
