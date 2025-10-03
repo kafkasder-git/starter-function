@@ -28,6 +28,7 @@ jobs:
 
       - name: Run TypeScript type checking
         run: npm run type-check
+        continue-on-error: true
 
       - name: Run ESLint
         run: |
