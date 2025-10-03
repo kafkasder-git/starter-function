@@ -35,7 +35,7 @@ interface BeneficiaryAidHistoryProps {
  * @returns {void} Nothing
  */
 export function BeneficiaryAidHistory({
-  beneficiaryId,
+  beneficiaryId: _beneficiaryId,
   aidHistory = [],
 }: BeneficiaryAidHistoryProps) {
   const [searchTerm, setSearchTerm] = useState('');

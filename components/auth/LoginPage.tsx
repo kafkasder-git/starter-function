@@ -75,7 +75,7 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
     try {
       await signIn(credentials.email, credentials.password);
       onLoginSuccess?.();
-    } catch (error) {
+    } catch {
       // Error is handled in SupabaseAuthContext
     }
   };

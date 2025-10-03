@@ -23,7 +23,7 @@ interface Activity {
 }
 
 // Activity data will be fetched from API
-const getActivities = async (): Promise<Activity[]> => {
+const _getActivities = async (): Promise<Activity[]> => {
   // TODO: Implement real API call to fetch activities
   return [];
 };

@@ -79,7 +79,7 @@ export function BeneficiaryDocuments({
       onDocumentUpload?.(files);
 
       toast.success(`${files.length} dosya başarıyla yüklendi!`);
-    } catch (error) {
+    } catch {
       toast.error('Dosya yükleme hatası!');
     } finally {
       setIsUploading(false);
@@ -92,7 +92,7 @@ export function BeneficiaryDocuments({
       setUploadedFiles((prev) => prev.filter((file) => file.id !== fileId));
       onDocumentDelete?.(fileId);
       toast.success('Dosya silindi!');
-    } catch (error) {
+    } catch {
       toast.error('Dosya silme hatası!');
     }
   };

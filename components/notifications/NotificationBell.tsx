@@ -36,7 +36,7 @@ export function NotificationBell({
   const [isAnimating, setIsAnimating] = useState(false);
   const [lastUnreadCount, setLastUnreadCount] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
-  const [storeReady, setStoreReady] = useState(false);
+  const [_storeReady, setStoreReady] = useState(false);
 
   // Detect mobile safely
   useEffect(() => {
@@ -51,7 +51,7 @@ export function NotificationBell({
   }, []);
 
   // Local state for animations
-  const [unreadCount, setUnreadCount] = useState(0);
+  const [_unreadCount, setUnreadCount] = useState(0);
 
   // Use the notification store directly
   const store = useNotificationStore();

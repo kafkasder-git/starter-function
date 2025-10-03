@@ -277,9 +277,9 @@ export function SmartAutomationSystem({
   const [filterType, setFilterType] = useState<AutomationType | 'all'>('all');
   const [filterStatus, setFilterStatus] = useState<AutomationStatus | 'all'>('all');
   const [showCreateForm, setShowCreateForm] = useState(false);
-  const [selectedAutomation, setSelectedAutomation] = useState<AutomationRule | null>(null);
+  const [_selectedAutomation, _setSelectedAutomation] = useState<AutomationRule | null>(null);
 
-  const { triggerHapticFeedback, deviceInfo } = useAdvancedMobile();
+  const { triggerHapticFeedback, deviceInfo: _deviceInfo } = useAdvancedMobile();
 
   // Filtrelenmiş otomasyonlar
   const filteredAutomations = automations.filter((automation) => {

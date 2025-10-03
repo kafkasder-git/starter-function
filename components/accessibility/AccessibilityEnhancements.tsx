@@ -125,7 +125,7 @@ export function AccessibilityEnhancements({
   const [showQuickAccess, setShowQuickAccess] = useState(false);
   const [announcements, setAnnouncements] = useState<string[]>([]);
 
-  const { triggerHapticFeedback, deviceInfo } = useAdvancedMobile();
+  const { triggerHapticFeedback, deviceInfo: _deviceInfo } = useAdvancedMobile();
   const announcementRef = useRef<HTMLDivElement>(null);
 
   // Erişilebilirlik ayarlarını uygula

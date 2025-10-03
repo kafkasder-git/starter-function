@@ -67,8 +67,8 @@ export function BeneficiaryHealthInfo({
   };
 
   const activeConditions = Object.entries(healthConditionsState)
-    .filter(([_, active]) => active)
-    .map(([condition, _]) => condition);
+    .filter(([, active]) => active)
+    .map(([condition]) => condition);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
