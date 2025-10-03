@@ -274,6 +274,12 @@ Temporary Items
 # Bundle analyzer
 bundle-analysis.html
 
+# Reports and audit results
+audit-results.json
+eslint-report.json
+*-report.json
+*.report.json
+
 # ==========================================
 # PROJECT SPECIFIC
 # ==========================================

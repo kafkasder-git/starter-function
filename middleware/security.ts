@@ -9,7 +9,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { rateLimit } from './rateLimit';
 import { validateCSRF } from './csrf';
-import { sanitizeInput } from '../utils/sanitization';
+import { InputSanitizer } from '../lib/security/InputSanitizer';
 
 import { logger } from '../lib/logging/logger';
 // Security middleware for API routes
@@ -155,7 +155,7 @@ export class SecurityMiddleware {
     // Sanitize query parameters
     const sanitizedSearchParams = new URLSearchParams();
     for (const [key, value] of url.searchParams.entries()) {
-      sanitizedSearchParams.set(key, sanitizeInput(value));
+      sanitizedSearchParams.set(key, InputSanitizer.sanitize(value, 'text'));
     }
 
     // Create new URL with sanitized params
@@ -185,7 +185,7 @@ export class SecurityMiddleware {
   // Recursively sanitize object properties
   private sanitizeObject(obj: unknown): unknown {
     if (typeof obj === 'string') {
-      return sanitizeInput(obj);
+      return InputSanitizer.sanitize(obj, 'text');
     }
 
     if (Array.isArray(obj)) {
@@ -195,7 +195,7 @@ export class SecurityMiddleware {
     if (obj && typeof obj === 'object') {
       const sanitized: Record<string, unknown> = {};
       for (const [key, value] of Object.entries(obj)) {
-        sanitized[sanitizeInput(key)] = this.sanitizeObject(value);
+        sanitized[InputSanitizer.sanitize(key, 'text')] = this.sanitizeObject(value);
       }
       return sanitized;
     }
