@@ -14,6 +14,10 @@ import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { DesktopActionButtons, DesktopStatsCard } from '../ui/desktop-table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../ui/dialog';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
+import { Textarea } from '../ui/textarea';
 
 interface Event {
   id: number;
@@ -37,6 +41,17 @@ interface Event {
 export function EventsPage() {
   const [viewType, setViewType] = useState('list');
   const [filterType, setFilterType] = useState('all');
+  const [showEventDialog, setShowEventDialog] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    date: '',
+    time: '',
+    location: '',
+    max_attendees: 0,
+    type: 'meeting' as Event['type'],
+  });
 
   const events: Event[] = [
     {
@@ -98,7 +113,45 @@ export function EventsPage() {
   };
 
   const handleNewEvent = () => {
-    toast.success('Yeni etkinlik ekleme formu açılıyor...');
+    setShowEventDialog(true);
+  };
+
+  const handleSubmitEvent = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!formData.title || !formData.date || !formData.time || !formData.location) {
+      toast.error('Etkinlik adı, tarih, saat ve lokasyon alanları zorunludur');
+      return;
+    }
+    
+    try {
+      setIsSubmitting(true);
+      
+      // TODO: Integrate with actual API
+      // const result = await eventsService.createEvent(formData);
+      
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      toast.success('Etkinlik başarıyla oluşturuldu!');
+      setShowEventDialog(false);
+      
+      // Reset form
+      setFormData({
+        title: '',
+        description: '',
+        date: '',
+        time: '',
+        location: '',
+        max_attendees: 0,
+        type: 'meeting',
+      });
+      
+    } catch (error) {
+      toast.error('Etkinlik oluşturulurken hata oluştu');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleViewEvent = (eventId: number) => {
@@ -310,6 +363,140 @@ export function EventsPage() {
         </p>
         <Badge variant="secondary">Geliştiriliyor</Badge>
       </motion.div>
+
+      {/* Event Creation Dialog */}
+      <Dialog open={showEventDialog} onOpenChange={setShowEventDialog}>
+        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Calendar className="w-5 h-5" />
+              Yeni Etkinlik Oluştur
+            </DialogTitle>
+            <DialogDescription>
+              Etkinlik detaylarını doldurun. Zorunlu alanları (*) doldurmanız gereklidir.
+            </DialogDescription>
+          </DialogHeader>
+
+          <form onSubmit={handleSubmitEvent} className="space-y-4 py-4">
+            {/* Event Title */}
+            <div className="space-y-2">
+              <Label htmlFor="title">
+                Etkinlik Adı <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="title"
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                placeholder="Aylık yönetim toplantısı"
+                required
+              />
+            </div>
+
+            {/* Description */}
+            <div className="space-y-2">
+              <Label htmlFor="description">Açıklama</Label>
+              <Textarea
+                id="description"
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                placeholder="Etkinlik hakkında detaylı bilgi"
+                rows={3}
+              />
+            </div>
+
+            {/* Date and Time */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="date">
+                  Tarih <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="date"
+                  type="date"
+                  value={formData.date}
+                  onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="time">
+                  Saat <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="time"
+                  type="time"
+                  value={formData.time}
+                  onChange={(e) => setFormData({ ...formData, time: e.target.value })}
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Location */}
+            <div className="space-y-2">
+              <Label htmlFor="location">
+                Lokasyon <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="location"
+                value={formData.location}
+                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                placeholder="Dernek merkezi, konferans salonu, vb."
+                required
+              />
+            </div>
+
+            {/* Type and Max Attendees */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="type">Etkinlik Türü</Label>
+                <Select
+                  value={formData.type}
+                  onValueChange={(value: Event['type']) => setFormData({ ...formData, type: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Tür seçin" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="meeting">Toplantı</SelectItem>
+                    <SelectItem value="charity">Hayır İşleri</SelectItem>
+                    <SelectItem value="education">Eğitim</SelectItem>
+                    <SelectItem value="social">Sosyal</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="max_attendees">Maksimum Katılımcı</Label>
+                <Input
+                  id="max_attendees"
+                  type="number"
+                  value={formData.max_attendees || ''}
+                  onChange={(e) =>
+                    setFormData({ ...formData, max_attendees: parseInt(e.target.value) || 0 })
+                  }
+                  placeholder="50"
+                  min="0"
+                />
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex justify-end gap-2 pt-4 border-t">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowEventDialog(false)}
+                disabled={isSubmitting}
+              >
+                İptal
+              </Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? 'Oluşturuluyor...' : 'Etkinlik Oluştur'}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

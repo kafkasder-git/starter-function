@@ -30,6 +30,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { DesktopActionButtons, DesktopFilters, DesktopStatsCard } from '../ui/desktop-table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
+import { Textarea } from '../ui/textarea';
 
 import { logger } from '../../lib/logging/logger';
 // Status and membership type mappings for Turkish display
@@ -68,6 +72,21 @@ export function MembersPage() {
     active: 0,
     inactive: 0,
     suspended: 0,
+  });
+  
+  // Dialog state for creating new member
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    first_name: '',
+    last_name: '',
+    email: '',
+    phone: '',
+    address: '',
+    city: '',
+    membership_type: 'standard',
+    membership_status: 'active',
+    notes: '',
   });
 
   // Load members data
@@ -117,6 +136,59 @@ export function MembersPage() {
       logger.error('Error loading stats:', error);
     }
   }, []);
+
+  // Handle form submission for creating new member
+  const handleCreateMember = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Basic validation
+    if (!formData.first_name || !formData.last_name) {
+      toast.error('Ad ve soyad alanları zorunludur');
+      return;
+    }
+    
+    if (!formData.email || !formData.phone) {
+      toast.error('E-posta ve telefon alanları zorunludur');
+      return;
+    }
+    
+    try {
+      setIsSubmitting(true);
+      
+      const result = await membersService.createMember(formData as any);
+      
+      if (result.error) {
+        toast.error(result.error);
+        return;
+      }
+      
+      toast.success('Üye başarıyla oluşturuldu!');
+      setShowCreateDialog(false);
+      
+      // Reset form
+      setFormData({
+        first_name: '',
+        last_name: '',
+        email: '',
+        phone: '',
+        address: '',
+        city: '',
+        membership_type: 'standard',
+        membership_status: 'active',
+        notes: '',
+      });
+      
+      // Reload members list
+      await loadMembers();
+      await loadStats();
+      
+    } catch (error) {
+      logger.error('Error creating member:', error);
+      toast.error('Üye oluşturulurken hata oluştu');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   // Load cities for filter
 
@@ -179,13 +251,13 @@ export function MembersPage() {
           primaryAction={{
             label: 'Yeni Üye Ekle',
             icon: <Plus className="w-4 h-4" />,
-            onClick: () => {},
+            onClick: () => setShowCreateDialog(true),
           }}
           secondaryActions={[
             {
               label: 'Dışa Aktar',
               icon: <Download className="w-4 h-4" />,
-              onClick: () => {},
+              onClick: () => toast.info('Dışa aktarma özelliği yakında eklenecek'),
               variant: 'outline',
             },
           ]}
@@ -354,7 +426,7 @@ export function MembersPage() {
                             variant="ghost"
                             size="sm"
                             className="min-h-[44px] min-w-[44px] p-2 text-blue-600 hover:text-blue-700"
-                            onClick={() => {}}
+                            onClick={() => toast.info(`${member.name} detayları görüntüleniyor`)}
                             aria-label="Görüntüle"
                           >
                             <Eye className="w-4 h-4" />
@@ -363,7 +435,7 @@ export function MembersPage() {
                             variant="ghost"
                             size="sm"
                             className="min-h-[44px] min-w-[44px] p-2 text-red-600 hover:text-red-700"
-                            onClick={() => {}}
+                            onClick={() => toast.error('Silme özelliği yakında eklenecek')}
                             aria-label="Sil"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -497,7 +569,7 @@ export function MembersPage() {
                               ? 'Arama kriterlerinize uygun üye bulunamadı.'
                               : 'Henüz hiç üye kaydı yok.'}
                         </p>
-                        <Button className="gap-2">
+                        <Button className="gap-2" onClick={() => setShowCreateDialog(true)}>
                           <Plus className="h-4 w-4" />
                           İlk Üyeyi Ekle
                         </Button>
@@ -551,6 +623,169 @@ export function MembersPage() {
           </Card>
         )}
       </div>
+
+      {/* Create Member Dialog */}
+      <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <UserPlus className="w-5 h-5" />
+              Yeni Üye Ekle
+            </DialogTitle>
+            <DialogDescription>
+              Yeni üye bilgilerini doldurun. Zorunlu alanları (*) doldurmanız gereklidir.
+            </DialogDescription>
+          </DialogHeader>
+
+          <form onSubmit={handleCreateMember} className="space-y-4 py-4">
+            {/* Name Fields */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="first_name">
+                  Ad <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="first_name"
+                  value={formData.first_name}
+                  onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
+                  placeholder="Üyenin adı"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="last_name">
+                  Soyad <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="last_name"
+                  value={formData.last_name}
+                  onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
+                  placeholder="Üyenin soyadı"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Contact Fields */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">
+                  E-posta <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  placeholder="ornek@email.com"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone">
+                  Telefon <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  placeholder="05XX XXX XX XX"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Address Fields */}
+            <div className="space-y-2">
+              <Label htmlFor="address">Adres</Label>
+              <Textarea
+                id="address"
+                value={formData.address}
+                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                placeholder="Açık adres"
+                rows={2}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="city">Şehir</Label>
+              <Input
+                id="city"
+                value={formData.city}
+                onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                placeholder="Şehir"
+              />
+            </div>
+
+            {/* Membership Details */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="membership_type">Üyelik Tipi</Label>
+                <Select
+                  value={formData.membership_type}
+                  onValueChange={(value) => setFormData({ ...formData, membership_type: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Üyelik tipi seçin" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="standard">Standart</SelectItem>
+                    <SelectItem value="premium">Premium</SelectItem>
+                    <SelectItem value="corporate">Kurumsal</SelectItem>
+                    <SelectItem value="student">Öğrenci</SelectItem>
+                    <SelectItem value="senior">Emekli</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="membership_status">Durum</Label>
+                <Select
+                  value={formData.membership_status}
+                  onValueChange={(value) => setFormData({ ...formData, membership_status: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Durum seçin" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="active">Aktif</SelectItem>
+                    <SelectItem value="inactive">Pasif</SelectItem>
+                    <SelectItem value="suspended">Askıda</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* Notes */}
+            <div className="space-y-2">
+              <Label htmlFor="notes">Notlar</Label>
+              <Textarea
+                id="notes"
+                value={formData.notes}
+                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                placeholder="Ek notlar veya açıklamalar"
+                rows={3}
+              />
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex justify-end gap-2 pt-4 border-t">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowCreateDialog(false)}
+                disabled={isSubmitting}
+              >
+                İptal
+              </Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? 'Kaydediliyor...' : 'Üye Ekle'}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
     </PageLayout>
   );
 }

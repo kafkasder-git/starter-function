@@ -6,13 +6,23 @@
  */
 
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { PageLayout } from '../PageLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '../ui/dialog';
 import { Input } from '../ui/input';
+import { Label } from '../ui/label';
 import { Badge } from '../ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { Textarea } from '../ui/textarea';
 import {
   Stethoscope,
   Search,
@@ -177,6 +187,23 @@ export function HospitalReferralPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [urgencyFilter, setUrgencyFilter] = useState<string>('all');
+  const [showReferralDialog, setShowReferralDialog] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    patientName: '',
+    patientId: '',
+    patientAge: 0,
+    patientGender: 'male' as 'male' | 'female',
+    patientPhone: '',
+    medicalCondition: '',
+    urgencyLevel: 'routine' as HospitalReferral['urgencyLevel'],
+    hospital: '',
+    department: '',
+    referredBy: '',
+    notes: '',
+    transportNeeded: false,
+    estimatedCost: 0,
+  });
 
   const getStatusBadge = (status: HospitalReferral['status']) => {
     const statusConfig = {
@@ -237,6 +264,62 @@ export function HospitalReferralPage() {
       .reduce((sum, r) => sum + (r.actualCost ?? r.estimatedCost ?? 0), 0),
   };
 
+  const handleCreateReferral = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!formData.patientName || !formData.patientId || !formData.medicalCondition || !formData.hospital) {
+      toast.error('Lütfen zorunlu alanları doldurun');
+      return;
+    }
+    
+    try {
+      setIsSubmitting(true);
+      
+      // TODO: Integrate with actual API
+      // const result = await hospitalReferralService.createReferral(formData);
+      
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Add to local state for demonstration
+      const newReferral: HospitalReferral = {
+        id: Math.max(...referrals.map(r => r.id), 0) + 1,
+        referralNumber: `HSK-${new Date().getFullYear()}-${String(referrals.length + 1).padStart(3, '0')}`,
+        ...formData,
+        referralDate: new Date().toISOString().split('T')[0],
+        status: 'pending',
+        followUpRequired: formData.urgencyLevel !== 'routine',
+      };
+      
+      setReferrals(prev => [newReferral, ...prev]);
+      
+      toast.success('Hastane sevki başarıyla oluşturuldu!');
+      setShowReferralDialog(false);
+      
+      // Reset form
+      setFormData({
+        patientName: '',
+        patientId: '',
+        patientAge: 0,
+        patientGender: 'male',
+        patientPhone: '',
+        medicalCondition: '',
+        urgencyLevel: 'routine',
+        hospital: '',
+        department: '',
+        referredBy: '',
+        notes: '',
+        transportNeeded: false,
+        estimatedCost: 0,
+      });
+      
+    } catch (error) {
+      toast.error('Sevk oluşturulurken hata oluştu');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <PageLayout
       title="Hastane Sevk İşlemleri"
@@ -247,7 +330,7 @@ export function HospitalReferralPage() {
             <Download className="w-4 h-4 mr-2" />
             Sevk Raporu
           </Button>
-          <Button>
+          <Button onClick={() => setShowReferralDialog(true)}>
             <Plus className="w-4 h-4 mr-2" />
             İhtiyaç Sahibi İçin Yeni Sevk
           </Button>
@@ -517,6 +600,221 @@ export function HospitalReferralPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Hospital Referral Dialog */}
+      <Dialog open={showReferralDialog} onOpenChange={setShowReferralDialog}>
+        <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Stethoscope className="w-5 h-5" />
+              Yeni Hastane Sevki
+            </DialogTitle>
+            <DialogDescription>
+              İhtiyaç sahibi için yeni hastane sevki oluşturun. Zorunlu alanları (*) doldurmanız gereklidir.
+            </DialogDescription>
+          </DialogHeader>
+
+          <form onSubmit={handleCreateReferral} className="space-y-4 py-4">
+            {/* Patient Info */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="patientName">
+                  Hasta Adı <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="patientName"
+                  value={formData.patientName}
+                  onChange={(e) => setFormData({ ...formData, patientName: e.target.value })}
+                  placeholder="Hastanın tam adı"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="patientId">
+                  T.C. Kimlik No <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="patientId"
+                  value={formData.patientId}
+                  onChange={(e) => setFormData({ ...formData, patientId: e.target.value })}
+                  placeholder="11 haneli kimlik numarası"
+                  required
+                  maxLength={11}
+                />
+              </div>
+            </div>
+
+            {/* Patient Details */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="patientAge">Yaş</Label>
+                <Input
+                  id="patientAge"
+                  type="number"
+                  value={formData.patientAge || ''}
+                  onChange={(e) => setFormData({ ...formData, patientAge: parseInt(e.target.value) || 0 })}
+                  placeholder="0"
+                  min="0"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="patientGender">Cinsiyet</Label>
+                <Select
+                  value={formData.patientGender}
+                  onValueChange={(value: 'male' | 'female') =>
+                    setFormData({ ...formData, patientGender: value })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seçin" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="male">Erkek</SelectItem>
+                    <SelectItem value="female">Kadın</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="patientPhone">Telefon</Label>
+                <Input
+                  id="patientPhone"
+                  type="tel"
+                  value={formData.patientPhone}
+                  onChange={(e) => setFormData({ ...formData, patientPhone: e.target.value })}
+                  placeholder="05XX XXX XX XX"
+                />
+              </div>
+            </div>
+
+            {/* Medical Condition */}
+            <div className="space-y-2">
+              <Label htmlFor="medicalCondition">
+                Tıbbi Durum <span className="text-red-500">*</span>
+              </Label>
+              <Textarea
+                id="medicalCondition"
+                value={formData.medicalCondition}
+                onChange={(e) => setFormData({ ...formData, medicalCondition: e.target.value })}
+                placeholder="Hastanın tıbbi durumu ve şikayetleri"
+                rows={2}
+                required
+              />
+            </div>
+
+            {/* Hospital Details */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="hospital">
+                  Hastane <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="hospital"
+                  value={formData.hospital}
+                  onChange={(e) => setFormData({ ...formData, hospital: e.target.value })}
+                  placeholder="Hastane adı"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="department">Bölüm</Label>
+                <Input
+                  id="department"
+                  value={formData.department}
+                  onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                  placeholder="Örn: Kardiyoloji"
+                />
+              </div>
+            </div>
+
+            {/* Urgency and Referred By */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="urgencyLevel">Aciliyet</Label>
+                <Select
+                  value={formData.urgencyLevel}
+                  onValueChange={(value: HospitalReferral['urgencyLevel']) =>
+                    setFormData({ ...formData, urgencyLevel: value })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seçin" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="routine">Rutin</SelectItem>
+                    <SelectItem value="urgent">Acil</SelectItem>
+                    <SelectItem value="emergency">Çok Acil</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="referredBy">Sevk Eden</Label>
+                <Input
+                  id="referredBy"
+                  value={formData.referredBy}
+                  onChange={(e) => setFormData({ ...formData, referredBy: e.target.value })}
+                  placeholder="Doktor veya kurum adı"
+                />
+              </div>
+            </div>
+
+            {/* Transport and Cost */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="estimatedCost">Tahmini Maliyet (TL)</Label>
+                <Input
+                  id="estimatedCost"
+                  type="number"
+                  value={formData.estimatedCost || ''}
+                  onChange={(e) =>
+                    setFormData({ ...formData, estimatedCost: parseFloat(e.target.value) || 0 })
+                  }
+                  placeholder="0"
+                  min="0"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="transportNeeded" className="flex items-center gap-2">
+                  <input
+                    id="transportNeeded"
+                    type="checkbox"
+                    checked={formData.transportNeeded}
+                    onChange={(e) => setFormData({ ...formData, transportNeeded: e.target.checked })}
+                    className="w-4 h-4"
+                  />
+                  Ulaşım Gerekli
+                </Label>
+              </div>
+            </div>
+
+            {/* Notes */}
+            <div className="space-y-2">
+              <Label htmlFor="notes">Notlar</Label>
+              <Textarea
+                id="notes"
+                value={formData.notes}
+                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                placeholder="Ek bilgiler ve notlar"
+                rows={2}
+              />
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex justify-end gap-2 pt-4 border-t">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowReferralDialog(false)}
+                disabled={isSubmitting}
+              >
+                İptal
+              </Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? 'Oluşturuluyor...' : 'Sevk Oluştur'}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
     </PageLayout>
   );
 }

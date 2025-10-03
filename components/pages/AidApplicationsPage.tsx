@@ -24,9 +24,18 @@ import { PageLayout } from '../PageLayout';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '../ui/dialog';
 import { Input } from '../ui/input';
+import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
+import { Textarea } from '../ui/textarea';
 
 interface AidApplication {
   id: number;
@@ -122,6 +131,18 @@ export function AidApplicationsPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [priorityFilter, setPriorityFilter] = useState<string>('all');
   const [aidTypeFilter, setAidTypeFilter] = useState<string>('all');
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    applicantName: '',
+    applicantId: '',
+    phone: '',
+    address: '',
+    aidType: 'Nakdi Yardım',
+    requestedAmount: 0,
+    priority: 'medium' as AidApplication['priority'],
+    description: '',
+  });
 
   const getStatusBadge = (status: AidApplication['status']) => {
     const statusConfig = {
@@ -173,6 +194,55 @@ export function AidApplicationsPage() {
     toast.success('Başvuru reddedildi');
   };
 
+  const handleCreateApplication = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!formData.applicantName || !formData.applicantId || !formData.phone) {
+      toast.error('Lütfen zorunlu alanları doldurun');
+      return;
+    }
+    
+    try {
+      setIsSubmitting(true);
+      
+      // TODO: Integrate with actual API
+      // const result = await aidApplicationsService.createApplication(formData);
+      
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Add to local state for demonstration
+      const newApplication: AidApplication = {
+        id: Math.max(...applications.map(a => a.id), 0) + 1,
+        ...formData,
+        applicationDate: new Date().toISOString().split('T')[0],
+        status: 'pending',
+      };
+      
+      setApplications(prev => [newApplication, ...prev]);
+      
+      toast.success('Başvuru başarıyla oluşturuldu!');
+      setShowCreateDialog(false);
+      
+      // Reset form
+      setFormData({
+        applicantName: '',
+        applicantId: '',
+        phone: '',
+        address: '',
+        aidType: 'Nakdi Yardım',
+        requestedAmount: 0,
+        priority: 'medium',
+        description: '',
+      });
+      
+    } catch (error) {
+      toast.error('Başvuru oluşturulurken hata oluştu');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const stats = {
     total: applications.length,
     pending: applications.filter((a) => a.status === 'pending').length,
@@ -195,6 +265,7 @@ export function AidApplicationsPage() {
               boxShadow: '0 4px 12px rgba(30, 58, 138, 0.4)',
               minWidth: '180px',
             }}
+            onClick={() => setShowCreateDialog(true)}
           >
             <Plus className="w-4 h-4 mr-2" />
             <span className="hidden lg:inline">İhtiyaç Sahibi Adına Başvuru Oluştur</span>
@@ -560,6 +631,161 @@ export function AidApplicationsPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Create Application Dialog */}
+      <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Plus className="w-5 h-5" />
+              Yeni Yardım Başvurusu
+            </DialogTitle>
+            <DialogDescription>
+              İhtiyaç sahibi adına başvuru oluşturun. Zorunlu alanları (*) doldurmanız gereklidir.
+            </DialogDescription>
+          </DialogHeader>
+
+          <form onSubmit={handleCreateApplication} className="space-y-4 py-4">
+            {/* Applicant Name and ID */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="applicantName">
+                  Başvuran Adı <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="applicantName"
+                  value={formData.applicantName}
+                  onChange={(e) => setFormData({ ...formData, applicantName: e.target.value })}
+                  placeholder="İhtiyaç sahibinin tam adı"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="applicantId">
+                  T.C. Kimlik No <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="applicantId"
+                  value={formData.applicantId}
+                  onChange={(e) => setFormData({ ...formData, applicantId: e.target.value })}
+                  placeholder="11 haneli kimlik numarası"
+                  required
+                  maxLength={11}
+                />
+              </div>
+            </div>
+
+            {/* Contact Info */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="phone">
+                  Telefon <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  placeholder="05XX XXX XX XX"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="priority">Öncelik</Label>
+                <Select
+                  value={formData.priority}
+                  onValueChange={(value: AidApplication['priority']) =>
+                    setFormData({ ...formData, priority: value })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Öncelik seçin" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="low">Düşük</SelectItem>
+                    <SelectItem value="medium">Orta</SelectItem>
+                    <SelectItem value="high">Yüksek</SelectItem>
+                    <SelectItem value="urgent">Acil</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* Address */}
+            <div className="space-y-2">
+              <Label htmlFor="address">Adres</Label>
+              <Textarea
+                id="address"
+                value={formData.address}
+                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                placeholder="Açık adres"
+                rows={2}
+              />
+            </div>
+
+            {/* Aid Type and Amount */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="aidType">Yardım Türü</Label>
+                <Select
+                  value={formData.aidType}
+                  onValueChange={(value) => setFormData({ ...formData, aidType: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Tür seçin" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Nakdi Yardım">Nakdi Yardım</SelectItem>
+                    <SelectItem value="Ayni Yardım">Ayni Yardım</SelectItem>
+                    <SelectItem value="Sağlık Yardımı">Sağlık Yardımı</SelectItem>
+                    <SelectItem value="Eğitim Yardımı">Eğitim Yardımı</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="requestedAmount">Talep Edilen Miktar (TL)</Label>
+                <Input
+                  id="requestedAmount"
+                  type="number"
+                  value={formData.requestedAmount || ''}
+                  onChange={(e) =>
+                    setFormData({ ...formData, requestedAmount: parseFloat(e.target.value) || 0 })
+                  }
+                  placeholder="0"
+                  min="0"
+                />
+              </div>
+            </div>
+
+            {/* Description */}
+            <div className="space-y-2">
+              <Label htmlFor="description">Açıklama</Label>
+              <Textarea
+                id="description"
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                placeholder="Yardım talebinin detayları"
+                rows={3}
+              />
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex justify-end gap-2 pt-4 border-t">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowCreateDialog(false)}
+                disabled={isSubmitting}
+              >
+                İptal
+              </Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? 'Kaydediliyor...' : 'Başvuru Oluştur'}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
     </PageLayout>
   );
 }

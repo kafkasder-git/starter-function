@@ -6,13 +6,23 @@
  */
 
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { PageLayout } from '../PageLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '../ui/dialog';
 import { Input } from '../ui/input';
+import { Label } from '../ui/label';
 import { Badge } from '../ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { Textarea } from '../ui/textarea';
 import {
   Gift,
   Search,
@@ -151,6 +161,21 @@ export function InKindAidTransactionsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const [showDeliveryDialog, setShowDeliveryDialog] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    recipientName: '',
+    recipientId: '',
+    itemCategory: 'Gıda',
+    itemDescription: '',
+    quantity: 1,
+    unit: 'Koli',
+    estimatedValue: 0,
+    deliveryDate: new Date().toISOString().split('T')[0],
+    deliveryMethod: 'delivery' as InKindTransaction['deliveryMethod'],
+    storageLocation: '',
+    notes: '',
+  });
 
   const getStatusBadge = (status: InKindTransaction['status']) => {
     const statusConfig = {
@@ -211,17 +236,76 @@ export function InKindAidTransactionsPage() {
     ).length,
   };
 
+  const handleExportReport = () => {
+    toast.success('Envanter raporu hazırlanıyor...');
+  };
+
+  const handleCreateDelivery = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!formData.recipientName || !formData.recipientId || !formData.itemDescription) {
+      toast.error('Lütfen zorunlu alanları doldurun');
+      return;
+    }
+    
+    try {
+      setIsSubmitting(true);
+      
+      // TODO: Integrate with actual API
+      // const result = await inKindAidService.createDelivery(formData);
+      
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Add to local state for demonstration
+      const newTransaction: InKindTransaction = {
+        id: Math.max(...transactions.map(t => t.id), 0) + 1,
+        transactionNumber: `AYT-${new Date().getFullYear()}-${String(transactions.length + 1).padStart(3, '0')}`,
+        ...formData,
+        deliveryDate: `${formData.deliveryDate} ${new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}`,
+        status: 'prepared',
+        processedBy: 'Sistem Kullanıcısı',
+        approvedBy: 'Bekliyor',
+      };
+      
+      setTransactions(prev => [newTransaction, ...prev]);
+      
+      toast.success('Teslimat kaydı başarıyla oluşturuldu!');
+      setShowDeliveryDialog(false);
+      
+      // Reset form
+      setFormData({
+        recipientName: '',
+        recipientId: '',
+        itemCategory: 'Gıda',
+        itemDescription: '',
+        quantity: 1,
+        unit: 'Koli',
+        estimatedValue: 0,
+        deliveryDate: new Date().toISOString().split('T')[0],
+        deliveryMethod: 'delivery',
+        storageLocation: '',
+        notes: '',
+      });
+      
+    } catch (error) {
+      toast.error('Teslimat kaydı oluşturulurken hata oluştu');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <PageLayout
       title="Ayni Yardım İşlemleri"
       subtitle="İhtiyaç sahiplerine gerçekleştirilen ayni yardım teslimatlarını görüntüleyin ve yönetin"
       actions={
         <div className="flex gap-2">
-          <Button variant="outline">
+          <Button variant="outline" onClick={handleExportReport}>
             <Download className="w-4 h-4 mr-2" />
             Envanter Raporu
           </Button>
-          <Button>
+          <Button onClick={() => setShowDeliveryDialog(true)}>
             <Plus className="w-4 h-4 mr-2" />
             İhtiyaç Sahibi İçin Yeni Teslimat
           </Button>
@@ -440,6 +524,194 @@ export function InKindAidTransactionsPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Delivery Dialog */}
+      <Dialog open={showDeliveryDialog} onOpenChange={setShowDeliveryDialog}>
+        <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Gift className="w-5 h-5" />
+              Yeni Ayni Yardım Teslimatı
+            </DialogTitle>
+            <DialogDescription>
+              İhtiyaç sahibi için yeni teslimat kaydı oluşturun. Zorunlu alanları (*) doldurmanız gereklidir.
+            </DialogDescription>
+          </DialogHeader>
+
+          <form onSubmit={handleCreateDelivery} className="space-y-4 py-4">
+            {/* Recipient Info */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="recipientName">
+                  Alıcı Adı <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="recipientName"
+                  value={formData.recipientName}
+                  onChange={(e) => setFormData({ ...formData, recipientName: e.target.value })}
+                  placeholder="İhtiyaç sahibinin adı"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="recipientId">
+                  T.C. Kimlik No <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="recipientId"
+                  value={formData.recipientId}
+                  onChange={(e) => setFormData({ ...formData, recipientId: e.target.value })}
+                  placeholder="11 haneli kimlik numarası"
+                  required
+                  maxLength={11}
+                />
+              </div>
+            </div>
+
+            {/* Item Info */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="itemCategory">Kategori</Label>
+                <Select
+                  value={formData.itemCategory}
+                  onValueChange={(value) => setFormData({ ...formData, itemCategory: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Kategori seçin" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Gıda">Gıda</SelectItem>
+                    <SelectItem value="Giyim">Giyim</SelectItem>
+                    <SelectItem value="Ev Eşyası">Ev Eşyası</SelectItem>
+                    <SelectItem value="Eğitim">Eğitim</SelectItem>
+                    <SelectItem value="Sağlık">Sağlık</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="deliveryMethod">Teslimat Yöntemi</Label>
+                <Select
+                  value={formData.deliveryMethod}
+                  onValueChange={(value: InKindTransaction['deliveryMethod']) =>
+                    setFormData({ ...formData, deliveryMethod: value })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Yöntem seçin" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="delivery">Kurye</SelectItem>
+                    <SelectItem value="pickup">Teslim Alındı</SelectItem>
+                    <SelectItem value="voucher">Voucher</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* Item Description */}
+            <div className="space-y-2">
+              <Label htmlFor="itemDescription">
+                Yardım Açıklaması <span className="text-red-500">*</span>
+              </Label>
+              <Textarea
+                id="itemDescription"
+                value={formData.itemDescription}
+                onChange={(e) => setFormData({ ...formData, itemDescription: e.target.value })}
+                placeholder="Teslim edilen yardımın detaylı açıklaması"
+                rows={2}
+                required
+              />
+            </div>
+
+            {/* Quantity and Value */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="quantity">Miktar</Label>
+                <Input
+                  id="quantity"
+                  type="number"
+                  value={formData.quantity || ''}
+                  onChange={(e) => setFormData({ ...formData, quantity: parseInt(e.target.value) || 1 })}
+                  placeholder="1"
+                  min="1"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="unit">Birim</Label>
+                <Input
+                  id="unit"
+                  value={formData.unit}
+                  onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
+                  placeholder="Koli, Paket, vb."
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="estimatedValue">Tahmini Değer (TL)</Label>
+                <Input
+                  id="estimatedValue"
+                  type="number"
+                  value={formData.estimatedValue || ''}
+                  onChange={(e) =>
+                    setFormData({ ...formData, estimatedValue: parseFloat(e.target.value) || 0 })
+                  }
+                  placeholder="0"
+                  min="0"
+                />
+              </div>
+            </div>
+
+            {/* Date and Location */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="deliveryDate">Teslimat Tarihi</Label>
+                <Input
+                  id="deliveryDate"
+                  type="date"
+                  value={formData.deliveryDate}
+                  onChange={(e) => setFormData({ ...formData, deliveryDate: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="storageLocation">Depo Lokasyonu</Label>
+                <Input
+                  id="storageLocation"
+                  value={formData.storageLocation}
+                  onChange={(e) => setFormData({ ...formData, storageLocation: e.target.value })}
+                  placeholder="Örn: Depo A-15"
+                />
+              </div>
+            </div>
+
+            {/* Notes */}
+            <div className="space-y-2">
+              <Label htmlFor="notes">Notlar</Label>
+              <Textarea
+                id="notes"
+                value={formData.notes}
+                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                placeholder="Ek notlar ve özel durumlar"
+                rows={2}
+              />
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex justify-end gap-2 pt-4 border-t">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowDeliveryDialog(false)}
+                disabled={isSubmitting}
+              >
+                İptal
+              </Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? 'Kaydediliyor...' : 'Teslimat Oluştur'}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
     </PageLayout>
   );
 }

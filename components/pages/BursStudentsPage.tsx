@@ -26,7 +26,10 @@ import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Input } from '../ui/input';
+import { Label } from '../ui/label';
+import { Textarea } from '../ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../ui/dialog';
 
 interface Student {
   id: number;
@@ -61,6 +64,19 @@ export function BursStudentsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [programFilter, setProgramFilter] = useState<string>('all');
+  const [showApplicationDialog, setShowApplicationDialog] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    student_name: '',
+    email: '',
+    phone: '',
+    school: '',
+    grade: '',
+    program: '',
+    scholarship_amount: 0,
+    gpa: 0,
+    notes: '',
+  });
 
   const students: Student[] = useMemo(
     () => [
@@ -176,7 +192,47 @@ export function BursStudentsPage() {
   };
 
   const handleNewStudent = () => {
-    toast.success('Yeni öğrenci ekleme formu açılıyor...');
+    setShowApplicationDialog(true);
+  };
+
+  const handleSubmitApplication = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!formData.student_name || !formData.email || !formData.school) {
+      toast.error('Öğrenci adı, e-posta ve okul alanları zorunludur');
+      return;
+    }
+    
+    try {
+      setIsSubmitting(true);
+      
+      // TODO: Integrate with actual API
+      // const result = await scholarshipService.createApplication(formData);
+      
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      toast.success('Burs başvurusu başarıyla oluşturuldu!');
+      setShowApplicationDialog(false);
+      
+      // Reset form
+      setFormData({
+        student_name: '',
+        email: '',
+        phone: '',
+        school: '',
+        grade: '',
+        program: '',
+        scholarship_amount: 0,
+        gpa: 0,
+        notes: '',
+      });
+      
+    } catch (error) {
+      toast.error('Başvuru oluşturulurken hata oluştu');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleBulkAction = () => {
@@ -406,6 +462,156 @@ export function BursStudentsPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* Application Dialog */}
+      <Dialog open={showApplicationDialog} onOpenChange={setShowApplicationDialog}>
+        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <GraduationCap className="w-5 h-5" />
+              Yeni Burs Başvurusu
+            </DialogTitle>
+            <DialogDescription>
+              Öğrenci bilgilerini doldurun ve burs başvurusunu oluşturun.
+            </DialogDescription>
+          </DialogHeader>
+
+          <form onSubmit={handleSubmitApplication} className="space-y-4 py-4">
+            {/* Student Name */}
+            <div className="space-y-2">
+              <Label htmlFor="student_name">
+                Öğrenci Adı <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="student_name"
+                value={formData.student_name}
+                onChange={(e) => setFormData({ ...formData, student_name: e.target.value })}
+                placeholder="Öğrencinin tam adı"
+                required
+              />
+            </div>
+
+            {/* Contact Information */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">
+                  E-posta <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  placeholder="ogrenci@email.com"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone">Telefon</Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  placeholder="05XX XXX XX XX"
+                />
+              </div>
+            </div>
+
+            {/* School Information */}
+            <div className="space-y-2">
+              <Label htmlFor="school">
+                Okul <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="school"
+                value={formData.school}
+                onChange={(e) => setFormData({ ...formData, school: e.target.value })}
+                placeholder="Üniversite veya okul adı"
+                required
+              />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="grade">Sınıf</Label>
+                <Input
+                  id="grade"
+                  value={formData.grade}
+                  onChange={(e) => setFormData({ ...formData, grade: e.target.value })}
+                  placeholder="Örn: 3. Sınıf"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="program">Bölüm</Label>
+                <Input
+                  id="program"
+                  value={formData.program}
+                  onChange={(e) => setFormData({ ...formData, program: e.target.value })}
+                  placeholder="Örn: Bilgisayar Mühendisliği"
+                />
+              </div>
+            </div>
+
+            {/* Scholarship Details */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="scholarship_amount">Burs Tutarı (TL)</Label>
+                <Input
+                  id="scholarship_amount"
+                  type="number"
+                  value={formData.scholarship_amount || ''}
+                  onChange={(e) =>
+                    setFormData({ ...formData, scholarship_amount: parseFloat(e.target.value) || 0 })
+                  }
+                  placeholder="1500"
+                  min="0"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="gpa">Not Ortalaması (GPA)</Label>
+                <Input
+                  id="gpa"
+                  type="number"
+                  step="0.01"
+                  value={formData.gpa || ''}
+                  onChange={(e) => setFormData({ ...formData, gpa: parseFloat(e.target.value) || 0 })}
+                  placeholder="3.45"
+                  min="0"
+                  max="4"
+                />
+              </div>
+            </div>
+
+            {/* Notes */}
+            <div className="space-y-2">
+              <Label htmlFor="notes">Notlar</Label>
+              <Textarea
+                id="notes"
+                value={formData.notes}
+                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                placeholder="Ek bilgiler ve notlar"
+                rows={3}
+              />
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex justify-end gap-2 pt-4 border-t">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowApplicationDialog(false)}
+                disabled={isSubmitting}
+              >
+                İptal
+              </Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? 'Kaydediliyor...' : 'Başvuru Oluştur'}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -17,12 +17,22 @@ import {
   User,
 } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '../ui/dialog';
 import { Input } from '../ui/input';
+import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
+import { Textarea } from '../ui/textarea';
 
 interface LegalDocument {
   id: number;
@@ -51,6 +61,15 @@ export function LegalDocumentsPage() {
   const [filterType, setFilterType] = useState<string>('all');
   const [filterCategory, setFilterCategory] = useState<string>('all');
   const [activeTab, setActiveTab] = useState('all');
+  const [showUploadDialog, setShowUploadDialog] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    type: 'sozlesme' as LegalDocument['type'],
+    category: 'medeni' as LegalDocument['category'],
+    relatedCase: '',
+    description: '',
+  });
 
   const filteredDocuments = documents.filter((doc) => {
     const matchesSearch =
@@ -102,6 +121,42 @@ export function LegalDocumentsPage() {
   const approvedDocs = documents.filter((d) => d.status === 'onaylandi').length;
   const pendingDocs = documents.filter((d) => d.status === 'bekliyor').length;
 
+  const handleUpload = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!formData.name || !formData.type || !formData.category) {
+      toast.error('Lütfen zorunlu alanları doldurun');
+      return;
+    }
+    
+    try {
+      setIsSubmitting(true);
+      
+      // TODO: Integrate with actual API
+      // const result = await legalDocumentsService.uploadDocument(formData);
+      
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      toast.success('Belge başarıyla yüklendi!');
+      setShowUploadDialog(false);
+      
+      // Reset form
+      setFormData({
+        name: '',
+        type: 'sozlesme',
+        category: 'medeni',
+        relatedCase: '',
+        description: '',
+      });
+      
+    } catch (error) {
+      toast.error('Belge yüklenirken hata oluştu');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="flex-1 space-y-4 p-4 sm:space-y-6 sm:p-6">
       {/* Header */}
@@ -110,7 +165,7 @@ export function LegalDocumentsPage() {
           <h1 className="text-2xl font-medium">Hukuki Belgeler</h1>
           <p className="text-muted-foreground mt-1">Hukuki belge yönetimi ve arşiv sistemi</p>
         </div>
-        <Button className="gap-2 w-full sm:w-auto">
+        <Button className="gap-2 w-full sm:w-auto" onClick={() => setShowUploadDialog(true)}>
           <Upload className="w-4 h-4" />
           Belge Yükle
         </Button>
@@ -281,6 +336,138 @@ export function LegalDocumentsPage() {
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* Upload Dialog */}
+      <Dialog open={showUploadDialog} onOpenChange={setShowUploadDialog}>
+        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Upload className="w-5 h-5" />
+              Belge Yükle
+            </DialogTitle>
+            <DialogDescription>
+              Hukuki belge bilgilerini doldurun. Zorunlu alanları (*) doldurmanız gereklidir.
+            </DialogDescription>
+          </DialogHeader>
+
+          <form onSubmit={handleUpload} className="space-y-4 py-4">
+            {/* Document Name */}
+            <div className="space-y-2">
+              <Label htmlFor="name">
+                Belge Adı <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="name"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                placeholder="Örn: İdare Mahkemesi Dilekçesi"
+                required
+              />
+            </div>
+
+            {/* Type and Category */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="type">
+                  Belge Türü <span className="text-red-500">*</span>
+                </Label>
+                <Select
+                  value={formData.type}
+                  onValueChange={(value: LegalDocument['type']) => setFormData({ ...formData, type: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Tür seçin" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="sozlesme">Sözleşme</SelectItem>
+                    <SelectItem value="dilekce">Dilekçe</SelectItem>
+                    <SelectItem value="karar">Karar</SelectItem>
+                    <SelectItem value="tutanak">Tutanak</SelectItem>
+                    <SelectItem value="rapor">Rapor</SelectItem>
+                    <SelectItem value="diger">Diğer</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="category">
+                  Kategori <span className="text-red-500">*</span>
+                </Label>
+                <Select
+                  value={formData.category}
+                  onValueChange={(value: LegalDocument['category']) =>
+                    setFormData({ ...formData, category: value })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Kategori seçin" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="medeni">Medeni</SelectItem>
+                    <SelectItem value="ceza">Ceza</SelectItem>
+                    <SelectItem value="is">İş</SelectItem>
+                    <SelectItem value="idare">İdare</SelectItem>
+                    <SelectItem value="ticaret">Ticaret</SelectItem>
+                    <SelectItem value="aile">Aile</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* Related Case */}
+            <div className="space-y-2">
+              <Label htmlFor="relatedCase">İlgili Dava Numarası</Label>
+              <Input
+                id="relatedCase"
+                value={formData.relatedCase}
+                onChange={(e) => setFormData({ ...formData, relatedCase: e.target.value })}
+                placeholder="Örn: 2024/123"
+              />
+            </div>
+
+            {/* Description */}
+            <div className="space-y-2">
+              <Label htmlFor="description">Açıklama</Label>
+              <Textarea
+                id="description"
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                placeholder="Belge hakkında ek bilgiler"
+                rows={3}
+              />
+            </div>
+
+            {/* File Upload Input */}
+            <div className="space-y-2">
+              <Label htmlFor="file">Dosya Seç</Label>
+              <Input
+                id="file"
+                type="file"
+                accept=".pdf,.doc,.docx"
+                className="cursor-pointer"
+              />
+              <p className="text-xs text-muted-foreground">
+                Desteklenen formatlar: PDF, DOC, DOCX (Maks. 10MB)
+              </p>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex justify-end gap-2 pt-4 border-t">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowUploadDialog(false)}
+                disabled={isSubmitting}
+              >
+                İptal
+              </Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? 'Yükleniyor...' : 'Belge Yükle'}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

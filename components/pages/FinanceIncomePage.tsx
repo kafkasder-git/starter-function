@@ -24,8 +24,18 @@ import { MobileInfoCard, ResponsiveCardGrid } from '../ResponsiveCard';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '../ui/dialog';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
 import { Progress } from '../ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { Textarea } from '../ui/textarea';
 
 interface Transaction {
   id: number;
@@ -55,6 +65,16 @@ export function FinanceIncomePage() {
   const isMobile = useIsMobile();
   const [selectedPeriod, setSelectedPeriod] = useState('thisMonth');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [showTransactionDialog, setShowTransactionDialog] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    type: 'income' as 'income' | 'expense',
+    category: '',
+    description: '',
+    amount: 0,
+    date: new Date().toISOString().split('T')[0],
+    paymentMethod: 'bank' as Transaction['paymentMethod'],
+  });
 
   // Mock data kaldırıldı - gerçek veriler API'den gelecek
   const transactions: Transaction[] = useMemo(() => [], []);
@@ -119,11 +139,48 @@ export function FinanceIncomePage() {
   const expenseCategories = categoryBreakdown.filter((c) => c.type === 'expense');
 
   const handleNewTransaction = () => {
-    toast.success('Yeni işlem ekleme formu açılıyor...');
+    setShowTransactionDialog(true);
   };
 
   const handleExportReport = () => {
     toast.success('Mali rapor Excel formatında dışa aktarılıyor...');
+  };
+
+  const handleSubmitTransaction = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!formData.category || !formData.description || formData.amount <= 0) {
+      toast.error('Lütfen tüm zorunlu alanları doldurun');
+      return;
+    }
+    
+    try {
+      setIsSubmitting(true);
+      
+      // TODO: Integrate with actual API
+      // const result = await financeService.createTransaction(formData);
+      
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      toast.success('İşlem başarıyla kaydedildi!');
+      setShowTransactionDialog(false);
+      
+      // Reset form
+      setFormData({
+        type: 'income',
+        category: '',
+        description: '',
+        amount: 0,
+        date: new Date().toISOString().split('T')[0],
+        paymentMethod: 'bank',
+      });
+      
+    } catch (error) {
+      toast.error('İşlem kaydedilirken hata oluştu');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const getPaymentMethodIcon = (method: Transaction['paymentMethod']) => {
@@ -399,6 +456,141 @@ export function FinanceIncomePage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Transaction Dialog */}
+      <Dialog open={showTransactionDialog} onOpenChange={setShowTransactionDialog}>
+        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Plus className="w-5 h-5" />
+              Yeni Gelir/Gider İşlemi
+            </DialogTitle>
+            <DialogDescription>
+              Yeni bir gelir veya gider işlemi kaydedin. Zorunlu alanları (*) doldurmanız gereklidir.
+            </DialogDescription>
+          </DialogHeader>
+
+          <form onSubmit={handleSubmitTransaction} className="space-y-4 py-4">
+            {/* Transaction Type */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="type">
+                  İşlem Türü <span className="text-red-500">*</span>
+                </Label>
+                <Select
+                  value={formData.type}
+                  onValueChange={(value: 'income' | 'expense') =>
+                    setFormData({ ...formData, type: value })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Tür seçin" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="income">Gelir</SelectItem>
+                    <SelectItem value="expense">Gider</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="date">
+                  Tarih <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="date"
+                  type="date"
+                  value={formData.date}
+                  onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Category */}
+            <div className="space-y-2">
+              <Label htmlFor="category">
+                Kategori <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="category"
+                value={formData.category}
+                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                placeholder="Örn: Bağış, Aidat, Kira, Maaş"
+                required
+              />
+            </div>
+
+            {/* Description */}
+            <div className="space-y-2">
+              <Label htmlFor="description">
+                Açıklama <span className="text-red-500">*</span>
+              </Label>
+              <Textarea
+                id="description"
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                placeholder="İşlem detayları"
+                rows={3}
+                required
+              />
+            </div>
+
+            {/* Amount and Payment Method */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="amount">
+                  Tutar (TL) <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="amount"
+                  type="number"
+                  value={formData.amount || ''}
+                  onChange={(e) => setFormData({ ...formData, amount: parseFloat(e.target.value) || 0 })}
+                  placeholder="0.00"
+                  min="0"
+                  step="0.01"
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="paymentMethod">Ödeme Yöntemi</Label>
+                <Select
+                  value={formData.paymentMethod}
+                  onValueChange={(value: Transaction['paymentMethod']) =>
+                    setFormData({ ...formData, paymentMethod: value })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Yöntem seçin" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="cash">Nakit</SelectItem>
+                    <SelectItem value="bank">Banka</SelectItem>
+                    <SelectItem value="card">Kart</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex justify-end gap-2 pt-4 border-t">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowTransactionDialog(false)}
+                disabled={isSubmitting}
+              >
+                İptal
+              </Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? 'Kaydediliyor...' : 'İşlemi Kaydet'}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
