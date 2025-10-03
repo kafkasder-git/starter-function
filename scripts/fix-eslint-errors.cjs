@@ -1,4 +1,3 @@
-
 /**
  * ESLint Error Fixing Script
  * Automatically fixes common ESLint errors
@@ -17,7 +16,7 @@ const filesToFix = [
   'utils',
   'middleware',
   'stores',
-  'types'
+  'types',
 ];
 
 function shouldSkipFile(filePath) {
@@ -37,10 +36,10 @@ function fixESLintErrors(content) {
   let hasChanges = false;
 
   // Fix 1: Remove duplicate imports
-  const importLines = newContent.split('\n').filter(line => line.trim().startsWith('import'));
+  const importLines = newContent.split('\n').filter((line) => line.trim().startsWith('import'));
   const uniqueImports = new Set();
   const deduplicatedImports = [];
-  
+
   for (const line of importLines) {
     if (!uniqueImports.has(line.trim())) {
       uniqueImports.add(line.trim());
@@ -50,7 +49,7 @@ function fixESLintErrors(content) {
 
   // Fix 2: Replace || with ?? for nullish coalescing
   newContent = newContent.replace(/\|\|/g, '??');
-  
+
   // Fix 3: Remove unnecessary optional chains
   newContent = newContent.replace(/\?\.\w+\?\?/g, (match) => {
     return match.replace(/\?\?/g, '');
@@ -116,17 +115,17 @@ function fixFile(filePath) {
 
 function findFiles(dir, extensions = ['.ts', '.tsx', '.js', '.jsx']) {
   const files = [];
-  
+
   try {
     const items = fs.readdirSync(dir);
-    
+
     for (const item of items) {
       const fullPath = path.join(dir, item);
       const stat = fs.statSync(fullPath);
-      
+
       if (stat.isDirectory() && !shouldSkipFile(fullPath)) {
         files.push(...findFiles(fullPath, extensions));
-      } else if (stat.isFile() && extensions.some(ext => item.endsWith(ext))) {
+      } else if (stat.isFile() && extensions.some((ext) => item.endsWith(ext))) {
         if (!shouldSkipFile(fullPath)) {
           files.push(fullPath);
         }
@@ -135,23 +134,23 @@ function findFiles(dir, extensions = ['.ts', '.tsx', '.js', '.jsx']) {
   } catch (error) {
     console.error(`Error reading directory ${dir}:`, error.message);
   }
-  
+
   return files;
 }
 
 function main() {
   console.log('🚀 Starting ESLint error fixing...\n');
-  
+
   let totalFiles = 0;
   let fixedFiles = 0;
-  
+
   for (const dir of filesToFix) {
     if (fs.existsSync(dir)) {
       const files = findFiles(dir);
       totalFiles += files.length;
-      
+
       console.log(`📁 Processing ${dir} (${files.length} files)...`);
-      
+
       for (const file of files) {
         if (fixFile(file)) {
           fixedFiles++;
@@ -161,8 +160,8 @@ function main() {
       console.log(`⚠️  Directory not found: ${dir}`);
     }
   }
-  
-  console.log(`\n🎉 ESLint fixing complete!`);
+
+  console.log('\n🎉 ESLint fixing complete!');
   console.log(`📊 Total files processed: ${totalFiles}`);
   console.log(`✅ Files fixed: ${fixedFiles}`);
   console.log(`📝 Files unchanged: ${totalFiles - fixedFiles}`);

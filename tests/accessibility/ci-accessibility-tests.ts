@@ -1,5 +1,7 @@
-
-import { runReportingAccessibilityTests, type AccessibilityTestReport } from './accessibility-test-runner';
+import {
+  runReportingAccessibilityTests,
+  type AccessibilityTestReport,
+} from './accessibility-test-runner';
 import { logger } from '../../lib/logging';
 import { JSDOM } from 'jsdom';
 import fs from 'fs';

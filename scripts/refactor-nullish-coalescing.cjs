@@ -1,4 +1,3 @@
-
 /**
  * Nullish Coalescing Refactoring Script
  * Replaces || with ?? for better null/undefined handling
@@ -15,7 +14,7 @@ const filesToRefactor = [
   'contexts',
   'lib',
   'utils',
-  'middleware'
+  'middleware',
 ];
 
 function shouldSkipFile(filePath) {
@@ -45,7 +44,7 @@ function refactorNullishCoalescing(content) {
     // Function calls
     { from: /(\w+\(\))\s*\|\|\s*(\w+)/g, to: '$1 ?? $2' },
     // String literals
-    { from: /(\w+)\s*\|\|\s*['"]([^'"]*)['"]/g, to: '$1 ?? \'$2\'' },
+    { from: /(\w+)\s*\|\|\s*['"]([^'"]*)['"]/g, to: "$1 ?? '$2'" },
     // Numbers
     { from: /(\w+)\s*\|\|\s*(\d+)/g, to: '$1 ?? $2' },
     // Boolean values
@@ -85,17 +84,17 @@ function refactorFile(filePath) {
 
 function findFiles(dir, extensions = ['.ts', '.tsx', '.js', '.jsx']) {
   const files = [];
-  
+
   try {
     const items = fs.readdirSync(dir);
-    
+
     for (const item of items) {
       const fullPath = path.join(dir, item);
       const stat = fs.statSync(fullPath);
-      
+
       if (stat.isDirectory() && !shouldSkipFile(fullPath)) {
         files.push(...findFiles(fullPath, extensions));
-      } else if (stat.isFile() && extensions.some(ext => item.endsWith(ext))) {
+      } else if (stat.isFile() && extensions.some((ext) => item.endsWith(ext))) {
         if (!shouldSkipFile(fullPath)) {
           files.push(fullPath);
         }
@@ -104,23 +103,23 @@ function findFiles(dir, extensions = ['.ts', '.tsx', '.js', '.jsx']) {
   } catch (error) {
     console.error(`Error reading directory ${dir}:`, error.message);
   }
-  
+
   return files;
 }
 
 function main() {
   console.log('🚀 Starting nullish coalescing refactoring...\n');
-  
+
   let totalFiles = 0;
   let refactoredFiles = 0;
-  
+
   for (const dir of filesToRefactor) {
     if (fs.existsSync(dir)) {
       const files = findFiles(dir);
       totalFiles += files.length;
-      
+
       console.log(`📁 Processing ${dir} (${files.length} files)...`);
-      
+
       for (const file of files) {
         if (refactorFile(file)) {
           refactoredFiles++;
@@ -130,8 +129,8 @@ function main() {
       console.log(`⚠️  Directory not found: ${dir}`);
     }
   }
-  
-  console.log(`\n🎉 Refactoring complete!`);
+
+  console.log('\n🎉 Refactoring complete!');
   console.log(`📊 Total files processed: ${totalFiles}`);
   console.log(`✅ Files refactored: ${refactoredFiles}`);
   console.log(`📝 Files unchanged: ${totalFiles - refactoredFiles}`);
