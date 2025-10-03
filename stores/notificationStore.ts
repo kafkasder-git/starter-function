@@ -103,7 +103,7 @@ export const useNotificationStore = create<NotificationStoreState & Notification
     {
       name: 'notification-storage',
       storage: createJSONStorage(() => localStorage),
-      onRehydrateStorage: (state) => {
+      onRehydrateStorage: (_state) => {
         return (hydratedState, error) => {
           if (error) {
             console.error('An error occurred during hydration:', error);

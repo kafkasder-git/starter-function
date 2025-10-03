@@ -205,7 +205,7 @@ export const useUIStore = create<UIStore>()(
   devtools(
     subscribeWithSelector(
       persist(
-        immer((set, get) => ({
+        immer((set, _get) => ({
           ...defaultSettings,
 
           // Layout actions

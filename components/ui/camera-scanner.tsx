@@ -200,10 +200,10 @@ export function CameraScanner({
                 {/* Tarama Çerçevesi */}
                 {isScanning && (
                   <div className="absolute inset-4 border-2 border-blue-500 rounded-lg pointer-events-none">
-                    <div className="absolute top-2 left-2 w-6 h-6 border-t-2 border-l-2 border-blue-500"></div>
-                    <div className="absolute top-2 right-2 w-6 h-6 border-t-2 border-r-2 border-blue-500"></div>
-                    <div className="absolute bottom-2 left-2 w-6 h-6 border-b-2 border-l-2 border-blue-500"></div>
-                    <div className="absolute bottom-2 right-2 w-6 h-6 border-b-2 border-r-2 border-blue-500"></div>
+                    <div className="absolute top-2 left-2 w-6 h-6 border-t-2 border-l-2 border-blue-500" />
+                    <div className="absolute top-2 right-2 w-6 h-6 border-t-2 border-r-2 border-blue-500" />
+                    <div className="absolute bottom-2 left-2 w-6 h-6 border-b-2 border-l-2 border-blue-500" />
+                    <div className="absolute bottom-2 right-2 w-6 h-6 border-b-2 border-r-2 border-blue-500" />
                   </div>
                 )}
               </div>

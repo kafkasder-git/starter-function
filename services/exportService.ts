@@ -12,15 +12,16 @@ import type {
   ReportResponse,
   AnalyticsData,
   FinancialData,
+  ExportFormat,
 } from '../types/reporting';
-import { ExportFormat } from '../types/reporting';
 
-import type { ExportDataOptions, OptimizationOptions } from './exportUtils';
 import {
   ChartExportUtils,
   DataFormattingUtils,
   OptimizationUtils,
   ExportTemplateUtils,
+  type ExportDataOptions,
+  type OptimizationOptions,
 } from './exportUtils';
 
 /**
@@ -303,8 +304,8 @@ export class ExportService {
     data: T,
     config: ExportConfig,
     exportId: string,
-    needsOptimization: boolean,
-    optimizationOptions: OptimizationOptions,
+    _needsOptimization: boolean,
+    _optimizationOptions: OptimizationOptions,
   ): Promise<ExportResult> {
     this.updateProgress(exportId, {
       stage: 'formatting',

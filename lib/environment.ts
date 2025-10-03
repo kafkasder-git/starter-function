@@ -182,10 +182,10 @@ Bu eksiklikler giderilmezse uygulama çalışmayacaktır!
       `;
       document.body.appendChild(errorDiv);
       return; // Don't throw in production
-    } else {
+    } 
       // Only throw in build/server environments
       throw new Error(errorMessage);
-    }
+    
   }
 
   // Security check - hardcoded credentials kontrolü (test ortamında disable)

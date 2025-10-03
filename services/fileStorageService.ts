@@ -235,7 +235,7 @@ export class FileStorageService {
 
       const existingBuckets = buckets?.map((b) => b.name) || [];
 
-      for (const [key, config] of Object.entries(this.config.buckets)) {
+      for (const [_key, config] of Object.entries(this.config.buckets)) {
         if (!existingBuckets.includes(config.name)) {
           const { error: createError } = await supabase.storage.createBucket(config.name, {
             public: config.isPublic,
@@ -506,7 +506,7 @@ export class FileStorageService {
       return result;
     } catch (error) {
       const processingTime = Date.now() - startTime;
-      const errorResult: FileListResult = {
+      const _errorResult: FileListResult = {
         files: [],
         total: 0,
         hasMore: false,
@@ -593,7 +593,7 @@ export class FileStorageService {
   async downloadFile(
     bucket: string,
     filePath: string,
-    options: FileDownloadOptions = {},
+    _options: FileDownloadOptions = {},
   ): Promise<Blob | null> {
     const startTime = Date.now();
 
@@ -735,7 +735,7 @@ export class FileStorageService {
       }
 
       // Upload to target
-      const { data, error: uploadError } = await supabase.storage
+      const { data: _data, error: uploadError } = await supabase.storage
         .from(targetBucket)
         .upload(targetPath, sourceFile, {
           cacheControl: '3600',
@@ -883,7 +883,7 @@ export class FileStorageService {
     };
 
     // Get stats for each bucket
-    for (const [key, config] of Object.entries(this.config.buckets)) {
+    for (const [_key, config] of Object.entries(this.config.buckets)) {
       try {
         const { data: files } = await supabase.storage.from(config.name).list('', { limit: 1000 });
 
@@ -916,7 +916,7 @@ export class FileStorageService {
 
     try {
       // Test bucket access
-      for (const [key, config] of Object.entries(this.config.buckets)) {
+      for (const [_key, config] of Object.entries(this.config.buckets)) {
         try {
           const { error } = await supabase.storage.from(config.name).list('', { limit: 1 });
 

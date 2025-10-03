@@ -264,7 +264,7 @@ export default function BeneficiaryForm({
             </div>
             <Button
               type="button"
-              onClick={() => setIsCameraOpen(true)}
+              onClick={() => { setIsCameraOpen(true); }}
               variant="outline"
               className="flex items-center gap-2 border-blue-300 text-blue-700 hover:bg-blue-100"
             >
@@ -788,7 +788,7 @@ export default function BeneficiaryForm({
       {/* Kamera Tarama Modal */}
       <CameraScanner
         isOpen={isCameraOpen}
-        onClose={() => setIsCameraOpen(false)}
+        onClose={() => { setIsCameraOpen(false); }}
         onScanComplete={handleOCRResult}
         title="Kimlik/Pasaport Tarama"
       />

@@ -8,8 +8,7 @@
 import type { ReactNode } from 'react';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import type { AuthContextType, AuthState, LoginCredentials, Permission, User } from '../types/auth';
-import { ROLE_PERMISSIONS, UserRole } from '../types/auth';
+import type { AuthContextType, AuthState, LoginCredentials, Permission , UserRole } from '../types/auth';
 
 import { logger } from '../lib/logging/logger';
 const AuthContext = createContext<AuthContextType | undefined>(undefined);

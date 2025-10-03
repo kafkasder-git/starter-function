@@ -7,8 +7,7 @@
 
 // Centralized Error Handling for Services
 
-import type { ApiResponse } from './config';
-import { ServiceError, ServiceErrorCode } from './config';
+import { ServiceError, ServiceErrorCode, type ApiResponse } from './config';
 
 import { logger } from '../lib/logging/logger';
 /**

@@ -43,7 +43,7 @@ class OCRService {
    */
   async checkCameraSupport(): Promise<boolean> {
     try {
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      if (!navigator.mediaDevices?.getUserMedia) {
         logger.warn('Kamera API desteklenmiyor');
         return false;
       }
@@ -94,7 +94,7 @@ class OCRService {
   stopCamera(): void {
     try {
       if (this.mediaStream) {
-        this.mediaStream.getTracks().forEach(track => track.stop());
+        this.mediaStream.getTracks().forEach(track => { track.stop(); });
         this.mediaStream = null;
       }
       

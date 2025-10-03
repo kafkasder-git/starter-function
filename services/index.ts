@@ -253,11 +253,7 @@ export type {
 // =============================================================================
 
 // Service factory for creating service instances with configuration
-export const createServices = (_config?: {
-  baseUrl?: string;
-  timeout?: number;
-  retryAttempts?: number;
-}) => {
+export const createServices = () => {
   // TODO: Use _config parameter for service configuration
   // Return configured service instances
   return {

@@ -12,6 +12,7 @@
     "test:coverage": "vitest --coverage",
     "test:ui": "vitest --ui",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint:app": "eslint components services contexts hooks lib stores types utils --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "lint:check": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "eslint . --ext ts,tsx --fix",
     "lint:quality": "eslint --config eslint.config.quality.js .",

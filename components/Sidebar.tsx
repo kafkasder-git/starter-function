@@ -9,7 +9,6 @@ import {
   BarChart3,
   Building2,
   Calendar,
-  Database,
   GraduationCap,
   Heart,
   HelpingHand,
