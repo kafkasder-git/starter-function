@@ -133,7 +133,7 @@ function validateEnvironment(): void {
     return;
   }
 
-  const requiredVars = ['VITE_SUPABASE_URL', 'VITE_SUPABASE_ANON_KEY', 'VITE_CSRF_SECRET'];
+  const requiredVars = ['VITE_SUPABASE_URL', 'VITE_SUPABASE_ANON_KEY'];
 
   const missingVars: string[] = [];
 
@@ -265,7 +265,6 @@ export const environment: EnvironmentConfig = {
   supabase: {
     url: getEnvVar('VITE_SUPABASE_URL'),
     anonKey: getEnvVar('VITE_SUPABASE_ANON_KEY'),
-    serviceRoleKey: getEnvVar('VITE_SUPABASE_SERVICE_ROLE_KEY', ''),
   },
 
   features: {
