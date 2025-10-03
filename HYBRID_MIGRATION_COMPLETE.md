@@ -101,12 +101,7 @@ interface Member {
   gender?: 'male' | 'female' | 'other';
   city?: string;
   membership_number: string; // Auto-generated
-  membership_status?:
-    | 'active'
-    | 'inactive'
-    | 'suspended'
-    | 'expired'
-    | 'pending';
+  membership_status?: 'active' | 'inactive' | 'suspended' | 'expired' | 'pending';
   volunteer_hours?: number;
   contribution_amount?: number;
   // ... ve 40+ alan daha
