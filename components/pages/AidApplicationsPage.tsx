@@ -1,6 +1,6 @@
 /**
  * @fileoverview AidApplicationsPage Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -24,13 +24,7 @@ import { PageLayout } from '../PageLayout';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '../ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../ui/dialog';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
@@ -121,7 +115,7 @@ const mockApplications: AidApplication[] = [
 
 /**
  * AidApplicationsPage function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -196,34 +190,34 @@ export function AidApplicationsPage() {
 
   const handleCreateApplication = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.applicantName || !formData.applicantId || !formData.phone) {
       toast.error('Lütfen zorunlu alanları doldurun');
       return;
     }
-    
+
     try {
       setIsSubmitting(true);
-      
+
       // TODO: Integrate with actual API
       // const result = await aidApplicationsService.createApplication(formData);
-      
+
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       // Add to local state for demonstration
       const newApplication: AidApplication = {
-        id: Math.max(...applications.map(a => a.id), 0) + 1,
+        id: Math.max(...applications.map((a) => a.id), 0) + 1,
         ...formData,
         applicationDate: new Date().toISOString().split('T')[0],
         status: 'pending',
       };
-      
-      setApplications(prev => [newApplication, ...prev]);
-      
+
+      setApplications((prev) => [newApplication, ...prev]);
+
       toast.success('Başvuru başarıyla oluşturuldu!');
       setShowCreateDialog(false);
-      
+
       // Reset form
       setFormData({
         applicantName: '',
@@ -235,7 +229,6 @@ export function AidApplicationsPage() {
         priority: 'medium',
         description: '',
       });
-      
     } catch (error) {
       toast.error('Başvuru oluşturulurken hata oluştu');
     } finally {

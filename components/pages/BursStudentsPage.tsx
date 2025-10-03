@@ -1,6 +1,6 @@
 /**
  * @fileoverview BursStudentsPage Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -55,7 +55,7 @@ interface StudentStats {
 
 /**
  * BursStudentsPage function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -197,24 +197,24 @@ export function BursStudentsPage() {
 
   const handleSubmitApplication = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.student_name || !formData.email || !formData.school) {
       toast.error('Öğrenci adı, e-posta ve okul alanları zorunludur');
       return;
     }
-    
+
     try {
       setIsSubmitting(true);
-      
+
       // TODO: Integrate with actual API
       // const result = await scholarshipService.createApplication(formData);
-      
+
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       toast.success('Burs başvurusu başarıyla oluşturuldu!');
       setShowApplicationDialog(false);
-      
+
       // Reset form
       setFormData({
         student_name: '',
@@ -227,7 +227,6 @@ export function BursStudentsPage() {
         gpa: 0,
         notes: '',
       });
-      
     } catch (error) {
       toast.error('Başvuru oluşturulurken hata oluştu');
     } finally {
@@ -562,7 +561,10 @@ export function BursStudentsPage() {
                   type="number"
                   value={formData.scholarship_amount || ''}
                   onChange={(e) =>
-                    setFormData({ ...formData, scholarship_amount: parseFloat(e.target.value) || 0 })
+                    setFormData({
+                      ...formData,
+                      scholarship_amount: parseFloat(e.target.value) || 0,
+                    })
                   }
                   placeholder="1500"
                   min="0"
@@ -575,7 +577,9 @@ export function BursStudentsPage() {
                   type="number"
                   step="0.01"
                   value={formData.gpa || ''}
-                  onChange={(e) => setFormData({ ...formData, gpa: parseFloat(e.target.value) || 0 })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, gpa: parseFloat(e.target.value) || 0 })
+                  }
                   placeholder="3.45"
                   min="0"
                   max="4"

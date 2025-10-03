@@ -1,6 +1,6 @@
 /**
  * @fileoverview InKindAidTransactionsPage Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -10,13 +10,7 @@ import { toast } from 'sonner';
 import { PageLayout } from '../PageLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '../ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../ui/dialog';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Badge } from '../ui/badge';
@@ -152,7 +146,7 @@ const mockTransactions: InKindTransaction[] = [
 
 /**
  * InKindAidTransactionsPage function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -242,24 +236,24 @@ export function InKindAidTransactionsPage() {
 
   const handleCreateDelivery = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.recipientName || !formData.recipientId || !formData.itemDescription) {
       toast.error('Lütfen zorunlu alanları doldurun');
       return;
     }
-    
+
     try {
       setIsSubmitting(true);
-      
+
       // TODO: Integrate with actual API
       // const result = await inKindAidService.createDelivery(formData);
-      
+
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       // Add to local state for demonstration
       const newTransaction: InKindTransaction = {
-        id: Math.max(...transactions.map(t => t.id), 0) + 1,
+        id: Math.max(...transactions.map((t) => t.id), 0) + 1,
         transactionNumber: `AYT-${new Date().getFullYear()}-${String(transactions.length + 1).padStart(3, '0')}`,
         ...formData,
         deliveryDate: `${formData.deliveryDate} ${new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}`,
@@ -267,12 +261,12 @@ export function InKindAidTransactionsPage() {
         processedBy: 'Sistem Kullanıcısı',
         approvedBy: 'Bekliyor',
       };
-      
-      setTransactions(prev => [newTransaction, ...prev]);
-      
+
+      setTransactions((prev) => [newTransaction, ...prev]);
+
       toast.success('Teslimat kaydı başarıyla oluşturuldu!');
       setShowDeliveryDialog(false);
-      
+
       // Reset form
       setFormData({
         recipientName: '',
@@ -287,7 +281,6 @@ export function InKindAidTransactionsPage() {
         storageLocation: '',
         notes: '',
       });
-      
     } catch (error) {
       toast.error('Teslimat kaydı oluşturulurken hata oluştu');
     } finally {
@@ -534,7 +527,8 @@ export function InKindAidTransactionsPage() {
               Yeni Ayni Yardım Teslimatı
             </DialogTitle>
             <DialogDescription>
-              İhtiyaç sahibi için yeni teslimat kaydı oluşturun. Zorunlu alanları (*) doldurmanız gereklidir.
+              İhtiyaç sahibi için yeni teslimat kaydı oluşturun. Zorunlu alanları (*) doldurmanız
+              gereklidir.
             </DialogDescription>
           </DialogHeader>
 
@@ -632,7 +626,9 @@ export function InKindAidTransactionsPage() {
                   id="quantity"
                   type="number"
                   value={formData.quantity || ''}
-                  onChange={(e) => setFormData({ ...formData, quantity: parseInt(e.target.value) || 1 })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, quantity: parseInt(e.target.value) || 1 })
+                  }
                   placeholder="1"
                   min="1"
                 />

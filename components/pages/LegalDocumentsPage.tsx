@@ -1,6 +1,6 @@
 /**
  * @fileoverview LegalDocumentsPage Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -21,13 +21,7 @@ import { toast } from 'sonner';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '../ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../ui/dialog';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
@@ -51,7 +45,7 @@ interface LegalDocument {
 
 /**
  * LegalDocumentsPage function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -123,24 +117,24 @@ export function LegalDocumentsPage() {
 
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.name || !formData.type || !formData.category) {
       toast.error('Lütfen zorunlu alanları doldurun');
       return;
     }
-    
+
     try {
       setIsSubmitting(true);
-      
+
       // TODO: Integrate with actual API
       // const result = await legalDocumentsService.uploadDocument(formData);
-      
+
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       toast.success('Belge başarıyla yüklendi!');
       setShowUploadDialog(false);
-      
+
       // Reset form
       setFormData({
         name: '',
@@ -149,7 +143,6 @@ export function LegalDocumentsPage() {
         relatedCase: '',
         description: '',
       });
-      
     } catch (error) {
       toast.error('Belge yüklenirken hata oluştu');
     } finally {
@@ -373,7 +366,9 @@ export function LegalDocumentsPage() {
                 </Label>
                 <Select
                   value={formData.type}
-                  onValueChange={(value: LegalDocument['type']) => setFormData({ ...formData, type: value })}
+                  onValueChange={(value: LegalDocument['type']) =>
+                    setFormData({ ...formData, type: value })
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Tür seçin" />
@@ -440,12 +435,7 @@ export function LegalDocumentsPage() {
             {/* File Upload Input */}
             <div className="space-y-2">
               <Label htmlFor="file">Dosya Seç</Label>
-              <Input
-                id="file"
-                type="file"
-                accept=".pdf,.doc,.docx"
-                className="cursor-pointer"
-              />
+              <Input id="file" type="file" accept=".pdf,.doc,.docx" className="cursor-pointer" />
               <p className="text-xs text-muted-foreground">
                 Desteklenen formatlar: PDF, DOC, DOCX (Maks. 10MB)
               </p>

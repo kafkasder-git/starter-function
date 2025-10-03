@@ -1,6 +1,6 @@
 /**
  * @fileoverview HospitalReferralPage Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -10,13 +10,7 @@ import { toast } from 'sonner';
 import { PageLayout } from '../PageLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '../ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../ui/dialog';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Badge } from '../ui/badge';
@@ -178,7 +172,7 @@ const mockReferrals: HospitalReferral[] = [
 
 /**
  * HospitalReferralPage function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -266,36 +260,41 @@ export function HospitalReferralPage() {
 
   const handleCreateReferral = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!formData.patientName || !formData.patientId || !formData.medicalCondition || !formData.hospital) {
+
+    if (
+      !formData.patientName ||
+      !formData.patientId ||
+      !formData.medicalCondition ||
+      !formData.hospital
+    ) {
       toast.error('Lütfen zorunlu alanları doldurun');
       return;
     }
-    
+
     try {
       setIsSubmitting(true);
-      
+
       // TODO: Integrate with actual API
       // const result = await hospitalReferralService.createReferral(formData);
-      
+
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       // Add to local state for demonstration
       const newReferral: HospitalReferral = {
-        id: Math.max(...referrals.map(r => r.id), 0) + 1,
+        id: Math.max(...referrals.map((r) => r.id), 0) + 1,
         referralNumber: `HSK-${new Date().getFullYear()}-${String(referrals.length + 1).padStart(3, '0')}`,
         ...formData,
         referralDate: new Date().toISOString().split('T')[0],
         status: 'pending',
         followUpRequired: formData.urgencyLevel !== 'routine',
       };
-      
-      setReferrals(prev => [newReferral, ...prev]);
-      
+
+      setReferrals((prev) => [newReferral, ...prev]);
+
       toast.success('Hastane sevki başarıyla oluşturuldu!');
       setShowReferralDialog(false);
-      
+
       // Reset form
       setFormData({
         patientName: '',
@@ -312,7 +311,6 @@ export function HospitalReferralPage() {
         transportNeeded: false,
         estimatedCost: 0,
       });
-      
     } catch (error) {
       toast.error('Sevk oluşturulurken hata oluştu');
     } finally {
@@ -610,7 +608,8 @@ export function HospitalReferralPage() {
               Yeni Hastane Sevki
             </DialogTitle>
             <DialogDescription>
-              İhtiyaç sahibi için yeni hastane sevki oluşturun. Zorunlu alanları (*) doldurmanız gereklidir.
+              İhtiyaç sahibi için yeni hastane sevki oluşturun. Zorunlu alanları (*) doldurmanız
+              gereklidir.
             </DialogDescription>
           </DialogHeader>
 
@@ -652,7 +651,9 @@ export function HospitalReferralPage() {
                   id="patientAge"
                   type="number"
                   value={formData.patientAge || ''}
-                  onChange={(e) => setFormData({ ...formData, patientAge: parseInt(e.target.value) || 0 })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, patientAge: parseInt(e.target.value) || 0 })
+                  }
                   placeholder="0"
                   min="0"
                 />
@@ -778,7 +779,9 @@ export function HospitalReferralPage() {
                     id="transportNeeded"
                     type="checkbox"
                     checked={formData.transportNeeded}
-                    onChange={(e) => setFormData({ ...formData, transportNeeded: e.target.checked })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, transportNeeded: e.target.checked })
+                    }
                     className="w-4 h-4"
                   />
                   Ulaşım Gerekli

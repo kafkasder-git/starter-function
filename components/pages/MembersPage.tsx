@@ -1,6 +1,6 @@
 /**
  * @fileoverview MembersPage Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -30,7 +30,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { DesktopActionButtons, DesktopFilters, DesktopStatsCard } from '../ui/desktop-table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '../ui/dialog';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Textarea } from '../ui/textarea';
@@ -53,7 +60,7 @@ const membershipTypeMapping = {
 
 /**
  * MembersPage function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -73,7 +80,7 @@ export function MembersPage() {
     inactive: 0,
     suspended: 0,
   });
-  
+
   // Dialog state for creating new member
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -140,31 +147,31 @@ export function MembersPage() {
   // Handle form submission for creating new member
   const handleCreateMember = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Basic validation
     if (!formData.first_name || !formData.last_name) {
       toast.error('Ad ve soyad alanları zorunludur');
       return;
     }
-    
+
     if (!formData.email || !formData.phone) {
       toast.error('E-posta ve telefon alanları zorunludur');
       return;
     }
-    
+
     try {
       setIsSubmitting(true);
-      
+
       const result = await membersService.createMember(formData as any);
-      
+
       if (result.error) {
         toast.error(result.error);
         return;
       }
-      
+
       toast.success('Üye başarıyla oluşturuldu!');
       setShowCreateDialog(false);
-      
+
       // Reset form
       setFormData({
         first_name: '',
@@ -177,11 +184,10 @@ export function MembersPage() {
         membership_status: 'active',
         notes: '',
       });
-      
+
       // Reload members list
       await loadMembers();
       await loadStats();
-      
     } catch (error) {
       logger.error('Error creating member:', error);
       toast.error('Üye oluşturulurken hata oluştu');
@@ -565,9 +571,9 @@ export function MembersPage() {
                       <TableCell colSpan={7} className="p-8 text-center">
                         <UserPlus className="w-12 h-12 mx-auto mb-4 text-gray-300" />
                         <p className="text-gray-600 mb-2">
-                            {(searchTerm || statusFilter !== 'all' || typeFilter !== 'all')
-                              ? 'Arama kriterlerinize uygun üye bulunamadı.'
-                              : 'Henüz hiç üye kaydı yok.'}
+                          {searchTerm || statusFilter !== 'all' || typeFilter !== 'all'
+                            ? 'Arama kriterlerinize uygun üye bulunamadı.'
+                            : 'Henüz hiç üye kaydı yok.'}
                         </p>
                         <Button className="gap-2" onClick={() => setShowCreateDialog(true)}>
                           <Plus className="h-4 w-4" />
@@ -598,7 +604,7 @@ export function MembersPage() {
                     onClick={() => {
                       setCurrentPage((prev) => Math.max(1, prev - 1));
                     }}
-                      disabled={currentPage === 1 || loading}
+                    disabled={currentPage === 1 || loading}
                     className="px-4"
                   >
                     Önceki

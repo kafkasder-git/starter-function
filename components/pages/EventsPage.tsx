@@ -1,6 +1,6 @@
 /**
  * @fileoverview EventsPage Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -34,7 +34,7 @@ interface Event {
 
 /**
  * EventsPage function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -118,24 +118,24 @@ export function EventsPage() {
 
   const handleSubmitEvent = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.title || !formData.date || !formData.time || !formData.location) {
       toast.error('Etkinlik adı, tarih, saat ve lokasyon alanları zorunludur');
       return;
     }
-    
+
     try {
       setIsSubmitting(true);
-      
+
       // TODO: Integrate with actual API
       // const result = await eventsService.createEvent(formData);
-      
+
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       toast.success('Etkinlik başarıyla oluşturuldu!');
       setShowEventDialog(false);
-      
+
       // Reset form
       setFormData({
         title: '',
@@ -146,7 +146,6 @@ export function EventsPage() {
         max_attendees: 0,
         type: 'meeting',
       });
-      
     } catch (error) {
       toast.error('Etkinlik oluşturulurken hata oluştu');
     } finally {
@@ -452,7 +451,9 @@ export function EventsPage() {
                 <Label htmlFor="type">Etkinlik Türü</Label>
                 <Select
                   value={formData.type}
-                  onValueChange={(value: Event['type']) => setFormData({ ...formData, type: value })}
+                  onValueChange={(value: Event['type']) =>
+                    setFormData({ ...formData, type: value })
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Tür seçin" />

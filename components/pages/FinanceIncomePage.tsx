@@ -1,6 +1,6 @@
 /**
  * @fileoverview FinanceIncomePage Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -24,13 +24,7 @@ import { MobileInfoCard, ResponsiveCardGrid } from '../ResponsiveCard';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '../ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../ui/dialog';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Progress } from '../ui/progress';
@@ -57,7 +51,7 @@ interface MonthlyData {
 
 /**
  * FinanceIncomePage function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -148,24 +142,24 @@ export function FinanceIncomePage() {
 
   const handleSubmitTransaction = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.category || !formData.description || formData.amount <= 0) {
       toast.error('Lütfen tüm zorunlu alanları doldurun');
       return;
     }
-    
+
     try {
       setIsSubmitting(true);
-      
+
       // TODO: Integrate with actual API
       // const result = await financeService.createTransaction(formData);
-      
+
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       toast.success('İşlem başarıyla kaydedildi!');
       setShowTransactionDialog(false);
-      
+
       // Reset form
       setFormData({
         type: 'income',
@@ -175,7 +169,6 @@ export function FinanceIncomePage() {
         date: new Date().toISOString().split('T')[0],
         paymentMethod: 'bank',
       });
-      
     } catch (error) {
       toast.error('İşlem kaydedilirken hata oluştu');
     } finally {
@@ -466,7 +459,8 @@ export function FinanceIncomePage() {
               Yeni Gelir/Gider İşlemi
             </DialogTitle>
             <DialogDescription>
-              Yeni bir gelir veya gider işlemi kaydedin. Zorunlu alanları (*) doldurmanız gereklidir.
+              Yeni bir gelir veya gider işlemi kaydedin. Zorunlu alanları (*) doldurmanız
+              gereklidir.
             </DialogDescription>
           </DialogHeader>
 
@@ -546,7 +540,9 @@ export function FinanceIncomePage() {
                   id="amount"
                   type="number"
                   value={formData.amount || ''}
-                  onChange={(e) => setFormData({ ...formData, amount: parseFloat(e.target.value) || 0 })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, amount: parseFloat(e.target.value) || 0 })
+                  }
                   placeholder="0.00"
                   min="0"
                   step="0.01"
