@@ -258,7 +258,7 @@ class NativeFeaturesService {
    */
   async copyToClipboard(text: string): Promise<boolean> {
     try {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
+      if (navigator.clipboard?.writeText) {
         await navigator.clipboard.writeText(text);
         return true;
       } 
@@ -287,7 +287,7 @@ class NativeFeaturesService {
    */
   async readFromClipboard(): Promise<string> {
     try {
-      if (navigator.clipboard && navigator.clipboard.readText) {
+      if (navigator.clipboard?.readText) {
         return await navigator.clipboard.readText();
       } 
         throw new Error('Clipboard read not supported');

@@ -27,7 +27,7 @@ logger.info('Supabase Configuration Debug:', {
   supabaseUrl,
   hasAnonKey: Boolean(supabaseAnonKey),
   anonKeyLength: supabaseAnonKey?.length ?? 0,
-  supabaseUrlValid: supabaseUrl && supabaseUrl.startsWith('http'),
+  supabaseUrlValid: supabaseUrl?.startsWith('http'),
   importMetaEnv: {
     VITE_SUPABASE_URL: (import.meta?.env?.VITE_SUPABASE_URL) || process.env.VITE_SUPABASE_URL,
     VITE_SUPABASE_ANON_KEY: ((import.meta?.env?.VITE_SUPABASE_ANON_KEY) || process.env.VITE_SUPABASE_ANON_KEY) ? 'SET' : 'NOT_SET',
@@ -128,8 +128,7 @@ export type SupabaseClient = typeof supabase;
 
 // Helper function to check if Supabase is properly configured
 export const isSupabaseConfigured = (): boolean => {
-  return Boolean(supabaseUrl &&
-    supabaseUrl.startsWith('http') &&
+  return Boolean(supabaseUrl?.startsWith('http') &&
     supabaseAnonKey &&
     supabaseAnonKey !== 'placeholder-key');
 };

@@ -78,7 +78,7 @@ export function useBeneficiaries(options: UseBeneficiariesOptions = {}) {
         
         if (needType) {
           filteredData = filteredData.filter(b => 
-            b.need_types && b.need_types.includes(needType)
+            b.need_types?.includes(needType)
           );
         }
 

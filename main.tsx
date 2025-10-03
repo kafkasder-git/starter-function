@@ -46,7 +46,7 @@ if (typeof window !== 'undefined') {
     console.error('Global error:', event.error);
     
     // Don't reload on script loading errors
-    if (event.filename && event.filename.includes('chunk')) {
+    if (event.filename?.includes('chunk')) {
       console.warn('Chunk loading error detected, attempting reload...');
       setTimeout(() => {
         window.location.reload();
