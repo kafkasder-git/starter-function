@@ -14,7 +14,11 @@ export default defineConfig({
     postcss: './postcss.config.js',
   },
   plugins: [
-    react(),
+    react({
+      // React plugin optimizasyonları
+      include: ['**/*.{jsx,tsx}'],
+      exclude: [/node_modules/],
+    }),
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg'],
@@ -105,10 +109,11 @@ export default defineConfig({
     extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
     alias: {
       '@': path.resolve(__dirname, '.'),
-      // Remove explicit React aliases to prevent ReactCurrentOwner issues
-      // react: path.resolve(__dirname, './node_modules/react'),
-      // 'react-dom': path.resolve(__dirname, './node_modules/react-dom'),
+      // React alias'larını geri ekle ama daha güvenli şekilde
+      react: path.resolve(__dirname, 'node_modules/react'),
+      'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
     },
+    dedupe: ['react', 'react-dom'],
   },
   build: {
     target: 'esnext',
@@ -119,16 +124,15 @@ export default defineConfig({
         manualChunks: {
           // Optimize edilmiş chunk stratejisi
           'react-vendor': ['react', 'react-dom'],
-          'ui-vendor': [
-            '@radix-ui/react-dialog',
-            '@radix-ui/react-dropdown-menu',
-            '@radix-ui/react-select',
-            '@radix-ui/react-popover',
-            '@radix-ui/react-tooltip',
-            '@radix-ui/react-tabs',
-            '@radix-ui/react-accordion',
-            '@radix-ui/react-collapsible',
-          ],
+          // Radix UI bileşenlerini ayrı chunk'lara böl
+          'radix-dialog': ['@radix-ui/react-dialog'],
+          'radix-dropdown': ['@radix-ui/react-dropdown-menu'],
+          'radix-select': ['@radix-ui/react-select'],
+          'radix-popover': ['@radix-ui/react-popover'],
+          'radix-tooltip': ['@radix-ui/react-tooltip'],
+          'radix-tabs': ['@radix-ui/react-tabs'],
+          'radix-accordion': ['@radix-ui/react-accordion'],
+          'radix-collapsible': ['@radix-ui/react-collapsible'],
           'supabase-vendor': ['@supabase/supabase-js'],
           'chart-vendor': ['recharts'],
           'form-vendor': ['react-hook-form', '@hookform/resolvers', 'zod'],
