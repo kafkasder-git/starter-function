@@ -104,8 +104,9 @@ export default defineConfig({
     extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
     alias: {
       '@': path.resolve(__dirname, '.'),
-      react: path.resolve(__dirname, './node_modules/react'),
-      'react-dom': path.resolve(__dirname, './node_modules/react-dom'),
+      // Remove explicit React aliases to prevent ReactCurrentOwner issues
+      // react: path.resolve(__dirname, './node_modules/react'),
+      // 'react-dom': path.resolve(__dirname, './node_modules/react-dom'),
     },
   },
   build: {
