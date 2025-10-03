@@ -96,3 +96,9 @@
 [functions]
   directory = "netlify/functions"
 
+# Note: Lighthouse plugin (@netlify/plugin-lighthouse) Netlify Pro plan gerektirir
+# Free plan için kaldırıldı. Performance monitoring için:
+# - Chrome DevTools Lighthouse
+# - Netlify Analytics (opsiyonel)
+# - Web Vitals monitoring
+
