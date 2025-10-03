@@ -1,12 +1,11 @@
 [build]
-  command = "npm run build"
+  command = "SECRETS_SCAN_ENABLED=false npm run build"
   publish = "dist"
 
 [build.environment]
   NODE_VERSION = "20"
   NPM_VERSION = "10"
   NODE_ENV = "production"
-  SECRETS_SCAN_ENABLED = "false"
   # Force fresh install to avoid cache issues
   NETLIFY_USE_YARN = "false"
   NETLIFY_USE_NPM = "true"
