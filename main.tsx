@@ -9,7 +9,7 @@ if (typeof window !== 'undefined') {
   // Handle unhandled promise rejections
   window.addEventListener('unhandledrejection', (event) => {
     console.error('Unhandled promise rejection:', event.reason);
-    
+
     // Show user-friendly error message
     const errorContainer = document.getElementById('global-error-container');
     if (!errorContainer) {
@@ -30,13 +30,13 @@ if (typeof window !== 'undefined') {
       `;
       div.innerHTML = '⚠️ Bir bağlantı hatası oluştu. Sayfa yenileniyor...';
       document.body.appendChild(div);
-      
+
       // Auto refresh after 3 seconds
       setTimeout(() => {
         window.location.reload();
       }, 3000);
     }
-    
+
     // Prevent the default browser error handling
     event.preventDefault();
   });
@@ -44,9 +44,9 @@ if (typeof window !== 'undefined') {
   // Handle JavaScript errors
   window.addEventListener('error', (event) => {
     console.error('Global error:', event.error);
-    
+
     // Don't reload on script loading errors
-    if (event.filename && event.filename.includes('chunk')) {
+    if (event.filename?.includes('chunk')) {
       console.warn('Chunk loading error detected, attempting reload...');
       setTimeout(() => {
         window.location.reload();
@@ -64,7 +64,7 @@ try {
   );
 } catch (error) {
   console.error('Failed to initialize app:', error);
-  
+
   // Fallback UI for critical errors
   const root = document.getElementById('root');
   if (root) {
