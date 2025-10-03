@@ -16,7 +16,7 @@ const filesToDocument = [
   'contexts',
   'lib',
   'utils',
-  'middleware'
+  'middleware',
 ];
 
 // JSDoc templates for different types of functions/components
@@ -61,7 +61,7 @@ const jsdocTemplates = {
  * ${description || `${name} Type`}
  * 
  * @typedef {Object} ${name}
- */`
+ */`,
 };
 
 function shouldSkipFile(filePath) {
@@ -88,7 +88,7 @@ function generateJSDocForFile(filePath) {
       const fileName = path.basename(filePath, path.extname(filePath));
       const fileType = getFileType(filePath);
       const description = getFileDescription(fileName, fileType);
-      
+
       const fileJSDoc = `/**
  * @fileoverview ${description}
  * 
@@ -97,17 +97,17 @@ function generateJSDocForFile(filePath) {
  */
 
 `;
-      
+
       newContent = fileJSDoc + content;
       hasChanges = true;
     }
 
     // Add JSDoc for classes
     newContent = addJSDocForClasses(newContent, filePath);
-    
+
     // Add JSDoc for functions
     newContent = addJSDocForFunctions(newContent, filePath);
-    
+
     // Add JSDoc for interfaces
     newContent = addJSDocForInterfaces(newContent, filePath);
 
@@ -144,9 +144,9 @@ function getFileDescription(fileName, fileType) {
     library: `${fileName} Library - Utility functions and helpers`,
     utility: `${fileName} Utility - Helper functions and utilities`,
     middleware: `${fileName} Middleware - Request/response processing`,
-    module: `${fileName} Module - Application module`
+    module: `${fileName} Module - Application module`,
   };
-  
+
   return descriptions[fileType] || `${fileName} - Application module`;
 }
 
@@ -154,19 +154,19 @@ function addJSDocForClasses(content, filePath) {
   // Match class declarations
   const classRegex = /^export\s+(?:default\s+)?class\s+(\w+)/gm;
   let newContent = content;
-  
+
   content.replace(classRegex, (match, className) => {
     const beforeClass = content.substring(0, content.indexOf(match));
     const linesBefore = beforeClass.split('\n');
     const lastLine = linesBefore[linesBefore.length - 1];
-    
+
     // Check if JSDoc already exists
     if (!lastLine.trim().startsWith('/**')) {
       const jsdoc = jsdocTemplates.service(className);
       newContent = newContent.replace(match, `${jsdoc}\n${match}`);
     }
   });
-  
+
   return newContent;
 }
 
@@ -174,19 +174,19 @@ function addJSDocForFunctions(content, filePath) {
   // Match function declarations
   const functionRegex = /^export\s+(?:default\s+)?(?:async\s+)?function\s+(\w+)/gm;
   let newContent = content;
-  
+
   content.replace(functionRegex, (match, functionName) => {
     const beforeFunction = content.substring(0, content.indexOf(match));
     const linesBefore = beforeFunction.split('\n');
     const lastLine = linesBefore[linesBefore.length - 1];
-    
+
     // Check if JSDoc already exists
     if (!lastLine.trim().startsWith('/**')) {
       const jsdoc = jsdocTemplates.function(functionName);
       newContent = newContent.replace(match, `${jsdoc}\n${match}`);
     }
   });
-  
+
   return newContent;
 }
 
@@ -194,35 +194,35 @@ function addJSDocForInterfaces(content, filePath) {
   // Match interface declarations
   const interfaceRegex = /^export\s+interface\s+(\w+)/gm;
   let newContent = content;
-  
+
   content.replace(interfaceRegex, (match, interfaceName) => {
     const beforeInterface = content.substring(0, content.indexOf(match));
     const linesBefore = beforeInterface.split('\n');
     const lastLine = linesBefore[linesBefore.length - 1];
-    
+
     // Check if JSDoc already exists
     if (!lastLine.trim().startsWith('/**')) {
       const jsdoc = jsdocTemplates.interface(interfaceName);
       newContent = newContent.replace(match, `${jsdoc}\n${match}`);
     }
   });
-  
+
   return newContent;
 }
 
 function findFiles(dir, extensions = ['.ts', '.tsx', '.js', '.jsx']) {
   const files = [];
-  
+
   try {
     const items = fs.readdirSync(dir);
-    
+
     for (const item of items) {
       const fullPath = path.join(dir, item);
       const stat = fs.statSync(fullPath);
-      
+
       if (stat.isDirectory() && !shouldSkipFile(fullPath)) {
         files.push(...findFiles(fullPath, extensions));
-      } else if (stat.isFile() && extensions.some(ext => item.endsWith(ext))) {
+      } else if (stat.isFile() && extensions.some((ext) => item.endsWith(ext))) {
         if (!shouldSkipFile(fullPath)) {
           files.push(fullPath);
         }
@@ -231,23 +231,23 @@ function findFiles(dir, extensions = ['.ts', '.tsx', '.js', '.jsx']) {
   } catch (error) {
     console.error(`Error reading directory ${dir}:`, error.message);
   }
-  
+
   return files;
 }
 
 function main() {
   console.log('🚀 Starting JSDoc generation...\n');
-  
+
   let totalFiles = 0;
   let documentedFiles = 0;
-  
+
   for (const dir of filesToDocument) {
     if (fs.existsSync(dir)) {
       const files = findFiles(dir);
       totalFiles += files.length;
-      
+
       console.log(`📁 Processing ${dir} (${files.length} files)...`);
-      
+
       for (const file of files) {
         if (generateJSDocForFile(file)) {
           documentedFiles++;
@@ -257,8 +257,8 @@ function main() {
       console.log(`⚠️  Directory not found: ${dir}`);
     }
   }
-  
-  console.log(`\n🎉 JSDoc generation complete!`);
+
+  console.log('\n🎉 JSDoc generation complete!');
   console.log(`📊 Total files processed: ${totalFiles}`);
   console.log(`✅ Files documented: ${documentedFiles}`);
   console.log(`📝 Files unchanged: ${totalFiles - documentedFiles}`);

@@ -1,6 +1,6 @@
 /**
  * @fileoverview queryOptimizationService Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -48,9 +48,9 @@ interface QueryOptimizationConfig {
 
 /**
  * QueryOptimizationService Service
- * 
+ *
  * Service class for handling queryoptimizationservice operations
- * 
+ *
  * @class QueryOptimizationService
  */
 export class QueryOptimizationService {
@@ -125,7 +125,7 @@ export class QueryOptimizationService {
 
     try {
       // Replace table name placeholders if any
-      let {sql} = statement;
+      let { sql } = statement;
       if (sql.includes('{table_name}')) {
         // This is a dynamic table query - handle accordingly
         sql = sql.replace('{table_name}', parameters.shift() || 'donations');
@@ -144,8 +144,8 @@ export class QueryOptimizationService {
 
       // Update statement metrics
       statement.usageCount++;
-      statement.averageExecutionTime = 
-        (statement.averageExecutionTime * (statement.usageCount - 1) + executionTime) / 
+      statement.averageExecutionTime =
+        (statement.averageExecutionTime * (statement.usageCount - 1) + executionTime) /
         statement.usageCount;
 
       // Log query if requested
@@ -259,7 +259,7 @@ export class QueryOptimizationService {
 
       return result;
     } catch (error: unknown) {
-      logger.error(`Error executing optimized query:`, error);
+      logger.error('Error executing optimized query:', error);
       throw error;
     }
   }
@@ -290,8 +290,8 @@ export class QueryOptimizationService {
 
       // Update metrics
       analysis.executionCount++;
-      analysis.averageExecutionTime = 
-        (analysis.averageExecutionTime * (analysis.executionCount - 1) + executionTime) / 
+      analysis.averageExecutionTime =
+        (analysis.averageExecutionTime * (analysis.executionCount - 1) + executionTime) /
         analysis.executionCount;
       analysis.lastExecuted = Date.now();
 
@@ -299,7 +299,7 @@ export class QueryOptimizationService {
       if (plan) {
         const suggestions = this.analyzeQueryPlan(plan);
         const indexes = this.suggestIndexes(plan);
-        
+
         analysis.suggestions = [...new Set([...analysis.suggestions, ...suggestions])];
         analysis.indexes = [...new Set([...analysis.indexes, ...indexes])];
       }
@@ -315,25 +315,25 @@ export class QueryOptimizationService {
    */
   private analyzeQueryPlan(plan: unknown): string[] {
     const suggestions: string[] = [];
-    
+
     // This is a simplified implementation
     // In a real application, you would parse the actual query plan
     if (typeof plan === 'object' && plan !== null) {
       const planStr = JSON.stringify(plan);
-      
+
       if (planStr.includes('Seq Scan')) {
         suggestions.push('Consider adding an index for sequential scan operations');
       }
-      
+
       if (planStr.includes('Nested Loop')) {
         suggestions.push('Consider optimizing nested loop joins');
       }
-      
+
       if (planStr.includes('Hash Join')) {
         suggestions.push('Hash join detected - consider memory optimization');
       }
     }
-    
+
     return suggestions;
   }
 
@@ -342,26 +342,26 @@ export class QueryOptimizationService {
    */
   private suggestIndexes(plan: unknown): string[] {
     const indexes: string[] = [];
-    
+
     // This is a simplified implementation
     // In a real application, you would analyze the actual query plan
     if (typeof plan === 'object' && plan !== null) {
       const planStr = JSON.stringify(plan);
-      
+
       // Look for common patterns that benefit from indexes
       if (planStr.includes('WHERE')) {
         indexes.push('Consider adding indexes on WHERE clause columns');
       }
-      
+
       if (planStr.includes('ORDER BY')) {
         indexes.push('Consider adding indexes on ORDER BY columns');
       }
-      
+
       if (planStr.includes('JOIN')) {
         indexes.push('Consider adding indexes on JOIN columns');
       }
     }
-    
+
     return indexes;
   }
 
@@ -496,14 +496,15 @@ export class QueryOptimizationService {
     topSlowQueries: QueryMetrics[];
     queryAnalysis: QueryAnalysis[];
   } {
-    const slowQueries = this.queryHistory.filter(q => q.executionTime > 1000);
+    const slowQueries = this.queryHistory.filter((q) => q.executionTime > 1000);
     const topSlowQueries = [...this.queryHistory]
       .sort((a, b) => b.executionTime - a.executionTime)
       .slice(0, 10);
 
-    const averageExecutionTime = this.queryHistory.length > 0
-      ? this.queryHistory.reduce((sum, q) => sum + q.executionTime, 0) / this.queryHistory.length
-      : 0;
+    const averageExecutionTime =
+      this.queryHistory.length > 0
+        ? this.queryHistory.reduce((sum, q) => sum + q.executionTime, 0) / this.queryHistory.length
+        : 0;
 
     return {
       totalQueries: this.queryHistory.length,
@@ -545,7 +546,7 @@ export class QueryOptimizationService {
 
     // Analyze query history for common patterns
     const tableUsage = new Map<string, Set<string>>();
-    
+
     this.queryHistory.forEach((query) => {
       // Simple regex to extract table names (this is basic - in production use a proper SQL parser)
       const tableMatches = query.sql.match(/FROM\s+(\w+)/gi);
@@ -555,7 +556,7 @@ export class QueryOptimizationService {
           if (!tableUsage.has(tableName)) {
             tableUsage.set(tableName, new Set());
           }
-          
+
           // Extract column names from WHERE clauses
           const whereMatches = query.sql.match(/WHERE\s+(\w+)/gi);
           if (whereMatches) {
@@ -574,7 +575,7 @@ export class QueryOptimizationService {
         suggestions.push({
           table,
           column,
-          reason: `Frequently used in WHERE clauses`,
+          reason: 'Frequently used in WHERE clauses',
           impact: 'medium',
         });
       });
