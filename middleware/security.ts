@@ -6,7 +6,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { supabaseAdmin } from '../lib/supabase';
 import { rateLimit } from './rateLimit';
 import { validateCSRF } from './csrf';
 import { InputSanitizer } from '../lib/security/InputSanitizer';
@@ -24,10 +24,8 @@ export class SecurityMiddleware {
   private readonly supabase;
 
   constructor() {
-    this.supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    );
+    // Use existing supabaseAdmin instance to avoid Multiple GoTrueClient warning
+    this.supabase = supabaseAdmin;
   }
 
   // Main security middleware

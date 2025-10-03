@@ -278,18 +278,27 @@ export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
     }
 
     try {
-      const { error } = await supabase.auth.signOut();
+      // Try to sign out from Supabase with local scope
+      // Using 'local' scope to only clear local storage, not all sessions
+      const { error } = await supabase.auth.signOut({ scope: 'local' });
 
       if (error) {
-        throw error;
+        // Log the error but don't block logout
+        logger.warn('Supabase signOut API error (non-blocking):', error);
       }
 
-      // Success is handled by onAuthStateChange
+      // Always clear local state regardless of API response
+      // This ensures users can log out even if Supabase API fails
+      setUser(null);
+      setSession(null);
+      
+      toast.success('Çıkış yapıldı', { duration: 2000 });
     } catch (error: any) {
-      const errorMessage = error.message ?? 'Çıkış yapılırken hata oluştu';
-      setError(errorMessage);
-      toast.error(errorMessage, { duration: 3000 });
-      throw new Error(errorMessage);
+      // Even if Supabase API fails completely, clear local state
+      logger.error('SignOut error (clearing local state anyway):', error);
+      setUser(null);
+      setSession(null);
+      toast.success('Çıkış yapıldı', { duration: 2000 });
     } finally {
       setIsLoading(false);
     }
