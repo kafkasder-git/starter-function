@@ -1,6 +1,6 @@
 /**
  * @fileoverview useBeneficiaries Hook - İhtiyaç sahipleri yönetimi
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -30,7 +30,7 @@ interface UseBeneficiariesOptions {
 
 /**
  * useBeneficiaries hook'u - İhtiyaç sahipleri yönetimi
- * 
+ *
  * @param options - Hook seçenekleri
  * @returns İhtiyaç sahipleri yönetim fonksiyonları ve durumları
  */
@@ -41,7 +41,7 @@ export function useBeneficiaries(options: UseBeneficiariesOptions = {}) {
     city,
     needType,
     realtime = true,
-    autoFetch = true
+    autoFetch = true,
   } = options;
 
   // State tanımlamaları
@@ -59,27 +59,25 @@ export function useBeneficiaries(options: UseBeneficiariesOptions = {}) {
 
     try {
       const response = await beneficiariesService.getAll();
-      
+
       if (response.success && response.data) {
         let filteredData = response.data;
 
         // Filtreleri uygula
         if (!includeDeleted) {
-          filteredData = filteredData.filter(b => b.status !== 'deleted');
+          filteredData = filteredData.filter((b) => b.status !== 'deleted');
         }
-        
+
         if (status) {
-          filteredData = filteredData.filter(b => b.status === status);
+          filteredData = filteredData.filter((b) => b.status === status);
         }
-        
+
         if (city) {
-          filteredData = filteredData.filter(b => b.city === city);
+          filteredData = filteredData.filter((b) => b.city === city);
         }
-        
+
         if (needType) {
-          filteredData = filteredData.filter(b => 
-            b.need_types?.includes(needType)
-          );
+          filteredData = filteredData.filter((b) => b.need_types?.includes(needType));
         }
 
         setBeneficiaries(filteredData);
@@ -105,7 +103,7 @@ export function useBeneficiaries(options: UseBeneficiariesOptions = {}) {
 
     try {
       const response = await beneficiariesService.getActiveBeneficiaries();
-      
+
       if (response.success && response.data) {
         setBeneficiaries(response.data);
       } else {
@@ -130,7 +128,7 @@ export function useBeneficiaries(options: UseBeneficiariesOptions = {}) {
 
     try {
       const response = await beneficiariesService.getBeneficiariesByCity(cityName);
-      
+
       if (response.success && response.data) {
         setBeneficiaries(response.data);
       } else {
@@ -155,7 +153,7 @@ export function useBeneficiaries(options: UseBeneficiariesOptions = {}) {
 
     try {
       const response = await beneficiariesService.getUrgentBeneficiaries();
-      
+
       if (response.success && response.data) {
         setBeneficiaries(response.data);
       } else {
@@ -180,16 +178,15 @@ export function useBeneficiaries(options: UseBeneficiariesOptions = {}) {
 
     try {
       const response = await beneficiariesService.create(beneficiaryData);
-      
+
       if (response.success && response.data) {
-        setBeneficiaries(prev => [response.data!, ...prev]);
+        setBeneficiaries((prev) => [response.data!, ...prev]);
         toast.success('İhtiyaç sahibi başarıyla oluşturuldu');
         return response.data;
-      } 
-        setError(response.error || 'İhtiyaç sahibi oluşturulamadı');
-        toast.error('İhtiyaç sahibi oluşturulurken hata oluştu');
-        return null;
-      
+      }
+      setError(response.error || 'İhtiyaç sahibi oluşturulamadı');
+      toast.error('İhtiyaç sahibi oluşturulurken hata oluştu');
+      return null;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Beklenmeyen bir hata oluştu';
       setError(errorMessage);
@@ -209,18 +206,15 @@ export function useBeneficiaries(options: UseBeneficiariesOptions = {}) {
 
     try {
       const response = await beneficiariesService.update(id, updates);
-      
+
       if (response.success && response.data) {
-        setBeneficiaries(prev => 
-          prev.map(b => b.id === id ? response.data! : b)
-        );
+        setBeneficiaries((prev) => prev.map((b) => (b.id === id ? response.data! : b)));
         toast.success('İhtiyaç sahibi başarıyla güncellendi');
         return response.data;
-      } 
-        setError(response.error || 'İhtiyaç sahibi güncellenemedi');
-        toast.error('İhtiyaç sahibi güncellenirken hata oluştu');
-        return null;
-      
+      }
+      setError(response.error || 'İhtiyaç sahibi güncellenemedi');
+      toast.error('İhtiyaç sahibi güncellenirken hata oluştu');
+      return null;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Beklenmeyen bir hata oluştu';
       setError(errorMessage);
@@ -240,18 +234,15 @@ export function useBeneficiaries(options: UseBeneficiariesOptions = {}) {
 
     try {
       const response = await beneficiariesService.updateBeneficiaryStatus(id, status);
-      
+
       if (response.success && response.data) {
-        setBeneficiaries(prev => 
-          prev.map(b => b.id === id ? response.data! : b)
-        );
+        setBeneficiaries((prev) => prev.map((b) => (b.id === id ? response.data! : b)));
         toast.success('İhtiyaç sahibi durumu başarıyla güncellendi');
         return response.data;
-      } 
-        setError(response.error || 'İhtiyaç sahibi durumu güncellenemedi');
-        toast.error('İhtiyaç sahibi durumu güncellenirken hata oluştu');
-        return null;
-      
+      }
+      setError(response.error || 'İhtiyaç sahibi durumu güncellenemedi');
+      toast.error('İhtiyaç sahibi durumu güncellenirken hata oluştu');
+      return null;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Beklenmeyen bir hata oluştu';
       setError(errorMessage);
@@ -271,16 +262,15 @@ export function useBeneficiaries(options: UseBeneficiariesOptions = {}) {
 
     try {
       const response = await beneficiariesService.delete(id);
-      
+
       if (response.success) {
-        setBeneficiaries(prev => prev.filter(b => b.id !== id));
+        setBeneficiaries((prev) => prev.filter((b) => b.id !== id));
         toast.success('İhtiyaç sahibi başarıyla silindi');
         return true;
-      } 
-        setError(response.error || 'İhtiyaç sahibi silinemedi');
-        toast.error('İhtiyaç sahibi silinirken hata oluştu');
-        return false;
-      
+      }
+      setError(response.error || 'İhtiyaç sahibi silinemedi');
+      toast.error('İhtiyaç sahibi silinirken hata oluştu');
+      return false;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Beklenmeyen bir hata oluştu';
       setError(errorMessage);
@@ -297,7 +287,7 @@ export function useBeneficiaries(options: UseBeneficiariesOptions = {}) {
   const fetchStats = useCallback(async () => {
     try {
       const response = await beneficiariesService.getBeneficiaryStats();
-      
+
       if (response.success && response.data) {
         setStats(response.data);
       } else {
@@ -327,7 +317,7 @@ export function useBeneficiaries(options: UseBeneficiariesOptions = {}) {
     loading,
     error,
     stats,
-    
+
     // Actions
     fetchBeneficiaries,
     fetchActiveBeneficiaries,
@@ -338,9 +328,11 @@ export function useBeneficiaries(options: UseBeneficiariesOptions = {}) {
     updateBeneficiaryStatus,
     deleteBeneficiary,
     fetchStats,
-    
+
     // Utilities
     refresh: fetchBeneficiaries,
-    clearError: () => { setError(null); }
+    clearError: () => {
+      setError(null);
+    },
   };
 }
