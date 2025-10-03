@@ -158,7 +158,7 @@ export default defineConfig({
           const facadeModuleId = chunkInfo.facadeModuleId
             ? chunkInfo.facadeModuleId.split('/').pop()
             : 'chunk';
-          return "js/[name]-[hash:8].js";
+          return 'js/[name]-[hash:8].js';
         },
         entryFileNames: 'js/[name]-[hash:8].js',
         assetFileNames: (assetInfo) => {

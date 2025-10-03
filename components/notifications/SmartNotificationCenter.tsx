@@ -1,6 +1,6 @@
 /**
  * @fileoverview SmartNotificationCenter Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -35,7 +35,7 @@ import { useAdvancedMobile } from '../../hooks/useAdvancedMobile';
 
 /**
  * SmartNotification Interface
- * 
+ *
  * @interface SmartNotification
  */
 export interface SmartNotification {
@@ -109,7 +109,7 @@ const priorityColors = {
 
 /**
  * SmartNotificationCenter function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -468,7 +468,7 @@ export function SmartNotificationCenter({
                     <Bell className="w-12 h-12 mb-4 text-gray-300" />
                     <p className="text-sm">Bildirim bulunamadı</p>
                     <p className="text-xs text-gray-400 mt-1">
-                      {activeTab === 'all' ? 'Henüz bildirim yok' : "Bu kategoride bildirim yok"}
+                      {activeTab === 'all' ? 'Henüz bildirim yok' : 'Bu kategoride bildirim yok'}
                     </p>
                   </motion.div>
                 )}

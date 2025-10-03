@@ -1,6 +1,6 @@
 /**
  * @fileoverview EnhancedDashboard Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -33,10 +33,9 @@ const getTimeAgo = (date: Date): string => {
   } else if (diffInSeconds < 86400) {
     const hours = Math.floor(diffInSeconds / 3600);
     return `${hours} saat önce`;
-  } 
-    const days = Math.floor(diffInSeconds / 86400);
-    return `${days} gün önce`;
-  
+  }
+  const days = Math.floor(diffInSeconds / 86400);
+  return `${days} gün önce`;
 };
 
 // Sample data for charts
@@ -310,9 +309,7 @@ const EnhancedDashboard = memo(
           className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
         >
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
-              Dashboard 📊
-            </h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Dashboard 📊</h1>
             <p className="text-gray-600 mt-1">Dernek yönetim sistemi - Güncel durum özeti</p>
           </div>
 
@@ -424,7 +421,10 @@ const EnhancedDashboard = memo(
                                 <span>İlerleme</span>
                                 <span>{task.progress}%</span>
                               </div>
-                              <Progress value={task.progress} className="h-1.5 bg-gray-200 rounded-full" />
+                              <Progress
+                                value={task.progress}
+                                className="h-1.5 bg-gray-200 rounded-full"
+                              />
                             </div>
 
                             <div className="flex items-center gap-2">
@@ -496,7 +496,7 @@ const EnhancedDashboard = memo(
                             transition={{ delay: 0.1 + index * 0.05 }}
                             className="flex items-center gap-4 p-3 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer"
                           >
-                            <div className={"p-2 rounded-lg bg-gray-100 flex-shrink-0"}>
+                            <div className={'p-2 rounded-lg bg-gray-100 flex-shrink-0'}>
                               {activity.icon &&
                                 React.createElement(activity.icon as unknown as LucideIcon, {
                                   className: `w-4 h-4 ${activity.color ?? 'text-gray-400'}`,

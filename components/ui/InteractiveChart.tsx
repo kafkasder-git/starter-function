@@ -1,6 +1,6 @@
 /**
  * @fileoverview InteractiveChart Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -36,7 +36,7 @@ import {
 
 /**
  * ChartDataPoint Interface
- * 
+ *
  * @interface ChartDataPoint
  */
 export interface ChartDataPoint {
@@ -96,7 +96,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 
 /**
  * InteractiveChart function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -123,7 +123,7 @@ export function InteractiveChart({
   ];
 
   const processedData = useMemo(() => {
-      if (!data || data.length === 0) return [];
+    if (!data || data.length === 0) return [];
 
     return data.map((item) => ({
       ...item,
@@ -143,7 +143,7 @@ export function InteractiveChart({
                   key={i}
                   className="h-3 bg-gray-200 rounded"
                   style={{ width: `${60 + Math.random() * 40}%` }}
-                 />
+                />
               ))}
             </div>
           </div>
@@ -254,9 +254,8 @@ export function InteractiveChart({
   const handleExport = () => {
     // Export implementation
     const csvContent =
-      "data:text/csv;charset=utf-8," +
-      `Ad,Değer\n${ 
-      processedData.map((row) => `${row.name},${row.value}`).join('\n')}`;
+      'data:text/csv;charset=utf-8,' +
+      `Ad,Değer\n${processedData.map((row) => `${row.name},${row.value}`).join('\n')}`;
 
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');

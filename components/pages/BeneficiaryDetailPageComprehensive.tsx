@@ -1,6 +1,6 @@
 /**
  * @fileoverview BeneficiaryDetailPageComprehensive Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -127,7 +127,7 @@ interface BeneficiaryDetailPageComprehensiveProps {
 
 /**
  * BeneficiaryDetailPageComprehensive function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -522,7 +522,7 @@ export function BeneficiaryDetailPageComprehensive({
       );
 
       if (result.error) {
-        toast.error(`Güncelleme sırasında hata: ${  result.error}`);
+        toast.error(`Güncelleme sırasında hata: ${result.error}`);
         return;
       }
 
@@ -552,7 +552,7 @@ export function BeneficiaryDetailPageComprehensive({
   };
 
   const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const {files} = event.target;
+    const { files } = event.target;
     if (!files) return;
 
     setIsUploadingPhoto(true);
@@ -740,7 +740,7 @@ export function BeneficiaryDetailPageComprehensive({
       );
 
       if (result.error) {
-        toast.error(`IBAN kaydedilirken hata: ${  result.error}`);
+        toast.error(`IBAN kaydedilirken hata: ${result.error}`);
         return;
       }
 
@@ -880,12 +880,14 @@ export function BeneficiaryDetailPageComprehensive({
               id: personResult.data.id.toString(),
               name: personResult.data.ad_soyad ?? '',
               relationship:
-                (relationshipMap[rel.relationship_type] || rel.relationship_type) ?? 'Belirtilmemiş',
+                (relationshipMap[rel.relationship_type] || rel.relationship_type) ??
+                'Belirtilmemiş',
               phone: personResult.data.telefon_no ?? personResult.data.Telefon_No ?? undefined,
               ad_soyad: personResult.data.ad_soyad ?? '',
               tur: personResult.data.tur ?? personResult.data.Tur ?? undefined,
               yakinlik:
-                (relationshipMap[rel.relationship_type] || rel.relationship_type) ?? 'Belirtilmemiş',
+                (relationshipMap[rel.relationship_type] || rel.relationship_type) ??
+                'Belirtilmemiş',
               kimlik_no: personResult.data.kimlik_no ?? personResult.data.Kimlik_No ?? undefined,
               telefon_no: personResult.data.telefon_no ?? personResult.data.Telefon_No ?? undefined,
               baglanti_tarihi: rel.created_at?.split('T')[0] || '2024-01-01',
@@ -936,7 +938,7 @@ export function BeneficiaryDetailPageComprehensive({
         );
       } else if (result.error) {
         logger.error('❌ Error loading dependents:', result.error);
-        toast.error(`Bağlı kişiler yüklenirken hata: ${  result.error}`);
+        toast.error(`Bağlı kişiler yüklenirken hata: ${result.error}`);
         setExistingDependents([]);
       }
     } catch (error: any) {
@@ -1083,7 +1085,7 @@ export function BeneficiaryDetailPageComprehensive({
 
       if (error) {
         logger.error('❌ Error creating relationship:', error);
-        toast.error(`Bağlantı kaydedilirken hata: ${  error.message}`);
+        toast.error(`Bağlantı kaydedilirken hata: ${error.message}`);
         return;
       }
 
@@ -1116,7 +1118,7 @@ export function BeneficiaryDetailPageComprehensive({
 
       if (error) {
         logger.error('❌ Error removing relationship:', error);
-        toast.error(`Bağlantı kaldırılırken hata: ${  error.message}`);
+        toast.error(`Bağlantı kaldırılırken hata: ${error.message}`);
         return;
       }
 
@@ -1132,7 +1134,7 @@ export function BeneficiaryDetailPageComprehensive({
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const {files} = event.target;
+    const { files } = event.target;
     if (!files) return;
 
     setIsUploading(true);
@@ -1149,7 +1151,7 @@ export function BeneficiaryDetailPageComprehensive({
           const newFiles = Array.from(files).map((file, index) => ({
             id: (Date.now() + index).toString(),
             name: file.name,
-            size: `${(file.size / (1024 * 1024)).toFixed(1)  } MB`,
+            size: `${(file.size / (1024 * 1024)).toFixed(1)} MB`,
             type: file.type,
             uploadDate: new Date().toISOString().split('T')[0],
             url: URL.createObjectURL(file),
@@ -2713,7 +2715,7 @@ export function BeneficiaryDetailPageComprehensive({
                     <div
                       className="bg-blue-600 h-2 rounded-full transition-all duration-300"
                       style={{ width: `${uploadProgress}%` }}
-                     />
+                    />
                   </div>
                 </div>
               )}
@@ -3468,7 +3470,7 @@ export function BeneficiaryDetailPageComprehensive({
                       <div
                         className="bg-blue-600 h-2 rounded-full transition-all duration-300"
                         style={{ width: `${photoUploadProgress}%` }}
-                       />
+                      />
                     </div>
                     <p className="text-sm text-gray-600 mt-2">
                       Yükleniyor... {photoUploadProgress}%
