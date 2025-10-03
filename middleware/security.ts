@@ -1,6 +1,6 @@
 /**
  * @fileoverview security Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -15,9 +15,9 @@ import { logger } from '../lib/logging/logger';
 // Security middleware for API routes
 /**
  * SecurityMiddleware Service
- * 
+ *
  * Service class for handling securitymiddleware operations
- * 
+ *
  * @class SecurityMiddleware
  */
 export class SecurityMiddleware {
@@ -212,7 +212,7 @@ export class SecurityMiddleware {
   ) {
     const url = new URL(request.url);
     const path = url.pathname;
-    const {method} = request;
+    const { method } = request;
 
     // Define permission requirements for different endpoints
     const permissionMap: Record<string, { methods: string[]; permissions: string[] }> = {
