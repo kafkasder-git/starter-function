@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 /**
  * JSDoc Generation Script
  * Automatically generates JSDoc documentation for TypeScript/JavaScript files

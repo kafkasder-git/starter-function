@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 /**
  * Nullish Coalescing Refactoring Script
  * Replaces || with ?? for better null/undefined handling

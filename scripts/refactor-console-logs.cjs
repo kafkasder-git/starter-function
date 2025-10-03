@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 /**
  * Console.log to Logger Refactoring Script
  * Replaces console.log/error/warn with logger equivalents
