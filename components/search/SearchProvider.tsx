@@ -5,8 +5,7 @@
  * @version 1.0.0
  */
 
-import type { ReactNode } from 'react';
-import { createContext, useContext } from 'react';
+import { createContext, useContext, type ReactNode } from 'react';
 import { useSearch } from '../../hooks/useSearch';
 import type { SearchConfig, FilterValue, SortConfig, SearchResult } from '../../types/search';
 

@@ -5,12 +5,10 @@
  * @version 1.0.0
  */
 
-import type { ReactNode } from 'react';
-import { forwardRef, useState } from 'react';
+import { forwardRef, useState, type ReactNode } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Loader2, X } from 'lucide-react';
-import type { FormFieldProps } from './FormField';
-import { FormField } from './FormField';
+import { FormField, type FormFieldProps } from './FormField';
 import { Button } from '../ui/button';
 import { cn } from '../ui/utils';
 import { useIsMobile } from '../../hooks/useTouchDevice';

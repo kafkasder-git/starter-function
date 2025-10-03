@@ -33,8 +33,7 @@ import { Progress } from '../ui/progress';
 import { useDataExport } from '../../hooks/useDataExport';
 import { useIsMobile } from '../../hooks/useTouchDevice';
 import { cn } from '../ui/utils';
-import type { ExportConfig, ExportResult } from '../../types/data';
-import { EXPORT_TEMPLATES } from '../../types/data';
+import { EXPORT_TEMPLATES, type ExportConfig, type ExportResult } from '../../types/data';
 
 interface ExportModalProps {
   isOpen: boolean;

@@ -5,8 +5,7 @@
  * @version 1.0.0
  */
 
-import type { KeyboardEvent } from 'react';
-import { useState, useRef } from 'react';
+import { useState, useRef, type KeyboardEvent } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Search, X, Filter, Clock, TrendingUp, Loader2, Command, History } from 'lucide-react';
 import { Input } from '../ui/input';

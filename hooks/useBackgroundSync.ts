@@ -4,8 +4,7 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
-import type { SyncOptions, SyncResult, SyncTask } from '../services/backgroundSyncService';
-import { backgroundSyncService } from '../services/backgroundSyncService';
+import { backgroundSyncService, type SyncOptions, type SyncResult, type SyncTask } from '../services/backgroundSyncService';
 
 /**
  * UseBackgroundSyncReturn Interface

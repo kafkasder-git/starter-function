@@ -7,14 +7,14 @@
 
 import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { useDebounce } from './useDebounce';
-import type {
-  SearchState,
-  SearchConfig,
-  FilterValue,
-  SortConfig,
-  SearchResult,
+import {
+  TURKISH_CHAR_MAP,
+  type SearchState,
+  type SearchConfig,
+  type FilterValue,
+  type SortConfig,
+  type SearchResult,
 } from '../types/search';
-import { TURKISH_CHAR_MAP } from '../types/search';
 
 import { logger } from '../lib/logging/logger';
 interface UseSearchProps<T = unknown> {

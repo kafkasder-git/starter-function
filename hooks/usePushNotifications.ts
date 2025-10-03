@@ -4,8 +4,7 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
-import type { NotificationPayload } from '../services/pushNotificationService';
-import { pushNotificationService } from '../services/pushNotificationService';
+import { pushNotificationService, type NotificationPayload } from '../services/pushNotificationService';
 
 import { logger } from '../lib/logging/logger';
 /**

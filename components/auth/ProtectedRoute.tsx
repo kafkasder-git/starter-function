@@ -7,8 +7,7 @@
 
 import type { ReactNode } from 'react';
 import { useSupabaseAuth } from '../../contexts/SupabaseAuthContext';
-import type { Permission } from '../../types/auth';
-import { UserRole } from '../../types/auth';
+import { UserRole, type Permission } from '../../types/auth';
 import { UnauthorizedPage } from './UnauthorizedPage';
 import { LoadingSpinner } from '../LoadingSpinner';
 import { LoginPage } from './LoginPage';

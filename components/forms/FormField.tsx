@@ -5,8 +5,7 @@
  * @version 1.0.0
  */
 
-import type { ReactNode } from 'react';
-import { forwardRef, useState } from 'react';
+import { forwardRef, useState, type ReactNode } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { AlertCircle, CheckCircle, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { Input } from '../ui/input';

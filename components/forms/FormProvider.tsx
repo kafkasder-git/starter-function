@@ -5,8 +5,7 @@
  * @version 1.0.0
  */
 
-import type { ReactNode } from 'react';
-import { createContext, useContext } from 'react';
+import { createContext, useContext, type ReactNode } from 'react';
 
 import { logger } from '../../lib/logging/logger';
 interface ValidationError {

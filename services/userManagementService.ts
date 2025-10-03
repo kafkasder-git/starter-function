@@ -94,7 +94,7 @@ export interface UserActivity {
   action: string;
   description: string;
   timestamp: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 // Placeholder service for user management
@@ -135,7 +135,7 @@ const userManagementService = {
     return [];
   },
 
-  async getUserStats(): Promise<any> {
+  async getUserStats(): Promise<Record<string, unknown>> {
     // Placeholder implementation
     return {};
   },

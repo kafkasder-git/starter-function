@@ -7,8 +7,7 @@
 
 import { useCallback, useRef, useState } from 'react';
 import { toast } from 'sonner';
-import type { ImportConfig, ImportError, ImportResult, ImportWarning } from '../types/data';
-import { IMPORT_VALIDATION_RULES } from '../types/data';
+import { IMPORT_VALIDATION_RULES, type ImportConfig, type ImportError, type ImportResult, type ImportWarning } from '../types/data';
 
 interface UseDataImportProps {
   onProgress?: (progress: number) => void;

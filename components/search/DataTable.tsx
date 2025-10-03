@@ -5,8 +5,7 @@
  * @version 1.0.0
  */
 
-import type { ReactNode } from 'react';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, type ReactNode } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   ChevronUp,

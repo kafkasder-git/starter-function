@@ -5,8 +5,7 @@
  * @version 1.0.0
  */
 
-import type { ApiResponse, PaginatedResponse } from './config';
-import { SERVICE_CONFIG } from './config';
+import { SERVICE_CONFIG, type ApiResponse, type PaginatedResponse } from './config';
 
 /**
  * Base entity interface that all database entities should extend

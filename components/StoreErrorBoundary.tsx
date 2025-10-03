@@ -5,8 +5,7 @@
  * @version 1.0.0
  */
 
-import type { ReactNode } from 'react';
-import React, { Component } from 'react';
+import React, { Component, type ReactNode } from 'react';
 
 import { logger } from '../lib/logging/logger';
 interface Props {
