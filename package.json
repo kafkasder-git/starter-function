@@ -107,6 +107,7 @@
     "tailwind-merge": "^2.6.0",
     "tesseract.js": "^6.0.1",
     "vaul": "^1.1.2",
+    "vite-plugin-pwa": "^1.0.3",
     "zod": "^3.25.76",
     "zustand": "^5.0.3"
   },
@@ -159,7 +160,6 @@
     "typescript": "^5.9.2",
     "typescript-eslint": "^8.44.1",
     "vite": "^7.1.8",
-    "vite-plugin-pwa": "^1.0.3",
     "vitest": "^3.2.4",
     "workbox-window": "^7.3.0"
   },
