@@ -168,9 +168,7 @@
     "node": ">=20.0.0",
     "npm": ">=9.0.0"
   },
-  "overrides": {
-    "glob": "^10.4.5"
-  },
+  
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
       "eslint --fix",
