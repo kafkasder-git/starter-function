@@ -248,7 +248,7 @@ export function useMobileFormOptimized({
         onChange: (e: any) => {
           handleFieldChange(fieldName, e.target.value, rules);
         },
-        'aria-invalid': !!errors[fieldName],
+        'aria-invalid': Boolean(errors[fieldName]),
         'aria-describedby': errors[fieldName] ? `${fieldName}-error` : undefined,
         className: `
         w-full min-h-[44px] px-3 py-2 border rounded-md

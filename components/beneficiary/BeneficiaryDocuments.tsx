@@ -330,7 +330,7 @@ export function BeneficiaryDocuments({
       {/* File Preview Modal */}
       {previewFile && (
         <Dialog
-          open={!!previewFile}
+          open={Boolean(previewFile)}
           onOpenChange={() => {
             setPreviewFile(null);
           }}

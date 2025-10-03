@@ -135,7 +135,7 @@ export function MobileInfoCard({
   onClick,
   className,
 }: MobileInfoCardProps) {
-  const isInteractive = !!onClick;
+  const isInteractive = Boolean(onClick);
 
   return (
     <ResponsiveCard

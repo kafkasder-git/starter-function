@@ -287,13 +287,11 @@ export class KeyboardNavigationTester {
 
   private hasAccessibleName(element: Element): boolean {
     // Check various ways an element can have an accessible name
-    return !!(
-      element.getAttribute('aria-label') ||
+    return Boolean(element.getAttribute('aria-label') ||
       element.getAttribute('aria-labelledby') ||
       element.getAttribute('title') ||
       (element as HTMLElement).innerText?.trim() ||
-      element.querySelector('img')?.getAttribute('alt')
-    );
+      element.querySelector('img')?.getAttribute('alt'));
   }
 
   private getElementDescription(element: Element): string {

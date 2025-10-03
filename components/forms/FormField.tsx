@@ -224,7 +224,7 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
               <Checkbox
                 id={id}
                 name={name}
-                checked={!!value}
+                checked={Boolean(value)}
                 onCheckedChange={handleChange}
                 disabled={disabled}
                 onFocus={handleFocus}
@@ -283,7 +283,7 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
               <Switch
                 id={id}
                 name={name}
-                checked={!!value}
+                checked={Boolean(value)}
                 onCheckedChange={handleChange}
                 disabled={disabled}
                 onFocus={handleFocus}

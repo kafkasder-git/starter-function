@@ -504,7 +504,7 @@ export default function BeneficiaryForm({
             <Checkbox
               id="linked_orphan"
               checked={watchedValues.linked_orphan}
-              onCheckedChange={(checked) => { setValue('linked_orphan', !!checked); }}
+              onCheckedChange={(checked) => { setValue('linked_orphan', Boolean(checked)); }}
             />
             <Label htmlFor="linked_orphan">Yetim ile bağlantılı</Label>
           </div>
@@ -513,7 +513,7 @@ export default function BeneficiaryForm({
             <Checkbox
               id="linked_card"
               checked={watchedValues.linked_card}
-              onCheckedChange={(checked) => { setValue('linked_card', !!checked); }}
+              onCheckedChange={(checked) => { setValue('linked_card', Boolean(checked)); }}
             />
             <Label htmlFor="linked_card">Kart ile bağlantılı</Label>
           </div>

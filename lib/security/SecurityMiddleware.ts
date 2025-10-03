@@ -68,7 +68,7 @@ export class SecureAPIClient {
     // Audit logging
     AuditLogger.log('api_request', endpoint, {
       method: options.method ?? 'GET',
-      hasPermission: !!requiredPermission,
+      hasPermission: Boolean(requiredPermission),
       bodySize: options.body ? options.body.length : 0,
     });
 

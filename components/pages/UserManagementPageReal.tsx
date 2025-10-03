@@ -585,7 +585,7 @@ export function UserManagementPageReal() {
       />
 
       {/* Delete Confirmation Dialog */}
-      <AlertDialog open={!!deleteUserId} onOpenChange={() => { setDeleteUserId(null); }}>
+      <AlertDialog open={Boolean(deleteUserId)} onOpenChange={() => { setDeleteUserId(null); }}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Kullanıcıyı Sil</AlertDialogTitle>
