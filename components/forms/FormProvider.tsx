@@ -8,7 +8,7 @@
 import type { ReactNode } from 'react';
 import { createContext, useContext } from 'react';
 
-import { logger } from '../lib/logging/logger';
+import { logger } from '../../lib/logging/logger';
 interface ValidationError {
   field: string;
   message: string;

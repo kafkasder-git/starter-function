@@ -62,6 +62,11 @@
     "supabase/migrations/**",
     "**/*.cjs",
     "**/*.mjs",
-    ".env.production"
+    ".env.production",
+    "**/__tests__/**",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.spec.ts",
+    "**/*.spec.tsx"
   ]
 }

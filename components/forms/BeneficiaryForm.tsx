@@ -21,7 +21,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Textarea } from '../ui/textarea';
 import { CameraScanner } from '../ui/camera-scanner';
 
-import { logger } from '../lib/logging/logger';
+import { logger } from '../../lib/logging/logger';
 import type { OCRResult } from '../../services/ocrService';
 // Form validation schema
 const beneficiarySchema = z.object({

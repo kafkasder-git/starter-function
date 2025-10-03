@@ -26,7 +26,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { useMobileForm } from '../../hooks/useMobileForm';
 import { useAdvancedMobile } from '../../hooks/useAdvancedMobile';
 
-import { logger } from '../lib/logging/logger';
+import { logger } from '../../lib/logging/logger';
 interface FormField {
   name: string;
   label: string;

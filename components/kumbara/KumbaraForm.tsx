@@ -23,7 +23,7 @@ import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Textarea } from '../ui/textarea';
 
-import { logger } from '../lib/logging/logger';
+import { logger } from '../../lib/logging/logger';
 // Enhanced Zod validation schemas with TypeScript best practices
 const TURKISH_NAME_REGEX = /^[a-zA-ZğüşıöçĞÜŞİÖÇ\s]+$/;
 const TURKISH_PHONE_REGEX = /^(\+90|0)?[5][0-9]{9}$/;

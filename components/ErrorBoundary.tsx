@@ -6,8 +6,7 @@
  */
 
 import { AlertTriangle, Home, RefreshCw } from 'lucide-react';
-import type { ErrorInfo, ReactNode } from 'react';
-import { Component } from 'react';
+import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 
