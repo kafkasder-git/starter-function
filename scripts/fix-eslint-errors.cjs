@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 
 /**
  * ESLint Error Fixing Script

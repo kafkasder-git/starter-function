@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 
 /**
  * Import cleanup script for Kafkasder Management Panel

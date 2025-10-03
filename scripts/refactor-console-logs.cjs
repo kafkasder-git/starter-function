@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 
 /**
  * Console.log to Logger Refactoring Script
