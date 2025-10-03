@@ -322,7 +322,7 @@ export function EnhancedField({
   const field = form.register(name);
   const fieldState = form.formState.errors[name];
   const error = fieldState?.message;
-  const invalid = !!error;
+  const invalid = Boolean(error);
   const isDirty = form.formState.dirtyFields[name];
 
   const sizeClasses = {

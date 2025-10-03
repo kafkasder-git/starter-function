@@ -539,11 +539,9 @@ class NativeFeaturesService {
    * Check if in fullscreen mode
    */
   isFullscreen(): boolean {
-    return !!(
-      document.fullscreenElement ||
+    return Boolean(document.fullscreenElement ||
       (document as any).webkitFullscreenElement ||
-      (document as any).msFullscreenElement
-    );
+      (document as any).msFullscreenElement);
   }
 
   /**

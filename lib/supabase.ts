@@ -25,7 +25,7 @@ const supabaseAnonKey = environment.supabase.anonKey;
 // Debug environment variables
 logger.info('Supabase Configuration Debug:', {
   supabaseUrl,
-  hasAnonKey: !!supabaseAnonKey,
+  hasAnonKey: Boolean(supabaseAnonKey),
   anonKeyLength: supabaseAnonKey?.length ?? 0,
   supabaseUrlValid: supabaseUrl && supabaseUrl.startsWith('http'),
   importMetaEnv: {
@@ -128,12 +128,10 @@ export type SupabaseClient = typeof supabase;
 
 // Helper function to check if Supabase is properly configured
 export const isSupabaseConfigured = (): boolean => {
-  return !!(
-    supabaseUrl &&
+  return Boolean(supabaseUrl &&
     supabaseUrl.startsWith('http') &&
     supabaseAnonKey &&
-    supabaseAnonKey !== 'placeholder-key'
-  );
+    supabaseAnonKey !== 'placeholder-key');
 };
 
 // Helper function to get Supabase configuration status
@@ -141,7 +139,7 @@ export const getSupabaseStatus = () => {
   return {
     configured: isSupabaseConfigured(),
     url: supabaseUrl,
-    hasKey: !!supabaseAnonKey,
+    hasKey: Boolean(supabaseAnonKey),
     isPlaceholder: safeSupabaseUrl === 'https://placeholder.supabase.co',
   };
 };

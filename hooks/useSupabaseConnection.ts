@@ -95,12 +95,10 @@ export function isSupabaseConfigured(): boolean {
   const url = import.meta.env.VITE_SUPABASE_URL;
   const key = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-  return !!(
-    url &&
+  return Boolean(url &&
     key &&
     !url.includes('your-project') &&
     !key.includes('your-anon-key') &&
     url.startsWith('https://') &&
-    url.includes('.supabase.co')
-  );
+    url.includes('.supabase.co'));
 }

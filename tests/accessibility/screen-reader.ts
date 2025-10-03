@@ -281,13 +281,13 @@ export class ScreenReaderTester {
         let hasLabel = false;
         if (fieldId) {
           const label = form.querySelector(`label[for="${fieldId}"]`);
-          hasLabel = !!label;
+          hasLabel = Boolean(label);
         }
         if (!hasLabel) {
-          hasLabel = !!field.closest('label');
+          hasLabel = Boolean(field.closest('label'));
         }
         if (!hasLabel) {
-          hasLabel = !!(field.getAttribute('aria-label') || field.getAttribute('aria-labelledby'));
+          hasLabel = Boolean(field.getAttribute('aria-label') || field.getAttribute('aria-labelledby'));
         }
 
         // Check for required indicator
@@ -295,28 +295,22 @@ export class ScreenReaderTester {
         if (isRequired) {
           if (fieldId) {
             const label = form.querySelector(`label[for="${fieldId}"]`);
-            hasRequiredIndicator = !!(
-              label?.textContent?.includes('*') ||
+            hasRequiredIndicator = Boolean(label?.textContent?.includes('*') ||
               label?.querySelector('.required') ||
-              field.getAttribute('aria-required') === 'true'
-            );
+              field.getAttribute('aria-required') === 'true');
           }
         }
 
         // Check for error messages
         const hasErrorMessage =
-          !!(
-            field.getAttribute('aria-describedby') &&
+          Boolean(field.getAttribute('aria-describedby') &&
             document
               .getElementById(field.getAttribute('aria-describedby')!)
-              ?.textContent?.includes('error')
-          ) || field.getAttribute('aria-invalid') === 'true';
+              ?.textContent?.includes('error')) || field.getAttribute('aria-invalid') === 'true';
 
         // Check for help text
-        const hasHelpText = !!(
-          field.getAttribute('aria-describedby') &&
-          document.getElementById(field.getAttribute('aria-describedby')!)
-        );
+        const hasHelpText = Boolean(field.getAttribute('aria-describedby') &&
+          document.getElementById(field.getAttribute('aria-describedby')!));
 
         formData.fields.push({
           field,
@@ -373,7 +367,7 @@ export class ScreenReaderTester {
       const headers = table.querySelectorAll('th');
       const cells = table.querySelectorAll('td');
 
-      const hasCaption = !!caption;
+      const hasCaption = Boolean(caption);
       const hasHeaders = headers.length > 0;
 
       // Check if headers are properly associated with cells

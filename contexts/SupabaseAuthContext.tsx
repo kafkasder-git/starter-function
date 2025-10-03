@@ -43,7 +43,7 @@ export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const isAuthenticated = !!user && !!session;
+  const isAuthenticated = Boolean(user) && Boolean(session);
 
   // Initialize auth state
   useEffect(() => {
