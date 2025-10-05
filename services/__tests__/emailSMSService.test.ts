@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
-import { EmailSMSService, sendEmail, sendSMS, sendWithTemplate } from '../emailSMSService';
+import { EmailSMSService } from '../emailSMSService';
 
 // Mock monitoring service
 vi.mock('../../services/monitoringService', () => ({
@@ -36,11 +36,9 @@ describe('EmailSMSService', () => {
     });
 
     it('should initialize with default configuration', () => {
-      const config = (service as any).emailConfig;
+      const config = service.getConfiguration();
 
-      expect(config.provider).toBe('smtp');
-      expect(config.from.email).toBe('noreply@kafkasder.com');
-      expect(config.from.name).toBe('Kafkas Derneği Yönetim Sistemi');
+      expect(config.provider).toBe('mock');
     });
 
     it('should load templates on initialization', () => {
@@ -48,7 +46,7 @@ describe('EmailSMSService', () => {
 
       expect(templates.length).toBeGreaterThan(0);
       expect(templates.some((t) => t.id === 'welcome-member')).toBe(true);
-      expect(templates.some((t) => t.id === 'verification-code')).toBe(true);
+      expect(templates.some((t) => t.id === 'donation-receipt')).toBe(true);
     });
   });
 

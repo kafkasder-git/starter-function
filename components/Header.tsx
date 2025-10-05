@@ -76,9 +76,15 @@ export function Header({
   });
 
   // const { trackClick, trackSearch, trackFeatureUse } = useUXAnalytics();
-  const trackClick = () => {};
-  const trackSearch = () => {};
-  const trackFeatureUse = () => {};
+  const trackClick = (): void => {
+    // TODO: Implement analytics tracking
+  };
+  const trackSearch = (): void => {
+    // TODO: Implement search analytics
+  };
+  const trackFeatureUse = (): void => {
+    // TODO: Implement feature usage tracking
+  };
 
   const { preferences, updatePreference, addRecentSearch } = useUserPreferences();
 

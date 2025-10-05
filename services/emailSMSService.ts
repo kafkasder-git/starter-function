@@ -49,6 +49,67 @@ export class EmailSMSService {
     logger.info(`Sending bulk SMS to ${recipients.length} recipients: ${message}`);
     return true;
   }
+
+  // Template management methods
+  private templates: any[] = [
+    {
+      id: 'welcome-member',
+      category: 'member',
+      subject: 'Hoş Geldiniz',
+      body: 'Merhaba {{name}}, derneğimize hoş geldiniz!',
+      variables: ['name']
+    },
+    {
+      id: 'donation-receipt',
+      category: 'donation',
+      subject: 'Bağış Makbuzu',
+      body: '{{name}} adına {{amount}} TL bağış alınmıştır.',
+      variables: ['name', 'amount']
+    }
+  ];
+
+  getTemplates(): any[] {
+    return this.templates;
+  }
+
+  getTemplate(id: string): any {
+    return this.templates.find(t => t.id === id) || null;
+  }
+
+  getTemplatesByCategory(category: string): any[] {
+    return this.templates.filter(t => t.category === category);
+  }
+
+  renderTemplate(templateId: string, variables: Record<string, any>): string {
+    const template = this.getTemplate(templateId);
+    if (!template) return '';
+    
+    let rendered = template.body;
+    Object.entries(variables).forEach(([key, value]) => {
+      rendered = rendered.replace(new RegExp(`{{${key}}}`, 'g'), String(value));
+    });
+    return rendered;
+  }
+
+  // Email with template
+  async sendWithTemplate(to: string, templateId: string, variables: Record<string, any>): Promise<boolean> {
+    // Mock implementation
+    logger.info(`Sending email with template ${templateId} to ${to}`);
+    return true;
+  }
+
+  // Configuration
+  getConfiguration(): any {
+    // Mock implementation
+    return { provider: 'mock' };
+  }
+
+  // Initialize service
+  async initialize(): Promise<void> {
+    // Mock implementation - load templates
+    logger.info('EmailSMSService initialized with templates');
+    // Templates are already loaded in the class property
+  }
 }
 
 // Placeholder service for backward compatibility

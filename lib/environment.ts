@@ -86,7 +86,32 @@ function getEnvVar(key: string, defaultValue?: string): string {
   let value: string | undefined;
 
   if (isBrowser) {
+    // Try import.meta.env first (for local development)
     value = import.meta.env[key as keyof ImportMetaEnv] as string;
+    
+    // If not found, try Cloudflare Pages runtime environment variables
+    if (!value && typeof window !== 'undefined') {
+      // Check for Cloudflare Pages runtime injection
+      const envScript = document.querySelector('script[data-env]');
+      if (envScript) {
+        try {
+          const envData = JSON.parse(envScript.textContent || '{}');
+          value = envData[key];
+        } catch (e) {
+          // Ignore JSON parse errors
+        }
+      }
+      
+      // Check window.__ENV__ (Cloudflare Pages pattern)
+      if (!value && (window as any).__ENV__) {
+        value = (window as any).__ENV__[key];
+      }
+      
+      // Check window.env (another common pattern)
+      if (!value && (window as any).env) {
+        value = (window as any).env[key];
+      }
+    }
   } else if (isNode) {
     // eslint-disable-next-line security/detect-object-injection
     value = process.env[key];
@@ -263,8 +288,8 @@ export const environment: EnvironmentConfig = {
   },
 
   supabase: {
-    url: getEnvVar('VITE_SUPABASE_URL'),
-    anonKey: getEnvVar('VITE_SUPABASE_ANON_KEY'),
+    url: getEnvVar('VITE_SUPABASE_URL', 'https://gyburnfaszhxcxdnwogj.supabase.co'),
+    anonKey: getEnvVar('VITE_SUPABASE_ANON_KEY', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd5YnVybmZhc3poeGN4ZG53b2dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc4ODI2ODMsImV4cCI6MjA3MzQ1ODY4M30.R-AD4ABGXGI1v_VoVqeRDVs9Wio-GJ0HUVRrP0iGG4k'),
   },
 
   features: {

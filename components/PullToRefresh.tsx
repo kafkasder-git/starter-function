@@ -43,7 +43,7 @@ export function PullToRefresh({
 
   // Check if we're at the top and can pull
   const checkCanPull = useCallback(() => {
-    if (!containerRef.current ?? disabled) return false;
+    if (!containerRef.current || disabled) return false;
     const element = containerRef.current;
     return element.scrollTop <= 0;
   }, [disabled]);
@@ -63,7 +63,7 @@ export function PullToRefresh({
   // Handle touch move
   const handleTouchMove = useCallback(
     (e: TouchEvent) => {
-      if (!canPull ?? disabled) return;
+      if (!canPull || disabled) return;
 
       const currentY = e.touches[0].clientY;
       const deltaY = currentY - startYRef.current;
@@ -88,7 +88,7 @@ export function PullToRefresh({
 
   // Handle touch end
   const handleTouchEnd = useCallback(async () => {
-    if (!canPull ?? disabled) return;
+    if (!canPull || disabled) return;
 
     setCanPull(false);
 
@@ -139,7 +139,7 @@ export function PullToRefresh({
     >
       {/* Pull Indicator */}
       <AnimatePresence>
-        {(isPulling ?? isRefreshing) && (
+        {(isPulling || isRefreshing) && (
           <motion.div
             initial={{ opacity: 0, y: -60 }}
             animate={{
@@ -199,7 +199,7 @@ export function PullToRefresh({
       {/* Content */}
       <motion.div
         animate={{
-          y: isPulling ?? isRefreshing ? pullDistance * 0.3 : 0,
+          y: (isPulling || isRefreshing) ? pullDistance * 0.3 : 0,
         }}
         transition={{ type: 'spring', damping: 20, stiffness: 300 }}
       >

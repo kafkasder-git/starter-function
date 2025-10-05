@@ -126,19 +126,19 @@ export const ValidationRules = {
   }),
 
   decimal: (message = 'Geçerli bir sayı girin'): FieldValidationRule => ({
-    pattern: /^[0-9]{1,15}(?:\.[0-9]{1,2})?$/,
+    pattern: /^[0-9]{1,10}(?:\.[0-9]{1,2})?$/,
     custom: (value) => {
       if (!value) return true;
-      const decimalRegex = /^[0-9]{1,15}(?:\.[0-9]{1,2})?$/;
+      const decimalRegex = /^[0-9]{1,10}(?:\.[0-9]{1,2})?$/;
       return decimalRegex.test(value.toString()) || message;
     },
   }),
 
   money: (message = 'Geçerli bir tutar girin'): FieldValidationRule => ({
-    pattern: /^[0-9]{1,15}(?:\.[0-9]{1,2})?$/,
+    pattern: /^[0-9]{1,10}(?:\.[0-9]{1,2})?$/,
     custom: (value) => {
       if (!value) return true;
-      const moneyRegex = /^[0-9]{1,15}(?:\.[0-9]{1,2})?$/;
+      const moneyRegex = /^[0-9]{1,10}(?:\.[0-9]{1,2})?$/;
       const numValue = parseFloat(value.toString());
       return (moneyRegex.test(value.toString()) && !isNaN(numValue) && numValue >= 0) || message;
     },

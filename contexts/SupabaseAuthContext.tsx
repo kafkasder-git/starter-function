@@ -124,52 +124,10 @@ export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
 
     // Check if Supabase is properly configured
     if (!isSupabaseConfigured()) {
-      // Mock authentication for development
-      logger.info('Using mock authentication - Supabase not configured');
-
-      // Simulate a delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // Mock successful login with demo credentials
-      if (email === 'demo@example.com' && password === 'demo123') {
-        const mockUser = {
-          id: 'mock-user-id',
-          email,
-          user_metadata: { name: 'Demo User' },
-          app_metadata: {},
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          aud: 'authenticated',
-          role: 'authenticated',
-          email_confirmed_at: new Date().toISOString(),
-          phone_confirmed_at: undefined,
-          confirmation_sent_at: undefined,
-          recovery_sent_at: undefined,
-          email_change_sent_at: undefined,
-          new_email: undefined,
-          invited_at: undefined,
-          action_link: undefined,
-          phone: undefined,
-          last_sign_in_at: new Date().toISOString(),
-        } as User;
-
-        setUser(mockUser);
-        setSession({
-          access_token: 'mock-access-token',
-          refresh_token: 'mock-refresh-token',
-          expires_in: 3600,
-          expires_at: Math.floor(Date.now() / 1000) + 3600,
-          token_type: 'bearer',
-          user: mockUser,
-        } as Session);
-
-        setIsLoading(false);
-        toast.success('Demo modunda giriş yapıldı');
-        return;
-      }
-      setError('Demo için: demo@example.com / demo123 kullanın');
+      const errorMessage = 'Supabase konfigürasyonu eksik. Lütfen administrator ile iletişime geçin.';
+      setError(errorMessage);
       setIsLoading(false);
-      toast.error('Demo için: demo@example.com / demo123 kullanın');
+      toast.error(errorMessage);
       return;
     }
 
@@ -214,12 +172,12 @@ export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
     setIsLoading(true);
     setError(null);
 
-    // Check if we're in mock mode
+    // Check if Supabase is properly configured
     if (!isSupabaseConfigured()) {
-      // Mock sign up
-      setError('Demo modunda kayıt yapılamaz. Giriş için demo@example.com / demo123 kullanın.');
+      const errorMessage = 'Supabase konfigürasyonu eksik. Lütfen administrator ile iletişime geçin.';
+      setError(errorMessage);
       setIsLoading(false);
-      toast.error('Demo modunda kayıt yapılamaz');
+      toast.error(errorMessage);
       return;
     }
 
@@ -266,9 +224,9 @@ export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
     setIsLoading(true);
     setError(null);
 
-    // Check if we're in mock mode
+    // Check if Supabase is properly configured
     if (!isSupabaseConfigured()) {
-      // Mock sign out
+      // Clear local state even if Supabase is not configured
       setUser(null);
       setSession(null);
       setIsLoading(false);
@@ -308,11 +266,12 @@ export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
     setIsLoading(true);
     setError(null);
 
-    // Check if we're in mock mode
+    // Check if Supabase is properly configured
     if (!isSupabaseConfigured()) {
-      // Mock password reset
+      const errorMessage = 'Supabase konfigürasyonu eksik. Lütfen administrator ile iletişime geçin.';
+      setError(errorMessage);
       setIsLoading(false);
-      toast.success('Demo modunda şifre sıfırlama yapılamaz');
+      toast.error(errorMessage);
       return;
     }
 

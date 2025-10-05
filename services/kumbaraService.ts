@@ -117,6 +117,14 @@ class KumbaraService {
               aVal = new Date(a.lastCollection || 0);
               bVal = new Date(b.lastCollection || 0);
               break;
+            case 'created_at':
+              aVal = a.created_at;
+              bVal = b.created_at;
+              break;
+            case undefined:
+              aVal = a.created_at;
+              bVal = b.created_at;
+              break;
             default:
               aVal = a.created_at;
               bVal = b.created_at;
@@ -224,7 +232,7 @@ class KumbaraService {
   /**
    * Delete kumbara (soft delete)
    */
-  async deleteKumbara(id: string, deletedBy: string): Promise<boolean> {
+  async deleteKumbara(_id: string, _deletedBy: string): Promise<boolean> {
     try {
       // Mock API call - replace with real implementation
       return true;
@@ -273,7 +281,7 @@ class KumbaraService {
   /**
    * Get collections for a kumbara
    */
-  async getCollections(kumbaraId: string, limit = 10): Promise<KumbaraCollection[]> {
+  async getCollections(kumbaraId: string, _limit = 10): Promise<KumbaraCollection[]> {
     try {
       // 🔗 Gerçek API'den toplama kayıtları alınacak
       return [];
@@ -403,7 +411,7 @@ class KumbaraService {
    * Generate printable QR code HTML
    */
   generatePrintableQR(kumbara: Kumbara): string {
-    const qrData = this.generateQRData(kumbara);
+    const _qrData = this.generateQRData(kumbara);
 
     return `
       <html>
@@ -621,7 +629,7 @@ class KumbaraService {
   /**
    * Acknowledge alert
    */
-  async acknowledgeAlert(alertId: string, acknowledgedBy: string): Promise<boolean> {
+  async acknowledgeAlert(_alertId: string, _acknowledgedBy: string): Promise<boolean> {
     try {
       // Mock API call - replace with real implementation
       return true;

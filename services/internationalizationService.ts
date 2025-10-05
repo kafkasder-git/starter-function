@@ -741,7 +741,7 @@ class InternationalizationService {
   /**
    * Tarih formatla
    */
-  public formatDate(date: Date, format?: string): string {
+  public formatDate(date: Date, _format?: string): string {
     const options: Intl.DateTimeFormatOptions = {
       year: 'numeric',
       month: '2-digit',

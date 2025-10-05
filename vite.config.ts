@@ -113,19 +113,32 @@ export default defineConfig({
       react: path.resolve(__dirname, 'node_modules/react'),
       'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
     },
-    dedupe: ['react', 'react-dom', '@radix-ui/react-slot'],
+    dedupe: [
+      'react', 
+      'react-dom', 
+      '@radix-ui/react-slot',
+      '@radix-ui/react-dialog',
+      '@radix-ui/react-dropdown-menu',
+      '@radix-ui/react-select'
+    ],
   },
   build: {
     target: 'esnext',
     outDir: 'dist',
     chunkSizeWarningLimit: 1000, // Daha düşük limit
+    // Cloudflare Pages optimization
+    assetsDir: 'assets',
     rollupOptions: {
       output: {
         manualChunks: {
-          // Optimize edilmiş chunk stratejisi
-          'react-vendor': ['react', 'react-dom'],
-          // Radix UI bileşenlerini tek chunk'ta topla React bağımlılığı için
-          'radix-ui': [
+          // React ve React-DOM - jsx-runtime ile birlikte bundle'da
+          'react-vendor': [
+            'react',
+            'react-dom',
+            'react/jsx-runtime',
+          ],
+          // Radix UI bileşenleri - ayrı chunk
+          'ui-vendor': [
             '@radix-ui/react-dialog',
             '@radix-ui/react-dropdown-menu',
             '@radix-ui/react-select',
@@ -138,6 +151,20 @@ export default defineConfig({
             '@radix-ui/react-alert-dialog',
             '@radix-ui/react-checkbox',
             '@radix-ui/react-radio-group',
+            '@radix-ui/react-avatar',
+            '@radix-ui/react-label',
+            '@radix-ui/react-menubar',
+            '@radix-ui/react-navigation-menu',
+            '@radix-ui/react-separator',
+            '@radix-ui/react-slider',
+            '@radix-ui/react-switch',
+            '@radix-ui/react-toggle',
+            '@radix-ui/react-toggle-group',
+            '@radix-ui/react-aspect-ratio',
+            '@radix-ui/react-context-menu',
+            '@radix-ui/react-hover-card',
+            '@radix-ui/react-progress',
+            '@radix-ui/react-scroll-area',
           ],
           'supabase-vendor': ['@supabase/supabase-js'],
           'chart-vendor': ['recharts'],
@@ -158,18 +185,18 @@ export default defineConfig({
           const facadeModuleId = chunkInfo.facadeModuleId
             ? chunkInfo.facadeModuleId.split('/').pop()
             : 'chunk';
-          return 'js/[name]-[hash:8].js';
+          return 'assets/js/[name]-[hash:8].js';
         },
-        entryFileNames: 'js/[name]-[hash:8].js',
+        entryFileNames: 'assets/js/[name]-[hash:8].js',
         assetFileNames: (assetInfo) => {
           const safeName = assetInfo.name || 'asset.bin';
           const info = safeName.split('.');
           const ext = info[info.length - 1] || 'bin';
           if (/\.(css)$/.test(safeName)) {
-            return `css/[name]-[hash:8].${ext}`;
+            return `assets/css/[name]-[hash:8].${ext}`;
           }
           if (/\.(png|jpe?g|svg|gif|tiff|bmp|ico|webp)$/i.test(safeName)) {
-            return `img/[name]-[hash:8].${ext}`;
+            return `assets/img/[name]-[hash:8].${ext}`;
           }
           return `assets/[name]-[hash:8].${ext}`;
         },
@@ -178,6 +205,7 @@ export default defineConfig({
         // External olarak işaretlenecek modüller
         return ['virtual:pwa-register'].includes(id);
       },
+      // React singleton için global variables - rollupOptions altında değil
     },
     sourcemap: false, // Production'da sourcemap kapalı
     minify: 'terser',
