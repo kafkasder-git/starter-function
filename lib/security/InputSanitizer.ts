@@ -70,7 +70,7 @@ export class XSSProtection {
     sanitized = sanitized.replace(/javascript:/gi, '');
     
     // Encode remaining HTML tags and special characters (avoid double encoding)
-    sanitized = sanitized.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    sanitized = sanitized.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     sanitized = sanitized.replace(/"/g, '&quot;').replace(/'/g, '&#x27;');
     sanitized = sanitized.replace(/\//g, '&#x2F;');
     
@@ -223,7 +223,7 @@ export class RateLimiter {
     const now = Date.now();
     const attempt = this.attempts.get(identifier);
     
-    if (!attempt ?? now > attempt.resetTime) {
+    if (!attempt || now > attempt.resetTime) {
       this.attempts.set(identifier, { count: 1, resetTime: now + windowMs });
       return true;
     }
@@ -258,7 +258,7 @@ export class RateLimiter {
  */
 export class InputSanitizer {
   static sanitize(input: unknown, type: 'text' | 'html' | 'sql' | 'email' | 'phone' | 'url' | 'filepath' = 'text'): string {
-    if (input === null ?? input === undefined) return '';
+    if (input === null || input === undefined) return '';
     
     const stringInput = typeof input === 'string' ? input : String(input);
     
@@ -332,13 +332,26 @@ export class InputSanitizer {
     }
   }
 
-  static sanitizeFormData(formData: Record<string, unknown>): Record<string, string> {
-    const result: Record<string, string> = {};
+  static sanitizeFormData(formData: Record<string, unknown>): Record<string, any> {
+    const result: Record<string, any> = {};
 
     for (const [key, value] of Object.entries(formData)) {
-      if (value === null ?? value === undefined) {
+      if (value === null || value === undefined) {
         result[key] = '';
-      } else if (typeof value === 'string') {
+      } else if (typeof value === 'object' && !Array.isArray(value) && value !== null) {
+        result[key] = this.sanitizeFormData(value as Record<string, unknown>);
+      } else if (Array.isArray(value)) {
+        result[key] = value.map(item => {
+          if (typeof item === 'object' && item !== null) {
+            return this.sanitizeFormData(item);
+          }
+          if (typeof item === 'string') {
+            return this.sanitizeText(item);
+          }
+          return item;
+        });
+      }
+      else if (typeof value === 'string') {
         // Determine field type based on key name
         if (key.toLowerCase().includes('email')) {
           result[key] = this.sanitizeEmail(value);
