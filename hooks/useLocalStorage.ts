@@ -1,6 +1,6 @@
 /**
  * @fileoverview useLocalStorage Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -15,7 +15,12 @@ function useLocalStorage<T>(key: string, initialValue: T) {
       // Get from local storage by key
       const item = window.localStorage.getItem(key);
       // Parse stored json or if none return initialValue
-      return item ? JSON.parse(item) : initialValue;
+      if (item) {
+        const stored = JSON.parse(item);
+        // Merge stored object with initialValue to include new keys
+        return { ...initialValue, ...stored };
+      }
+      return initialValue;
     } catch (error) {
       logger.warn(`Error reading localStorage key "${key}":`, error);
       return initialValue;
@@ -44,7 +49,7 @@ function useLocalStorage<T>(key: string, initialValue: T) {
 // Hook for managing user preferences
 /**
  * useUserPreferences function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -96,7 +101,7 @@ export function useUserPreferences() {
 // Hook for managing form drafts
 /**
  * useFormDraft function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
