@@ -77,7 +77,7 @@ export const commonSchemas = {
       // Checksum validation
       const checksum1 = ((digits[0] ?? 0) + (digits[2] ?? 0) + (digits[4] ?? 0) + (digits[6] ?? 0) + (digits[8] ?? 0)) * 7;
       const checksum2 = (digits[1] ?? 0) + (digits[3] ?? 0) + (digits[5] ?? 0) + (digits[7] ?? 0);
-      const digit10 = (checksum1 - checksum2) % 10;
+      const digit10 = ((checksum1 - checksum2) % 10 + 10) % 10;
       const digit11 =
         ((digits[0] ?? 0) +
           (digits[1] ?? 0) +
