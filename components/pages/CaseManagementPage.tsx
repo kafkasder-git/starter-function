@@ -56,7 +56,7 @@ interface DonorInstitution {
   tags: string[];
 }
 
-// Mock data kaldırıldı - gerçek veriler API'den gelecek
+// Real data will be fetched from API
 
 /**
  * PartnerDonorsPage function

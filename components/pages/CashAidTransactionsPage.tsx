@@ -41,7 +41,7 @@ interface CashTransaction {
   documentPath?: string;
 }
 
-const mockTransactions: CashTransaction[] = [
+const initialTransactions: CashTransaction[] = [
   {
     id: 1,
     transactionNumber: 'NCT-2024-001',
@@ -107,7 +107,7 @@ const mockTransactions: CashTransaction[] = [
  * @returns {void} Nothing
  */
 export function CashAidTransactionsPage() {
-  const [transactions, setTransactions] = useState<CashTransaction[]>(mockTransactions);
+  const [transactions, setTransactions] = useState<CashTransaction[]>(initialTransactions);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [paymentMethodFilter, setPaymentMethodFilter] = useState<string>('all');

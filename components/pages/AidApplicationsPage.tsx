@@ -45,7 +45,7 @@ interface AidApplication {
   address: string;
 }
 
-const mockApplications: AidApplication[] = [
+const initialApplications: AidApplication[] = [
   {
     id: 1,
     applicantName: 'Ayşe Yılmaz',
@@ -120,7 +120,7 @@ const mockApplications: AidApplication[] = [
  * @returns {void} Nothing
  */
 export function AidApplicationsPage() {
-  const [applications, setApplications] = useState<AidApplication[]>(mockApplications);
+  const [applications, setApplications] = useState<AidApplication[]>(initialApplications);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [priorityFilter, setPriorityFilter] = useState<string>('all');

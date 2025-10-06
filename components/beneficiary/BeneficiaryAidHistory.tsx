@@ -42,8 +42,8 @@ export function BeneficiaryAidHistory({
   const [filterType, setFilterType] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
 
-  // Mock data if no aid history provided
-  const mockAidHistory: AidRecord[] = [
+  // Fallback data if no aid history provided
+  const fallbackAidHistory: AidRecord[] = [
     {
       id: '1',
       date: '2024-01-15',
@@ -74,7 +74,7 @@ export function BeneficiaryAidHistory({
     },
   ];
 
-  const records = aidHistory.length > 0 ? aidHistory : mockAidHistory;
+  const records = aidHistory.length > 0 ? aidHistory : fallbackAidHistory;
 
   const filteredRecords = records.filter((record) => {
     const matchesSearch =

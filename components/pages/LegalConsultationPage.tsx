@@ -29,7 +29,7 @@ interface LegalConsultation {
   rating?: number;
 }
 
-// Mock data kaldırıldı - gerçek veriler API'den gelecek
+// Real data will be fetched from API
 
 import { useState, useMemo } from 'react';
 import { useSearch } from '../../hooks/useSearch';

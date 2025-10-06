@@ -759,7 +759,7 @@ export function BeneficiaryDetailPageComprehensive({
   // Document Management Modal Handlers
   const handleOpenDocumentModal = () => {
     setIsDocumentModalOpen(true);
-    // Load existing documents (mock data)
+    // Load existing documents (example data)
     setUploadedFiles([
       {
         id: '1',

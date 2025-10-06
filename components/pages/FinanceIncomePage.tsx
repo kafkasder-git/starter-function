@@ -70,12 +70,12 @@ export function FinanceIncomePage() {
     paymentMethod: 'bank' as Transaction['paymentMethod'],
   });
 
-  // Mock data kaldırıldı - gerçek veriler API'den gelecek
+  // Real data will be fetched from API
   const transactions: Transaction[] = useMemo(() => [], []);
 
   const monthlyData: MonthlyData[] = useMemo(
     () => [
-      // Mock data kaldırıldı - gerçek veriler API'den gelecek
+      // Example data - will be replaced with real API data
       { month: 'Temmuz', income: 58000, expense: 42000, balance: 16000 },
       { month: 'Ağustos', income: 49000, expense: 45000, balance: 4000 },
       { month: 'Eylül', income: 61000, expense: 39000, balance: 22000 },

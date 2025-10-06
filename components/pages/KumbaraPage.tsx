@@ -48,7 +48,7 @@ interface Kumbara {
   notes?: string;
 }
 
-// Mock data kaldırıldı - gerçek veriler API'den gelecek
+// Real data will be fetched from API
 
 /**
  * KumbaraPage function

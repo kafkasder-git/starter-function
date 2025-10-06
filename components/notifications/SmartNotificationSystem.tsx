@@ -71,8 +71,8 @@ export interface Notification {
   expiresAt?: Date;
 }
 
-// Mock bildirim verileri
-const mockNotifications: Notification[] = [
+// Example notification data
+const exampleNotifications: Notification[] = [
   {
     id: '1',
     type: 'donation',
@@ -169,7 +169,7 @@ export function SmartNotificationSystem({
   onMarkAsRead,
   onMarkAllAsRead,
 }: SmartNotificationSystemProps) {
-  const [notifications, setNotifications] = useState<Notification[]>(mockNotifications);
+  const [notifications, setNotifications] = useState<Notification[]>(exampleNotifications);
   const [activeTab, setActiveTab] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<NotificationType | 'all'>('all');

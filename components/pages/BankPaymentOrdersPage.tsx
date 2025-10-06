@@ -51,7 +51,7 @@ interface PaymentOrder {
   failureReason?: string;
 }
 
-const mockPaymentOrders: PaymentOrder[] = [
+const initialPaymentOrders: PaymentOrder[] = [
   {
     id: 1,
     orderNumber: 'BPO-2024-001',
@@ -143,7 +143,7 @@ const mockPaymentOrders: PaymentOrder[] = [
  * @returns {void} Nothing
  */
 export function BankPaymentOrdersPage() {
-  const [paymentOrders, setPaymentOrders] = useState<PaymentOrder[]>(mockPaymentOrders);
+  const [paymentOrders, setPaymentOrders] = useState<PaymentOrder[]>(initialPaymentOrders);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [isNewOrderOpen, setIsNewOrderOpen] = useState(false);

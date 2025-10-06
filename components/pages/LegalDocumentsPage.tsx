@@ -41,7 +41,7 @@ interface LegalDocument {
   description?: string;
 }
 
-// Mock data kaldırıldı - gerçek veriler API'den gelecek
+// Real data will be fetched from API
 
 /**
  * LegalDocumentsPage function

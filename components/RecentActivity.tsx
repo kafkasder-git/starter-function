@@ -28,6 +28,8 @@ interface Activity {
 //   return [];
 // };
 
+const recentActivities: Activity[] = [];
+
 /**
  * RecentActivity function
  * 
@@ -86,7 +88,7 @@ export function RecentActivity() {
         </Button>
       </CardHeader>
       <CardContent className="space-y-3 lg:space-y-4 max-h-96 overflow-y-auto scrollbar-thin px-6 py-6">
-        {mockActivities.length > 0 ? (
+        {recentActivities.length > 0 ? (
           [].map((activity) => ( // TODO: Replace with real data from getActivities()
             <div
               key={activity.id}

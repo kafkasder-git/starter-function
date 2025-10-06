@@ -58,7 +58,7 @@ interface HospitalReferral {
   followUpRequired: boolean;
 }
 
-const mockReferrals: HospitalReferral[] = [
+const initialReferrals: HospitalReferral[] = [
   {
     id: 1,
     referralNumber: 'HSK-2024-001',
@@ -177,7 +177,7 @@ const mockReferrals: HospitalReferral[] = [
  * @returns {void} Nothing
  */
 export function HospitalReferralPage() {
-  const [referrals, setReferrals] = useState<HospitalReferral[]>(mockReferrals);
+  const [referrals, setReferrals] = useState<HospitalReferral[]>(initialReferrals);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [urgencyFilter, setUrgencyFilter] = useState<string>('all');

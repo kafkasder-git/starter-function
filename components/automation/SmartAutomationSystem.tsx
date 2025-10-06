@@ -88,8 +88,8 @@ export interface AutomationRule {
   tags: string[];
 }
 
-// Mock otomasyon verileri
-const mockAutomations: AutomationRule[] = [
+// Example automation rules
+const exampleAutomations: AutomationRule[] = [
   {
     id: '1',
     name: 'Günlük Bağış Raporu',
@@ -271,7 +271,7 @@ export function SmartAutomationSystem({
   onAutomationDelete,
   onAutomationRun,
 }: SmartAutomationSystemProps) {
-  const [automations, setAutomations] = useState<AutomationRule[]>(mockAutomations);
+  const [automations, setAutomations] = useState<AutomationRule[]>(exampleAutomations);
   const [activeTab, setActiveTab] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<AutomationType | 'all'>('all');

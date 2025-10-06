@@ -52,7 +52,7 @@ interface InKindTransaction {
   notes?: string;
 }
 
-const mockTransactions: InKindTransaction[] = [
+const initialTransactions: InKindTransaction[] = [
   {
     id: 1,
     transactionNumber: 'AYT-2024-001',
@@ -151,7 +151,7 @@ const mockTransactions: InKindTransaction[] = [
  * @returns {void} Nothing
  */
 export function InKindAidTransactionsPage() {
-  const [transactions, setTransactions] = useState<InKindTransaction[]>(mockTransactions);
+  const [transactions, setTransactions] = useState<InKindTransaction[]>(initialTransactions);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');

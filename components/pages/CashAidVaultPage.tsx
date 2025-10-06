@@ -46,7 +46,7 @@ interface VaultTransaction {
   balance: number;
 }
 
-const mockTransactions: VaultTransaction[] = [
+const initialTransactions: VaultTransaction[] = [
   {
     id: 1,
     type: 'deposit',
@@ -117,7 +117,7 @@ const mockTransactions: VaultTransaction[] = [
  * @returns {void} Nothing
  */
 export function CashAidVaultPage() {
-  const [transactions, setTransactions] = useState<VaultTransaction[]>(mockTransactions);
+  const [transactions, setTransactions] = useState<VaultTransaction[]>(initialTransactions);
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState<string>('all');
   const [isNewTransactionOpen, setIsNewTransactionOpen] = useState(false);

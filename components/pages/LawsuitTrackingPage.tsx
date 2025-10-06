@@ -54,7 +54,7 @@ interface Lawsuit {
   costs: number;
 }
 
-// Mock data kaldırıldı - gerçek veriler API'den gelecek
+// Real data will be fetched from API
 
 /**
  * LawsuitTrackingPage function

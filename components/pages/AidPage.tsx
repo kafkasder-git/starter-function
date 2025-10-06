@@ -42,7 +42,7 @@ interface AidRequest {
 }
 
 // TODO: Load from API
-const mockAidRequests: AidRequest[] = [];
+const initialAidRequests: AidRequest[] = [];
 
 /**
  * AidPage function
@@ -55,7 +55,7 @@ export function AidPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [priorityFilter, setPriorityFilter] = useState('all');
-  const [aidRequests] = useState<AidRequest[]>(mockAidRequests);
+  const [aidRequests] = useState<AidRequest[]>(initialAidRequests);
 
   const filteredRequests = aidRequests.filter((request) => {
     const matchesSearch =
