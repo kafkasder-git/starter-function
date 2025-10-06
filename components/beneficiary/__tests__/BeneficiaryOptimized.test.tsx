@@ -90,7 +90,7 @@ describe('BeneficiaryOptimized', () => {
 
   it('handles save operation', async () => {
     const { beneficiariesService } = await import('../../../services/beneficiariesService');
-    (beneficiariesService.update as any).mockResolvedValue({ data: mockBeneficiary });
+    (beneficiariesService.update as any).mockResolvedValue({ result: mockBeneficiary });
 
     render(<BeneficiaryOptimized beneficiaryId="test-1" />);
 

@@ -7,8 +7,8 @@ import { vi } from 'vitest';
 // Mock Supabase client for testing
 const mockSupabaseClient = {
   auth: {
-    getSession: vi.fn().mockResolvedValue({ data: { session: null }, error: null }),
-    getUser: vi.fn().mockResolvedValue({ data: { user: null }, error: null }),
+    getSession: vi.fn().mockResolvedValue({ session: { session: null }, error: null }),
+    getUser: vi.fn().mockResolvedValue({ user: { user: null }, error: null }),
     signInWithPassword: vi.fn(),
     signUp: vi.fn(),
     signOut: vi.fn(),
@@ -37,7 +37,7 @@ const customRender = (ui: ReactElement, options?: Omit<RenderOptions, 'wrapper'>
   render(ui, { wrapper: AllTheProviders, ...options });
 
 // Test data factories
-export const createMockUser = (overrides = {}) => ({
+export const createTestUser = (overrides = {}) => ({
   id: '123',
   email: 'test@example.com',
   name: 'Test User',
@@ -46,7 +46,7 @@ export const createMockUser = (overrides = {}) => ({
   ...overrides,
 });
 
-export const createMockBeneficiary = (overrides = {}) => ({
+export const createTestBeneficiary = (overrides = {}) => ({
   id: '1',
   name: 'Test',
   surname: 'User',
@@ -59,7 +59,7 @@ export const createMockBeneficiary = (overrides = {}) => ({
   ...overrides,
 });
 
-export const createMockKumbara = (overrides = {}) => ({
+export const createTestKumbara = (overrides = {}) => ({
   id: 'kumbara-123',
   code: 'KMB-001',
   name: 'Test Kumbara',
@@ -95,7 +95,7 @@ export const createTestQRData = (overrides = {}) => ({
   ...overrides,
 });
 
-export const createMockCollection = (overrides = {}) => ({
+export const createTestCollection = (overrides = {}) => ({
   id: 'collection-123',
   kumbara_id: 'kumbara-123',
   collection_date: new Date().toISOString(),

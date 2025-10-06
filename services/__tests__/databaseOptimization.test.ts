@@ -314,8 +314,8 @@ describe('Database Optimization Services Integration', () => {
   describe('Optimization Capabilities', () => {
     it('should support cache operations', () => {
       // Test basic cache operations
-      mockServices.caching.set('test_key', { data: 'test' });
-      expect(mockServices.caching.set).toHaveBeenCalledWith('test_key', { data: 'test' });
+      mockServices.caching.set('test_key', { value: 'test' });
+      expect(mockServices.caching.set).toHaveBeenCalledWith('test_key', { value: 'test' });
 
       mockServices.caching.get('test_key');
       expect(mockServices.caching.get).toHaveBeenCalledWith('test_key');
