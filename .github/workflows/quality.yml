@@ -40,8 +40,8 @@ jobs:
         run: |
           echo "🤖 Checking GitHub Copilot architecture compliance..."
 
-          # Check for direct Supabase usage in components/hooks
-          DIRECT_SUPABASE=$(find . -name "*.ts" -o -name "*.tsx" | grep -E "(components|hooks)" | xargs grep -l "import.*supabase" | wc -l)
+          # Check for direct Supabase usage in components/hooks (excluding auth contexts)
+          DIRECT_SUPABASE=$(find . -name "*.ts" -o -name "*.tsx" | grep -E "(components|hooks)" | grep -v "SupabaseAuthContext\|useSupabaseConnection" | xargs grep -l "import.*supabase" 2>/dev/null | wc -l)
 
           if [ "$DIRECT_SUPABASE" -gt 0 ]; then
             echo "::warning::Found $DIRECT_SUPABASE files with direct Supabase usage. Use service layer instead."

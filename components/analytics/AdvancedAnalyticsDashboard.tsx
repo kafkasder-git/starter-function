@@ -146,8 +146,7 @@ export function AdvancedAnalyticsDashboard({
         const data = await getAnalyticsData();
         setAnalyticsData(data);
       } catch {
-        // Handle error silently or use proper error reporting
-        // console.error('Failed to fetch analytics data:', error);
+        // Handle error silently - errors are logged by the service layer
       } finally {
         setLoading(false);
       }

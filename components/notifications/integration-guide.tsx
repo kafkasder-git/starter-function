@@ -13,6 +13,7 @@
 import React from 'react';
 // Removed unused import: useNavigate
 import { toast } from 'sonner';
+import { logger } from '@/lib/logging/logger';
 
 // 1. ToastProvider'ı ana App bileşeninde kullanın
 // eslint-disable-next-line unused-imports/no-unused-imports
@@ -102,11 +103,9 @@ const __AddMemberExampleComponent: React.FC = () => {
       // quickNotifications.yeniUye(memberData.name);
       
     } catch (error) {
-      // Using a safer console pattern
-      if (import.meta.env.DEV) {
-        // eslint-disable-next-line no-console
-        console.error('Member creation error:', error);
-      }
+      // Using logger for error reporting
+      logger.error('Member creation error:', error);
+      
       // Hata bildirimi - unused parameter so using underscore prefix
       enhancedNotifications.hata({
         title: 'Üye Eklenemedi',

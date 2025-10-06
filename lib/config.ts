@@ -31,8 +31,8 @@ export const SUPABASE_CONFIG = {
 export const isDevelopment = import.meta.env.DEV;
 export const isProduction = import.meta.env.PROD;
 
-// Mock credentials fallback (only for development)
-export const MOCK_CREDENTIALS = isDevelopment
+// Development credentials fallback (only for development)
+export const DEV_CREDENTIALS = isDevelopment
   ? {
       'admin@dernek.org': 'admin123',
       'manager@dernek.org': 'manager123',
