@@ -209,7 +209,7 @@ interface DonationData {
   note?: string;
 }
 
-// Mock submit donation function - simulates data submission
+// Example donation submission function - simulates data submission
 const submitDonation = async (data: DonationData): Promise<{id: string}> => {
   return new Promise((resolve) => {
     // Simulate processing with the data (using it to prevent unused variable warning)

@@ -32,7 +32,7 @@ interface EnvironmentConfig {
     pwa: boolean;
     analytics: boolean;
     monitoring: boolean;
-    mockData: boolean;
+    demoMode: boolean;
     offlineMode: boolean;
     security?: {
       virusScan: boolean;
@@ -296,7 +296,7 @@ export const environment: EnvironmentConfig = {
     pwa: getEnvBool('VITE_ENABLE_PWA', true),
     analytics: getEnvBool('VITE_ENABLE_ANALYTICS', false),
     monitoring: getEnvBool('VITE_ENABLE_MONITORING', true),
-    mockData: getEnvBool('VITE_ENABLE_MOCK_DATA', true),
+    demoMode: getEnvBool('VITE_ENABLE_DEMO_MODE', true),
     offlineMode: getEnvBool('VITE_ENABLE_OFFLINE_MODE', true),
   },
 

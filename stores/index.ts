@@ -1,6 +1,6 @@
 // Store exports for easy importing
 export { useAuthStore, authSelectors, authStore } from './authStore';
-// Mock notification store (database table not available)
+// Notification store (database table integration pending)
 export { useNotificationStore, notificationSelectors } from './notificationStore';
 export { useUIStore, uiSelectors, uiStore } from './uiStore';
 
@@ -8,7 +8,7 @@ export { useUIStore, uiSelectors, uiStore } from './uiStore';
 import { storeLogger } from '../lib/logging';
 
 // Store types
-// Mock notification types (database table not available)
+// Notification types (database table integration pending)
 export type { NotificationState } from './notificationStore';
 
 // Store initialization hook
