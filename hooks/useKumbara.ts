@@ -450,7 +450,7 @@ export function useKumbara(options: UseKumbaraOptions = {}): UseKumbaraReturn {
     }
   }, [autoFetch, fetchKumbaras]);
 
-  // Realtime updates (mock implementation)
+  // Realtime updates (implementation pending)
   useEffect(() => {
     if (!realtime) return;
 
