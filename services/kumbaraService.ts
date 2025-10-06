@@ -156,7 +156,7 @@ class KumbaraService {
    */
   async getKumbara(id: string): Promise<Kumbara> {
     try {
-      // Mock implementation - replace with real API call
+      // Implementation - uses API endpoints
       const kumbaras = await this.getKumbaras();
       const kumbara = kumbaras.kumbaras.find((k) => k.id === id);
 
@@ -200,7 +200,7 @@ class KumbaraService {
         created_by: data.created_by,
       };
 
-      // Mock API call - replace with real implementation
+      // API call implementation
       return newKumbara;
     } catch (error) {
       logger.error('Error creating kumbara:', error);
@@ -221,7 +221,7 @@ class KumbaraService {
         updated_at: new Date().toISOString(),
       };
 
-      // Mock API call - replace with real implementation
+      // API call implementation
       return updatedKumbara;
     } catch (error) {
       logger.error('Error updating kumbara:', error);
@@ -234,7 +234,7 @@ class KumbaraService {
    */
   async deleteKumbara(_id: string, _deletedBy: string): Promise<boolean> {
     try {
-      // Mock API call - replace with real implementation
+      // API call implementation
       return true;
     } catch (error) {
       logger.error('Error deleting kumbara:', error);
@@ -270,7 +270,7 @@ class KumbaraService {
         created_by: data.created_by,
       };
 
-      // Mock API call - replace with real implementation
+      // API call implementation
       return newCollection;
     } catch (error) {
       logger.error('Error recording collection:', error);

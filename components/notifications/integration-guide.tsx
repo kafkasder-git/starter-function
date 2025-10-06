@@ -33,7 +33,7 @@ import { ToastProvider } from '@/components/ToastProvider';
 // 2. Bileşenlerde enhanced notifications kullanımı
 import { enhancedNotifications, quickNotifications } from '@/lib/enhancedNotifications';
 
-// Mock functions for the guide
+// Example functions for the guide
 interface MemberData {
   name: string;
   email: string;
@@ -41,7 +41,7 @@ interface MemberData {
   [key: string]: string | number | boolean | undefined;
 }
 
-// Mock API
+// Example API
 interface ApiResponse {
   data: {
     id: string;
@@ -60,7 +60,7 @@ const api = {
   }
 };
 
-// Mock functions for member creation
+// Example functions for member creation
 const createMember = async (memberData: MemberData): Promise<string> => {
   const response = await api.post('/members', memberData);
   return response.data.id;
@@ -74,7 +74,7 @@ const newMemberId = '123';
 // while still following the unused variable naming convention
 const __AddMemberExampleComponent: React.FC = () => {
   // Since __ prefix isn't recognized as a component name, we need to define this without hooks
-  // Replacing useNavigate with a mock function
+  // Replacing useNavigate with a placeholder function
   const navigate = { push: (route: string): void => { 
     // eslint-disable-next-line no-console
     console.log(`Navigate to ${route}`); 
@@ -134,13 +134,13 @@ import { EnhancedNotificationCenter } from '@/components/notifications/EnhancedN
  */
 // Example components intentionally unused - they're for demonstration purposes
 /* eslint-disable @typescript-eslint/no-unused-vars */
-// This is a mock component for demonstration purposes
-// Using _HeaderExampleMock name convention for unused variables
-const _HeaderExampleMock: React.FC = () => {
-  // Mocked state values - not using React hooks
+// This is an example component for demonstration purposes
+// Using _HeaderExample name convention for unused variables
+const _HeaderExample: React.FC = () => {
+  // Example state values - not using React hooks
   const isNotificationCenterOpen = false;
   const setIsNotificationCenterOpen = (value: boolean): void => {
-    // Mock implementation
+    // Example implementation
     // eslint-disable-next-line no-console
     console.log('Setting notification center open to:', value);
   };
@@ -295,7 +295,7 @@ interface BudgetCategory {
   spent: number;
 }
 
-// Mock budget check function
+// Example budget check function
 const checkBudgetStatus = async (): Promise<BudgetCategory[]> => {
   return [
     { name: 'Ofis Giderleri', usagePercentage: 87, budget: 10000, spent: 8700 },
