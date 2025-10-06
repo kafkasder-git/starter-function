@@ -45,7 +45,7 @@ const mockEnv = {
   VITE_ENABLE_PWA: 'true',
   VITE_ENABLE_ANALYTICS: 'false',
   VITE_ENABLE_OCR: 'true',
-  VITE_ENABLE_MOCK_DATA: 'false',
+  VITE_ENABLE_DEMO_MODE: 'false',
   VITE_ENABLE_OFFLINE_MODE: 'true',
   VITE_LOG_LEVEL: 'error',
   VITE_LOG_CONSOLE: 'true',
@@ -81,7 +81,7 @@ describe('Environment Service', () => {
       expect(environment.features.pwa).toBe(true);
       expect(environment.features.analytics).toBe(false);
       expect(environment.features.monitoring).toBe(true);
-      expect(environment.features.mockData).toBe(false);
+      expect(environment.features.demoMode).toBe(false);
       expect(environment.features.offlineMode).toBe(true);
     });
 
@@ -176,7 +176,7 @@ describe('Environment Service', () => {
     it('should correctly parse boolean environment variables', () => {
       expect(environment.features.pwa).toBe(true);
       expect(environment.features.analytics).toBe(false);
-      expect(environment.features.mockData).toBe(false);
+      expect(environment.features.demoMode).toBe(false);
     });
 
     it('should handle string boolean values', () => {

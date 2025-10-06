@@ -131,4 +131,4 @@ vi.mock('sonner', () => ({
 }));
 
 // Export test utilities
-export { createMockKumbara, createMockQRData, createMockCollection, createMockUser, createMockBeneficiary, waitFor } from './utils';
+export { createMockKumbara, createTestQRData, createMockCollection, createMockUser, createMockBeneficiary, waitFor } from './utils';

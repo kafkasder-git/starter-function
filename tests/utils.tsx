@@ -84,7 +84,7 @@ export const createMockKumbara = (overrides = {}) => ({
   ...overrides,
 });
 
-export const createMockQRData = (overrides = {}) => ({
+export const createTestQRData = (overrides = {}) => ({
   code: 'KMB-001',
   name: 'Test Kumbara',
   location: 'Test Location',

@@ -45,7 +45,6 @@ interface VaultTransaction {
   approvedBy: string;
   balance: number;
 }
-
 const initialTransactions: VaultTransaction[] = [
   {
     id: 1,
