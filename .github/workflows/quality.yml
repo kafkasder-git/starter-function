@@ -54,8 +54,8 @@ jobs:
             echo "::warning::Found $CONSOLE_USAGE console statements. Use logger instead."
           fi
 
-          # Check for mock data in production code
-          MOCK_USAGE=$(find . -name "*.ts" -o -name "*.tsx" | grep -v "test\|spec" | xargs grep -c "mock.*data\|fake.*data\|dummy.*data" | awk -F: '{sum += $2} END {print sum+0}')
+          # Check for mock data in production code (exclude __tests__ directories and test files)
+          MOCK_USAGE=$(find . -name "*.ts" -o -name "*.tsx" | grep -v "test\|spec\|__tests__\|\.test\.\|\.spec\." | xargs grep -ic "mock.*data\|fake.*data\|dummy.*data" 2>/dev/null | awk -F: '{sum += $2} END {print sum+0}')
 
           if [ "$MOCK_USAGE" -gt 0 ]; then
             echo "::error::Found $MOCK_USAGE mock data usage in production code."
