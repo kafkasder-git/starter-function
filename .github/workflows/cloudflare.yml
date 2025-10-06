@@ -27,8 +27,8 @@ jobs:
       - name: Build project
         run: npm run build
         env:
-          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL || 'https://gyburnfaszhxcxdnwogj.supabase.co' }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd5YnVybmZhc3poeGN4ZG53b2dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc4ODI2ODMsImV4cCI6MjA3MzQ1ODY4M30.R-AD4ABGXGI1v_VoVqeRDVs9Wio-GJ0HUVRrP0iGG4k' }}
           NODE_ENV: production
       
       - name: Deploy to Cloudflare Pages
