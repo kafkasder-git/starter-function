@@ -394,7 +394,7 @@ class IntelligentStatsService {
   }
 
   // Get current mode info for debugging
-  async getCurrentMode(): Promise<{ mode: 'real' | 'mock'; hasData: boolean }> {
+  async getCurrentMode(): Promise<{ mode: 'real' | 'demo'; hasData: boolean }> {
     return {
       mode: 'real',
       hasData: false,

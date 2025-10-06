@@ -56,7 +56,7 @@ const sampleAidDistribution = [
   { name: 'Barınma Desteği', value: 8, color: '#FECA57' },
 ];
 
-// Son aktiviteler - gelişmiş mock data
+// Recent activities interface
 interface RecentActivity {
   id: string;
   title: string;

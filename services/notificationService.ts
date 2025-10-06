@@ -37,7 +37,7 @@ interface NotificationStats {
 }
 
 class NotificationService {
-  // Mock data kaldırıldı - gerçek bildirimler API'den gelecek
+  // Real notifications from API
 
   async getNotificationStats(): Promise<NotificationStats> {
     // 🔗 Gerçek API'den bildirim istatistikleri alınacak
