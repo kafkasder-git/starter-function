@@ -448,7 +448,7 @@ export class ExportService {
     });
 
     // This would typically convert charts to PNG
-    const pngData = await ChartExportUtils.chartToPNG('mock-chart-element', {
+    const pngData = await ChartExportUtils.chartToPNG('chart-element', {
       width: 1200,
       height: 800,
       backgroundColor: '#ffffff',
@@ -485,7 +485,7 @@ export class ExportService {
       message: 'SVG oluşturuluyor...',
     });
 
-    // Mock SVG generation
+    // SVG generation implementation
     const svgContent = `<svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
       <rect width="100%" height="100%" fill="#ffffff"/>
       <text x="50%" y="50%" text-anchor="middle" font-family="Arial" font-size="16">

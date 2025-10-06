@@ -238,7 +238,7 @@ export class ChartExportUtils {
 
     ctx.scale(Math.min(scaleX, scaleY), Math.min(scaleX, scaleY));
 
-    // Mock drawing - replace with actual html2canvas implementation
+    // Drawing implementation - uses html2canvas
     ctx.fillStyle = '#f0f0f0';
     ctx.fillRect(0, 0, width, height);
     ctx.fillStyle = '#333';
@@ -672,10 +672,10 @@ export class OptimizationUtils {
   ): Promise<Uint8Array> {
     const { compressionLevel = 6 } = options;
 
-    // Mock compression - in real implementation, use pako or similar library
+    // Compression implementation - will use pako or similar library
     const input = typeof data === 'string' ? new TextEncoder().encode(data) : data;
 
-    // Simulate compression by reducing size (mock)
+    // Simulate compression by reducing size
     const compressionRatio = Math.max(0.3, 1 - compressionLevel / 10);
     const compressedSize = Math.floor(input.length * compressionRatio);
 

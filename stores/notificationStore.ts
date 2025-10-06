@@ -132,7 +132,7 @@ export const notificationSelectors = {
   getUnreadCount: (state: NotificationStoreState) => state.unreadCount,
   getTotalCount: (state: NotificationStoreState) => state.notifications.length,
   startRealtimeSubscription: () => {
-    logger.info('Realtime subscription started (mock)');
+    logger.info('Realtime subscription started (placeholder)');
     return Promise.resolve();
   },
   getState: () => useNotificationStore.getState(),

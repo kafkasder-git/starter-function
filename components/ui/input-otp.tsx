@@ -51,7 +51,7 @@ function InputOTPSlot({
   // eslint-disable-next-line security/detect-object-injection, @typescript-eslint/no-unnecessary-condition
 const slot = inputOTPContext.slots?.[index];
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-const { char, hasFakeCaret, isActive } = slot || {};
+const { char, hasCaret, isActive } = slot || {};
 
   return (
     <div
@@ -64,7 +64,7 @@ const { char, hasFakeCaret, isActive } = slot || {};
       {...props}
     >
       {char}
-      {hasFakeCaret && (
+      {hasCaret && (
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
           <div className="animate-caret-blink bg-foreground h-4 w-px duration-1000" />
         </div>

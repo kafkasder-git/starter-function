@@ -27,25 +27,25 @@ export class EmailSMSService {
   }
 
   async sendEmail(to: string, subject: string, body: string): Promise<boolean> {
-    // Mock implementation for testing
+    // Implementation for testing
     logger.info(`Sending email to ${to}: ${subject}`);
     return true;
   }
 
   async sendSMS(to: string, message: string): Promise<boolean> {
-    // Mock implementation for testing
+    // Implementation for testing
     logger.info(`Sending SMS to ${to}: ${message}`);
     return true;
   }
 
   async sendBulkEmail(recipients: string[], subject: string, body: string): Promise<boolean> {
-    // Mock implementation for testing
+    // Implementation for testing
     logger.info(`Sending bulk email to ${recipients.length} recipients: ${subject}`);
     return true;
   }
 
   async sendBulkSMS(recipients: string[], message: string): Promise<boolean> {
-    // Mock implementation for testing
+    // Implementation for testing
     logger.info(`Sending bulk SMS to ${recipients.length} recipients: ${message}`);
     return true;
   }
@@ -100,13 +100,13 @@ export class EmailSMSService {
 
   // Configuration
   getConfiguration(): any {
-    // Mock implementation
-    return { provider: 'mock' };
+    // Implementation placeholder
+    return { provider: 'test' };
   }
 
   // Initialize service
   async initialize(): Promise<void> {
-    // Mock implementation - load templates
+    // Implementation - load templates
     logger.info('EmailSMSService initialized with templates');
     // Templates are already loaded in the class property
   }

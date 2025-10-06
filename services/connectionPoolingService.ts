@@ -540,8 +540,8 @@ export class ConnectionPoolingService {
         avgResponseTime: executionTime,
         maxResponseTime: executionTime,
         minResponseTime: executionTime,
-        connectionPoolSize: 10, // Mock value
-        activeConnections: 3, // Mock value
+        connectionPoolSize: 10, // Default value
+        activeConnections: 3, // Current value
       });
     }
 

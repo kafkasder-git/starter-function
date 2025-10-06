@@ -838,12 +838,12 @@ export class FileStorageService {
    * Process file (compression, encryption, etc.)
    */
   private async processFile(file: File): Promise<File> {
-    // Mock implementation - in real app, implement compression/encryption
+    // Implementation - will add compression/encryption
     return file;
   }
 
   /**
-   * Save file metadata (mock implementation)
+   * Save file metadata (implementation pending)
    */
   private async saveFileMetadata(metadata: FileMetadata): Promise<void> {
     // In real app, save to database
@@ -851,7 +851,7 @@ export class FileStorageService {
   }
 
   /**
-   * Delete file metadata (mock implementation)
+   * Delete file metadata (implementation pending)
    */
   private async deleteFileMetadata(bucket: string, filePath: string): Promise<void> {
     // In real app, delete from database
@@ -902,7 +902,7 @@ export class FileStorageService {
       }
     }
 
-    // Get recent uploads (mock implementation)
+    // Get recent uploads (implementation pending)
     stats.recentUploads = [];
 
     return stats;

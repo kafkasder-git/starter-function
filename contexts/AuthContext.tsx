@@ -13,7 +13,7 @@ import { logger } from '../lib/logging/logger';
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Authentication will be handled by Supabase Auth
-// Removed mock users and credentials - using real authentication
+// Using real Supabase authentication
 
 interface AuthProviderProps {
   children: ReactNode;

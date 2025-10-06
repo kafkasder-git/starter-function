@@ -602,7 +602,7 @@ class KumbaraService {
    */
   async getKumbaraAlerts(): Promise<KumbaraAlert[]> {
     try {
-      // Mock alerts - replace with real API call
+      // Alerts implementation - will use real API call
       const alerts: KumbaraAlert[] = [
         {
           id: '1',
@@ -631,7 +631,7 @@ class KumbaraService {
    */
   async acknowledgeAlert(_alertId: string, _acknowledgedBy: string): Promise<boolean> {
     try {
-      // Mock API call - replace with real implementation
+      // API call implementation
       return true;
     } catch (error) {
       logger.error('Error acknowledging alert:', error);

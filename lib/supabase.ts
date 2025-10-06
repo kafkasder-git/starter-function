@@ -59,7 +59,7 @@ if (!supabaseAnonKey) {
   logger.warn('Missing VITE_SUPABASE_ANON_KEY. Supabase features will be disabled.');
 }
 
-// Create a safe Supabase client - use dummy values if environment is not configured
+// Create a safe Supabase client - use default values if environment is not configured
 const normalizedUrl = (supabaseUrl || '').trim();
 const normalizedKey = (supabaseAnonKey || '').trim();
 const safeSupabaseUrl = normalizedUrl.startsWith('http')

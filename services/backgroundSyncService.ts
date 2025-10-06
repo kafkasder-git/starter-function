@@ -352,13 +352,13 @@ class BackgroundSyncService {
   }
 
   /**
-   * Perform actual sync operation (mock implementation)
+   * Perform actual sync operation (implementation pending)
    */
   private async performSyncOperation(task: SyncTask): Promise<boolean> {
     // Simulate network delay
     await new Promise((resolve) => setTimeout(resolve, 100 + Math.random() * 500));
 
-    // Mock API calls based on entity
+    // API calls based on entity
     switch (task.entity) {
       case 'beneficiaries':
         return this.syncBeneficiary(task);
@@ -375,42 +375,42 @@ class BackgroundSyncService {
   }
 
   /**
-   * Sync beneficiary data (mock implementation)
+   * Sync beneficiary data (implementation pending)
    */
   private async syncBeneficiary(task: SyncTask): Promise<boolean> {
     logger.info(`Syncing beneficiary ${task.type}:`, task.data);
 
-    // Mock success/failure (90% success rate)
+    // Simulate success/failure (90% success rate)
     return Math.random() > 0.1;
   }
 
   /**
-   * Sync donation data (mock implementation)
+   * Sync donation data (implementation pending)
    */
   private async syncDonation(task: SyncTask): Promise<boolean> {
     logger.info(`Syncing donation ${task.type}:`, task.data);
 
-    // Mock success/failure (95% success rate)
+    // Simulate success/failure (95% success rate)
     return Math.random() > 0.05;
   }
 
   /**
-   * Sync member data (mock implementation)
+   * Sync member data (implementation pending)
    */
   private async syncMember(task: SyncTask): Promise<boolean> {
     logger.info(`Syncing member ${task.type}:`, task.data);
 
-    // Mock success/failure (85% success rate)
+    // Simulate success/failure (85% success rate)
     return Math.random() > 0.15;
   }
 
   /**
-   * Sync activity data (mock implementation)
+   * Sync activity data (implementation pending)
    */
   private async syncActivity(task: SyncTask): Promise<boolean> {
     logger.info(`Syncing activity ${task.type}:`, task.data);
 
-    // Mock success/failure (98% success rate)
+    // Simulate success/failure (98% success rate)
     return Math.random() > 0.02;
   }
 

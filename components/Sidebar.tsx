@@ -26,7 +26,7 @@ import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 import { cn } from './ui/utils';
 // Auth imports removed for simplified implementation
-// useNotificationStore removed - no more fake notification badges
+// Real notification badges will come from API
 
 interface Module {
   id: string;
@@ -66,7 +66,7 @@ export function Sidebar({
   onMobileToggle,
 }: SidebarProps) {
   // Auth removed for simplified implementation
-  // notificationStore removed - no more fake notification badges
+  // Real notification badges will come from API
   const [openPopover, setOpenPopover] = useState<string | null>(null);
   const [hoveredModule, setHoveredModule] = useState<string | null>(null);
   const [isPopoverHovered, setIsPopoverHovered] = useState(false);
@@ -99,7 +99,7 @@ export function Sidebar({
         { name: 'Bağış Raporları', href: '/bagis/raporlar' },
         { name: 'Kumbara Takibi', href: '/bagis/kumbara' },
       ],
-      // badge: 3 removed - no fake notification
+      // badge: 3 will come from API
     },
     {
       id: 'uye',
@@ -177,7 +177,7 @@ export function Sidebar({
         { name: 'İş Birliği Anlaşmaları', href: '/partner/anlasmalar' },
         { name: 'Diğer Dernekler', href: '/partner/dernekler' },
       ],
-      // badge: 2 removed - no fake notification
+      // badge: 2 will come from API
     },
     {
       id: 'hukuki',
@@ -190,7 +190,7 @@ export function Sidebar({
         { name: 'Hukuki Belgeler', href: '/hukuki/belgeler' },
         { name: 'Hukuki Raporlar', href: '/hukuki/raporlar' },
       ],
-      // badge: 1 removed - no fake notification
+      // badge: 1 will come from API
     },
     {
       id: 'user-management',

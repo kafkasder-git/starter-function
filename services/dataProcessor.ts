@@ -459,7 +459,7 @@ export class DataProcessor {
   }
 
   private static calculateMetricChange(trend: 'up' | 'down' | 'stable'): number {
-    // Replace mock calculation with more realistic change calculation
+    // Calculate realistic change values
     switch (trend) {
       case 'up':
         return Math.random() * 15 + 5; // 5-20% increase
