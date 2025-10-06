@@ -15,7 +15,7 @@ import { logger } from './logging/logger';
  * @class SecureAPIClient
  */
 export class SecureAPIClient {
-  private static readonly baseURL = (import.meta?.env?.VITE_API_URL) || process.env.VITE_API_URL ?? '';
+  private static readonly baseURL = import.meta.env.VITE_API_URL ?? '';
   private static readonly sessionId = crypto.getRandomValues(new Uint8Array(16)).join('');
 
   static async secureRequest(
@@ -207,7 +207,7 @@ export const DEFAULT_SECURITY_CONFIG: SecurityConfig = {
   enableInputSanitization: true,
   maxRequestsPerMinute: 100,
   sessionTimeoutMinutes: 60,
-  requireHTTPS: (typeof import.meta !== 'undefined' && import.meta.env?.PROD) || process.env.NODE_ENV === 'production',
+  requireHTTPS: import.meta.env.PROD,
 };
 
 // Security monitoring
@@ -233,7 +233,7 @@ export class SecurityMonitor {
       logger.error('CRITICAL SECURITY THREAT:', threat);
 
       // In production, send to security service
-      if ((typeof import.meta !== 'undefined' && import.meta.env?.PROD) || process.env.NODE_ENV === 'production') {
+      if (import.meta.env.PROD) {
         this.sendThreatAlert(threat);
       }
     }

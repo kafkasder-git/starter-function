@@ -103,7 +103,7 @@ const __AddMemberExampleComponent: React.FC = () => {
       
     } catch (error) {
       // Using a safer console pattern
-      if (process.env.NODE_ENV !== 'production') {
+      if (import.meta.env.DEV) {
         // eslint-disable-next-line no-console
         console.error('Member creation error:', error);
       }

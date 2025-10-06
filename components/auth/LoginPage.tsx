@@ -1,12 +1,13 @@
 /**
  * @fileoverview LoginPage Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
 
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
+import { toast } from 'sonner';
 import { Eye, EyeOff, Lock, Mail, Shield, AlertCircle } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -14,6 +15,7 @@ import { Label } from '../ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Checkbox } from '../ui/checkbox';
 import { Alert, AlertDescription } from '../ui/alert';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../ui/dialog';
 import { useSupabaseAuth } from '../../contexts/SupabaseAuthContext';
 
 interface LoginPageProps {
@@ -22,7 +24,7 @@ interface LoginPageProps {
 
 /**
  * LoginPage function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -35,6 +37,9 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+  const [showResetDialog, setShowResetDialog] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
+  const [isResetting, setIsResetting] = useState(false);
 
   // Clear errors when user starts typing
   useEffect(() => {
@@ -89,37 +94,71 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
     }
   };
 
+  const handlePasswordReset = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!resetEmail) {
+      toast.error('Lütfen e-posta adresinizi girin');
+      return;
+    }
+
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(resetEmail)) {
+      toast.error('Geçerli bir e-posta adresi girin');
+      return;
+    }
+
+    try {
+      setIsResetting(true);
+
+      // TODO: Integrate with actual API
+      // const result = await authService.resetPassword(resetEmail);
+
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
+      toast.success('Şifre sıfırlama bağlantısı e-posta adresinize gönderildi!');
+      setShowResetDialog(false);
+      setResetEmail('');
+    } catch {
+      toast.error('Şifre sıfırlama talebi gönderilemedi');
+    } finally {
+      setIsResetting(false);
+    }
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-50 via-white to-slate-100">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 via-white to-slate-100 p-4">
       {/* Background Decorations */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-primary/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-40 h-40 bg-blue-500/5 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 right-1/3 w-24 h-24 bg-emerald-500/5 rounded-full blur-2xl" />
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="bg-primary/5 absolute top-1/4 left-1/4 h-32 w-32 rounded-full blur-3xl" />
+        <div className="absolute right-1/4 bottom-1/4 h-40 w-40 rounded-full bg-blue-500/5 blur-3xl" />
+        <div className="absolute top-1/2 right-1/3 h-24 w-24 rounded-full bg-emerald-500/5 blur-2xl" />
       </div>
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-md relative z-10"
+        className="relative z-10 w-full max-w-md"
       >
-        <Card className="border-slate-200/60 shadow-xl bg-white/95 backdrop-blur-sm">
-          <CardHeader className="space-y-4 text-center pb-6">
+        <Card className="border-slate-200/60 bg-white/95 shadow-xl backdrop-blur-sm">
+          <CardHeader className="space-y-4 pb-6 text-center">
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
-              className="w-16 h-16 mx-auto bg-gradient-to-br from-primary via-blue-600 to-blue-800 rounded-2xl flex items-center justify-center shadow-lg"
+              className="from-primary mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br via-blue-600 to-blue-800 shadow-lg"
             >
-              <Shield className="w-8 h-8 text-white" />
+              <Shield className="h-8 w-8 text-white" />
             </motion.div>
 
             <div className="space-y-2">
-              <CardTitle className="text-2xl font-bold text-slate-900 tracking-tight">
+              <CardTitle className="text-2xl font-bold tracking-tight text-slate-900">
                 Dernek Yönetim Sistemi
               </CardTitle>
-              <CardDescription className="text-slate-600 font-medium">
+              <CardDescription className="font-medium text-slate-600">
                 Hesabınızla giriş yapın
               </CardDescription>
             </div>
@@ -141,11 +180,11 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-slate-700 font-semibold">
+                <Label htmlFor="email" className="font-semibold text-slate-700">
                   Kullanıcı Adı
                 </Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-500" />
+                  <Mail className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-slate-500" />
                   <Input
                     id="email"
                     type="text"
@@ -154,23 +193,23 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
                     onChange={(e) => {
                       handleInputChange('email', e.target.value);
                     }}
-                    className={`pl-10 h-12 bg-white border-slate-300 focus:border-primary focus:ring-primary/20 ${
+                    className={`focus:border-primary focus:ring-primary/20 h-12 border-slate-300 bg-white pl-10 ${
                       formErrors.email ? 'border-red-300 focus:border-red-400' : ''
                     }`}
                     disabled={isLoading}
                   />
                 </div>
                 {formErrors.email && (
-                  <p className="text-sm text-red-600 font-medium">{formErrors.email}</p>
+                  <p className="text-sm font-medium text-red-600">{formErrors.email}</p>
                 )}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-slate-700 font-semibold">
+                <Label htmlFor="password" className="font-semibold text-slate-700">
                   Şifre
                 </Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-500" />
+                  <Lock className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-slate-500" />
                   <Input
                     id="password"
                     type={showPassword ? 'text' : 'password'}
@@ -179,7 +218,7 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
                     onChange={(e) => {
                       handleInputChange('password', e.target.value);
                     }}
-                    className={`pl-10 pr-10 h-12 bg-white border-slate-300 focus:border-primary focus:ring-primary/20 ${
+                    className={`focus:border-primary focus:ring-primary/20 h-12 border-slate-300 bg-white pr-10 pl-10 ${
                       formErrors.password ? 'border-red-300 focus:border-red-400' : ''
                     }`}
                     disabled={isLoading}
@@ -189,14 +228,14 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
                     onClick={() => {
                       setShowPassword(!showPassword);
                     }}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500 hover:text-slate-700 transition-colors"
+                    className="absolute top-1/2 right-3 -translate-y-1/2 transform text-slate-500 transition-colors hover:text-slate-700"
                     disabled={isLoading}
                   >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
                 {formErrors.password && (
-                  <p className="text-sm text-red-600 font-medium">{formErrors.password}</p>
+                  <p className="text-sm font-medium text-red-600">{formErrors.password}</p>
                 )}
               </div>
 
@@ -211,7 +250,7 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
                 />
                 <Label
                   htmlFor="rememberMe"
-                  className="text-sm text-slate-600 font-medium cursor-pointer"
+                  className="cursor-pointer text-sm font-medium text-slate-600"
                 >
                   Beni hatırla
                 </Label>
@@ -220,11 +259,11 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full h-12 bg-gradient-to-r from-primary to-blue-700 hover:from-primary/90 hover:to-blue-700/90 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50"
+                className="from-primary hover:from-primary/90 h-12 w-full bg-gradient-to-r to-blue-700 font-semibold text-white shadow-lg transition-all duration-200 hover:to-blue-700/90 hover:shadow-xl disabled:opacity-50"
               >
                 {isLoading ? (
                   <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
                     Giriş yapılıyor...
                   </div>
                 ) : (
@@ -236,7 +275,13 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
             <div className="pt-4 text-center">
               <p className="text-xs text-slate-500">
                 Şifrenizi mi unuttunuz?{' '}
-                <button className="text-primary hover:underline font-medium">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowResetDialog(true);
+                  }}
+                  className="text-primary font-medium hover:underline"
+                >
                   Sıfırlama talebi
                 </button>
               </p>
@@ -255,6 +300,62 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
           </p>
         </motion.div>
       </motion.div>
+
+      {/* Password Reset Dialog */}
+      <Dialog open={showResetDialog} onOpenChange={setShowResetDialog}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Mail className="h-5 w-5" />
+              Şifre Sıfırlama
+            </DialogTitle>
+            <DialogDescription>
+              E-posta adresinizi girin, size şifre sıfırlama bağlantısı gönderelim.
+            </DialogDescription>
+          </DialogHeader>
+
+          <form onSubmit={handlePasswordReset} className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="resetEmail">E-posta Adresi</Label>
+              <Input
+                id="resetEmail"
+                type="email"
+                value={resetEmail}
+                onChange={(e) => {
+                  setResetEmail(e.target.value);
+                }}
+                placeholder="ornek@email.com"
+                required
+                disabled={isResetting}
+              />
+            </div>
+
+            <div className="flex justify-end gap-2 border-t pt-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setShowResetDialog(false);
+                  setResetEmail('');
+                }}
+                disabled={isResetting}
+              >
+                İptal
+              </Button>
+              <Button type="submit" disabled={isResetting}>
+                {isResetting ? (
+                  <div className="flex items-center gap-2">
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                    Gönderiliyor...
+                  </div>
+                ) : (
+                  'Sıfırlama Bağlantısı Gönder'
+                )}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

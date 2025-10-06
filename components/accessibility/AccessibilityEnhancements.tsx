@@ -1,6 +1,6 @@
 /**
  * @fileoverview AccessibilityEnhancements Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -109,7 +109,7 @@ interface AccessibilityEnhancementsProps {
 
 /**
  * AccessibilityEnhancements function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -125,7 +125,7 @@ export function AccessibilityEnhancements({
   const [showQuickAccess, setShowQuickAccess] = useState(false);
   const [announcements, setAnnouncements] = useState<string[]>([]);
 
-  const { triggerHapticFeedback, deviceInfo: _deviceInfo } = useAdvancedMobile();
+  const { triggerHapticFeedback } = useAdvancedMobile();
   const announcementRef = useRef<HTMLDivElement>(null);
 
   // Erişilebilirlik ayarlarını uygula
@@ -270,8 +270,8 @@ export function AccessibilityEnhancements({
       if (index < 5) {
         // İlk 5 element için kontrol
         const styles = window.getComputedStyle(element);
-        const {color} = styles;
-        const {backgroundColor} = styles;
+        const { color } = styles;
+        const { backgroundColor } = styles;
 
         // Basit kontrast hesaplama (gerçek uygulamada daha gelişmiş algoritma kullanılır)
         if (color === backgroundColor) {
@@ -298,7 +298,7 @@ export function AccessibilityEnhancements({
       if (index < 10) {
         // İlk 10 resim için kontrol
         const alt = img.getAttribute('alt');
-        if (!alt ?? alt.trim() === '') {
+        if (!alt || alt.trim() === '') {
           issues.push({
             type: 'error',
             category: 'alt_text',
@@ -466,7 +466,7 @@ export function AccessibilityEnhancements({
   }, [handleQuickAccess, showQuickAccess]);
 
   return (
-    <div className={`w-full max-w-6xl mx-auto ${className}`}>
+    <div className={`mx-auto w-full max-w-6xl ${className}`}>
       {/* Ekran Okuyucu Duyuruları */}
       <div ref={announcementRef} className="sr-only" aria-live="polite" aria-atomic="true">
         {announcements[0]}
@@ -481,7 +481,7 @@ export function AccessibilityEnhancements({
             exit={{ opacity: 0, y: -20 }}
             className="fixed top-4 right-4 z-50"
           >
-            <Card className="shadow-xl border-0 bg-white/95 backdrop-blur-sm">
+            <Card className="border-0 bg-white/95 shadow-xl backdrop-blur-sm">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-semibold text-gray-900">
                   Hızlı Erişim (Alt + A)
@@ -496,7 +496,7 @@ export function AccessibilityEnhancements({
                   }}
                   className="w-full justify-start gap-2"
                 >
-                  <Contrast className="w-4 h-4" />
+                  <Contrast className="h-4 w-4" />
                   Kontrast (Alt+1)
                 </Button>
                 <Button
@@ -507,7 +507,7 @@ export function AccessibilityEnhancements({
                   }}
                   className="w-full justify-start gap-2"
                 >
-                  <Type className="w-4 h-4" />
+                  <Type className="h-4 w-4" />
                   Font (Alt+2)
                 </Button>
                 <Button
@@ -518,7 +518,7 @@ export function AccessibilityEnhancements({
                   }}
                   className="w-full justify-start gap-2"
                 >
-                  <Focus className="w-4 h-4" />
+                  <Focus className="h-4 w-4" />
                   Odak (Alt+3)
                 </Button>
                 <Button
@@ -529,7 +529,7 @@ export function AccessibilityEnhancements({
                   }}
                   className="w-full justify-start gap-2"
                 >
-                  <Zap className="w-4 h-4" />
+                  <Zap className="h-4 w-4" />
                   Tarama (Alt+4)
                 </Button>
               </CardContent>
@@ -538,11 +538,11 @@ export function AccessibilityEnhancements({
         )}
       </AnimatePresence>
 
-      <Card className="shadow-xl border-0 bg-white/95 backdrop-blur-sm">
+      <Card className="border-0 bg-white/95 shadow-xl backdrop-blur-sm">
         <CardHeader className="pb-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Eye className="w-6 h-6 text-blue-600" />
+              <Eye className="h-6 w-6 text-blue-600" />
               <div>
                 <CardTitle className="text-xl font-semibold text-gray-900">
                   Erişilebilirlik Merkezi
@@ -560,7 +560,7 @@ export function AccessibilityEnhancements({
                 }}
                 className="gap-2"
               >
-                <Zap className="w-4 h-4" />
+                <Zap className="h-4 w-4" />
                 Hızlı Erişim (Alt+A)
               </Button>
 
@@ -573,12 +573,12 @@ export function AccessibilityEnhancements({
               >
                 {isScanning ? (
                   <>
-                    <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
                     Tara...
                   </>
                 ) : (
                   <>
-                    <Zap className="w-4 h-4" />
+                    <Zap className="h-4 w-4" />
                     Erişilebilirlik Tara
                   </>
                 )}
@@ -589,36 +589,36 @@ export function AccessibilityEnhancements({
 
         <CardContent className="p-0">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-5 mx-6 mb-4">
+            <TabsList className="mx-6 mb-4 grid w-full grid-cols-5">
               <TabsTrigger value="visual" className="flex items-center gap-2">
-                <Eye className="w-4 h-4" />
+                <Eye className="h-4 w-4" />
                 Görsel
               </TabsTrigger>
               <TabsTrigger value="audio" className="flex items-center gap-2">
-                <Volume2 className="w-4 h-4" />
+                <Volume2 className="h-4 w-4" />
                 Ses
               </TabsTrigger>
               <TabsTrigger value="motor" className="flex items-center gap-2">
-                <MousePointer className="w-4 h-4" />
+                <MousePointer className="h-4 w-4" />
                 Motor
               </TabsTrigger>
               <TabsTrigger value="cognitive" className="flex items-center gap-2">
-                <Cpu className="w-4 h-4" />
+                <Cpu className="h-4 w-4" />
                 Bilişsel
               </TabsTrigger>
               <TabsTrigger value="results" className="flex items-center gap-2">
-                <Check className="w-4 h-4" />
+                <Check className="h-4 w-4" />
                 Sonuçlar
               </TabsTrigger>
             </TabsList>
 
             <TabsContent value="visual" className="px-6 pb-6">
               <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   <Card>
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
-                        <Contrast className="w-5 h-5 text-blue-600" />
+                        <Contrast className="h-5 w-5 text-blue-600" />
                         Görsel Ayarlar
                       </CardTitle>
                     </CardHeader>
@@ -680,13 +680,13 @@ export function AccessibilityEnhancements({
                   <Card>
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
-                        <Type className="w-5 h-5 text-green-600" />
+                        <Type className="h-5 w-5 text-green-600" />
                         Metin Ayarları
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <div>
-                        <div className="flex items-center justify-between mb-2">
+                        <div className="mb-2 flex items-center justify-between">
                           <p className="font-medium text-gray-700">Font Boyutu</p>
                           <Badge variant="outline">{settings.fontSize}x</Badge>
                         </div>
@@ -700,7 +700,7 @@ export function AccessibilityEnhancements({
                           step={0.5}
                           className="w-full"
                         />
-                        <div className="flex justify-between text-xs text-gray-500 mt-1">
+                        <div className="mt-1 flex justify-between text-xs text-gray-500">
                           <span>Küçük</span>
                           <span>Büyük</span>
                         </div>
@@ -713,11 +713,11 @@ export function AccessibilityEnhancements({
 
             <TabsContent value="audio" className="px-6 pb-6">
               <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   <Card>
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
-                        <Volume2 className="w-5 h-5 text-purple-600" />
+                        <Volume2 className="h-5 w-5 text-purple-600" />
                         Ses Ayarları
                       </CardTitle>
                     </CardHeader>
@@ -749,7 +749,7 @@ export function AccessibilityEnhancements({
                       </div>
 
                       <div>
-                        <div className="flex items-center justify-between mb-2">
+                        <div className="mb-2 flex items-center justify-between">
                           <p className="font-medium text-gray-700">Ses Seviyesi</p>
                           <Badge variant="outline">{settings.volume}%</Badge>
                         </div>
@@ -772,11 +772,11 @@ export function AccessibilityEnhancements({
 
             <TabsContent value="motor" className="px-6 pb-6">
               <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   <Card>
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
-                        <MousePointer className="w-5 h-5 text-orange-600" />
+                        <MousePointer className="h-5 w-5 text-orange-600" />
                         Motor Ayarları
                       </CardTitle>
                     </CardHeader>
@@ -827,11 +827,11 @@ export function AccessibilityEnhancements({
 
             <TabsContent value="cognitive" className="px-6 pb-6">
               <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   <Card>
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
-                        <Cpu className="w-5 h-5 text-indigo-600" />
+                        <Cpu className="h-5 w-5 text-indigo-600" />
                         Bilişsel Ayarlar
                       </CardTitle>
                     </CardHeader>
@@ -887,29 +887,29 @@ export function AccessibilityEnhancements({
                     <Card>
                       <CardHeader>
                         <CardTitle className="flex items-center gap-2">
-                          <Check className="w-5 h-5 text-green-600" />
+                          <Check className="h-5 w-5 text-green-600" />
                           Tarama Sonuçları
                         </CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                          <div className="text-center p-4 bg-green-50 rounded-lg">
+                        <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-4">
+                          <div className="rounded-lg bg-green-50 p-4 text-center">
                             <p className="text-2xl font-bold text-green-600">{scanResults.score}</p>
                             <p className="text-sm text-gray-600">Erişilebilirlik Skoru</p>
                           </div>
-                          <div className="text-center p-4 bg-blue-50 rounded-lg">
+                          <div className="rounded-lg bg-blue-50 p-4 text-center">
                             <p className="text-2xl font-bold text-blue-600">
                               {scanResults.passedChecks}
                             </p>
                             <p className="text-sm text-gray-600">Geçen Kontrol</p>
                           </div>
-                          <div className="text-center p-4 bg-red-50 rounded-lg">
+                          <div className="rounded-lg bg-red-50 p-4 text-center">
                             <p className="text-2xl font-bold text-red-600">
                               {scanResults.failedChecks}
                             </p>
                             <p className="text-sm text-gray-600">Başarısız Kontrol</p>
                           </div>
-                          <div className="text-center p-4 bg-yellow-50 rounded-lg">
+                          <div className="rounded-lg bg-yellow-50 p-4 text-center">
                             <p className="text-2xl font-bold text-yellow-600">
                               {scanResults.warnings}
                             </p>
@@ -923,26 +923,26 @@ export function AccessibilityEnhancements({
                             scanResults.issues.map((issue, index) => (
                               <div
                                 key={index}
-                                className={`p-3 rounded-lg border ${
+                                className={`rounded-lg border p-3 ${
                                   issue.type === 'error'
-                                    ? 'bg-red-50 border-red-200'
+                                    ? 'border-red-200 bg-red-50'
                                     : issue.type === 'warning'
-                                      ? 'bg-yellow-50 border-yellow-200'
-                                      : 'bg-blue-50 border-blue-200'
+                                      ? 'border-yellow-200 bg-yellow-50'
+                                      : 'border-blue-200 bg-blue-50'
                                 }`}
                               >
                                 <div className="flex items-start gap-3">
                                   {issue.type === 'error' ? (
-                                    <X className="w-5 h-5 text-red-600 mt-0.5" />
+                                    <X className="mt-0.5 h-5 w-5 text-red-600" />
                                   ) : issue.type === 'warning' ? (
-                                    <AlertTriangle className="w-5 h-5 text-yellow-600 mt-0.5" />
+                                    <AlertTriangle className="mt-0.5 h-5 w-5 text-yellow-600" />
                                   ) : (
-                                    <Info className="w-5 h-5 text-blue-600 mt-0.5" />
+                                    <Info className="mt-0.5 h-5 w-5 text-blue-600" />
                                   )}
                                   <div className="flex-1">
                                     <p className="font-medium text-gray-900">{issue.message}</p>
-                                    <p className="text-sm text-gray-600 mt-1">{issue.suggestion}</p>
-                                    <div className="flex items-center gap-2 mt-2">
+                                    <p className="mt-1 text-sm text-gray-600">{issue.suggestion}</p>
+                                    <div className="mt-2 flex items-center gap-2">
                                       <Badge variant="outline" className="text-xs">
                                         {issue.category}
                                       </Badge>
@@ -957,9 +957,9 @@ export function AccessibilityEnhancements({
                               </div>
                             ))
                           ) : (
-                            <div className="text-center py-8">
-                              <Check className="w-12 h-12 text-green-600 mx-auto mb-4" />
-                              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                            <div className="py-8 text-center">
+                              <Check className="mx-auto mb-4 h-12 w-12 text-green-600" />
+                              <h3 className="mb-2 text-lg font-medium text-gray-900">
                                 Harika! Hiç sorun bulunamadı
                               </h3>
                               <p className="text-gray-500">
@@ -972,12 +972,12 @@ export function AccessibilityEnhancements({
                     </Card>
                   </>
                 ) : (
-                  <div className="text-center py-12">
-                    <Zap className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  <div className="py-12 text-center">
+                    <Zap className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+                    <h3 className="mb-2 text-lg font-medium text-gray-900">
                       Henüz Tarama Yapılmadı
                     </h3>
-                    <p className="text-gray-500 mb-4">
+                    <p className="mb-4 text-gray-500">
                       Erişilebilirlik sorunlarını tespit etmek için tarama yapın
                     </p>
                     <Button onClick={runAccessibilityScan} disabled={isScanning}>

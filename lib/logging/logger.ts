@@ -55,17 +55,17 @@ class Logger {
     if (typeof window === 'undefined') return LogLevel.INFO;
     
     // Production'da sadece error ve üstü
-    if ((typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PROD) ?? process.env.NODE_ENV === 'production') {
+    if (import.meta.env.PROD) {
       return LogLevel.ERROR;
     }
     
     // Development'da debug ve üstü
-    if ((typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.DEV) ?? process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       return LogLevel.DEBUG;
     }
     
     // Test ortamında sadece error
-    if ((typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.MODE === 'test') || process.env.NODE_ENV === 'test') {
+    if (import.meta.env.MODE === 'test') {
       return LogLevel.ERROR;
     }
     
@@ -74,12 +74,12 @@ class Logger {
 
   private shouldEnableConsole(): boolean {
     // Production'da console'u tamamen devre dışı bırak
-    if ((typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PROD) ?? process.env.NODE_ENV === 'production') {
+    if (import.meta.env.PROD) {
       return false;
     }
     
     // Test ortamında console'u devre dışı bırak
-    if ((typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.MODE === 'test') || process.env.NODE_ENV === 'test') {
+    if (import.meta.env.MODE === 'test') {
       return false;
     }
     
@@ -157,7 +157,7 @@ class Logger {
 
   // Hata ayıklama için özel metod
   dev(message: string, ...args: unknown[]): void {
-    if ((typeof import.meta !== 'undefined' && import.meta.env?.DEV) || process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       this.debug(`DEV: ${message}`, ...args);
     }
   }

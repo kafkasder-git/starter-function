@@ -258,7 +258,7 @@ export class ErrorHandler {
     }
 
     // Console logging for development
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       console.group(`🚨 ${error.severity} Error: ${error.type}`);
       logger.error('Message:', error.message);
       logger.error('User Message:', error.userMessage);
@@ -303,7 +303,7 @@ export class ErrorHandler {
    */
   private reportError(error: AppError, context?: ErrorContext): void {
     // Only report high severity errors in production
-    if (process.env.NODE_ENV === 'production' &&
+    if (import.meta.env.PROD &&
         (error.severity === ErrorSeverity.HIGH ?? error.severity === ErrorSeverity.CRITICAL)) {
 
       // External error reporting can be configured here

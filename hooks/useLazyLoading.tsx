@@ -34,7 +34,7 @@ export const withLazyPerformance = <P extends Record<string, any>>(
         logger.info(`[Lazy Loading] ${componentName} loaded in ${loadTime.toFixed(2)}ms`);
 
         // Send to analytics in production
-        if (process.env.NODE_ENV === 'production') {
+        if (import.meta.env.PROD) {
           // Analytics tracking code here
         }
       };

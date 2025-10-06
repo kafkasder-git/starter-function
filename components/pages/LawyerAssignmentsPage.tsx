@@ -6,10 +6,18 @@
  */
 
 import { useState, useMemo } from 'react';
+import { toast } from 'sonner';
+import { Plus } from 'lucide-react';
 
 import { useSearch } from '@/hooks/useSearch';
 import type { Lawyer } from '@/types/lawyer';
 import type { SearchConfig, FilterValue } from '@/types/search';
+import { Button } from '../ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../ui/dialog';
+import { Label } from '../ui/label';
+import { Input } from '../ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { Textarea } from '../ui/textarea';
 
 type TabKey = 'all' | 'available' | 'busy' | 'top';
 
@@ -95,6 +103,16 @@ export function LawyerAssignmentsPage() {
   const [selectedLawyer, setSelectedLawyer] = useState<Lawyer | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<TabKey>('all');
+  const [showAssignDialog, setShowAssignDialog] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [assignmentData, setAssignmentData] = useState({
+    lawyerId: '',
+    caseTitle: '',
+    caseType: '',
+    description: '',
+    clientName: '',
+    clientPhone: '',
+  });
 
   // Use the optimized search hook
   const { searchState, setQuery, setFilters, clearFilters, isEmpty } = useSearch<Lawyer>({
@@ -127,8 +145,57 @@ export function LawyerAssignmentsPage() {
     clearFilters(); // Clear existing filters when changing tabs
   };
 
+  const handleAssignLawyer = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!assignmentData.lawyerId || !assignmentData.caseTitle || !assignmentData.clientName) {
+      toast.error('Lütfen zorunlu alanları doldurun');
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+
+      // TODO: Integrate with actual API
+      // const result = await legalService.assignLawyer(assignmentData);
+
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      toast.success('Avukat başarıyla atandı!');
+      setShowAssignDialog(false);
+
+      // Reset form
+      setAssignmentData({
+        lawyerId: '',
+        caseTitle: '',
+        caseType: '',
+        description: '',
+        clientName: '',
+        clientPhone: '',
+      });
+    } catch {
+      toast.error('Avukat ataması yapılırken hata oluştu');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
-    <div className="lawyer-assignments">
+    <div className="lawyer-assignments space-y-6 p-6">
+      {/* Header with Assign Button */}
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Avukat Atamaları</h1>
+        <Button
+          onClick={() => {
+            setShowAssignDialog(true);
+          }}
+          size="sm"
+        >
+          <Plus className="mr-2 h-4 w-4" />
+          Avukat Ata
+        </Button>
+      </div>
       {/* Tabs */}
       <div className="tabs">
         <button
@@ -235,6 +302,134 @@ export function LawyerAssignmentsPage() {
           </div>
         </div>
       )}
+
+      {/* Assignment Dialog */}
+      <Dialog open={showAssignDialog} onOpenChange={setShowAssignDialog}>
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Plus className="h-5 w-5" />
+              Avukat Ataması
+            </DialogTitle>
+            <DialogDescription>
+              Bir davaya avukat atayın. Zorunlu alanları (*) doldurmanız gereklidir.
+            </DialogDescription>
+          </DialogHeader>
+
+          <form onSubmit={handleAssignLawyer} className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="lawyerId">Avukat Seçin *</Label>
+              <Select
+                value={assignmentData.lawyerId}
+                onValueChange={(value) => {
+                  setAssignmentData({ ...assignmentData, lawyerId: value });
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Avukat seçin" />
+                </SelectTrigger>
+                <SelectContent>
+                  {filteredLawyers.map((lawyer: Lawyer) => (
+                    <SelectItem key={lawyer.id} value={lawyer.id.toString()}>
+                      {lawyer.name} - {lawyer.specializations[0]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="clientName">Müvekkil Adı *</Label>
+              <Input
+                id="clientName"
+                value={assignmentData.clientName}
+                onChange={(e) => {
+                  setAssignmentData({ ...assignmentData, clientName: e.target.value });
+                }}
+                placeholder="Müvekkil adı"
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="clientPhone">Müvekkil Telefonu</Label>
+              <Input
+                id="clientPhone"
+                type="tel"
+                value={assignmentData.clientPhone}
+                onChange={(e) => {
+                  setAssignmentData({ ...assignmentData, clientPhone: e.target.value });
+                }}
+                placeholder="0555 123 45 67"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="caseTitle">Dava Başlığı *</Label>
+              <Input
+                id="caseTitle"
+                value={assignmentData.caseTitle}
+                onChange={(e) => {
+                  setAssignmentData({ ...assignmentData, caseTitle: e.target.value });
+                }}
+                placeholder="Dava konusu"
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="caseType">Dava Türü</Label>
+              <Select
+                value={assignmentData.caseType}
+                onValueChange={(value) => {
+                  setAssignmentData({ ...assignmentData, caseType: value });
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Dava türü seçin" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="is_hukuku">İş Hukuku</SelectItem>
+                  <SelectItem value="aile_hukuku">Aile Hukuku</SelectItem>
+                  <SelectItem value="ceza_hukuku">Ceza Hukuku</SelectItem>
+                  <SelectItem value="medeni_hukuk">Medeni Hukuk</SelectItem>
+                  <SelectItem value="idare_hukuku">İdare Hukuku</SelectItem>
+                  <SelectItem value="diger">Diğer</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="description">Açıklama</Label>
+              <Textarea
+                id="description"
+                value={assignmentData.description}
+                onChange={(e) => {
+                  setAssignmentData({ ...assignmentData, description: e.target.value });
+                }}
+                placeholder="Dava detayları ve notlar"
+                rows={4}
+              />
+            </div>
+
+            <div className="flex justify-end gap-2 border-t pt-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setShowAssignDialog(false);
+                }}
+                disabled={isSubmitting}
+              >
+                İptal
+              </Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? 'Atanıyor...' : 'Avukat Ata'}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

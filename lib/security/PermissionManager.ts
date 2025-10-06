@@ -268,7 +268,7 @@ export class AuditLogger {
     }
 
     // In production, send to backend
-    if ((typeof import.meta !== 'undefined' && import.meta.env?.PROD) || process.env.NODE_ENV === 'production') {
+    if (import.meta.env.PROD) {
       this.sendToBackend(auditLog);
     }
   }

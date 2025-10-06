@@ -1,6 +1,6 @@
 /**
  * @fileoverview DonationsPage Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -60,7 +60,7 @@ interface DonationFormData {
 
 /**
  * DonationsPage function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -235,9 +235,9 @@ export function DonationsPage() {
     }
   };
 
-  const handleUpdateStatus = async (id: number, newStatus: Donation['status']) => {
+  const handleUpdateStatus = async (id: string, newStatus: Donation['status']) => {
     try {
-      const result = await donationsService.updateDonation(id, { status: newStatus });
+      const result = await donationsService.updateDonation(parseInt(id), { status: newStatus });
 
       if (result.error) {
         throw new Error(result.error);
@@ -252,13 +252,13 @@ export function DonationsPage() {
     }
   };
 
-  const handleDeleteDonation = async (id: number) => {
+  const handleDeleteDonation = async (id: string) => {
     if (!confirm('Bu bağışı silmek istediğinizden emin misiniz?')) {
       return;
     }
 
     try {
-      const result = await donationsService.deleteDonation(id);
+      const result = await donationsService.deleteDonation(parseInt(id));
 
       if (result.error) {
         throw new Error(result.error);
@@ -282,13 +282,60 @@ export function DonationsPage() {
       title="Bağış Yönetimi"
       subtitle="Tüm bağışları görüntüleyin ve yönetin"
       actions={
-        <div className="flex gap-2 flex-wrap items-center justify-end w-full sm:w-auto p-2 sm:p-0">
+        <div className="flex w-full flex-wrap items-center justify-end gap-2 p-2 sm:w-auto sm:p-0">
           <Button
             variant="outline"
             size="sm"
-            className="min-h-[44px] px-4 text-sm border-gray-300 hover:border-gray-400 order-2 sm:order-1"
+            className="order-2 min-h-[44px] border-gray-300 px-4 text-sm hover:border-gray-400 sm:order-1"
+            onClick={async () => {
+              try {
+                const exportFilters: DonationsFilters = {
+                  searchTerm: searchTerm.trim() || undefined,
+                  status: statusFilter !== 'all' ? statusFilter : undefined,
+                  donationType: donationTypeFilter !== 'all' ? donationTypeFilter : undefined,
+                  paymentMethod: paymentMethodFilter !== 'all' ? paymentMethodFilter : undefined,
+                };
+                const result = await donationsService.exportDonations(exportFilters);
+                if (result.data) {
+                  // Convert to CSV
+                  const headers = [
+                    'Bağışçı',
+                    'E-posta',
+                    'Telefon',
+                    'Miktar',
+                    'Tür',
+                    'Ödeme Yöntemi',
+                    'Durum',
+                    'Tarih',
+                  ];
+                  const csvData = result.data.map((d) => [
+                    d.donor_name,
+                    d.donor_email || '',
+                    d.donor_phone || '',
+                    d.amount,
+                    d.donation_type,
+                    d.payment_method,
+                    d.status,
+                    new Date(d.created_at).toLocaleDateString('tr-TR'),
+                  ]);
+
+                  const csv = [headers, ...csvData].map((row) => row.join(',')).join('\n');
+                  const blob = new Blob([`\ufeff${csv}`], { type: 'text/csv;charset=utf-8;' });
+                  const link = document.createElement('a');
+                  link.href = URL.createObjectURL(blob);
+                  link.download = `bagislar_${new Date().toISOString().split('T')[0]}.csv`;
+                  link.click();
+                  toast.success('Bağışlar Excel formatında dışa aktarıldı');
+                } else {
+                  toast.error('Dışa aktarma başarısız');
+                }
+              } catch (error) {
+                logger.error('Export error:', error);
+                toast.error('Dışa aktarma sırasında hata oluştu');
+              }
+            }}
           >
-            <Download className="w-4 h-4 mr-2" />
+            <Download className="mr-2 h-4 w-4" />
             <span className="hidden sm:inline">Dışa Aktar</span>
             <span className="sm:hidden">Dışa Aktar</span>
           </Button>
@@ -296,17 +343,17 @@ export function DonationsPage() {
             <DialogTrigger asChild>
               <Button
                 size="sm"
-                className="min-h-[44px] px-6 py-3 corporate-gradient text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 order-1 sm:order-2 flex-shrink-0"
+                className="corporate-gradient order-1 min-h-[44px] flex-shrink-0 border-0 px-6 py-3 text-white shadow-lg transition-all duration-300 hover:shadow-xl sm:order-2"
               >
-                <Plus className="w-4 h-4 mr-2" />
+                <Plus className="mr-2 h-4 w-4" />
                 <span className="hidden sm:inline">Yeni Bağış</span>
                 <span className="sm:hidden">Yeni Bağış</span>
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-lg max-w-[95vw] max-h-[90vh] overflow-y-auto professional-card">
+            <DialogContent className="professional-card max-h-[90vh] max-w-[95vw] overflow-y-auto sm:max-w-lg">
               <DialogHeader className="pb-4">
                 <DialogTitle className="flex items-center gap-2">
-                  <Plus className="w-6 h-6 text-primary" />
+                  <Plus className="text-primary h-6 w-6" />
                   Yeni Bağış Kaydı
                 </DialogTitle>
                 <DialogDescription className="text-muted-foreground mt-1">
@@ -327,7 +374,7 @@ export function DonationsPage() {
                       donationForm.handleBlur('donor_name');
                     }}
                     placeholder="Bağışçının tam adını giriniz"
-                    className={`min-h-[44px] focus-corporate ${
+                    className={`focus-corporate min-h-[44px] ${
                       donationForm.touched.donor_name && donationForm.errors.donor_name
                         ? 'border-red-500 focus:border-red-500'
                         : ''
@@ -339,7 +386,7 @@ export function DonationsPage() {
                   )}
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
                     <Label htmlFor="donor_email">E-posta</Label>
                     <Input
@@ -353,7 +400,7 @@ export function DonationsPage() {
                         donationForm.handleBlur('donor_email');
                       }}
                       placeholder="bağışçı@email.com"
-                      className={`min-h-[44px] focus-corporate ${
+                      className={`focus-corporate min-h-[44px] ${
                         donationForm.touched.donor_email && donationForm.errors.donor_email
                           ? 'border-red-500 focus:border-red-500'
                           : ''
@@ -377,7 +424,7 @@ export function DonationsPage() {
                         donationForm.handleBlur('donor_phone');
                       }}
                       placeholder="0555 123 45 67"
-                      className={`min-h-[44px] focus-corporate ${
+                      className={`focus-corporate min-h-[44px] ${
                         donationForm.touched.donor_phone && donationForm.errors.donor_phone
                           ? 'border-red-500 focus:border-red-500'
                           : ''
@@ -403,7 +450,7 @@ export function DonationsPage() {
                       donationForm.handleBlur('amount');
                     }}
                     placeholder="0.00"
-                    className={`min-h-[44px] focus-corporate ${
+                    className={`focus-corporate min-h-[44px] ${
                       donationForm.touched.amount && donationForm.errors.amount
                         ? 'border-red-500 focus:border-red-500'
                         : ''
@@ -417,7 +464,7 @@ export function DonationsPage() {
                   )}
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
                     <Label htmlFor="donation_type">Bağış Türü</Label>
                     <Select
@@ -426,7 +473,7 @@ export function DonationsPage() {
                         donationForm.handleChange('donation_type', value);
                       }}
                     >
-                      <SelectTrigger className="min-h-[44px] focus-corporate">
+                      <SelectTrigger className="focus-corporate min-h-[44px]">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -445,7 +492,7 @@ export function DonationsPage() {
                         donationForm.handleChange('payment_method', value);
                       }}
                     >
-                      <SelectTrigger className="min-h-[44px] focus-corporate">
+                      <SelectTrigger className="focus-corporate min-h-[44px]">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -472,7 +519,7 @@ export function DonationsPage() {
                       donationForm.handleBlur('category');
                     }}
                     placeholder="Bağış kategorisi (örn: Eğitim, Sağlık)"
-                    className="min-h-[44px] focus-corporate"
+                    className="focus-corporate min-h-[44px]"
                     disabled={saving}
                   />
                   {donationForm.touched.category && donationForm.errors.category && (
@@ -492,7 +539,7 @@ export function DonationsPage() {
                       donationForm.handleBlur('description');
                     }}
                     placeholder="Bağış hakkında ek bilgiler..."
-                    className="min-h-[80px] focus-corporate"
+                    className="focus-corporate min-h-[80px]"
                     disabled={saving}
                   />
                   {donationForm.touched.description && donationForm.errors.description && (
@@ -501,7 +548,7 @@ export function DonationsPage() {
                 </div>
               </form>
 
-              <div className="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t">
+              <div className="flex flex-col justify-end gap-3 border-t pt-6 sm:flex-row">
                 <Button
                   variant="outline"
                   onClick={() => {
@@ -519,17 +566,17 @@ export function DonationsPage() {
                       handleCreateDonation(donationForm.values);
                     }
                   }}
-                  className="min-h-[44px] px-6 corporate-gradient shadow-md hover:shadow-lg"
+                  className="corporate-gradient min-h-[44px] px-6 shadow-md hover:shadow-lg"
                   disabled={saving || !donationForm.isValid}
                 >
                   {saving ? (
                     <>
-                      <Loader2 className="animate-spin h-4 w-4 mr-2" />
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       Kaydediliyor...
                     </>
                   ) : (
                     <>
-                      <Plus className="w-4 h-4 mr-2" />
+                      <Plus className="mr-2 h-4 w-4" />
                       Kaydet
                     </>
                   )}
@@ -540,17 +587,17 @@ export function DonationsPage() {
         </div>
       }
     >
-      <div className="safe-area p-3 sm:p-6 lg:p-8 space-y-4 sm:space-y-6">
+      <div className="safe-area space-y-4 p-3 sm:space-y-6 sm:p-6 lg:p-8">
         {/* Enhanced Summary Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
           <Card className="professional-card micro-interaction">
             <CardContent className="p-3 sm:p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-xl sm:text-2xl text-green-600">
+                  <div className="text-xl text-green-600 sm:text-2xl">
                     ₺{(stats.totalAmount ?? 0).toLocaleString()}
                   </div>
-                  <p className="text-xs sm:text-sm text-gray-600">Toplam Bağış</p>
+                  <p className="text-xs text-gray-600 sm:text-sm">Toplam Bağış</p>
                 </div>
                 <DollarSign className="h-8 w-8 text-green-500 opacity-80" />
               </div>
@@ -561,8 +608,8 @@ export function DonationsPage() {
             <CardContent className="p-3 sm:p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-xl sm:text-2xl text-blue-600">{stats.total ?? 0}</div>
-                  <p className="text-xs sm:text-sm text-gray-600">Toplam İşlem</p>
+                  <div className="text-xl text-blue-600 sm:text-2xl">{stats.total ?? 0}</div>
+                  <p className="text-xs text-gray-600 sm:text-sm">Toplam İşlem</p>
                 </div>
                 <TrendingUp className="h-8 w-8 text-blue-500 opacity-80" />
               </div>
@@ -573,8 +620,8 @@ export function DonationsPage() {
             <CardContent className="p-3 sm:p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-xl sm:text-2xl text-yellow-600">{stats.pending ?? 0}</div>
-                  <p className="text-xs sm:text-sm text-gray-600">Bekleyen</p>
+                  <div className="text-xl text-yellow-600 sm:text-2xl">{stats.pending ?? 0}</div>
+                  <p className="text-xs text-gray-600 sm:text-sm">Bekleyen</p>
                 </div>
                 <Clock className="h-8 w-8 text-yellow-500 opacity-80" />
               </div>
@@ -585,10 +632,10 @@ export function DonationsPage() {
             <CardContent className="p-3 sm:p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-xl sm:text-2xl text-emerald-600">
+                  <div className="text-xl text-emerald-600 sm:text-2xl">
                     ₺{(stats.averageAmount ?? 0).toLocaleString()}
                   </div>
-                  <p className="text-xs sm:text-sm text-gray-600">Ortalama</p>
+                  <p className="text-xs text-gray-600 sm:text-sm">Ortalama</p>
                 </div>
                 <CheckCircle className="h-8 w-8 text-emerald-500 opacity-80" />
               </div>
@@ -603,23 +650,23 @@ export function DonationsPage() {
               <CardTitle className="text-lg sm:text-xl">Bağış Listesi</CardTitle>
 
               {/* Enhanced Filters */}
-              <div className="space-y-3 sm:space-y-0 sm:flex sm:gap-4">
+              <div className="space-y-3 sm:flex sm:gap-4 sm:space-y-0">
                 <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                  <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
                   <Input
                     placeholder="Bağışçı adı, e-posta veya referans ara..."
                     value={searchTerm}
                     onChange={(e) => {
                       setSearchTerm(e.target.value);
                     }}
-                    className="pl-10 min-h-[44px] text-base focus-corporate"
+                    className="focus-corporate min-h-[44px] pl-10 text-base"
                     inputMode="search"
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-2 sm:gap-3 sm:flex sm:w-auto">
+                <div className="grid grid-cols-2 gap-2 sm:flex sm:w-auto sm:gap-3">
                   <Select value={statusFilter} onValueChange={setStatusFilter}>
-                    <SelectTrigger className="min-h-[44px] text-base focus-corporate">
+                    <SelectTrigger className="focus-corporate min-h-[44px] text-base">
                       <SelectValue placeholder="Tüm Durumlar" />
                     </SelectTrigger>
                     <SelectContent>
@@ -633,7 +680,7 @@ export function DonationsPage() {
                   </Select>
 
                   <Select value={donationTypeFilter} onValueChange={setDonationTypeFilter}>
-                    <SelectTrigger className="min-h-[44px] text-base focus-corporate">
+                    <SelectTrigger className="focus-corporate min-h-[44px] text-base">
                       <SelectValue placeholder="Tüm Türler" />
                     </SelectTrigger>
                     <SelectContent>
@@ -646,7 +693,7 @@ export function DonationsPage() {
                   </Select>
 
                   <Select value={paymentMethodFilter} onValueChange={setPaymentMethodFilter}>
-                    <SelectTrigger className="min-h-[44px] text-base focus-corporate">
+                    <SelectTrigger className="focus-corporate min-h-[44px] text-base">
                       <SelectValue placeholder="Tüm Ödeme Yöntemleri" />
                     </SelectTrigger>
                     <SelectContent>
@@ -672,10 +719,10 @@ export function DonationsPage() {
                   {donations.map((donation) => (
                     <Card
                       key={donation.id}
-                      className="border border-gray-200 hover:shadow-md transition-shadow"
+                      className="border border-gray-200 transition-shadow hover:shadow-md"
                     >
                       <CardContent className="p-4">
-                        <div className="flex justify-between items-start mb-3">
+                        <div className="mb-3 flex items-start justify-between">
                           <div className="flex-1">
                             <h3 className="font-medium text-gray-900">{donation.donor_name}</h3>
                             <p className="text-sm text-gray-600">
@@ -683,19 +730,19 @@ export function DonationsPage() {
                             </p>
                           </div>
                           <div className="text-right">
-                            <div className="font-semibold text-green-600 text-lg">
+                            <div className="text-lg font-semibold text-green-600">
                               ₺{donation.amount.toLocaleString()}
                             </div>
                             {getStatusBadge(donation.status)}
                           </div>
                         </div>
 
-                        <div className="flex justify-between items-center text-sm text-gray-500">
+                        <div className="flex items-center justify-between text-sm text-gray-500">
                           <span>{donation.payment_method}</span>
                           <span>{new Date(donation.created_at).toLocaleDateString('tr-TR')}</span>
                         </div>
 
-                        <div className="flex justify-end gap-2 mt-3">
+                        <div className="mt-3 flex justify-end gap-2">
                           {donation.status === 'pending' && (
                             <>
                               <Button
@@ -705,7 +752,7 @@ export function DonationsPage() {
                                 onClick={() => handleUpdateStatus(donation.id, 'approved')}
                                 aria-label="Onayla"
                               >
-                                <CheckCircle className="w-4 h-4" />
+                                <CheckCircle className="h-4 w-4" />
                               </Button>
                               <Button
                                 variant="ghost"
@@ -714,7 +761,7 @@ export function DonationsPage() {
                                 onClick={() => handleUpdateStatus(donation.id, 'rejected')}
                                 aria-label="Reddet"
                               >
-                                <XCircle className="w-4 h-4" />
+                                <XCircle className="h-4 w-4" />
                               </Button>
                             </>
                           )}
@@ -725,7 +772,7 @@ export function DonationsPage() {
                             onClick={() => handleDeleteDonation(donation.id)}
                             aria-label="Sil"
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
                       </CardContent>
@@ -734,17 +781,17 @@ export function DonationsPage() {
                 </div>
               ) : (
                 <div className="p-6 text-center">
-                  <Plus className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                  <p className="text-gray-600 mb-2">Henüz bağış kaydı bulunmuyor</p>
+                  <Plus className="mx-auto mb-4 h-12 w-12 text-gray-300" />
+                  <p className="mb-2 text-gray-600">Henüz bağış kaydı bulunmuyor</p>
                   <p className="text-sm text-gray-400">
-                    Yeni bağış eklemek için "Yeni Bağış" butonunu kullanın
+                    Yeni bağış eklemek için &quot;Yeni Bağış&quot; butonunu kullanın
                   </p>
                 </div>
               )}
             </div>
 
             {/* Desktop Table View */}
-            <div className="hidden sm:block overflow-x-auto">
+            <div className="hidden overflow-x-auto sm:block">
               <Table>
                 <TableHeader>
                   <TableRow className="bg-gray-50/50">
@@ -752,13 +799,13 @@ export function DonationsPage() {
                     <TableHead className="min-w-[100px] p-3 sm:p-4">Miktar</TableHead>
                     <TableHead className="min-w-[100px] p-3 sm:p-4">Tarih</TableHead>
                     <TableHead className="min-w-[100px] p-3 sm:p-4">Durum</TableHead>
-                    <TableHead className="hidden lg:table-cell min-w-[100px] p-3 sm:p-4">
+                    <TableHead className="hidden min-w-[100px] p-3 sm:p-4 lg:table-cell">
                       Yöntem
                     </TableHead>
-                    <TableHead className="hidden lg:table-cell min-w-[100px] p-3 sm:p-4">
+                    <TableHead className="hidden min-w-[100px] p-3 sm:p-4 lg:table-cell">
                       Tür
                     </TableHead>
-                    <TableHead className="min-w-[120px] p-3 sm:p-4 text-center">İşlemler</TableHead>
+                    <TableHead className="min-w-[120px] p-3 text-center sm:p-4">İşlemler</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -766,35 +813,35 @@ export function DonationsPage() {
                     Array.from({ length: 5 }).map((_, i) => (
                       <TableRow key={i}>
                         <TableCell className="p-3 sm:p-4">
-                          <div className="h-4 bg-gray-200 rounded w-32 animate-pulse" />
+                          <div className="h-4 w-32 animate-pulse rounded bg-gray-200" />
                         </TableCell>
                         <TableCell className="p-3 sm:p-4">
-                          <div className="h-4 bg-gray-200 rounded w-20 animate-pulse" />
+                          <div className="h-4 w-20 animate-pulse rounded bg-gray-200" />
                         </TableCell>
                         <TableCell className="p-3 sm:p-4">
-                          <div className="h-4 bg-gray-200 rounded w-24 animate-pulse" />
+                          <div className="h-4 w-24 animate-pulse rounded bg-gray-200" />
                         </TableCell>
                         <TableCell className="p-3 sm:p-4">
-                          <div className="h-6 bg-gray-200 rounded w-20 animate-pulse" />
+                          <div className="h-6 w-20 animate-pulse rounded bg-gray-200" />
                         </TableCell>
-                        <TableCell className="hidden lg:table-cell p-3 sm:p-4">
-                          <div className="h-4 bg-gray-200 rounded w-24 animate-pulse" />
+                        <TableCell className="hidden p-3 sm:p-4 lg:table-cell">
+                          <div className="h-4 w-24 animate-pulse rounded bg-gray-200" />
                         </TableCell>
-                        <TableCell className="hidden lg:table-cell p-3 sm:p-4">
-                          <div className="h-4 bg-gray-200 rounded w-16 animate-pulse" />
+                        <TableCell className="hidden p-3 sm:p-4 lg:table-cell">
+                          <div className="h-4 w-16 animate-pulse rounded bg-gray-200" />
                         </TableCell>
                         <TableCell className="p-3 sm:p-4">
                           <div className="flex justify-center gap-2">
-                            <div className="w-8 h-8 bg-gray-200 rounded animate-pulse" />
-                            <div className="w-8 h-8 bg-gray-200 rounded animate-pulse" />
+                            <div className="h-8 w-8 animate-pulse rounded bg-gray-200" />
+                            <div className="h-8 w-8 animate-pulse rounded bg-gray-200" />
                           </div>
                         </TableCell>
                       </TableRow>
                     ))
                   ) : donations.length > 0 ? (
                     donations.map((donation) => (
-                      <TableRow key={donation.id} className="hover:bg-gray-50/50 transition-colors">
-                        <TableCell className="font-medium p-3 sm:p-4">
+                      <TableRow key={donation.id} className="transition-colors hover:bg-gray-50/50">
+                        <TableCell className="p-3 font-medium sm:p-4">
                           <div>
                             <div className="font-medium">{donation.donor_name}</div>
                             {donation.donor_email && (
@@ -802,61 +849,61 @@ export function DonationsPage() {
                             )}
                           </div>
                         </TableCell>
-                        <TableCell className="font-semibold text-green-600 p-3 sm:p-4">
+                        <TableCell className="p-3 font-semibold text-green-600 sm:p-4">
                           ₺{donation.amount.toLocaleString()}
                         </TableCell>
-                        <TableCell className="text-gray-500 p-3 sm:p-4">
+                        <TableCell className="p-3 text-gray-500 sm:p-4">
                           {new Date(donation.created_at).toLocaleDateString('tr-TR')}
                         </TableCell>
                         <TableCell className="p-3 sm:p-4">
                           {getStatusBadge(donation.status)}
                         </TableCell>
-                        <TableCell className="hidden lg:table-cell text-gray-600 p-3 sm:p-4">
+                        <TableCell className="hidden p-3 text-gray-600 sm:p-4 lg:table-cell">
                           {donation.payment_method}
                         </TableCell>
-                        <TableCell className="hidden lg:table-cell text-gray-600 p-3 sm:p-4">
+                        <TableCell className="hidden p-3 text-gray-600 sm:p-4 lg:table-cell">
                           {donation.donation_type}
                         </TableCell>
-                        <TableCell className="text-center p-3 sm:p-4">
+                        <TableCell className="p-3 text-center sm:p-4">
                           <div className="flex items-center justify-center gap-2">
                             {donation.status === 'pending' && (
                               <>
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="h-8 w-8 p-0 text-green-600 hover:text-green-700 hover:bg-green-50"
+                                  className="h-8 w-8 p-0 text-green-600 hover:bg-green-50 hover:text-green-700"
                                   onClick={() => handleUpdateStatus(donation.id, 'approved')}
                                   aria-label="Onayla"
                                 >
-                                  <CheckCircle className="w-4 h-4" />
+                                  <CheckCircle className="h-4 w-4" />
                                 </Button>
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                                  className="h-8 w-8 p-0 text-red-600 hover:bg-red-50 hover:text-red-700"
                                   onClick={() => handleUpdateStatus(donation.id, 'rejected')}
                                   aria-label="Reddet"
                                 >
-                                  <XCircle className="w-4 h-4" />
+                                  <XCircle className="h-4 w-4" />
                                 </Button>
                               </>
                             )}
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="h-8 w-8 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                              className="h-8 w-8 p-0 text-blue-600 hover:bg-blue-50 hover:text-blue-700"
                               aria-label={`${donation.donor_name} bağışını görüntüle`}
                             >
-                              <Eye className="w-4 h-4" />
+                              <Eye className="h-4 w-4" />
                             </Button>
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                              className="h-8 w-8 p-0 text-red-600 hover:bg-red-50 hover:text-red-700"
                               onClick={() => handleDeleteDonation(donation.id)}
                               aria-label="Sil"
                             >
-                              <Trash2 className="w-4 h-4" />
+                              <Trash2 className="h-4 w-4" />
                             </Button>
                           </div>
                         </TableCell>
@@ -864,11 +911,11 @@ export function DonationsPage() {
                     ))
                   ) : (
                     <TableRow>
-                      <TableCell colSpan={7} className="text-center py-8 text-gray-500">
-                        <Plus className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                        <p className="text-gray-600 mb-2">Henüz bağış kaydı bulunmuyor</p>
+                      <TableCell colSpan={7} className="py-8 text-center text-gray-500">
+                        <Plus className="mx-auto mb-4 h-12 w-12 text-gray-300" />
+                        <p className="mb-2 text-gray-600">Henüz bağış kaydı bulunmuyor</p>
                         <p className="text-sm text-gray-400">
-                          Yeni bağış eklemek için "Yeni Bağış" butonunu kullanın
+                          Yeni bağış eklemek için &quot;Yeni Bağış&quot; butonunu kullanın
                         </p>
                       </TableCell>
                     </TableRow>

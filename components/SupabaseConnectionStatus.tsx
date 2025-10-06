@@ -1,6 +1,6 @@
 /**
  * @fileoverview SupabaseConnectionStatus Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -12,7 +12,7 @@ import { CheckCircle, XCircle, AlertTriangle, Loader2 } from 'lucide-react';
 
 /**
  * SupabaseConnectionStatus function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -30,10 +30,10 @@ export function SupabaseConnectionStatus() {
               <strong>Supabase Konfigürasyonu Eksik</strong>
             </p>
             <p>Lütfen aşağıdaki adımları takip edin:</p>
-            <ol className="list-decimal list-inside space-y-1 text-sm">
-              <li>Supabase Dashboard'dan proje URL'nizi alın</li>
-              <li>Supabase Anon Key'inizi alın</li>
-              <li>Proje root'unda .env dosyası oluşturun</li>
+            <ol className="list-inside list-decimal space-y-1 text-sm">
+              <li>Supabase Dashboard&apos;dan proje URL&apos;nizi alın</li>
+              <li>Supabase Anon Key&apos;inizi alın</li>
+              <li>Proje root&apos;unda .env dosyası oluşturun</li>
               <li>VITE_SUPABASE_URL ve VITE_SUPABASE_ANON_KEY değerlerini ekleyin</li>
             </ol>
           </div>
@@ -77,10 +77,10 @@ export function SupabaseConnectionStatus() {
             <strong>❌ Supabase Bağlantısı Başarısız</strong>
           </p>
           <p className="text-sm">{error}</p>
-          <div className="text-xs space-y-1">
+          <div className="space-y-1 text-xs">
             <p>Kontrol edilecekler:</p>
-            <ul className="list-disc list-inside">
-              <li>Supabase proje URL'si doğru mu?</li>
+            <ul className="list-inside list-disc">
+              <li>Supabase proje URL&apos;si doğru mu?</li>
               <li>Anon key doğru mu?</li>
               <li>Proje aktif mi?</li>
               <li>İnternet bağlantısı var mı?</li>

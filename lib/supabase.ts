@@ -29,9 +29,9 @@ logger.info('Supabase Configuration Debug:', {
   anonKeyLength: supabaseAnonKey?.length ?? 0,
   supabaseUrlValid: supabaseUrl?.startsWith('http'),
   importMetaEnv: {
-    VITE_SUPABASE_URL: import.meta?.env?.VITE_SUPABASE_URL || process.env.VITE_SUPABASE_URL,
+    VITE_SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL,
     VITE_SUPABASE_ANON_KEY:
-      import.meta?.env?.VITE_SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY
+      import.meta.env.VITE_SUPABASE_ANON_KEY
         ? 'SET'
         : 'NOT_SET',
   },
@@ -44,9 +44,9 @@ logger.info('Supabase Configuration Debug:', {
       ? Object.keys(import.meta.env as Record<string, any>).filter((key) => key.startsWith('VITE_'))
       : [],
   rawImportMetaEnv: {
-    VITE_SUPABASE_URL: import.meta?.env?.VITE_SUPABASE_URL || process.env.VITE_SUPABASE_URL,
+    VITE_SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL,
     VITE_SUPABASE_ANON_KEY:
-      import.meta?.env?.VITE_SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY,
+      import.meta.env.VITE_SUPABASE_ANON_KEY,
   },
 });
 

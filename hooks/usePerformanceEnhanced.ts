@@ -134,7 +134,7 @@ export function usePerformanceEnhanced(
     });
 
     // Performance warnings in development
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       if (renderTime > finalThresholds.maxRenderTime) {
         logger.warn(
           `⚡ Performance Warning: ${componentName} render time (${renderTime.toFixed(2)}ms) ` +
@@ -167,7 +167,7 @@ export function usePerformanceEnhanced(
 
     return () => {
       // Component unmount cleanup
-      if (process.env.NODE_ENV === 'development') {
+      if (import.meta.env.DEV) {
         logger.info(`📊 Performance Summary for ${componentName}:`, {
           totalRenders: renderCount.current,
           averageRenderTime: `${metrics.averageRenderTime.toFixed(2)  }ms`,
@@ -279,7 +279,7 @@ export function useOperationTimer() {
       }));
       delete timers.current[operationName];
 
-      if (process.env.NODE_ENV === 'development') {
+      if (import.meta.env.DEV) {
         logger.info(`⏱️ ${operationName}: ${duration.toFixed(2)}ms`);
       }
 

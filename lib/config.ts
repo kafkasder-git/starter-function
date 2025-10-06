@@ -22,14 +22,14 @@ export const APP_CONFIG = {
 
 // Supabase Configuration
 export const SUPABASE_CONFIG = {
-  url: (import.meta?.env?.VITE_SUPABASE_URL) || process.env.VITE_SUPABASE_URL,
-  anonKey: (import.meta?.env?.VITE_SUPABASE_ANON_KEY) || process.env.VITE_SUPABASE_ANON_KEY,
-  serviceRoleKey: (import.meta?.env?.SUPABASE_SERVICE_ROLE_KEY) || process.env.SUPABASE_SERVICE_ROLE_KEY,
+  url: import.meta.env.VITE_SUPABASE_URL,
+  anonKey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+  serviceRoleKey: import.meta.env.SUPABASE_SERVICE_ROLE_KEY,
 };
 
 // Environment check
-export const isDevelopment = (typeof import.meta !== 'undefined' && import.meta.env?.DEV) || process.env.NODE_ENV === 'development';
-export const isProduction = (typeof import.meta !== 'undefined' && import.meta.env?.PROD) || process.env.NODE_ENV === 'production';
+export const isDevelopment = import.meta.env.DEV;
+export const isProduction = import.meta.env.PROD;
 
 // Mock credentials fallback (only for development)
 export const MOCK_CREDENTIALS = isDevelopment

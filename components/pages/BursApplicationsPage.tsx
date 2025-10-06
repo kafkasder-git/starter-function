@@ -1,6 +1,6 @@
 /**
  * @fileoverview BursApplicationsPage Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -15,7 +15,9 @@ import { Avatar, AvatarFallback } from '../ui/avatar';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../ui/dialog';
 import { Input } from '../ui/input';
+import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
 interface Application {
@@ -50,7 +52,7 @@ interface ApplicationStats {
 
 /**
  * BursApplicationsPage function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -59,6 +61,19 @@ export function BursApplicationsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [priorityFilter, setPriorityFilter] = useState<string>('all');
+  const [showApplicationDialog, setShowApplicationDialog] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    applicantName: '',
+    email: '',
+    phone: '',
+    school: '',
+    program: '',
+    grade: '',
+    requestedAmount: 0,
+    familyIncome: 0,
+    gpa: 0,
+  });
 
   const applications: Application[] = useMemo(
     () => [
@@ -202,22 +217,22 @@ export function BursApplicationsPage() {
       pending: {
         label: 'Beklemede',
         variant: 'outline' as const,
-        icon: <Clock className="w-3 h-3" />,
+        icon: <Clock className="h-3 w-3" />,
       },
       approved: {
         label: 'Onaylandı',
         variant: 'default' as const,
-        icon: <Check className="w-3 h-3" />,
+        icon: <Check className="h-3 w-3" />,
       },
       rejected: {
         label: 'Reddedildi',
         variant: 'destructive' as const,
-        icon: <X className="w-3 h-3" />,
+        icon: <X className="h-3 w-3" />,
       },
       interview: {
         label: 'Görüşme',
         variant: 'secondary' as const,
-        icon: <AlertCircle className="w-3 h-3" />,
+        icon: <AlertCircle className="h-3 w-3" />,
       },
     };
 
@@ -255,7 +270,46 @@ export function BursApplicationsPage() {
   };
 
   const handleNewApplication = () => {
-    toast.success('Yeni başvuru formu açılıyor...');
+    setShowApplicationDialog(true);
+  };
+
+  const handleSubmitApplication = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!formData.applicantName || !formData.school || !formData.program) {
+      toast.error('Lütfen zorunlu alanları doldurun');
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+
+      // TODO: Integrate with actual API
+      // const result = await scholarshipService.createApplication(formData);
+
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      toast.success('Başvuru başarıyla kaydedildi!');
+      setShowApplicationDialog(false);
+
+      // Reset form
+      setFormData({
+        applicantName: '',
+        email: '',
+        phone: '',
+        school: '',
+        program: '',
+        grade: '',
+        requestedAmount: 0,
+        familyIncome: 0,
+        gpa: 0,
+      });
+    } catch {
+      toast.error('Başvuru kaydedilirken hata oluştu');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleBulkExport = () => {
@@ -263,28 +317,28 @@ export function BursApplicationsPage() {
   };
 
   return (
-    <div className="p-3 sm:p-6 lg:p-8 space-y-6 lg:space-y-8 bg-slate-50/50 min-h-full safe-area">
+    <div className="safe-area min-h-full space-y-6 bg-slate-50/50 p-3 sm:p-6 lg:space-y-8 lg:p-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1 sm:space-y-2">
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 flex items-center gap-3">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center">
-              <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+          <h1 className="flex items-center gap-3 text-2xl font-bold text-slate-800 sm:text-3xl">
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 sm:h-10 sm:w-10">
+              <FileText className="h-5 w-5 text-white sm:h-6 sm:w-6" />
             </div>
             Burs Başvuruları
           </h1>
-          <p className="text-sm sm:text-base text-slate-600">
+          <p className="text-sm text-slate-600 sm:text-base">
             Öğrenciler adına oluşturulan burs başvurularını inceleyin ve değerlendirin
           </p>
         </div>
 
         <div className="flex items-center gap-2">
           <Button onClick={handleBulkExport} variant="outline" size="sm" className="hidden sm:flex">
-            <Download className="w-4 h-4 mr-2" />
+            <Download className="mr-2 h-4 w-4" />
             Dışa Aktar
           </Button>
           <Button onClick={handleNewApplication} size="sm">
-            <Plus className="w-4 h-4 mr-2" />
+            <Plus className="mr-2 h-4 w-4" />
             Öğrenci Adına Başvuru Oluştur
           </Button>
         </div>
@@ -293,31 +347,31 @@ export function BursApplicationsPage() {
       {/* Statistics Cards */}
       <ResponsiveCardGrid cols={{ default: 2, sm: 5 }} gap="sm">
         <MobileInfoCard
-          icon={<FileText className="w-5 h-5" />}
+          icon={<FileText className="h-5 w-5" />}
           title="Toplam Başvuru"
           value={stats.total.toString()}
           color="text-blue-600"
         />
         <MobileInfoCard
-          icon={<Clock className="w-5 h-5" />}
+          icon={<Clock className="h-5 w-5" />}
           title="Beklemede"
           value={stats.pending.toString()}
           color="text-amber-600"
         />
         <MobileInfoCard
-          icon={<AlertCircle className="w-5 h-5" />}
+          icon={<AlertCircle className="h-5 w-5" />}
           title="Görüşme"
           value={stats.interview.toString()}
           color="text-purple-600"
         />
         <MobileInfoCard
-          icon={<Check className="w-5 h-5" />}
+          icon={<Check className="h-5 w-5" />}
           title="Onaylandı"
           value={stats.approved.toString()}
           color="text-green-600"
         />
         <MobileInfoCard
-          icon={<X className="w-5 h-5" />}
+          icon={<X className="h-5 w-5" />}
           title="Reddedildi"
           value={stats.rejected.toString()}
           color="text-red-600"
@@ -327,10 +381,10 @@ export function BursApplicationsPage() {
       {/* Filters */}
       <Card>
         <CardContent className="p-4 sm:p-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <div className="sm:col-span-2 lg:col-span-2">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400" />
                 <Input
                   placeholder="Başvuran, okul veya program ara..."
                   value={searchQuery}
@@ -394,7 +448,7 @@ export function BursApplicationsPage() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.05 }}
-                    className="bg-white border border-slate-200 rounded-lg p-4 space-y-3"
+                    className="space-y-3 rounded-lg border border-slate-200 bg-white p-4"
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
@@ -410,7 +464,7 @@ export function BursApplicationsPage() {
                           <span className="ml-1">{statusConfig.label}</span>
                         </Badge>
                         <span
-                          className={`text-xs px-2 py-1 rounded ${priorityConfig.bg} ${priorityConfig.color}`}
+                          className={`rounded px-2 py-1 text-xs ${priorityConfig.bg} ${priorityConfig.color}`}
                         >
                           {priorityConfig.label}
                         </span>
@@ -449,7 +503,7 @@ export function BursApplicationsPage() {
                         }}
                         className="flex-1 text-xs"
                       >
-                        <Eye className="w-3 h-3 mr-1" />
+                        <Eye className="mr-1 h-3 w-3" />
                         Detay
                       </Button>
                       {application.status === 'pending' && (
@@ -461,7 +515,7 @@ export function BursApplicationsPage() {
                             }}
                             className="text-xs"
                           >
-                            <Check className="w-3 h-3" />
+                            <Check className="h-3 w-3" />
                           </Button>
                           <Button
                             size="sm"
@@ -471,7 +525,7 @@ export function BursApplicationsPage() {
                             }}
                             className="text-xs"
                           >
-                            <X className="w-3 h-3" />
+                            <X className="h-3 w-3" />
                           </Button>
                         </>
                       )}
@@ -485,14 +539,14 @@ export function BursApplicationsPage() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-slate-200">
-                    <th className="text-left py-3 px-4 font-medium text-slate-700">Başvuran</th>
-                    <th className="text-left py-3 px-4 font-medium text-slate-700">Okul/Program</th>
-                    <th className="text-left py-3 px-4 font-medium text-slate-700">Burs Miktarı</th>
-                    <th className="text-left py-3 px-4 font-medium text-slate-700">GPA</th>
-                    <th className="text-left py-3 px-4 font-medium text-slate-700">Belgeler</th>
-                    <th className="text-left py-3 px-4 font-medium text-slate-700">Öncelik</th>
-                    <th className="text-left py-3 px-4 font-medium text-slate-700">Durum</th>
-                    <th className="text-left py-3 px-4 font-medium text-slate-700">İşlemler</th>
+                    <th className="px-4 py-3 text-left font-medium text-slate-700">Başvuran</th>
+                    <th className="px-4 py-3 text-left font-medium text-slate-700">Okul/Program</th>
+                    <th className="px-4 py-3 text-left font-medium text-slate-700">Burs Miktarı</th>
+                    <th className="px-4 py-3 text-left font-medium text-slate-700">GPA</th>
+                    <th className="px-4 py-3 text-left font-medium text-slate-700">Belgeler</th>
+                    <th className="px-4 py-3 text-left font-medium text-slate-700">Öncelik</th>
+                    <th className="px-4 py-3 text-left font-medium text-slate-700">Durum</th>
+                    <th className="px-4 py-3 text-left font-medium text-slate-700">İşlemler</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -507,11 +561,11 @@ export function BursApplicationsPage() {
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: index * 0.05 }}
-                        className="border-b border-slate-100 hover:bg-slate-50 transition-colors"
+                        className="border-b border-slate-100 transition-colors hover:bg-slate-50"
                       >
-                        <td className="py-4 px-4">
+                        <td className="px-4 py-4">
                           <div className="flex items-center gap-3">
-                            <Avatar className="w-10 h-10">
+                            <Avatar className="h-10 w-10">
                               <AvatarFallback className="bg-gradient-to-br from-blue-600 to-indigo-700 text-white">
                                 {application.applicantName
                                   .split(' ')
@@ -527,18 +581,18 @@ export function BursApplicationsPage() {
                             </div>
                           </div>
                         </td>
-                        <td className="py-4 px-4">
+                        <td className="px-4 py-4">
                           <div>
                             <div className="font-medium text-slate-900">{application.program}</div>
                             <div className="text-sm text-slate-500">{application.school}</div>
                           </div>
                         </td>
-                        <td className="py-4 px-4">
+                        <td className="px-4 py-4">
                           <span className="font-semibold text-green-600">
                             ₺{application.requestedAmount.toLocaleString()}
                           </span>
                         </td>
-                        <td className="py-4 px-4">
+                        <td className="px-4 py-4">
                           <span
                             className={`font-medium ${
                               application.gpa >= 3.5
@@ -551,9 +605,9 @@ export function BursApplicationsPage() {
                             {application.gpa.toFixed(2)}
                           </span>
                         </td>
-                        <td className="py-4 px-4">
+                        <td className="px-4 py-4">
                           <div className="flex items-center gap-2">
-                            <div className="w-12 h-2 bg-slate-200 rounded-full overflow-hidden">
+                            <div className="h-2 w-12 overflow-hidden rounded-full bg-slate-200">
                               <div
                                 className="h-full bg-green-500 transition-all duration-300"
                                 data-progress-width={`${docProgress.percentage}%`}
@@ -564,20 +618,20 @@ export function BursApplicationsPage() {
                             </span>
                           </div>
                         </td>
-                        <td className="py-4 px-4">
+                        <td className="px-4 py-4">
                           <span
-                            className={`text-xs px-2 py-1 rounded font-medium ${priorityConfig.bg} ${priorityConfig.color}`}
+                            className={`rounded px-2 py-1 text-xs font-medium ${priorityConfig.bg} ${priorityConfig.color}`}
                           >
                             {priorityConfig.label}
                           </span>
                         </td>
-                        <td className="py-4 px-4">
+                        <td className="px-4 py-4">
                           <Badge variant={statusConfig.variant} className="text-xs">
                             {statusConfig.icon}
                             <span className="ml-1">{statusConfig.label}</span>
                           </Badge>
                         </td>
-                        <td className="py-4 px-4">
+                        <td className="px-4 py-4">
                           <div className="flex items-center gap-1">
                             <Button
                               variant="ghost"
@@ -586,7 +640,7 @@ export function BursApplicationsPage() {
                                 handleViewApplication(application.id);
                               }}
                             >
-                              <Eye className="w-4 h-4" />
+                              <Eye className="h-4 w-4" />
                             </Button>
                             {application.status === 'pending' && (
                               <>
@@ -596,9 +650,9 @@ export function BursApplicationsPage() {
                                   onClick={() => {
                                     handleApproveApplication(application.id);
                                   }}
-                                  className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                                  className="text-green-600 hover:bg-green-50 hover:text-green-700"
                                 >
-                                  <Check className="w-4 h-4" />
+                                  <Check className="h-4 w-4" />
                                 </Button>
                                 <Button
                                   variant="ghost"
@@ -606,9 +660,9 @@ export function BursApplicationsPage() {
                                   onClick={() => {
                                     handleRejectApplication(application.id);
                                   }}
-                                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                  className="text-red-600 hover:bg-red-50 hover:text-red-700"
                                 >
-                                  <X className="w-4 h-4" />
+                                  <X className="h-4 w-4" />
                                 </Button>
                               </>
                             )}
@@ -623,6 +677,162 @@ export function BursApplicationsPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* Application Dialog */}
+      <Dialog open={showApplicationDialog} onOpenChange={setShowApplicationDialog}>
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Plus className="h-5 w-5" />
+              Yeni Burs Başvurusu
+            </DialogTitle>
+            <DialogDescription>
+              Öğrenci adına burs başvurusu oluşturun. Zorunlu alanları (*) doldurmanız gereklidir.
+            </DialogDescription>
+          </DialogHeader>
+
+          <form onSubmit={handleSubmitApplication} className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="applicantName">Öğrenci Adı *</Label>
+              <Input
+                id="applicantName"
+                value={formData.applicantName}
+                onChange={(e) => {
+                  setFormData({ ...formData, applicantName: e.target.value });
+                }}
+                placeholder="Öğrencinin tam adı"
+                required
+              />
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="email">E-posta</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => {
+                    setFormData({ ...formData, email: e.target.value });
+                  }}
+                  placeholder="ogrenci@email.com"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone">Telefon</Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  value={formData.phone}
+                  onChange={(e) => {
+                    setFormData({ ...formData, phone: e.target.value });
+                  }}
+                  placeholder="0555 123 45 67"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="school">Okul/Üniversite *</Label>
+              <Input
+                id="school"
+                value={formData.school}
+                onChange={(e) => {
+                  setFormData({ ...formData, school: e.target.value });
+                }}
+                placeholder="Örn: İstanbul Teknik Üniversitesi"
+                required
+              />
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="program">Program/Bölüm *</Label>
+                <Input
+                  id="program"
+                  value={formData.program}
+                  onChange={(e) => {
+                    setFormData({ ...formData, program: e.target.value });
+                  }}
+                  placeholder="Örn: Bilgisayar Mühendisliği"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="grade">Sınıf</Label>
+                <Input
+                  id="grade"
+                  value={formData.grade}
+                  onChange={(e) => {
+                    setFormData({ ...formData, grade: e.target.value });
+                  }}
+                  placeholder="Örn: 2. Sınıf"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              <div className="space-y-2">
+                <Label htmlFor="requestedAmount">Talep Edilen Burs (TL)</Label>
+                <Input
+                  id="requestedAmount"
+                  type="number"
+                  value={formData.requestedAmount || ''}
+                  onChange={(e) => {
+                    setFormData({ ...formData, requestedAmount: parseFloat(e.target.value) || 0 });
+                  }}
+                  placeholder="0"
+                  min="0"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="familyIncome">Aile Geliri (TL)</Label>
+                <Input
+                  id="familyIncome"
+                  type="number"
+                  value={formData.familyIncome || ''}
+                  onChange={(e) => {
+                    setFormData({ ...formData, familyIncome: parseFloat(e.target.value) || 0 });
+                  }}
+                  placeholder="0"
+                  min="0"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="gpa">Not Ortalaması (GPA)</Label>
+                <Input
+                  id="gpa"
+                  type="number"
+                  value={formData.gpa || ''}
+                  onChange={(e) => {
+                    setFormData({ ...formData, gpa: parseFloat(e.target.value) || 0 });
+                  }}
+                  placeholder="0.00"
+                  min="0"
+                  max="4"
+                  step="0.01"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 border-t pt-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setShowApplicationDialog(false);
+                }}
+                disabled={isSubmitting}
+              >
+                İptal
+              </Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? 'Kaydediliyor...' : 'Başvuruyu Kaydet'}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

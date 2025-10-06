@@ -6,24 +6,21 @@
  */
 
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Badge } from '../ui/badge';
 import { Avatar, AvatarFallback } from '../ui/avatar';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../ui/dialog';
+import { Label } from '../ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { Textarea } from '../ui/textarea';
 import { Send, Search, MessageCircle, UserPlus, Circle } from 'lucide-react';
 
 // Simple className utility function
 const cn = (...classes: (string | undefined | null | boolean)[]) => {
   return classes.filter(Boolean).join(' ');
-};
-
-// Simple toast function
-const toast = {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  success: (_message: string): void => {
-    // Mock toast function - does nothing
-  },
 };
 
 interface User {
@@ -85,6 +82,13 @@ export function InternalMessagingPage() {
   const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
   const [newMessage, setNewMessage] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [showNewChatDialog, setShowNewChatDialog] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [newChatData, setNewChatData] = useState({
+    recipientId: '',
+    subject: '',
+    message: '',
+  });
 
   const handleSendMessage = () => {
     if (!newMessage.trim()) return;
@@ -99,6 +103,39 @@ export function InternalMessagingPage() {
     }
   };
 
+  const handleStartNewChat = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!newChatData.recipientId || !newChatData.message) {
+      toast.error('Lütfen alıcı ve mesaj alanlarını doldurun');
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+
+      // TODO: Integrate with actual API
+      // const result = await messagingService.startConversation(newChatData);
+
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      toast.success('Yeni sohbet başlatıldı!');
+      setShowNewChatDialog(false);
+
+      // Reset form
+      setNewChatData({
+        recipientId: '',
+        subject: '',
+        message: '',
+      });
+    } catch {
+      toast.error('Sohbet başlatılırken hata oluştu');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="h-full bg-gray-50/50">
       <div className="container mx-auto h-full max-w-6xl p-4 sm:p-6">
@@ -110,7 +147,13 @@ export function InternalMessagingPage() {
             </p>
           </div>
 
-          <Button className="gap-2" size="sm">
+          <Button
+            className="gap-2"
+            size="sm"
+            onClick={() => {
+              setShowNewChatDialog(true);
+            }}
+          >
             <UserPlus className="h-4 w-4" />
             <span className="hidden sm:inline">Yeni Sohbet</span>
           </Button>
@@ -292,7 +335,13 @@ export function InternalMessagingPage() {
                   <p className="text-muted-foreground mb-4 text-sm">
                     Bir sohbet seçin veya yeni sohbet başlatın
                   </p>
-                  <Button className="gap-2" size="sm">
+                  <Button
+                    className="gap-2"
+                    size="sm"
+                    onClick={() => {
+                      setShowNewChatDialog(true);
+                    }}
+                  >
                     <UserPlus className="h-4 w-4" />
                     Yeni Sohbet
                   </Button>
@@ -301,6 +350,90 @@ export function InternalMessagingPage() {
             )}
           </div>
         </div>
+
+        {/* New Chat Dialog */}
+        <Dialog open={showNewChatDialog} onOpenChange={setShowNewChatDialog}>
+          <DialogContent className="sm:max-w-[500px]">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <UserPlus className="h-5 w-5" />
+                Yeni Sohbet Başlat
+              </DialogTitle>
+              <DialogDescription>Bir ekip üyesiyle yeni sohbet başlatın.</DialogDescription>
+            </DialogHeader>
+
+            <form onSubmit={handleStartNewChat} className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="recipientId">Alıcı *</Label>
+                <Select
+                  value={newChatData.recipientId}
+                  onValueChange={(value) => {
+                    setNewChatData({ ...newChatData, recipientId: value });
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Ekip üyesi seçin" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {users.map((user) => (
+                      <SelectItem key={user.id} value={user.id}>
+                        <div className="flex items-center gap-2">
+                          <span>{user.name}</span>
+                          <span className="text-muted-foreground text-xs">({user.department})</span>
+                          {user.isOnline && (
+                            <Circle className="h-2 w-2 fill-green-500 text-green-500" />
+                          )}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="subject">Konu</Label>
+                <Input
+                  id="subject"
+                  value={newChatData.subject}
+                  onChange={(e) => {
+                    setNewChatData({ ...newChatData, subject: e.target.value });
+                  }}
+                  placeholder="Sohbet konusu (opsiyonel)"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="message">İlk Mesaj *</Label>
+                <Textarea
+                  id="message"
+                  value={newChatData.message}
+                  onChange={(e) => {
+                    setNewChatData({ ...newChatData, message: e.target.value });
+                  }}
+                  placeholder="Mesajınızı yazın..."
+                  rows={4}
+                  required
+                />
+              </div>
+
+              <div className="flex justify-end gap-2 border-t pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    setShowNewChatDialog(false);
+                  }}
+                  disabled={isSubmitting}
+                >
+                  İptal
+                </Button>
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? 'Gönderiliyor...' : 'Sohbet Başlat'}
+                </Button>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
