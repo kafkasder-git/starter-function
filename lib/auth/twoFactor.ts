@@ -32,9 +32,23 @@ export function generateQRCodeURL(
 }
 
 /**
- * Generate TOTP code (for testing/backup)
+ * Simple hash function (replace with proper HMAC-SHA1 in production)
  */
-function generateTOTP(secret: string, window: number = 0): string {
+function simpleHash(str: string): number {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash;
+  }
+  return Math.abs(hash);
+}
+
+/**
+ * Generate TOTP code (for testing/backup)
+ * @internal Exported for testing purposes
+ */
+export function generateTOTP(secret: string, window: number = 0): string {
   const epoch = Math.floor(Date.now() / 1000);
   const time = Math.floor(epoch / 30) + window;
   
@@ -46,16 +60,14 @@ function generateTOTP(secret: string, window: number = 0): string {
 }
 
 /**
- * Simple hash function (replace with proper HMAC-SHA1 in production)
+ * Generate TOTP code for specific timestamp (for testing)
+ * @internal Exported for testing purposes
  */
-function simpleHash(str: string): number {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash = hash & hash;
-  }
-  return Math.abs(hash);
+export function computeTOTPForTest(secret: string, timestamp: number): string {
+  const time = Math.floor(timestamp / 1000 / 30);
+  const hash = simpleHash(secret + time.toString());
+  const code = (hash % 1000000).toString().padStart(6, '0');
+  return code;
 }
 
 /**

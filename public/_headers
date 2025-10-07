@@ -1,5 +1,5 @@
-# Security Headers for Netlify
-# https://docs.netlify.com/routing/headers/
+# Security Headers for Cloudflare Pages
+# https://developers.cloudflare.com/pages/platform/headers/
 
 /*
   # Security Headers
@@ -15,24 +15,48 @@
   # HSTS (HTTP Strict Transport Security)
   Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
   
-  # Feature Policy
-  Feature-Policy: geolocation 'none'; microphone 'none'; camera 'none'
+  # Cross-Origin Policies
+  Cross-Origin-Embedder-Policy: require-corp
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Resource-Policy: same-origin
 
 # Cache static assets
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
+  X-Content-Type-Options: nosniff
+
+# Cache JavaScript files
+/assets/js/*
+  Cache-Control: public, max-age=31536000, immutable
+  Content-Type: application/javascript
+
+# Cache CSS files
+/assets/css/*
+  Cache-Control: public, max-age=31536000, immutable
+  Content-Type: text/css
 
 # Cache images
-/images/*
+/assets/images/*
   Cache-Control: public, max-age=31536000, immutable
+
+# Cache fonts
+/assets/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+  Access-Control-Allow-Origin: *
 
 # Don't cache service worker
 /sw.js
-  Cache-Control: no-cache, no-store, must-revalidate
+  Cache-Control: public, max-age=0, must-revalidate
+  Service-Worker-Allowed: /
 
 # Don't cache manifest
 /manifest.webmanifest
-  Cache-Control: no-cache
+  Cache-Control: public, max-age=86400
+  Content-Type: application/manifest+json
+
+# Don't cache HTML
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
 
 # API routes (if any)
 /api/*
