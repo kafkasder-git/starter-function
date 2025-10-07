@@ -108,8 +108,16 @@ export default defineConfig({
   resolve: {
     extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
     alias: {
+      // Comment 5: Explicit aliases matching tsconfig paths
       '@': path.resolve(__dirname, '.'),
-      // React alias'larını geri ekle ama daha güvenli şekilde
+      '@components': path.resolve(__dirname, './components'),
+      '@lib': path.resolve(__dirname, './lib'),
+      '@services': path.resolve(__dirname, './services'),
+      '@hooks': path.resolve(__dirname, './hooks'),
+      '@stores': path.resolve(__dirname, './stores'),
+      '@types': path.resolve(__dirname, './types'),
+      '@utils': path.resolve(__dirname, './utils'),
+      // React deduplication
       react: path.resolve(__dirname, 'node_modules/react'),
       'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
     },

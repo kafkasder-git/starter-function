@@ -1,18 +1,22 @@
 {
+  "extends": "./tsconfig.json",
   "compilerOptions": {
-    "target": "ES2017",
     "composite": true,
+    "tsBuildInfoFile": "node_modules/.tmp/tsconfig.node.tsbuildinfo",
     "skipLibCheck": true,
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "isolatedModules": true,
-    "types": ["node", "vite/client"]
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "types": ["node"],
+    /* Node tooling files can be more lenient */
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "verbatimModuleSyntax": false
   },
   "include": [
     "vite.config.ts",
     "vitest.config.ts",
-    "lib/cursor-optimization-essentials.ts"
+    "playwright.config.ts",
+    "*.config.ts",
+    "*.config.js"
   ]
 }

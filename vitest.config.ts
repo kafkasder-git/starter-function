@@ -38,6 +38,13 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, '.'),
+      '@components': path.resolve(__dirname, './components'),
+      '@lib': path.resolve(__dirname, './lib'),
+      '@services': path.resolve(__dirname, './services'),
+      '@hooks': path.resolve(__dirname, './hooks'),
+      '@stores': path.resolve(__dirname, './stores'),
+      '@types': path.resolve(__dirname, './types'),
+      '@utils': path.resolve(__dirname, './utils'),
     },
   },
 });

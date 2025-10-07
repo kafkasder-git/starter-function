@@ -1,0 +1,120 @@
+SECURITY AUDIT REPORT
+Generated: Sal 07 Eki 2025 20:21:50 +03
+Project: Kafkasder Management System
+Version: 1.0.0
+
+============================================
+
+[1/8] Running npm audit...
+
+1. NPM AUDIT RESULTS
+-------------------
+✗ Vulnerabilities detected
+scripts/security-audit.sh: satır 63: npm: command not found
+  Run 'npm audit fix' to fix automatically
+
+[2/8] Checking outdated dependencies...
+2. OUTDATED DEPENDENCIES
+------------------------
+scripts/security-audit.sh: satır 76: npm: command not found
+✓ Dependency check complete
+
+[3/8] Checking environment variables...
+3. ENVIRONMENT VARIABLES
+------------------------
+✓ .env file not tracked in git
+PASS: .env file not tracked
+  Scanning for hardcoded secrets...
+⚠ Potential hardcoded secrets found
+WARNING: Potential hardcoded secrets detected
+./components/auth/LoginPage.tsx:    password: '',
+./components/auth/LoginPage.tsx:  const [showPassword, setShowPassword] = useState(false);
+./components/auth/LoginPage.tsx:    if (!credentials.password) {
+./components/auth/LoginPage.tsx:      errors.password = 'Şifre gerekli';
+./components/auth/LoginPage.tsx:    } else if (credentials.password.length < 6) {
+
+[4/8] Checking security headers configuration...
+4. SECURITY HEADERS
+-------------------
+✓ Found security headers in public/_headers
+PASS: Security headers configured in public/_headers
+✓ Found security headers in netlify.toml
+PASS: Security headers configured in netlify.toml
+✓ Found security headers in nginx.conf
+PASS: Security headers configured in nginx.conf
+
+[5/8] Checking HTTPS configuration...
+5. HTTPS CONFIGURATION
+----------------------
+⚠ HTTP URLs found (should use HTTPS)
+WARNING: HTTP URLs detected
+
+[6/8] Checking authentication implementation...
+6. AUTHENTICATION
+-----------------
+✓ Supabase authentication configured
+PASS: Authentication system in place
+
+[7/8] Checking input validation...
+7. INPUT VALIDATION
+-------------------
+✓ Input validation/sanitization found
+PASS: Input validation implemented
+
+[8/8] Checking file permissions...
+8. FILE PERMISSIONS
+-------------------
+✓ File permissions OK
+PASS: No overly permissive files
+
+
+============================================
+SUMMARY
+============================================
+
+
+============================================
+   AUDIT SUMMARY
+============================================
+✓ Security audit passed!
+  No critical issues found
+Status: PASS
+Critical Issues: 0
+
+Full report saved to: security-audit-report-20251007_202150.txt
+
+Full report saved to: security-audit-report-20251007_202150.txt
+
+
+RECOMMENDATIONS
+===============
+
+1. Regular Updates
+   - Run 'npm audit' weekly
+   - Update dependencies monthly
+   - Monitor security advisories
+
+2. Environment Security
+   - Never commit .env files
+   - Use environment-specific configs
+   - Rotate secrets regularly
+
+3. Code Security
+   - Use input validation everywhere
+   - Sanitize user inputs
+   - Implement rate limiting
+   - Use HTTPS only
+
+4. Monitoring
+   - Enable error tracking (Sentry)
+   - Monitor failed login attempts
+   - Track API usage
+   - Set up alerts
+
+5. Access Control
+   - Implement proper RBAC
+   - Use principle of least privilege
+   - Regular access reviews
+   - Strong password policies
+
+Security audit complete!
