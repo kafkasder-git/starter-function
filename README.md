@@ -185,24 +185,33 @@ VITE_APP_VERSION=1.0.0
 - **Bundle Size:** Optimize edildi
 - **Lighthouse Score:** 90+
 - **Test Coverage:** 80%+
+- **Core Web Vitals:** Optimized
+- **API Response Time:** < 200ms
 
 ### Optimizasyonlar
 
 - React memo, useMemo, useCallback
-- Lazy loading
-- Code splitting
+- Lazy loading ve code splitting
 - Image optimization
 - Bundle analysis
+- Service Worker caching
+- Rate limiting
+- Database query optimization
+- Virtual scrolling for large lists
 
 ## 🔒 Güvenlik
 
 ### Uygulanan Güvenlik Önlemleri
 
-- **XSS Protection** - Input sanitization
+- **XSS Protection** - Input sanitization with DOMPurify
 - **SQL Injection Protection** - Parameterized queries
 - **CSRF Protection** - Token validation
-- **Rate Limiting** - Request throttling
-- **Input Validation** - Client ve server-side
+- **Rate Limiting** - Request throttling (100 req/min)
+- **Input Validation** - Client ve server-side with Zod
+- **2FA/MFA** - Two-factor authentication support
+- **Security Headers** - CSP, HSTS, X-Frame-Options
+- **Row Level Security** - Database-level access control
+- **Encrypted Storage** - Sensitive data encryption
 
 ### Güvenlik Kontrolleri
 
@@ -212,6 +221,12 @@ npm audit
 
 # Dependency check
 npm run security:check
+
+# Run security audit script
+bash scripts/security-audit.sh
+
+# Check for vulnerabilities
+npm run deps:audit
 ```
 
 ## 🧪 Testing
