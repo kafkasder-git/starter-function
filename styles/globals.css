@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -166,14 +166,17 @@
 
 /* Safari iOS < 15.4 fallback - moved @layer content to regular CSS */
 * {
-  @apply border-border outline-ring/50;
+  border-color: var(--border);
+  outline-color: var(--ring);
+  outline-offset: 2px;
   transition-property: color, background-color, border-color;
   transition-duration: 0.2s;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 body {
-  @apply bg-background text-foreground;
+  background-color: var(--background);
+  color: var(--foreground);
 }
 
 /* Dark mode smooth transitions */
@@ -438,7 +441,7 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-  
+
   /* Disable smooth scrolling for reduced motion */
   @supports (scroll-behavior: auto) {
     * {
@@ -446,7 +449,6 @@ body {
     }
   }
 }
-
 
 /* High contrast support */
 @media (prefers-contrast: high) {
@@ -525,7 +527,7 @@ body {
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
       }
-      
+
       /* Disable smooth scrolling for reduced motion */
       @supports (scroll-behavior: auto) {
         * {
@@ -533,7 +535,6 @@ body {
         }
       }
     }
-
 
     /* High contrast support */
     @media (prefers-contrast: high) {
@@ -680,32 +681,48 @@ body {
 }
 
 .professional-card {
-  @apply bg-white rounded-lg shadow-md border border-gray-100/50;
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(243, 244, 246, 0.5);
 }
 
 .dark .professional-card {
-  @apply bg-slate-800 border-slate-700/50;
+  background-color: #1e293b;
+  border-color: rgba(51, 65, 85, 0.5);
 }
 
 .status-success {
-  @apply bg-emerald-50 text-emerald-700 border-emerald-200;
+  background-color: #ecfdf5;
+  color: #047857;
+  border-color: #a7f3d0;
 }
 
 .status-warning {
-  @apply bg-amber-50 text-amber-700 border-amber-200;
+  background-color: #fffbeb;
+  color: #b45309;
+  border-color: #fde68a;
 }
 
 .status-error {
-  @apply bg-red-50 text-red-700 border-red-200;
+  background-color: #fef2f2;
+  color: #b91c1c;
+  border-color: #fecaca;
 }
 
 .status-info {
-  @apply bg-blue-50 text-blue-700 border-blue-200;
+  background-color: #eff6ff;
+  color: #1d4ed8;
+  border-color: #bfdbfe;
 }
 
 /* Desktop focus states */
-.focus-desktop {
-  @apply focus:outline-none focus:ring-2 focus:ring-primary/20 focus:ring-offset-2;
+.focus-desktop:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+  outline-offset: 2px;
 }
 
 .micro-interaction {
@@ -762,65 +779,127 @@ body {
 }
 
 /* Enhanced focus states for corporate design */
-.focus-corporate {
-  @apply focus:outline-none focus:ring-2 focus:ring-primary/30 focus:ring-offset-2 focus:ring-offset-white;
+.focus-corporate:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3);
+  outline-offset: 2px;
 }
 
 /* Modern form styling */
 .modern-form-card {
-  @apply bg-white rounded-xl border border-border/50 shadow-sm p-6;
+  background-color: white;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(226, 232, 240, 0.5);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
 }
 
 .dark .modern-form-card {
-  @apply bg-slate-800 border-slate-700/50;
+  background-color: #1e293b;
+  border-color: rgba(51, 65, 85, 0.5);
 }
 
 .modern-form-grid {
-  @apply grid grid-cols-12 gap-4;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 1rem;
 }
 
 .modern-input-group {
-  @apply space-y-1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
 .modern-label {
-  @apply text-xs font-medium text-muted-foreground;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--muted-foreground);
 }
 
 .modern-compact-input {
-  @apply h-9 text-sm;
+  height: 2.25rem;
+  font-size: 0.875rem;
 }
 
 /* Compact checkbox styling for health conditions */
 .health-conditions-grid {
-  @apply grid grid-cols-2 md:grid-cols-3 gap-y-2 gap-x-6 max-h-80 overflow-y-auto border rounded-lg p-4 bg-muted/30;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem 1.5rem;
+  max-height: 20rem;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  background-color: rgba(247, 250, 252, 0.3);
+}
+
+@media (min-width: 768px) {
+  .health-conditions-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 .dark .health-conditions-grid {
-  @apply bg-slate-700/30 border-slate-600;
+  background-color: rgba(51, 65, 85, 0.3);
+  border-color: #475569;
 }
 
 /* Connected records sidebar styling */
 .connected-records-grid {
-  @apply grid grid-cols-2 gap-2;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
 }
 
 .connected-record-button {
-  @apply h-auto p-3 text-left justify-start text-xs hover:bg-primary/5 transition-colors;
+  height: auto;
+  padding: 0.625rem 0.75rem;
+  transition: background-color 0.2s;
+  font-size: 9px !important;
+  line-height: 1.3 !important;
+  font-weight: 400;
+  text-align: center;
+  white-space: pre-line;
+  word-break: keep-all;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.connected-record-button:hover {
+  background-color: rgba(37, 99, 235, 0.05);
 }
 
 /* Inline link styling */
 .inline-action-link {
-  @apply text-xs text-primary underline hover:text-primary/80 cursor-pointer;
+  font-size: 0.75rem;
+  color: var(--primary);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.inline-action-link:hover {
+  color: rgba(37, 99, 235, 0.8);
 }
 
 /* Photo upload area */
 .photo-upload-area {
-  @apply aspect-[3/4] w-full rounded-lg border-2 border-dashed border-muted-foreground/30 bg-muted/30 flex items-center justify-center;
+  aspect-ratio: 3/4;
+  width: 100%;
+  border-radius: 0.5rem;
+  border: 2px dashed rgba(74, 85, 104, 0.3);
+  background-color: rgba(247, 250, 252, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .dark .photo-upload-area {
-  @apply border-slate-600 bg-slate-700/30;
+  border-color: #475569;
+  background-color: rgba(51, 65, 85, 0.3);
 }
 
 /* All corporate button styles should be used as inline Tailwind classes */
@@ -852,23 +931,53 @@ body {
   transition: width 0.3s ease;
 }
 
-.progress-bar-25 { width: 25%; }
-.progress-bar-50 { width: 50%; }
-.progress-bar-75 { width: 75%; }
-.progress-bar-100 { width: 100%; }
+.progress-bar-25 {
+  width: 25%;
+}
+.progress-bar-50 {
+  width: 50%;
+}
+.progress-bar-75 {
+  width: 75%;
+}
+.progress-bar-100 {
+  width: 100%;
+}
 
 /* Animation delay classes for sidebar items */
-.animate-delay-0 { animation-delay: 0ms; }
-.animate-delay-50 { animation-delay: 50ms; }
-.animate-delay-100 { animation-delay: 100ms; }
-.animate-delay-150 { animation-delay: 150ms; }
-.animate-delay-200 { animation-delay: 200ms; }
-.animate-delay-250 { animation-delay: 250ms; }
-.animate-delay-300 { animation-delay: 300ms; }
-.animate-delay-350 { animation-delay: 350ms; }
-.animate-delay-400 { animation-delay: 400ms; }
-.animate-delay-450 { animation-delay: 450ms; }
-.animate-delay-500 { animation-delay: 500ms; }
+.animate-delay-0 {
+  animation-delay: 0ms;
+}
+.animate-delay-50 {
+  animation-delay: 50ms;
+}
+.animate-delay-100 {
+  animation-delay: 100ms;
+}
+.animate-delay-150 {
+  animation-delay: 150ms;
+}
+.animate-delay-200 {
+  animation-delay: 200ms;
+}
+.animate-delay-250 {
+  animation-delay: 250ms;
+}
+.animate-delay-300 {
+  animation-delay: 300ms;
+}
+.animate-delay-350 {
+  animation-delay: 350ms;
+}
+.animate-delay-400 {
+  animation-delay: 400ms;
+}
+.animate-delay-450 {
+  animation-delay: 450ms;
+}
+.animate-delay-500 {
+  animation-delay: 500ms;
+}
 
 .animate-fill-both {
   animation-fill-mode: both;
@@ -940,32 +1049,32 @@ body {
     }
 
     .professional-card {
-      @apply bg-white rounded-lg shadow-md border border-gray-100/50;
+      @apply rounded-lg border border-gray-100/50 bg-white shadow-md;
     }
 
     .dark .professional-card {
-      @apply bg-slate-800 border-slate-700/50;
+      @apply border-slate-700/50 bg-slate-800;
     }
 
     .status-success {
-      @apply bg-emerald-50 text-emerald-700 border-emerald-200;
+      @apply border-emerald-200 bg-emerald-50 text-emerald-700;
     }
 
     .status-warning {
-      @apply bg-amber-50 text-amber-700 border-amber-200;
+      @apply border-amber-200 bg-amber-50 text-amber-700;
     }
 
     .status-error {
-      @apply bg-red-50 text-red-700 border-red-200;
+      @apply border-red-200 bg-red-50 text-red-700;
     }
 
     .status-info {
-      @apply bg-blue-50 text-blue-700 border-blue-200;
+      @apply border-blue-200 bg-blue-50 text-blue-700;
     }
 
     /* Desktop focus states */
     .focus-desktop {
-      @apply focus:outline-none focus:ring-2 focus:ring-primary/20 focus:ring-offset-2;
+      @apply focus:ring-primary/20 focus:ring-2 focus:ring-offset-2 focus:outline-none;
     }
 
     .micro-interaction {
@@ -1023,16 +1132,16 @@ body {
 
     /* Enhanced focus states for corporate design */
     .focus-corporate {
-      @apply focus:outline-none focus:ring-2 focus:ring-primary/30 focus:ring-offset-2 focus:ring-offset-white;
+      @apply focus:ring-primary/30 focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:outline-none;
     }
 
     /* Modern form styling */
     .modern-form-card {
-      @apply bg-white rounded-xl border border-border/50 shadow-sm p-6;
+      @apply border-border/50 rounded-xl border bg-white p-6 shadow-sm;
     }
 
     .dark .modern-form-card {
-      @apply bg-slate-800 border-slate-700/50;
+      @apply border-slate-700/50 bg-slate-800;
     }
 
     .modern-form-grid {
@@ -1044,7 +1153,7 @@ body {
     }
 
     .modern-label {
-      @apply text-xs font-medium text-muted-foreground;
+      @apply text-muted-foreground text-xs font-medium;
     }
 
     .modern-compact-input {
@@ -1053,30 +1162,40 @@ body {
 
     /* Compact checkbox styling for health conditions */
     .health-conditions-grid {
-      @apply grid grid-cols-2 md:grid-cols-3 gap-y-2 gap-x-6 max-h-80 overflow-y-auto border rounded-lg p-4 bg-muted/30;
+      @apply bg-muted/30 grid max-h-80 grid-cols-2 gap-x-6 gap-y-2 overflow-y-auto rounded-lg border p-4 md:grid-cols-3;
     }
 
     .dark .health-conditions-grid {
-      @apply bg-slate-700/30 border-slate-600;
+      @apply border-slate-600 bg-slate-700/30;
     }
 
     /* Connected records sidebar styling */
     .connected-records-grid {
-      @apply grid grid-cols-2 gap-2;
+      @apply grid grid-cols-3 gap-2;
     }
 
     .connected-record-button {
-      @apply h-auto p-3 text-left justify-start text-xs hover:bg-primary/5 transition-colors;
+      @apply hover:bg-primary/5 h-auto px-3 py-2.5 transition-colors;
+      font-size: 9px !important;
+      line-height: 1.3 !important;
+      font-weight: 400;
+      text-align: center;
+      white-space: pre-line;
+      word-break: keep-all;
+      min-height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     /* Inline link styling */
     .inline-action-link {
-      @apply text-xs text-primary underline hover:text-primary/80 cursor-pointer;
+      @apply text-primary hover:text-primary/80 cursor-pointer text-xs underline;
     }
 
     /* Photo upload area */
     .photo-upload-area {
-      @apply aspect-[3/4] w-full rounded-lg border-2 border-dashed border-muted-foreground/30 bg-muted/30 flex items-center justify-center;
+      @apply border-muted-foreground/30 bg-muted/30 flex aspect-[3/4] w-full items-center justify-center rounded-lg border-2 border-dashed;
     }
 
     .dark .photo-upload-area {
@@ -1112,23 +1231,53 @@ body {
       transition: width 0.3s ease;
     }
 
-    .progress-bar-25 { width: 25%; }
-    .progress-bar-50 { width: 50%; }
-    .progress-bar-75 { width: 75%; }
-    .progress-bar-100 { width: 100%; }
+    .progress-bar-25 {
+      width: 25%;
+    }
+    .progress-bar-50 {
+      width: 50%;
+    }
+    .progress-bar-75 {
+      width: 75%;
+    }
+    .progress-bar-100 {
+      width: 100%;
+    }
 
     /* Animation delay classes for sidebar items */
-    .animate-delay-0 { animation-delay: 0ms; }
-    .animate-delay-50 { animation-delay: 50ms; }
-    .animate-delay-100 { animation-delay: 100ms; }
-    .animate-delay-150 { animation-delay: 150ms; }
-    .animate-delay-200 { animation-delay: 200ms; }
-    .animate-delay-250 { animation-delay: 250ms; }
-    .animate-delay-300 { animation-delay: 300ms; }
-    .animate-delay-350 { animation-delay: 350ms; }
-    .animate-delay-400 { animation-delay: 400ms; }
-    .animate-delay-450 { animation-delay: 450ms; }
-    .animate-delay-500 { animation-delay: 500ms; }
+    .animate-delay-0 {
+      animation-delay: 0ms;
+    }
+    .animate-delay-50 {
+      animation-delay: 50ms;
+    }
+    .animate-delay-100 {
+      animation-delay: 100ms;
+    }
+    .animate-delay-150 {
+      animation-delay: 150ms;
+    }
+    .animate-delay-200 {
+      animation-delay: 200ms;
+    }
+    .animate-delay-250 {
+      animation-delay: 250ms;
+    }
+    .animate-delay-300 {
+      animation-delay: 300ms;
+    }
+    .animate-delay-350 {
+      animation-delay: 350ms;
+    }
+    .animate-delay-400 {
+      animation-delay: 400ms;
+    }
+    .animate-delay-450 {
+      animation-delay: 450ms;
+    }
+    .animate-delay-500 {
+      animation-delay: 500ms;
+    }
 
     .animate-fill-both {
       animation-fill-mode: both;
@@ -1283,4 +1432,3 @@ body {
     padding: 1rem;
   }
 }
-
