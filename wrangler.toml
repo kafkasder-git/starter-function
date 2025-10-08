@@ -24,7 +24,7 @@ cwd = "."
 format = "directory"
 dir = "dist"
 
-# Pages configuration
+# Pages configuration (required for Cloudflare Pages)
 pages_build_output_dir = "dist"
 
 # Environment variables for development
