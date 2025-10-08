@@ -44,11 +44,15 @@ interface PaymentOrder {
   aidType: string;
   createdDate: string;
   scheduledDate: string;
-  status: 'pending' | 'approved' | 'sent' | 'completed' | 'failed' | 'cancelled';
+  status: 'pending' | 'first_approved' | 'fully_approved' | 'sent' | 'completed' | 'failed' | 'cancelled';
   createdBy: string;
-  approvedBy?: string;
+  firstApprovedBy?: string;
+  firstApprovedDate?: string;
+  secondApprovedBy?: string;
+  secondApprovedDate?: string;
   transactionId?: string;
   failureReason?: string;
+  requiresDualApproval: boolean;
 }
 
 const initialPaymentOrders: PaymentOrder[] = [];
@@ -78,7 +82,8 @@ export function BankPaymentOrdersPage() {
   const getStatusBadge = (status: PaymentOrder['status']) => {
     const statusConfig = {
       pending: { label: 'Bekliyor', color: 'bg-yellow-100 text-yellow-800' },
-      approved: { label: 'Onaylandı', color: 'bg-blue-100 text-blue-800' },
+      first_approved: { label: '1. Onay', color: 'bg-orange-100 text-orange-800' },
+      fully_approved: { label: 'Tam Onaylı', color: 'bg-blue-100 text-blue-800' },
       sent: { label: 'Gönderildi', color: 'bg-purple-100 text-purple-800' },
       completed: { label: 'Tamamlandı', color: 'bg-green-100 text-green-800' },
       failed: { label: 'Başarısız', color: 'bg-red-100 text-red-800' },
@@ -92,7 +97,8 @@ export function BankPaymentOrdersPage() {
   const getStatusIcon = (status: PaymentOrder['status']) => {
     const icons = {
       pending: <Clock className="w-4 h-4 text-yellow-600" />,
-      approved: <CheckCircle className="w-4 h-4 text-blue-600" />,
+      first_approved: <CheckCircle className="w-4 h-4 text-orange-600" />,
+      fully_approved: <CheckCircle className="w-4 h-4 text-blue-600" />,
       sent: <Send className="w-4 h-4 text-purple-600" />,
       completed: <CheckCircle className="w-4 h-4 text-green-600" />,
       failed: <XCircle className="w-4 h-4 text-red-600" />,
@@ -115,7 +121,8 @@ export function BankPaymentOrdersPage() {
   const stats = {
     total: paymentOrders.length,
     pending: paymentOrders.filter((o) => o.status === 'pending').length,
-    approved: paymentOrders.filter((o) => o.status === 'approved').length,
+    firstApproved: paymentOrders.filter((o) => o.status === 'first_approved').length,
+    fullyApproved: paymentOrders.filter((o) => o.status === 'fully_approved').length,
     sent: paymentOrders.filter((o) => o.status === 'sent').length,
     completed: paymentOrders.filter((o) => o.status === 'completed').length,
     failed: paymentOrders.filter((o) => o.status === 'failed').length,
@@ -143,6 +150,8 @@ export function BankPaymentOrdersPage() {
       return;
     }
 
+    const requiresDualApproval = amount >= 5000; // 5000 TL ve üzeri çift onay gerektirir
+
     const order: PaymentOrder = {
       id: Date.now(),
       orderNumber: `BPO-2024-${String(paymentOrders.length + 1).padStart(3, '0')}`,
@@ -157,6 +166,7 @@ export function BankPaymentOrdersPage() {
       scheduledDate: newOrder.scheduledDate,
       status: 'pending',
       createdBy: 'Admin Yöneticisi',
+      requiresDualApproval,
     };
 
     setPaymentOrders((prev) => [order, ...prev]);
@@ -174,27 +184,84 @@ export function BankPaymentOrdersPage() {
     toast.success('Ödeme emri başarıyla oluşturuldu');
   };
 
-  const handleApprove = (id: number) => {
-    setPaymentOrders((prev) =>
-      prev.map((order) =>
-        order.id === id
-          ? { ...order, status: 'approved' as const, approvedBy: 'Admin Yöneticisi' }
-          : order,
-      ),
-    );
-    toast.success('Ödeme emri onaylandı');
-  };
-
-  const handleSend = (id: number) => {
+  const handleFirstApprove = (id: number) => {
     setPaymentOrders((prev) =>
       prev.map((order) =>
         order.id === id
           ? {
               ...order,
+              status: 'first_approved' as const,
+              firstApprovedBy: 'Manager 1',
+              firstApprovedDate: new Date().toISOString(),
+            }
+          : order,
+      ),
+    );
+    toast.success('İlk onay tamamlandı. İkinci onay bekleniyor.');
+  };
+
+  const handleSecondApprove = (id: number) => {
+    setPaymentOrders((prev) =>
+      prev.map((order) =>
+        order.id === id
+          ? {
+              ...order,
+              status: 'fully_approved' as const,
+              secondApprovedBy: 'Manager 2',
+              secondApprovedDate: new Date().toISOString(),
+            }
+          : order,
+      ),
+    );
+    toast.success('İkinci onay tamamlandı. Ödeme emri göndermeye hazır.');
+  };
+
+  const handleApprove = (id: number) => {
+    const order = paymentOrders.find((o) => o.id === id);
+    if (!order) return;
+
+    if (order.requiresDualApproval) {
+      if (order.status === 'pending') {
+        handleFirstApprove(id);
+      } else if (order.status === 'first_approved') {
+        handleSecondApprove(id);
+      }
+    } else {
+      // Single approval for amounts < 5000 TL
+      setPaymentOrders((prev) =>
+        prev.map((o) =>
+          o.id === id
+            ? {
+                ...o,
+                status: 'fully_approved' as const,
+                firstApprovedBy: 'Manager',
+                firstApprovedDate: new Date().toISOString(),
+              }
+            : o,
+        ),
+      );
+      toast.success('Ödeme emri onaylandı');
+    }
+  };
+
+  const handleSend = (id: number) => {
+    const order = paymentOrders.find((o) => o.id === id);
+    if (!order) return;
+
+    if (order.status !== 'fully_approved') {
+      toast.error('Sadece tam onaylı ödeme emirleri gönderilebilir');
+      return;
+    }
+
+    setPaymentOrders((prev) =>
+      prev.map((o) =>
+        o.id === id
+          ? {
+              ...o,
               status: 'sent' as const,
               transactionId: `TXN${Date.now()}`,
             }
-          : order,
+          : o,
       ),
     );
     toast.success('Ödeme emri bankaya gönderildi');
