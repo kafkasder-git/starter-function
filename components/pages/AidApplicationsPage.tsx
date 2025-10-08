@@ -45,73 +45,7 @@ interface AidApplication {
   address: string;
 }
 
-const initialApplications: AidApplication[] = [
-  {
-    id: 1,
-    applicantName: 'Ayşe Yılmaz',
-    applicantId: '12345678901',
-    applicationDate: '2024-01-15',
-    aidType: 'Nakdi Yardım',
-    requestedAmount: 2500,
-    status: 'pending',
-    priority: 'high',
-    description: 'Kira ve market ihtiyacı için nakdi yardım talebi',
-    phone: '0555 123 45 67',
-    address: 'Atatürk Mah. Cumhuriyet Cad. No:45 Şişli/İSTANBUL',
-  },
-  {
-    id: 2,
-    applicantName: 'Mehmet Demir',
-    applicantId: '98765432109',
-    applicationDate: '2024-01-14',
-    aidType: 'Ayni Yardım',
-    requestedAmount: 0,
-    status: 'approved',
-    priority: 'medium',
-    description: 'Gıda kolisi ve temizlik malzemesi talebi',
-    phone: '0532 987 65 43',
-    address: 'Fatih Mah. İstiklal Sok. No:12 Fatih/İSTANBUL',
-  },
-  {
-    id: 3,
-    applicantName: 'Fatma Kaya',
-    applicantId: '11223344556',
-    applicationDate: '2024-01-13',
-    aidType: 'Sağlık Yardımı',
-    requestedAmount: 3500,
-    status: 'under-review',
-    priority: 'urgent',
-    description: 'Ameliyat masrafları için yardım talebi',
-    phone: '0545 123 98 76',
-    address: 'Beşiktaş Mah. Spor Cad. No:78 Beşiktaş/İSTANBUL',
-  },
-  {
-    id: 4,
-    applicantName: 'Ali Özkan',
-    applicantId: '55667788990',
-    applicationDate: '2024-01-12',
-    aidType: 'Eğitim Yardımı',
-    requestedAmount: 1500,
-    status: 'rejected',
-    priority: 'low',
-    description: 'Üniversite harç ve kitap masrafları',
-    phone: '0533 456 78 90',
-    address: 'Kadıköy Mah. Bağdat Cad. No:234 Kadıköy/İSTANBUL',
-  },
-  {
-    id: 5,
-    applicantName: 'Zeynep Arslan',
-    applicantId: '99887766554',
-    applicationDate: '2024-01-11',
-    aidType: 'Nakdi Yardım',
-    requestedAmount: 3000,
-    status: 'approved',
-    priority: 'high',
-    description: 'Elektrik ve doğalgaz faturası borçları',
-    phone: '0544 321 65 98',
-    address: 'Üsküdar Mah. Çamlıca Yolu No:56 Üsküdar/İSTANBUL',
-  },
-];
+const initialApplications: AidApplication[] = [];
 
 /**
  * AidApplicationsPage function

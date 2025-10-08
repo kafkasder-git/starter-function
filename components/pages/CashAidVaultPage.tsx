@@ -45,69 +45,7 @@ interface VaultTransaction {
   approvedBy: string;
   balance: number;
 }
-const initialTransactions: VaultTransaction[] = [
-  {
-    id: 1,
-    type: 'deposit',
-    amount: 10000,
-    date: '2024-01-15 09:30',
-    description: 'Aylık bağış geliri aktarımı',
-    reference: 'VLT-2024-001',
-    operator: 'Mehmet Yönetici',
-    approvedBy: 'Ayşe Muhasebe',
-    balance: 35000,
-  },
-  {
-    id: 2,
-    type: 'withdrawal',
-    amount: 2500,
-    date: '2024-01-15 14:20',
-    description: 'Kira yardımı ödemesi',
-    reference: 'VLT-2024-002',
-    operator: 'Fatma Koordinatör',
-    recipientName: 'Ayşe Yılmaz',
-    recipientId: '12345678901',
-    approvedBy: 'Mehmet Yönetici',
-    balance: 32500,
-  },
-  {
-    id: 3,
-    type: 'withdrawal',
-    amount: 1200,
-    date: '2024-01-14 16:45',
-    description: 'Fatura yardımı ödemesi',
-    reference: 'VLT-2024-003',
-    operator: 'Hasan Mali Müşavir',
-    recipientName: 'Zeynep Arslan',
-    recipientId: '99887766554',
-    approvedBy: 'Mehmet Yönetici',
-    balance: 31300,
-  },
-  {
-    id: 4,
-    type: 'deposit',
-    amount: 5000,
-    date: '2024-01-14 10:15',
-    description: 'Özel bağış geliri',
-    reference: 'VLT-2024-004',
-    operator: 'Ali Gönüllü',
-    approvedBy: 'Ayşe Muhasebe',
-    balance: 32500,
-  },
-  {
-    id: 5,
-    type: 'withdrawal',
-    amount: 800,
-    date: '2024-01-13 11:30',
-    description: 'Acil ihtiyaç yardımı',
-    reference: 'VLT-2024-005',
-    operator: 'Zeynep Sosyal Hizmet',
-    recipientName: 'Ahmet Kaya',
-    recipientId: '44556677889',
-    approvedBy: 'Fatma Koordinatör',
-    balance: 27500,
-  },
-];
+const initialTransactions: VaultTransaction[] = [];
 
 /**
  * CashAidVaultPage function

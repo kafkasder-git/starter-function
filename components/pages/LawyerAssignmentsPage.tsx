@@ -35,66 +35,7 @@ const LAWYER_SEARCH_CONFIG: SearchConfig = {
 
 // Lawyer data - will be fetched from API in the future
 
-const lawyers: Lawyer[] = [
-  {
-    id: 1,
-    name: 'Av. Fatma Demir',
-    barNumber: '12345',
-    barAssociation: 'Ankara Barosu',
-    phone: '0312 555 0201',
-    email: 'fatma.demir@hukuk.com',
-    specializations: ['İş Hukuku', 'Sosyal Güvenlik Hukuku', 'İdare Hukuku'],
-    experience: 12,
-    rating: 4.8,
-    totalCases: 245,
-    activeCases: 8,
-    successRate: 87,
-    status: 'musait',
-    office: 'Kızılay, Ankara',
-    consultationFee: 500,
-    languages: ['Türkçe', 'İngilizce'],
-    education: 'Ankara Üniversitesi Hukuk Fakültesi',
-    notes: 'İş hukuku konusunda uzman. Sosyal yardım davalarında deneyimli.',
-  },
-  {
-    id: 2,
-    name: 'Av. Mehmet Özkan',
-    barNumber: '23456',
-    barAssociation: 'Ankara Barosu',
-    phone: '0312 555 0301',
-    email: 'mehmet.ozkan@hukuk.com',
-    specializations: ['Aile Hukuku', 'Medeni Hukuk', 'Miras Hukuku'],
-    experience: 8,
-    rating: 4.6,
-    totalCases: 189,
-    activeCases: 12,
-    successRate: 82,
-    status: 'musait',
-    office: 'Çankaya, Ankara',
-    consultationFee: 400,
-    languages: ['Türkçe'],
-    education: 'Gazi Üniversitesi Hukuk Fakültesi',
-  },
-  {
-    id: 3,
-    name: 'Av. Dr. Zeynep Kaya',
-    barNumber: '34567',
-    barAssociation: 'Ankara Barosu',
-    phone: '0312 555 0401',
-    email: 'zeynep.kaya@hukuk.com',
-    specializations: ['Ceza Hukuku', 'İnsan Hakları', 'Anayasa Hukuku'],
-    experience: 15,
-    rating: 4.9,
-    totalCases: 312,
-    activeCases: 6,
-    successRate: 91,
-    status: 'dolu',
-    office: 'Kızılay, Ankara',
-    consultationFee: 750,
-    languages: ['Türkçe', 'İngilizce', 'Fransızca'],
-    education: 'İstanbul Üniversitesi Hukuk Fakültesi (Doktora)',
-  },
-];
+const lawyers: Lawyer[] = [];
 
 /**
  * LawyerAssignmentsPage component

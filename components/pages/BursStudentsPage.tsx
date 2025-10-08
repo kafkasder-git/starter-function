@@ -78,76 +78,7 @@ export function BursStudentsPage() {
     notes: '',
   });
 
-  const students: Student[] = useMemo(
-    () => [
-      {
-        id: 1,
-        name: 'Ahmet Yılmaz',
-        email: 'ahmet@email.com',
-        phone: '0532 123 4567',
-        school: 'İstanbul Üniversitesi',
-        grade: '3. Sınıf',
-        program: 'Bilgisayar Mühendisliği',
-        scholarshipAmount: 1500,
-        status: 'active',
-        startDate: '2023-09-15',
-        gpa: 3.45,
-      },
-      {
-        id: 2,
-        name: 'Ayşe Kaya',
-        email: 'ayse@email.com',
-        phone: '0533 987 6543',
-        school: 'Boğaziçi Üniversitesi',
-        grade: '4. Sınıf',
-        program: 'İktisat',
-        scholarshipAmount: 2000,
-        status: 'active',
-        startDate: '2022-09-12',
-        gpa: 3.78,
-      },
-      {
-        id: 3,
-        name: 'Mehmet Demir',
-        email: 'mehmet@email.com',
-        phone: '0534 555 1234',
-        school: 'ODTÜ',
-        grade: 'Mezun',
-        program: 'Makine Mühendisliği',
-        scholarshipAmount: 1800,
-        status: 'graduated',
-        startDate: '2020-09-14',
-        gpa: 3.12,
-      },
-      {
-        id: 4,
-        name: 'Fatma Özkan',
-        email: 'fatma@email.com',
-        phone: '0535 777 8899',
-        school: 'Hacettepe Üniversitesi',
-        grade: '2. Sınıf',
-        program: 'Tıp',
-        scholarshipAmount: 2500,
-        status: 'active',
-        startDate: '2024-09-16',
-        gpa: 3.89,
-      },
-      {
-        id: 5,
-        name: 'Can Polat',
-        email: 'can@email.com',
-        phone: '0536 111 2233',
-        school: 'İTÜ',
-        grade: '1. Sınıf',
-        program: 'Elektrik Mühendisliği',
-        scholarshipAmount: 1200,
-        status: 'active',
-        startDate: '2024-09-20',
-        gpa: 3.25,
-      },
-    ],
-    [],
-  );
+  const students: Student[] = useMemo(() => [], []);
 
   // Calculate statistics
   const stats: StudentStats = useMemo(() => {

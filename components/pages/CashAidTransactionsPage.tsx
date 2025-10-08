@@ -41,64 +41,7 @@ interface CashTransaction {
   documentPath?: string;
 }
 
-const initialTransactions: CashTransaction[] = [
-  {
-    id: 1,
-    transactionNumber: 'NCT-2024-001',
-    recipientName: 'Ayşe Yılmaz',
-    recipientId: '12345678901',
-    amount: 2500,
-    transactionDate: '2024-01-15 14:30',
-    aidCategory: 'Kira Yardımı',
-    paymentMethod: 'bank_transfer',
-    status: 'completed',
-    description: 'Ocak ayı kira yardımı ödemesi',
-    processedBy: 'Fatma Koordinatör',
-    approvedBy: 'Mehmet Yönetici',
-  },
-  {
-    id: 2,
-    transactionNumber: 'NCT-2024-002',
-    recipientName: 'Mehmet Demir',
-    recipientId: '98765432109',
-    amount: 1200,
-    transactionDate: '2024-01-15 11:15',
-    aidCategory: 'Fatura Yardımı',
-    paymentMethod: 'cash',
-    status: 'completed',
-    description: 'Elektrik ve doğalgaz fatura ödemesi',
-    processedBy: 'Hasan Mali Müşavir',
-    approvedBy: 'Ayşe Muhasebe',
-  },
-  {
-    id: 3,
-    transactionNumber: 'NCT-2024-003',
-    recipientName: 'Fatma Kaya',
-    recipientId: '11223344556',
-    amount: 3500,
-    transactionDate: '2024-01-14 16:45',
-    aidCategory: 'Sağlık Yardımı',
-    paymentMethod: 'bank_transfer',
-    status: 'pending',
-    description: 'Ameliyat masrafları için yardım',
-    processedBy: 'Zeynep Sosyal Hizmet',
-    approvedBy: 'Dr. Ali Başhekim',
-  },
-  {
-    id: 4,
-    transactionNumber: 'NCT-2024-004',
-    recipientName: 'Ali Özkan',
-    recipientId: '55667788990',
-    amount: 1500,
-    transactionDate: '2024-01-14 09:20',
-    aidCategory: 'Eğitim Yardımı',
-    paymentMethod: 'check',
-    status: 'completed',
-    description: 'Üniversite harç ve kitap masrafları',
-    processedBy: 'Elif Eğitim Sorumlusu',
-    approvedBy: 'Mehmet Yönetici',
-  },
-];
+const initialTransactions: CashTransaction[] = [];
 
 /**
  * CashAidTransactionsPage function

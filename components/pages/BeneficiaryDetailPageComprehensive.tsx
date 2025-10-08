@@ -51,74 +51,10 @@ import { Textarea } from '../ui/textarea';
 
 import { logger } from '../../lib/logging/logger';
 // Health conditions data
-const healthConditions = [
-  'Akdeniz Anemisi',
-  'Alerji',
-  'Astım',
-  'Bağışıklık Yetm.',
-  'Bel Fıtığı',
-  'Böbrek Yetmezliği',
-  'Bronşit (Kronik)',
-  'Depresyon',
-  'Diyabet (Şeker)',
-  'Düşük Tansiyon',
-  'Epilepsi (Sara)',
-  'Göz Eriş',
-  'Göğüs Hastalıkları',
-  'Görme Bozukluğu',
-  'Gastrit',
-  'Hepatit',
-  'Hipertansiyon',
-  'Hormonal Düzensizlik',
-  'Kalça / Diz Protez',
-  'Kalıcı İşitme Engeli',
-  'Kalıcı Konuşma Engeli',
-  'Kalıcı Yürüme Engeli',
-  'Kalp Yetmezliği',
-  'Kas/İskelet Hastalıkları',
-  'Kanser',
-  'Karaciğer Hastalığı',
-  'Korunma Zorluğu',
-  'Kronik İltihap',
-  'Lösemi',
-  'Menenjit',
-  'Migren',
-  'Nefes Darlığı',
-  'Obezite',
-  'Omurilik Hastalığı',
-  'Omuz',
-  'Psikoz',
-  'Psikolojik Sorun',
-  'Raynaud',
-  'Romatizma',
-  'Sinüzit',
-  'Stres',
-  'Sağır',
-  'Tiroid',
-  'Tüberküloz',
-  'Ülser',
-  'Onkolojik Rahatsızlık',
-  'Yaygın Gelişimsel Bozukluklar',
-  'Yüksek Tansiyon',
-];
+const healthConditions: string[] = [];
 
 // Connected records data
-const connectedRecords = [
-  'Banka Hesapları',
-  'Dokümanlar',
-  'Fotoğraflar',
-  'Bağışçılar',
-  'Bağlı Kişiler',
-  'Sponsorlar',
-  'Referanslar',
-  'Göç/İçine Sınav Takibi',
-  'Göç/İçine Sınav Hakkı',
-  'Yardım Talepleri',
-  'Yapılan Yardımlar',
-  'Rıza Beyanları',
-  'Sosyal Kartlar',
-  'Kart Özeti',
-];
+const connectedRecords: string[] = [];
 
 interface BeneficiaryDetailPageComprehensiveProps {
   beneficiaryId?: string;
@@ -266,176 +202,32 @@ export function BeneficiaryDetailPageComprehensive({
 
   // Donors Modal States
   const [isDonorsModalOpen, setIsDonorsModalOpen] = useState(false);
-  const [donors] = useState([
-    {
-      id: 1,
-      name: 'Ahmet Yılmaz',
-      email: 'ahmet@email.com',
-      phone: '0532 123 45 67',
-      totalDonation: '5,000 TL',
-      lastDonation: '15.01.2024',
-      donationCount: 3,
-    },
-    {
-      id: 2,
-      name: 'Fatma Demir',
-      email: 'fatma@email.com',
-      phone: '0541 987 65 43',
-      totalDonation: '2,500 TL',
-      lastDonation: '10.01.2024',
-      donationCount: 2,
-    },
-  ]);
+  const [donors] = useState([]);
   const [donorSearchTerm, setDonorSearchTerm] = useState('');
 
   // Sponsors Modal States
   const [isSponsorsModalOpen, setIsSponsorsModalOpen] = useState(false);
-  const [sponsors] = useState([
-    {
-      id: 1,
-      name: 'Yardım Derneği',
-      type: 'Dernek',
-      contact: 'info@yardim.org',
-      phone: '0212 123 45 67',
-      sponsorshipAmount: '10,000 TL',
-      startDate: '01.01.2024',
-      endDate: '31.12.2024',
-      status: 'Aktif',
-    },
-  ]);
+  const [sponsors] = useState([]);
 
   // Help Requests Modal States
   const [isHelpRequestsModalOpen, setIsHelpRequestsModalOpen] = useState(false);
-  const [helpRequests] = useState([
-    {
-      id: 1,
-      title: 'Gıda Yardımı Talebi',
-      description: 'Aylık gıda paketi ihtiyacı',
-      status: 'Beklemede',
-      requestDate: '10.01.2024',
-      priority: 'Yüksek',
-      category: 'Gıda',
-    },
-    {
-      id: 2,
-      title: 'Kıyafet Yardımı',
-      description: 'Kış kıyafetleri ihtiyacı',
-      status: 'Tamamlandı',
-      requestDate: '05.01.2024',
-      priority: 'Orta',
-      category: 'Giyim',
-    },
-  ]);
+  const [helpRequests] = useState([]);
 
   // Help Provided Modal States
   const [isHelpProvidedModalOpen, setIsHelpProvidedModalOpen] = useState(false);
-  const [helpProvided] = useState([
-    {
-      id: 1,
-      type: 'Gıda Paketi',
-      amount: '500 TL',
-      date: '15.01.2024',
-      description: 'Aylık gıda paketi',
-      provider: 'Yardım Derneği',
-    },
-    {
-      id: 2,
-      type: 'Nakit Yardım',
-      amount: '1,000 TL',
-      date: '01.01.2024',
-      description: 'Kira yardımı',
-      provider: 'Belediye',
-    },
-  ]);
+  const [helpProvided] = useState([]);
 
   // Consent Modal States
   const [isConsentModalOpen, setIsConsentModalOpen] = useState(false);
-  const [consents] = useState([
-    {
-      id: 1,
-      type: 'KVKK Aydınlatma Metni',
-      status: 'Onaylandı',
-      date: '01.01.2024',
-      description: 'Kişisel verilerin işlenmesi hakkında bilgilendirme',
-    },
-    {
-      id: 2,
-      type: 'Fotoğraf Çekim İzni',
-      status: 'Beklemede',
-      date: '15.01.2024',
-      description: 'Etkinliklerde fotoğraf çekimi için izin',
-    },
-  ]);
+  const [consents] = useState([]);
 
   // Completed Aids Modal States
   const [isCompletedAidsModalOpen, setIsCompletedAidsModalOpen] = useState(false);
-  const [completedAids] = useState([
-    {
-      id: 1,
-      type: 'Nakdi',
-      amount: '1,500 TL',
-      date: '15.01.2024',
-      description: 'Aylık gıda yardımı',
-      provider: 'Yardım Derneği',
-      status: 'Tamamlandı',
-      notes: 'Düzenli gıda yardımı paketi teslim edildi',
-    },
-    {
-      id: 2,
-      type: 'Ayni',
-      amount: '800 TL',
-      date: '10.01.2024',
-      description: 'Giyim yardımı',
-      provider: 'Belediye',
-      status: 'Tamamlandı',
-      notes: 'Kış kıyafetleri ve ayakkabı teslim edildi',
-    },
-    {
-      id: 3,
-      type: 'Hizmet',
-      amount: '500 TL',
-      date: '05.01.2024',
-      description: 'Sağlık hizmeti',
-      provider: 'Sağlık Merkezi',
-      status: 'Tamamlandı',
-      notes: 'Ücretsiz sağlık taraması yapıldı',
-    },
-  ]);
+  const [completedAids] = useState([]);
 
   // Consent Declarations Modal States
   const [isConsentDeclarationsModalOpen, setIsConsentDeclarationsModalOpen] = useState(false);
-  const [consentDeclarations] = useState([
-    {
-      id: 1,
-      type: 'KVKK Rıza Beyanı',
-      status: 'Onaylandı',
-      date: '01.01.2024',
-      description: 'Kişisel verilerin işlenmesi için rıza beyanı',
-      documentUrl: '#',
-      title: 'KVKK Rıza Beyanı',
-      details: 'Kişisel verilerin işlenmesi için rıza beyanı detayları',
-    },
-    {
-      id: 2,
-      type: 'Fotoğraf Çekim İzni',
-      status: 'Beklemede',
-      date: '15.01.2024',
-      description: 'Etkinliklerde fotoğraf çekimi için izin belgesi',
-      documentUrl: '#',
-      title: 'Fotoğraf Çekim İzni',
-      details: 'Etkinliklerde fotoğraf çekimi için izin belgesi detayları',
-    },
-    {
-      id: 3,
-      type: 'Veri Paylaşım Rızası',
-      status: 'Onaylandı',
-      date: '10.01.2024',
-      description: 'Üçüncü taraflarla veri paylaşımı için rıza',
-      documentUrl: '#',
-      title: 'Veri Paylaşım Rızası',
-      details: 'Üçüncü taraflarla veri paylaşımı için rıza detayları',
-    },
-  ]);
+  const [consentDeclarations] = useState([]);
 
   // Load beneficiary data
   useEffect(() => {

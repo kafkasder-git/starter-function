@@ -160,7 +160,7 @@ export function LawsuitTrackingPage() {
 
   const activeCases = lawsuits.filter((l) => l.status === 'devam').length;
   const wonCases = lawsuits.filter((l) => l.status === 'kazanildi').length;
-  const _totalCosts = lawsuits.reduce((sum, l) => sum + l.costs, 0);
+  // const _totalCosts = lawsuits.reduce((sum, l) => sum + l.costs, 0);
   const totalAmount = lawsuits.reduce((sum, l) => sum + (l.amount ?? 0), 0);
 
   return (

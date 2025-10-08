@@ -1,27 +1,13 @@
-/**
- * @fileoverview InternalMessagingPage Module - Application module
- *
- * @author Dernek Yönetim Sistemi Team
- * @version 1.0.0
- */
-
-import { useState } from 'react';
-import { toast } from 'sonner';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Badge } from '../ui/badge';
-import { Avatar, AvatarFallback } from '../ui/avatar';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../ui/dialog';
-import { Label } from '../ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Textarea } from '../ui/textarea';
-import { Send, Search, MessageCircle, UserPlus, Circle } from 'lucide-react';
-
-// Simple className utility function
-const cn = (...classes: (string | undefined | null | boolean)[]) => {
-  return classes.filter(Boolean).join(' ');
-};
+import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Separator } from '@/components/ui/separator';
+import { Send, Search, Phone, Video, MoreVertical, Paperclip, Smile } from 'lucide-react';
+import { useIsMobile } from '@/hooks/useAdvancedMobile';
 
 interface User {
   id: string;
@@ -40,37 +26,13 @@ interface Message {
 interface Conversation {
   id: string;
   participants: User[];
-  lastMessage?: Message;
+  lastMessage: Message;
   unreadCount: number;
 }
 
-const users: User[] = [
-  { id: '1', name: 'Ahmet Yılmaz', department: 'Yönetim', isOnline: true },
-  { id: '2', name: 'Fatma Özkan', department: 'Ba��ış', isOnline: true },
-];
-
-const conversations: Conversation[] = [
-  {
-    id: '1',
-    participants: users,
-    lastMessage: {
-      id: '1',
-      senderId: '2',
-      content: 'Merhaba, nasılsınız?',
-      timestamp: '10:30',
-    },
-    unreadCount: 1,
-  },
-];
-
-const messages: Message[] = [
-  {
-    id: '1',
-    senderId: '2',
-    content: 'Merhaba, nasılsınız?',
-    timestamp: '10:30',
-  },
-];
+const users: User[] = [];
+const conversations: Conversation[] = [];
+const messages: Message[] = [];
 
 /**
  * InternalMessagingPage function
@@ -79,361 +41,352 @@ const messages: Message[] = [
  * @returns {void} Nothing
  */
 export function InternalMessagingPage() {
-  const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
+  const isMobile = useIsMobile();
+  const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
   const [newMessage, setNewMessage] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [showNewChatDialog, setShowNewChatDialog] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [newChatData, setNewChatData] = useState({
-    recipientId: '',
-    subject: '',
-    message: '',
-  });
+  const [searchTerm, setSearchTerm] = useState('');
 
   const handleSendMessage = () => {
-    if (!newMessage.trim()) return;
-    toast.success('Mesaj gönderildi');
-    setNewMessage('');
+    if (newMessage.trim()) {
+      // TODO: Implement message sending
+      setNewMessage('');
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
     }
   };
 
-  const handleStartNewChat = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const filteredConversations = conversations.filter((conv) =>
+    conv.participants.some((participant) =>
+      participant.name.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  );
 
-    if (!newChatData.recipientId || !newChatData.message) {
-      toast.error('Lütfen alıcı ve mesaj alanlarını doldurun');
-      return;
-    }
+  const selectedConv = conversations.find((conv) => conv.id === selectedConversation);
 
-    try {
-      setIsSubmitting(true);
-
-      // TODO: Integrate with actual API
-      // const result = await messagingService.startConversation(newChatData);
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      toast.success('Yeni sohbet başlatıldı!');
-      setShowNewChatDialog(false);
-
-      // Reset form
-      setNewChatData({
-        recipientId: '',
-        subject: '',
-        message: '',
-      });
-    } catch {
-      toast.error('Sohbet başlatılırken hata oluştu');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  return (
-    <div className="h-full bg-gray-50/50">
-      <div className="container mx-auto h-full max-w-6xl p-4 sm:p-6">
-        <div className="mb-4 flex items-center justify-between sm:mb-6">
-          <div>
-            <h1 className="text-xl font-medium sm:text-2xl">Kurum İçi Mesajlaşma</h1>
-            <p className="text-muted-foreground text-sm sm:text-base">
-              Ekip üyeleriyle anlık iletişim kurun
-            </p>
+  if (isMobile) {
+    return (
+      <div className="flex flex-col h-screen bg-gray-50">
+        {/* Header */}
+        <div className="bg-white border-b p-4">
+          <div className="flex items-center justify-between">
+            <h1 className="text-lg font-semibold">Mesajlar</h1>
+            <Button variant="outline" size="sm">
+              <Search className="h-4 w-4" />
+            </Button>
           </div>
-
-          <Button
-            className="gap-2"
-            size="sm"
-            onClick={() => {
-              setShowNewChatDialog(true);
-            }}
-          >
-            <UserPlus className="h-4 w-4" />
-            <span className="hidden sm:inline">Yeni Sohbet</span>
-          </Button>
         </div>
 
-        <div className="grid h-[calc(100vh-180px)] grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-12">
-          {/* Conversations Sidebar */}
-          <div className="lg:col-span-4">
-            <Card className="flex h-full flex-col">
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-base sm:text-lg">Sohbetler</CardTitle>
+        {/* Conversation List */}
+        {!selectedConversation ? (
+          <div className="flex-1 overflow-hidden">
+            <div className="p-4">
+              <Input
+                placeholder="Kişi ara..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="mb-4"
+              />
+            </div>
+            <ScrollArea className="flex-1 px-4">
+              {filteredConversations.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  <p>Henüz mesaj yok</p>
+                  <p className="text-sm">Yeni mesaj göndermek için bir kişi seçin</p>
                 </div>
-                <div className="relative">
-                  <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
-                  <Input
-                    placeholder="Sohbet ara..."
-                    value={searchQuery}
-                    onChange={(e) => {
-                      setSearchQuery(e.target.value);
-                    }}
-                    className="pl-10 text-sm sm:text-base"
-                  />
-                </div>
-              </CardHeader>
-              <CardContent className="flex-1 p-0">
-                <div className="space-y-1 p-3">
-                  {conversations.map((conversation) => (
-                    <div
-                      key={conversation.id}
-                      onClick={() => {
-                        setSelectedConversation(conversation);
-                      }}
-                      className={cn(
-                        'hover:bg-muted/50 flex cursor-pointer items-center gap-3 rounded-lg p-3 transition-colors',
-                        selectedConversation?.id === conversation.id && 'bg-muted',
-                      )}
-                    >
-                      <div className="relative">
-                        <Avatar className="h-10 w-10 sm:h-12 sm:w-12">
-                          <AvatarFallback>
-                            {conversation.participants.find((p) => p.id !== '1')?.name[0]}
-                          </AvatarFallback>
-                        </Avatar>
-                        {conversation.participants.find((p) => p.id !== '1')?.isOnline && (
-                          <Circle className="absolute -right-1 -bottom-1 h-3 w-3 fill-green-500 text-green-500 sm:h-4 sm:w-4" />
-                        )}
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="mb-1 flex items-center justify-between">
-                          <h3 className="truncate text-sm font-medium sm:text-base">
-                            {conversation.participants.find((p) => p.id !== '1')?.name}
-                          </h3>
-                          {conversation.lastMessage && (
-                            <span className="text-muted-foreground text-xs">
-                              {conversation.lastMessage.timestamp}
-                            </span>
-                          )}
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <p className="text-muted-foreground truncate text-xs sm:text-sm">
-                            {conversation.lastMessage?.content ?? 'Henüz mesaj yok'}
-                          </p>
-                          {conversation.unreadCount > 0 && (
-                            <Badge className="flex h-4 w-4 items-center justify-center p-0 text-xs sm:h-5 sm:w-5">
-                              {conversation.unreadCount}
-                            </Badge>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Chat Area */}
-          <div className="lg:col-span-8">
-            {selectedConversation ? (
-              <Card className="flex h-full flex-col">
-                {/* Chat Header */}
-                <CardHeader className="border-b pb-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Avatar className="h-8 w-8 sm:h-10 sm:w-10">
-                        <AvatarFallback>
-                          {selectedConversation.participants.find((p) => p.id !== '1')?.name[0]}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <h3 className="text-sm font-medium sm:text-base">
-                          {selectedConversation.participants.find((p) => p.id !== '1')?.name}
-                        </h3>
-                        <p className="text-muted-foreground text-xs sm:text-sm">
-                          {selectedConversation.participants.find((p) => p.id !== '1')?.isOnline
-                            ? 'Çevrimiçi'
-                            : 'Çevrimdışı'}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </CardHeader>
-
-                {/* Messages */}
-                <CardContent className="flex-1 p-4">
-                  <div className="space-y-4">
-                    {messages.map((message) => (
-                      <div
-                        key={message.id}
-                        className={cn(
-                          'flex max-w-[80%] gap-3',
-                          message.senderId === '1' ? 'ml-auto flex-row-reverse' : '',
-                        )}
-                      >
-                        {message.senderId !== '1' && (
-                          <Avatar className="mt-1 h-6 w-6 sm:h-8 sm:w-8">
-                            <AvatarFallback className="text-xs">
-                              {
-                                selectedConversation.participants.find(
-                                  (p) => p.id === message.senderId,
-                                )?.name[0]
-                              }
-                            </AvatarFallback>
-                          </Avatar>
-                        )}
-                        <div
-                          className={cn(
-                            'rounded-2xl px-3 py-2 sm:px-4 sm:py-2',
-                            message.senderId === '1'
-                              ? 'bg-primary text-primary-foreground'
-                              : 'bg-muted',
-                          )}
-                        >
-                          <p className="text-sm">{message.content}</p>
-                          <p
-                            className={cn(
-                              'mt-1 text-xs opacity-70',
-                              message.senderId === '1' ? 'text-right' : 'text-left',
-                            )}
-                          >
-                            {message.timestamp}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-
-                {/* Message Input */}
-                <div className="border-t p-3 sm:p-4">
-                  <div className="flex items-center gap-2 sm:gap-3">
-                    <Input
-                      value={newMessage}
-                      onChange={(e) => {
-                        setNewMessage(e.target.value);
-                      }}
-                      onKeyPress={handleKeyPress}
-                      placeholder="Mesaj yazın..."
-                      className="flex-1 text-sm sm:text-base"
-                    />
-                    <Button
-                      onClick={handleSendMessage}
-                      disabled={!newMessage.trim()}
-                      size="sm"
-                      className="gap-2"
-                    >
-                      <Send className="h-4 w-4" />
-                      <span className="hidden sm:inline">Gönder</span>
-                    </Button>
-                  </div>
-                </div>
-              </Card>
-            ) : (
-              <Card className="flex h-full items-center justify-center">
-                <div className="p-6 text-center">
-                  <MessageCircle className="text-muted-foreground mx-auto mb-4 h-12 w-12 sm:h-16 sm:w-16" />
-                  <h3 className="mb-2 text-base font-medium sm:text-lg">Sohbet Seçin</h3>
-                  <p className="text-muted-foreground mb-4 text-sm">
-                    Bir sohbet seçin veya yeni sohbet başlatın
-                  </p>
-                  <Button
-                    className="gap-2"
-                    size="sm"
-                    onClick={() => {
-                      setShowNewChatDialog(true);
-                    }}
+              ) : (
+                filteredConversations.map((conversation) => (
+                  <div
+                    key={conversation.id}
+                    className="flex items-center p-3 hover:bg-gray-100 rounded-lg cursor-pointer mb-2"
+                    onClick={() => setSelectedConversation(conversation.id)}
                   >
-                    <UserPlus className="h-4 w-4" />
-                    Yeni Sohbet
+                    <Avatar className="h-10 w-10 mr-3">
+                      <AvatarFallback>
+                        {conversation.participants[0]?.name.charAt(0)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between">
+                        <p className="font-medium truncate">
+                          {conversation.participants.map((p) => p.name).join(', ')}
+                        </p>
+                        <span className="text-xs text-gray-500">
+                          {conversation.lastMessage.timestamp}
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-600 truncate">
+                        {conversation.lastMessage.content}
+                      </p>
+                    </div>
+                    {conversation.unreadCount > 0 && (
+                      <Badge variant="destructive" className="ml-2">
+                        {conversation.unreadCount}
+                      </Badge>
+                    )}
+                  </div>
+                ))
+              )}
+            </ScrollArea>
+          </div>
+        ) : (
+          /* Chat View */
+          <div className="flex flex-col h-full">
+            {/* Chat Header */}
+            <div className="bg-white border-b p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setSelectedConversation(null)}
+                    className="mr-2"
+                  >
+                    ←
+                  </Button>
+                  <Avatar className="h-8 w-8 mr-3">
+                    <AvatarFallback>
+                      {selectedConv?.participants[0]?.name.charAt(0)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="font-medium">
+                      {selectedConv?.participants.map((p) => p.name).join(', ')}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {selectedConv?.participants[0]?.department}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Button variant="ghost" size="sm">
+                    <Phone className="h-4 w-4" />
+                  </Button>
+                  <Button variant="ghost" size="sm">
+                    <Video className="h-4 w-4" />
+                  </Button>
+                  <Button variant="ghost" size="sm">
+                    <MoreVertical className="h-4 w-4" />
                   </Button>
                 </div>
-              </Card>
-            )}
-          </div>
-        </div>
-
-        {/* New Chat Dialog */}
-        <Dialog open={showNewChatDialog} onOpenChange={setShowNewChatDialog}>
-          <DialogContent className="sm:max-w-[500px]">
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <UserPlus className="h-5 w-5" />
-                Yeni Sohbet Başlat
-              </DialogTitle>
-              <DialogDescription>Bir ekip üyesiyle yeni sohbet başlatın.</DialogDescription>
-            </DialogHeader>
-
-            <form onSubmit={handleStartNewChat} className="space-y-4 py-4">
-              <div className="space-y-2">
-                <Label htmlFor="recipientId">Alıcı *</Label>
-                <Select
-                  value={newChatData.recipientId}
-                  onValueChange={(value) => {
-                    setNewChatData({ ...newChatData, recipientId: value });
-                  }}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Ekip üyesi seçin" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {users.map((user) => (
-                      <SelectItem key={user.id} value={user.id}>
-                        <div className="flex items-center gap-2">
-                          <span>{user.name}</span>
-                          <span className="text-muted-foreground text-xs">({user.department})</span>
-                          {user.isOnline && (
-                            <Circle className="h-2 w-2 fill-green-500 text-green-500" />
-                          )}
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
               </div>
+            </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="subject">Konu</Label>
+            {/* Messages */}
+            <ScrollArea className="flex-1 p-4">
+              {messages.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  <p>Henüz mesaj yok</p>
+                  <p className="text-sm">İlk mesajı gönderin</p>
+                </div>
+              ) : (
+                messages.map((message) => (
+                  <div
+                    key={message.id}
+                    className={`flex mb-4 ${
+                      message.senderId === '1' ? 'justify-end' : 'justify-start'
+                    }`}
+                  >
+                    <div
+                      className={`max-w-xs px-4 py-2 rounded-lg ${
+                        message.senderId === '1'
+                          ? 'bg-blue-500 text-white'
+                          : 'bg-gray-200 text-gray-900'
+                      }`}
+                    >
+                      <p className="text-sm">{message.content}</p>
+                      <p className="text-xs opacity-70 mt-1">{message.timestamp}</p>
+                    </div>
+                  </div>
+                ))
+              )}
+            </ScrollArea>
+
+            {/* Message Input */}
+            <div className="bg-white border-t p-4">
+              <div className="flex items-center space-x-2">
+                <Button variant="ghost" size="sm">
+                  <Paperclip className="h-4 w-4" />
+                </Button>
                 <Input
-                  id="subject"
-                  value={newChatData.subject}
-                  onChange={(e) => {
-                    setNewChatData({ ...newChatData, subject: e.target.value });
-                  }}
-                  placeholder="Sohbet konusu (opsiyonel)"
+                  placeholder="Mesaj yazın..."
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  className="flex-1"
                 />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="message">İlk Mesaj *</Label>
-                <Textarea
-                  id="message"
-                  value={newChatData.message}
-                  onChange={(e) => {
-                    setNewChatData({ ...newChatData, message: e.target.value });
-                  }}
-                  placeholder="Mesajınızı yazın..."
-                  rows={4}
-                  required
-                />
-              </div>
-
-              <div className="flex justify-end gap-2 border-t pt-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => {
-                    setShowNewChatDialog(false);
-                  }}
-                  disabled={isSubmitting}
-                >
-                  İptal
+                <Button variant="ghost" size="sm">
+                  <Smile className="h-4 w-4" />
                 </Button>
-                <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? 'Gönderiliyor...' : 'Sohbet Başlat'}
+                <Button onClick={handleSendMessage} size="sm">
+                  <Send className="h-4 w-4" />
                 </Button>
               </div>
-            </form>
-          </DialogContent>
-        </Dialog>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex h-screen bg-gray-50">
+      {/* Sidebar */}
+      <div className="w-1/3 border-r bg-white">
+        <div className="p-4 border-b">
+          <h1 className="text-xl font-semibold mb-4">Mesajlar</h1>
+          <Input
+            placeholder="Kişi ara..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+        <ScrollArea className="flex-1">
+          {filteredConversations.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              <p>Henüz mesaj yok</p>
+              <p className="text-sm">Yeni mesaj göndermek için bir kişi seçin</p>
+            </div>
+          ) : (
+            filteredConversations.map((conversation) => (
+              <div
+                key={conversation.id}
+                className={`p-4 border-b hover:bg-gray-50 cursor-pointer ${
+                  selectedConversation === conversation.id ? 'bg-blue-50' : ''
+                }`}
+                onClick={() => setSelectedConversation(conversation.id)}
+              >
+                <div className="flex items-center">
+                  <Avatar className="h-10 w-10 mr-3">
+                    <AvatarFallback>
+                      {conversation.participants[0]?.name.charAt(0)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between">
+                      <p className="font-medium truncate">
+                        {conversation.participants.map((p) => p.name).join(', ')}
+                      </p>
+                      <span className="text-xs text-gray-500">
+                        {conversation.lastMessage.timestamp}
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-600 truncate">
+                      {conversation.lastMessage.content}
+                    </p>
+                  </div>
+                  {conversation.unreadCount > 0 && (
+                    <Badge variant="destructive" className="ml-2">
+                      {conversation.unreadCount}
+                    </Badge>
+                  )}
+                </div>
+              </div>
+            ))
+          )}
+        </ScrollArea>
+      </div>
+
+      {/* Chat Area */}
+      <div className="flex-1 flex flex-col">
+        {selectedConversation ? (
+          <>
+            {/* Chat Header */}
+            <div className="bg-white border-b p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <Avatar className="h-10 w-10 mr-3">
+                    <AvatarFallback>
+                      {selectedConv?.participants[0]?.name.charAt(0)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="font-medium">
+                      {selectedConv?.participants.map((p) => p.name).join(', ')}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {selectedConv?.participants[0]?.department}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Button variant="ghost" size="sm">
+                    <Phone className="h-4 w-4" />
+                  </Button>
+                  <Button variant="ghost" size="sm">
+                    <Video className="h-4 w-4" />
+                  </Button>
+                  <Button variant="ghost" size="sm">
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            {/* Messages */}
+            <ScrollArea className="flex-1 p-4">
+              {messages.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  <p>Henüz mesaj yok</p>
+                  <p className="text-sm">İlk mesajı gönderin</p>
+                </div>
+              ) : (
+                messages.map((message) => (
+                  <div
+                    key={message.id}
+                    className={`flex mb-4 ${
+                      message.senderId === '1' ? 'justify-end' : 'justify-start'
+                    }`}
+                  >
+                    <div
+                      className={`max-w-xs px-4 py-2 rounded-lg ${
+                        message.senderId === '1'
+                          ? 'bg-blue-500 text-white'
+                          : 'bg-gray-200 text-gray-900'
+                      }`}
+                    >
+                      <p className="text-sm">{message.content}</p>
+                      <p className="text-xs opacity-70 mt-1">{message.timestamp}</p>
+                    </div>
+                  </div>
+                ))
+              )}
+            </ScrollArea>
+
+            {/* Message Input */}
+            <div className="bg-white border-t p-4">
+              <div className="flex items-center space-x-2">
+                <Button variant="ghost" size="sm">
+                  <Paperclip className="h-4 w-4" />
+                </Button>
+                <Input
+                  placeholder="Mesaj yazın..."
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  className="flex-1"
+                />
+                <Button variant="ghost" size="sm">
+                  <Smile className="h-4 w-4" />
+                </Button>
+                <Button onClick={handleSendMessage} size="sm">
+                  <Send className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-center text-gray-500">
+              <p className="text-lg font-medium">Mesaj seçin</p>
+              <p className="text-sm">Bir konuşma seçerek mesajlaşmaya başlayın</p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

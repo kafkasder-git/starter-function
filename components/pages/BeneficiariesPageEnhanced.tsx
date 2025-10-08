@@ -332,7 +332,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
     };
   }, [searchTerm, statusFilter, cityFilter, sortBy, loadBeneficiaries]);
 
-  const getStatusBadge = (status: string) => {
+  const _getStatusBadge = (status: string) => {
     const statusInfo =
       statusMapping[status as keyof typeof statusMapping] || statusMapping.inactive;
     return <Badge className={statusInfo.className}>{statusInfo.label}</Badge>;

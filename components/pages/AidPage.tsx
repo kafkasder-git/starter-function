@@ -41,7 +41,6 @@ interface AidRequest {
   assignedTo?: string;
 }
 
-// TODO: Load from API
 const initialAidRequests: AidRequest[] = [];
 
 /**

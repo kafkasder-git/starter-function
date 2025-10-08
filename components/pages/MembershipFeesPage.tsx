@@ -40,41 +40,7 @@ export function MembershipFeesPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
 
-  const members: Member[] = [
-    {
-      id: 1,
-      name: 'Ahmet Yılmaz',
-      email: 'ahmet@email.com',
-      phone: '0532 123 4567',
-      membershipType: 'regular',
-      feeAmount: 50,
-      lastPayment: '2024-10-01',
-      status: 'paid',
-      monthsOwed: 0,
-    },
-    {
-      id: 2,
-      name: 'Ayşe Kaya',
-      email: 'ayse@email.com',
-      phone: '0533 987 6543',
-      membershipType: 'premium',
-      feeAmount: 100,
-      lastPayment: '2024-08-15',
-      status: 'overdue',
-      monthsOwed: 2,
-    },
-    {
-      id: 3,
-      name: 'Mehmet Demir',
-      email: 'mehmet@email.com',
-      phone: '0534 555 1234',
-      membershipType: 'student',
-      feeAmount: 25,
-      lastPayment: '2024-09-30',
-      status: 'paid',
-      monthsOwed: 0,
-    },
-  ];
+  const members: Member[] = [];
 
   const stats = {
     totalMembers: members.length,
