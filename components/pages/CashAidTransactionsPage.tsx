@@ -107,7 +107,7 @@ const initialTransactions: CashTransaction[] = [
  * @returns {void} Nothing
  */
 export function CashAidTransactionsPage() {
-  const [transactions, setTransactions] = useState<CashTransaction[]>(initialTransactions);
+  const [transactions] = useState<CashTransaction[]>(initialTransactions);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [paymentMethodFilter, setPaymentMethodFilter] = useState<string>('all');

@@ -258,7 +258,7 @@ export function MembersPage() {
             {
               label: 'Dışa Aktar',
               icon: <Download className="h-4 w-4" />,
-              onClick: () => toast.info('Dışa aktarma özelliği yakında eklenecek'),
+              onClick: () => { toast.info('Dışa aktarma özelliği yakında eklenecek'); },
               variant: 'outline',
             },
           ]}
@@ -427,7 +427,7 @@ export function MembersPage() {
                             variant="ghost"
                             size="sm"
                             className="min-h-[44px] min-w-[44px] p-2 text-blue-600 hover:text-blue-700"
-                            onClick={() => toast.info(`${member.name} detayları görüntüleniyor`)}
+                            onClick={() => { toast.info(`${member.name} detayları görüntüleniyor`); }}
                             aria-label="Görüntüle"
                           >
                             <Eye className="h-4 w-4" />
@@ -436,7 +436,7 @@ export function MembersPage() {
                             variant="ghost"
                             size="sm"
                             className="min-h-[44px] min-w-[44px] p-2 text-red-600 hover:text-red-700"
-                            onClick={() => toast.error('Silme özelliği yakında eklenecek')}
+                            onClick={() => { toast.error('Silme özelliği yakında eklenecek'); }}
                             aria-label="Sil"
                           >
                             <Trash2 className="h-4 w-4" />

@@ -224,7 +224,7 @@ function getMemoryMetrics(): MemoryMetrics | null {
     return null;
   }
 
-  const memory = (performance as any).memory;
+  const {memory} = (performance as any);
   return {
     used: memory.usedJSHeapSize,
     total: memory.totalJSHeapSize,
@@ -305,7 +305,7 @@ export async function performHealthCheck(): Promise<HealthStatus> {
 /**
  * Start periodic health checks
  */
-export function startHealthMonitoring(interval: number = 60000) {
+export function startHealthMonitoring(interval = 60000) {
   let intervalId: NodeJS.Timeout;
 
   const check = async () => {

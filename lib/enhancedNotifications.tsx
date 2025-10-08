@@ -78,7 +78,7 @@ export const enhancedNotifications = {
       playNotificationSound(config.priority);
     }
 
-    return toast.success(config.message, {
+    toast.success(config.message, {
       description: config.title,
       duration,
       action: config.action ? {
@@ -98,7 +98,7 @@ export const enhancedNotifications = {
       playNotificationSound(config.priority);
     }
 
-    return toast.error(config.message, {
+    toast.error(config.message, {
       description: config.title,
       duration,
       action: config.action ? {
@@ -118,7 +118,7 @@ export const enhancedNotifications = {
       playNotificationSound(config.priority);
     }
 
-    return toast.warning(config.message, {
+    toast.warning(config.message, {
       description: config.title,
       duration,
       action: config.action ? {
@@ -134,7 +134,7 @@ export const enhancedNotifications = {
     const duration = config.duration ?? priorityDurations[config.priority ?? 'orta'];
     const categoryStyle = config.category ? categoryStyles[config.category] : categoryStyles.genel;
     
-    return toast.info(config.message, {
+    toast.info(config.message, {
       description: config.title,
       duration,
       action: config.action ? {

@@ -65,7 +65,7 @@ interface DonorInstitution {
  * @returns {void} Nothing
  */
 export default function PartnerDonorsPage() {
-  const [donors, setDonors] = useState<DonorInstitution[]>([]);
+  const [donors] = useState<DonorInstitution[]>([]);
   const [filteredDonors, setFilteredDonors] = useState<DonorInstitution[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<string>('all');

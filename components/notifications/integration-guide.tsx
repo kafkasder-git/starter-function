@@ -352,7 +352,7 @@ function _setupRealTimeNotifications(): void {
         break;
         
       default:
-        enhancedNotifications.bilgi({
+        void enhancedNotifications.bilgi({
           title: notification.title,
           message: notification.message,
           category: 'genel'
@@ -432,7 +432,7 @@ class NotificationErrorBoundary extends React.Component<ErrorBoundaryProps, Erro
     return { hasError: true };
   }
   
-  componentDidCatch(_error: Error, _errorInfo: React.ErrorInfo): void {
+  override componentDidCatch(_error: Error, _errorInfo: React.ErrorInfo): void {
     // You can also log the error to an error reporting service
     enhancedNotifications.hata({
       title: 'Uygulama Hatası',
@@ -447,7 +447,7 @@ class NotificationErrorBoundary extends React.Component<ErrorBoundaryProps, Erro
     });
   }
   
-  render(): React.ReactNode {
+  override render(): React.ReactNode {
     if (this.state.hasError) {
       return <div>Bir şeyler ters gitti...</div>;
     }

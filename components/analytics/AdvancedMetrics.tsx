@@ -3,7 +3,7 @@
  * @description Real-time analytics and metrics visualization
  */
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
@@ -21,14 +21,14 @@ interface ChartData {
 }
 
 export function AdvancedMetrics() {
-  const [metrics, setMetrics] = useState<MetricData[]>([
+  const [metrics] = useState<MetricData[]>([
     { label: 'Toplam Bağış', value: 125430, change: 18, trend: 'up' },
     { label: 'Aktif Üye', value: 1234, change: 5, trend: 'up' },
     { label: 'Yardım Başvurusu', value: 42, change: -3, trend: 'down' },
     { label: 'Kampanya', value: 8, change: 0, trend: 'stable' },
   ]);
 
-  const [donationTrend, setDonationTrend] = useState<ChartData[]>([
+  const [donationTrend] = useState<ChartData[]>([
     { name: 'Oca', value: 12000 },
     { name: 'Şub', value: 15000 },
     { name: 'Mar', value: 18000 },
@@ -37,7 +37,7 @@ export function AdvancedMetrics() {
     { name: 'Haz', value: 25000 },
   ]);
 
-  const [categoryData, setCategoryData] = useState<ChartData[]>([
+  const [categoryData] = useState<ChartData[]>([
     { name: 'Nakit', value: 45000 },
     { name: 'Zekat', value: 35000 },
     { name: 'Fitre', value: 15000 },
@@ -61,6 +61,8 @@ export function AdvancedMetrics() {
         return '↑';
       case 'down':
         return '↓';
+      case 'stable':
+        return '→';
       default:
         return '→';
     }
@@ -72,6 +74,8 @@ export function AdvancedMetrics() {
         return 'text-green-600';
       case 'down':
         return 'text-red-600';
+      case 'stable':
+        return 'text-gray-600';
       default:
         return 'text-gray-600';
     }

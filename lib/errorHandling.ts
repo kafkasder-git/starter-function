@@ -173,7 +173,7 @@ export class ErrorHandler {
       },
       timestamp: new Date(),
       userMessage,
-      actionRequired: severity === ErrorSeverity.HIGH ?? severity === ErrorSeverity.CRITICAL,
+      actionRequired: severity === ErrorSeverity.HIGH || severity === ErrorSeverity.CRITICAL,
     };
   }
 
@@ -211,17 +211,17 @@ export class ErrorHandler {
    */
   private determineErrorSeverity(error: Error, type: ErrorType): ErrorSeverity {
     // Critical errors
-    if (type === ErrorType.SERVER ?? type === ErrorType.AUTHENTICATION) {
+    if (type === ErrorType.SERVER || type === ErrorType.AUTHENTICATION) {
       return ErrorSeverity.CRITICAL;
     }
 
     // High severity errors
-    if (type === ErrorType.NETWORK ?? type === ErrorType.AUTHORIZATION) {
+    if (type === ErrorType.NETWORK || type === ErrorType.AUTHORIZATION) {
       return ErrorSeverity.HIGH;
     }
 
     // Medium severity errors
-    if (type === ErrorType.VALIDATION ?? type === ErrorType.NOT_FOUND) {
+    if (type === ErrorType.VALIDATION || type === ErrorType.NOT_FOUND) {
       return ErrorSeverity.MEDIUM;
     }
 
@@ -304,7 +304,7 @@ export class ErrorHandler {
   private reportError(error: AppError, context?: ErrorContext): void {
     // Only report high severity errors in production
     if (import.meta.env.PROD &&
-        (error.severity === ErrorSeverity.HIGH ?? error.severity === ErrorSeverity.CRITICAL)) {
+        (error.severity === ErrorSeverity.HIGH || error.severity === ErrorSeverity.CRITICAL)) {
 
       // External error reporting can be configured here
       // Currently no external error tracking service is configured
@@ -397,7 +397,7 @@ export const ErrorUtils = {
    */
   async withErrorHandling<T>(
     fn: () => Promise<T>,
-    context?: ErrorContext
+    _context?: ErrorContext
   ): Promise<T | null> {
     try {
       return await fn();

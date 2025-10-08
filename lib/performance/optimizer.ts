@@ -73,7 +73,7 @@ export function memoize<T extends (...args: any[]) => any>(
 /**
  * Lazy load images with Intersection Observer
  */
-export function lazyLoadImages(selector: string = 'img[data-src]') {
+export function lazyLoadImages(selector = 'img[data-src]') {
   if (!('IntersectionObserver' in window)) {
     // Fallback for browsers without IntersectionObserver
     const images = document.querySelectorAll(selector);
@@ -102,13 +102,13 @@ export function lazyLoadImages(selector: string = 'img[data-src]') {
   });
 
   const images = document.querySelectorAll(selector);
-  images.forEach((img) => imageObserver.observe(img));
+  images.forEach((img) => { imageObserver.observe(img); });
 }
 
 /**
  * Preload critical resources
  */
-export function preloadResources(resources: Array<{ href: string; as: string }>) {
+export function preloadResources(resources: { href: string; as: string }[]) {
   resources.forEach(({ href, as }) => {
     const link = document.createElement('link');
     link.rel = 'preload';
@@ -133,7 +133,7 @@ export function prefetchResources(urls: string[]) {
 /**
  * Request idle callback wrapper
  */
-export function runWhenIdle(callback: () => void, timeout: number = 2000) {
+export function runWhenIdle(callback: () => void, timeout = 2000) {
   if ('requestIdleCallback' in window) {
     requestIdleCallback(callback, { timeout });
   } else {
@@ -144,9 +144,9 @@ export function runWhenIdle(callback: () => void, timeout: number = 2000) {
 /**
  * Batch DOM updates
  */
-export function batchDOMUpdates(updates: Array<() => void>) {
+export function batchDOMUpdates(updates: (() => void)[]) {
   requestAnimationFrame(() => {
-    updates.forEach((update) => update());
+    updates.forEach((update) => { update(); });
   });
 }
 
@@ -154,11 +154,11 @@ export function batchDOMUpdates(updates: Array<() => void>) {
  * Virtual scroll helper
  */
 export class VirtualScroller {
-  private container: HTMLElement;
-  private itemHeight: number;
+  private readonly container: HTMLElement;
+  private readonly itemHeight: number;
   private items: any[];
-  private visibleCount: number;
-  private startIndex: number = 0;
+  private readonly visibleCount: number;
+  private startIndex = 0;
 
   constructor(
     container: HTMLElement,
@@ -176,7 +176,7 @@ export class VirtualScroller {
 
   private setupScroll() {
     this.container.addEventListener('scroll', () => {
-      const scrollTop = this.container.scrollTop;
+      const {scrollTop} = this.container;
       this.startIndex = Math.floor(scrollTop / this.itemHeight);
       this.render();
     });
@@ -256,7 +256,7 @@ export async function loadComponent<T>(
 /**
  * Service Worker registration helper
  */
-export async function registerServiceWorker(swPath: string = '/sw.js') {
+export async function registerServiceWorker(swPath = '/sw.js') {
   if (!('serviceWorker' in navigator)) {
     if (typeof window !== 'undefined') {
       import('../logging/logger').then(({ logger }) => {
@@ -288,9 +288,9 @@ export async function registerServiceWorker(swPath: string = '/sw.js') {
  * Cache API helper
  */
 export class CacheManager {
-  private cacheName: string;
+  private readonly cacheName: string;
 
-  constructor(cacheName: string = 'app-cache-v1') {
+  constructor(cacheName = 'app-cache-v1') {
     this.cacheName = cacheName;
   }
 

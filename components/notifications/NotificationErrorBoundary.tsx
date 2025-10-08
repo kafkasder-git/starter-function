@@ -35,11 +35,11 @@ export class NotificationErrorBoundary extends Component<Props, State> {
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+  override componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     logger.error('Notification component error:', error, errorInfo);
   }
 
-  render() {
+  override render() {
     if (this.state.hasError) {
       // Default fallback UI
       if (this.props.fallback) {

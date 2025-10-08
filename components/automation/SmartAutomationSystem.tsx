@@ -277,9 +277,9 @@ export function SmartAutomationSystem({
   const [filterType, setFilterType] = useState<AutomationType | 'all'>('all');
   const [filterStatus, setFilterStatus] = useState<AutomationStatus | 'all'>('all');
   const [showCreateForm, setShowCreateForm] = useState(false);
-  const [_selectedAutomation, _setSelectedAutomation] = useState<AutomationRule | null>(null);
+  const [, _setSelectedAutomation] = useState<AutomationRule | null>(null);
 
-  const { triggerHapticFeedback, deviceInfo: _deviceInfo } = useAdvancedMobile();
+  const { triggerHapticFeedback } = useAdvancedMobile();
 
   // Filtrelenmiş otomasyonlar
   const filteredAutomations = automations.filter((automation) => {
@@ -392,7 +392,7 @@ export function SmartAutomationSystem({
   // Otomasyonu düzenle
   const handleEdit = useCallback(
     (automation: AutomationRule) => {
-      setSelectedAutomation(automation);
+      _setSelectedAutomation(automation);
       onAutomationEdit?.(automation);
       triggerHapticFeedback('light');
     },

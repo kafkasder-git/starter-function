@@ -139,7 +139,7 @@ const initialAidRecords: AidRecord[] = [
  * @returns {void} Nothing
  */
 export function AllAidListPage() {
-  const [aidRecords, setAidRecords] = useState<AidRecord[]>(initialAidRecords);
+  const [aidRecords] = useState<AidRecord[]>(initialAidRecords);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [aidTypeFilter, setAidTypeFilter] = useState<string>('all');

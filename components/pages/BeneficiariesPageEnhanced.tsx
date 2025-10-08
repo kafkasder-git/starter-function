@@ -117,7 +117,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
   const [sortBy, setSortBy] = useState('name-asc');
   const [beneficiaries, setBeneficiaries] = useState<IhtiyacSahibiDisplay[]>([]);
   const [cities, setCities] = useState<string[]>([]);
-  const [totalCount, setTotalCount] = useState(0);
+  const [, setTotalCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(10);
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -181,7 +181,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
       }
 
       // Transform data to include display fields with proper fallbacks
-      const transformedData = (result.data || []).map((item: IhtiyacSahibi, index: number) => ({
+      const transformedData = (result.data || []).map((item: IhtiyacSahibi) => ({
         ...item,
         // Migration sonrası gerçek ID'ler 1'den başlayacak, display_id gerekli değil
         display_id: item.id, // Gerçek ID'yi kullan
@@ -293,7 +293,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
       if (result.data) {
         setCities(result.data);
       }
-    } catch (error) {
+    } catch {
       // Error loading cities - handle gracefully
     }
   }, []);
@@ -816,12 +816,12 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
                           <UserPlus className="w-12 h-12 mx-auto mb-4 text-gray-300" />
                           <p>Henüz hiç ihtiyaç sahibi kaydı yok.</p>
                           <p className="text-sm text-gray-400 mt-1">
-                            İlk kayıt için "Yeni İhtiyaç Sahibi Ekle" butonunu kullanın
+                            İlk kayıt için &quot;Yeni İhtiyaç Sahibi Ekle&quot; butonunu kullanın
                           </p>
                         </TableCell>
                       </TableRow>
                     ) : (
-                      beneficiaries.map((beneficiary, index) => (
+                      beneficiaries.map((beneficiary) => (
                         <TableRow
                           key={beneficiary.id}
                           className="hover:bg-blue-50/30 transition-colors cursor-pointer border-b border-gray-100"

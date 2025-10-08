@@ -51,7 +51,7 @@ const initialAidRequests: AidRequest[] = [];
  * @returns {void} Nothing
  */
 export function AidPage() {
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [priorityFilter, setPriorityFilter] = useState('all');

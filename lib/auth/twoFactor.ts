@@ -25,7 +25,7 @@ export function generateSecret(): string {
 export function generateQRCodeURL(
   secret: string,
   email: string,
-  issuer: string = 'Kafkasder'
+  issuer = 'Kafkasder'
 ): string {
   const otpauthURL = `otpauth://totp/${encodeURIComponent(issuer)}:${encodeURIComponent(email)}?secret=${secret}&issuer=${encodeURIComponent(issuer)}`;
   return `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(otpauthURL)}`;
@@ -48,7 +48,7 @@ function simpleHash(str: string): number {
  * Generate TOTP code (for testing/backup)
  * @internal Exported for testing purposes
  */
-export function generateTOTP(secret: string, window: number = 0): string {
+export function generateTOTP(secret: string, window = 0): string {
   const epoch = Math.floor(Date.now() / 1000);
   const time = Math.floor(epoch / 30) + window;
   
@@ -119,7 +119,7 @@ export async function enable2FA(userId: string): Promise<{
       .from('user_2fa')
       .upsert({
         user_id: userId,
-        secret: secret, // Should be encrypted in production
+        secret, // Should be encrypted in production
         backup_codes: backupCodes, // Should be hashed in production
         enabled: false, // Will be enabled after verification
         created_at: new Date().toISOString(),
@@ -190,12 +190,12 @@ export async function verify2FALogin(
       .eq('user_id', userId)
       .single();
 
-    if (!twoFA || !twoFA.enabled) {
+    if (!twoFA?.enabled) {
       return true; // 2FA not enabled
     }
 
     // Check if it's a backup code
-    if (twoFA.backup_codes && twoFA.backup_codes.includes(code)) {
+    if (twoFA.backup_codes?.includes(code)) {
       // Remove used backup code
       const updatedCodes = twoFA.backup_codes.filter((c: string) => c !== code);
       await supabase
@@ -242,7 +242,7 @@ export async function disable2FA(userId: string, code: string): Promise<boolean>
 /**
  * Generate backup codes
  */
-export function generateBackupCodes(count: number = 10): string[] {
+export function generateBackupCodes(count = 10): string[] {
   const codes: string[] = [];
   
   for (let i = 0; i < count; i++) {

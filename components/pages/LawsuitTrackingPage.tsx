@@ -63,7 +63,7 @@ interface Lawsuit {
  * @returns {void} Nothing
  */
 export function LawsuitTrackingPage() {
-  const [lawsuits, setLawsuits] = useState<Lawsuit[]>([]);
+  const [lawsuits] = useState<Lawsuit[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<string>('all');
   const [filterStatus, setFilterStatus] = useState<string>('all');
@@ -160,7 +160,7 @@ export function LawsuitTrackingPage() {
 
   const activeCases = lawsuits.filter((l) => l.status === 'devam').length;
   const wonCases = lawsuits.filter((l) => l.status === 'kazanildi').length;
-  const totalCosts = lawsuits.reduce((sum, l) => sum + l.costs, 0);
+  const _totalCosts = lawsuits.reduce((sum, l) => sum + l.costs, 0);
   const totalAmount = lawsuits.reduce((sum, l) => sum + (l.amount ?? 0), 0);
 
   return (

@@ -34,11 +34,11 @@ export class StoreErrorBoundary extends Component<Props, State> {
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+  override componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     logger.error('Store initialization error:', error, errorInfo);
   }
 
-  render() {
+  override render() {
     if (this.state.hasError) {
       // Fallback UI for store initialization errors
       if (this.props.fallback) {

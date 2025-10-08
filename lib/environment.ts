@@ -36,7 +36,7 @@ interface EnvironmentConfig {
 /**
  * Get environment variable with fallback
  */
-function getEnv(key: string, defaultValue: string = ''): string {
+function getEnv(key: string, defaultValue = ''): string {
   if (typeof import.meta !== 'undefined' && import.meta.env) {
     return (import.meta.env[key] as string) || defaultValue;
   }
@@ -46,7 +46,7 @@ function getEnv(key: string, defaultValue: string = ''): string {
 /**
  * Get boolean environment variable
  */
-function getBoolEnv(key: string, defaultValue: boolean = false): boolean {
+function getBoolEnv(key: string, defaultValue = false): boolean {
   const value = getEnv(key);
   if (!value) return defaultValue;
   return value === 'true' || value === '1';
@@ -55,7 +55,7 @@ function getBoolEnv(key: string, defaultValue: boolean = false): boolean {
 /**
  * Get number environment variable
  */
-function getNumberEnv(key: string, defaultValue: number = 0): number {
+function getNumberEnv(key: string, defaultValue = 0): number {
   const value = getEnv(key);
   if (!value) return defaultValue;
   const parsed = parseInt(value, 10);

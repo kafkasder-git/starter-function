@@ -3,7 +3,8 @@
  * @description Track Core Web Vitals and send to analytics
  */
 
-import { getCLS, getFID, getFCP, getLCP, getTTFB, Metric } from 'web-vitals';
+import type { Metric } from 'web-vitals';
+import { getCLS, getFID, getFCP, getLCP, getTTFB } from 'web-vitals';
 import { captureMessage, setContext } from '../monitoring/sentry';
 
 interface PerformanceMetric {

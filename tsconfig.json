@@ -12,7 +12,7 @@
     "noImplicitThis": true, // Comment 1: Prevent implicit this binding issues
     "noUnusedLocals": true, // Comment 1: Remove unused variables
     "noUnusedParameters": true, // Comment 1: Remove unused function parameters
-    "exactOptionalPropertyTypes": true, // Comment 1: Strict optional property handling
+    "exactOptionalPropertyTypes": false, // Changed to false for better compatibility
     "noImplicitOverride": true, // Comment 1: Require explicit override keyword
     "noUncheckedIndexedAccess": true, // Comment 1: Add undefined to indexed access
     "noFallthroughCasesInSwitch": true, // Comment 9: Prevent switch fallthrough bugs

@@ -199,16 +199,16 @@ export function startTransaction(name: string, op: string) {
 /**
  * Wrap component with Sentry error boundary
  */
-export const ErrorBoundary = Sentry.ErrorBoundary;
+export const {ErrorBoundary} = Sentry;
 
 /**
  * Profiler for React components
  */
-export const Profiler = Sentry.Profiler;
+export const {Profiler} = Sentry;
 
 /**
  * withProfiler HOC
  */
-export const withProfiler = Sentry.withProfiler;
+export const {withProfiler} = Sentry;
 
 export default Sentry;

@@ -36,7 +36,7 @@ export class SafeWrapper extends React.Component<SafeWrapperProps, SafeWrapperSt
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+  override componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     logger.error(
       `SafeWrapper caught error in ${this.props.componentName ?? 'Unknown Component'}:`,
       error,
@@ -44,7 +44,7 @@ export class SafeWrapper extends React.Component<SafeWrapperProps, SafeWrapperSt
     );
   }
 
-  render() {
+  override render() {
     if (this.state.hasError) {
       return (
         this.props.fallback || (

@@ -34,7 +34,7 @@ if (typeof window !== 'undefined') {
         z-index: 9999;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       `;
-      div.innerHTML = '⚠️ Bir bağlantı hatası oluştu. Sayfa yenileniyor...';
+      div.textContent = '⚠️ Bir bağlantı hatası oluştu. Sayfa yenileniyor...';
       document.body.appendChild(div);
 
       // Auto refresh after 3 seconds

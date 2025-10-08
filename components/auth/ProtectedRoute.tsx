@@ -98,7 +98,6 @@ export function ManagerRoute({ children }: { children: ReactNode }) {
  */
 export function PermissionGuard({
   children,
-  permission: _permission,
   fallback,
 }: {
   children: ReactNode;

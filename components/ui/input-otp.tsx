@@ -50,7 +50,7 @@ function InputOTPSlot({
   const inputOTPContext = React.useContext(OTPInputContext);
   // eslint-disable-next-line security/detect-object-injection, @typescript-eslint/no-unnecessary-condition
 const slot = inputOTPContext.slots?.[index];
-// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+ 
 const { char, hasCaret, isActive } = slot || {};
 
   return (

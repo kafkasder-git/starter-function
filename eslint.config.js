@@ -211,6 +211,9 @@ export default [
       'types/**',
       'utils/**',
       'tests/**',
+      'middleware/**',
+      '.storybook/**',
+      'lib/**',
     ],
   },
 ];

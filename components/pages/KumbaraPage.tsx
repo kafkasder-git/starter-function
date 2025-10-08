@@ -57,7 +57,7 @@ interface Kumbara {
  * @returns {void} Nothing
  */
 export function KumbaraPage() {
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [kumbaralar] = useState<Kumbara[]>([]);

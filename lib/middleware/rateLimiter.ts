@@ -11,16 +11,14 @@ interface RateLimitConfig {
   skipFailedRequests?: boolean;
 }
 
-interface RateLimitStore {
-  [key: string]: {
+type RateLimitStore = Record<string, {
     count: number;
     resetTime: number;
-  };
-}
+  }>;
 
 class RateLimiter {
   private store: RateLimitStore = {};
-  private config: RateLimitConfig;
+  private readonly config: RateLimitConfig;
 
   constructor(config: RateLimitConfig) {
     this.config = {
@@ -32,7 +30,7 @@ class RateLimiter {
     };
 
     // Cleanup old entries every minute
-    setInterval(() => this.cleanup(), 60000);
+    setInterval(() => { this.cleanup(); }, 60000);
   }
 
   /**
