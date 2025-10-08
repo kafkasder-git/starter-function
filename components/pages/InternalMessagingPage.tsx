@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Send, Search, Phone, Video, MoreVertical, Paperclip, Smile } from 'lucide-react';
-import { useIsMobile } from '@/hooks/useAdvancedMobile';
+import { useIsMobile } from '@/hooks/useTouchDevice';
 
 interface User {
   id: string;
