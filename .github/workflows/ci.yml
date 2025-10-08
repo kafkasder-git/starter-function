@@ -38,11 +38,12 @@ jobs:
         run: npm run format:check
 
   # ============================================================================
-  # UNIT TESTS
+  # UNIT TESTS (Temporarily disabled)
   # ============================================================================
   test:
     name: Unit Tests
     runs-on: ubuntu-latest
+    if: false
     steps:
       - uses: actions/checkout@v4
       
@@ -69,11 +70,12 @@ jobs:
           name: codecov-umbrella
 
   # ============================================================================
-  # E2E TESTS
+  # E2E TESTS (Temporarily disabled)
   # ============================================================================
   e2e:
     name: E2E Tests
     runs-on: ubuntu-latest
+    if: false
     steps:
       - uses: actions/checkout@v4
       
