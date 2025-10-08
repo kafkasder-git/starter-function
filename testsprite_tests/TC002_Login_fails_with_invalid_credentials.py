@@ -45,15 +45,15 @@ async def run_test():
                 pass
         
         # Interact with the page elements to simulate user flow
-        # Input SYSADMIN credentials and login
+        # Input invalid username and password
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div/div/div[2]/div/div[2]/form/div/div/input').nth(0)
-        await page.wait_for_timeout(3000); await elem.fill('isahamid095@gmail.com')
+        await page.wait_for_timeout(3000); await elem.fill('invaliduser@example.com')
         
 
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div/div/div[2]/div/div[2]/form/div[2]/div/input').nth(0)
-        await page.wait_for_timeout(3000); await elem.fill('Vadalov95.')
+        await page.wait_for_timeout(3000); await elem.fill('wrongpassword')
         
 
         frame = context.pages[-1]
@@ -61,30 +61,8 @@ async def run_test():
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Access all system modules and verify successful access for SYSADMIN role
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div[2]/div/aside/div/div/div[10]/div/button').nth(0)
-        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
-        
-
-        # Logout SYSADMIN and login as VOL role
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div/header/div[5]/button[2]').nth(0)
-        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
-        
-
-        # Attempt to access financial management pages to verify access restrictions for VOL role
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div[2]/div/aside/div/div/div[10]/div/button').nth(0)
-        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
-        
-
-        # Attempt to directly access financial management pages URL to verify HTTP 403 Forbidden response for VOL role
-        await page.goto('http://localhost:5173/financial-management', timeout=10000)
-        
-
-        # Final generic failing assertion since expected result is unknown
-        assert False, 'Test plan execution failed: generic failure assertion'
+        error_message_locator = frame.locator('text=Geçersiz kullanıcı adı veya şifre')
+        await expect(error_message_locator).to_be_visible(timeout=5000)
         await asyncio.sleep(5)
     
     finally:

@@ -45,7 +45,7 @@ async def run_test():
                 pass
         
         # Interact with the page elements to simulate user flow
-        # Input SYSADMIN credentials and login
+        # Input username and password to login
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div/div/div[2]/div/div[2]/form/div/div/input').nth(0)
         await page.wait_for_timeout(3000); await elem.fill('isahamid095@gmail.com')
@@ -61,30 +61,45 @@ async def run_test():
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Access all system modules and verify successful access for SYSADMIN role
+        # Navigate to a messaging or form input field to test XSS input sanitization
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div[2]/div/aside/div/div/div[10]/div/button').nth(0)
+        elem = frame.locator('xpath=html/body/div/div/div[2]/main/div/div/div/div/div[3]/div/div[2]/div/div/div/div[2]/div/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Logout SYSADMIN and login as VOL role
+        # Try alternative navigation to find input fields for XSS testing or report issue if none found.
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div/header/div[5]/button[2]').nth(0)
+        elem = frame.locator('xpath=html/body/div/div/div[2]/main/div/div/div/div/div[3]/div/div[2]/div/div/div/div[2]/div/button[2]').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Attempt to access financial management pages to verify access restrictions for VOL role
+        # Test the search input field by entering script tags or malicious HTML to verify if input is sanitized and scripts are not executed.
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div[2]/div/aside/div/div/div[10]/div/button').nth(0)
+        elem = frame.locator('xpath=html/body/div/div/div/header/div[3]/div/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill("<script>alert('XSS Test')</script>")
+        
+
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div/div/div[2]/main/div/div/div/div/div/div/div/div[2]/div/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Attempt to directly access financial management pages URL to verify HTTP 403 Forbidden response for VOL role
-        await page.goto('http://localhost:5173/financial-management', timeout=10000)
-        
-
-        # Final generic failing assertion since expected result is unknown
-        assert False, 'Test plan execution failed: generic failure assertion'
+        # Assert that the input field does not execute script tags and sanitizes input
+        frame = context.pages[-1]
+        search_input = frame.locator('xpath=html/body/div/div/div/header/div[3]/div/input').nth(0)
+        input_value = await search_input.input_value()
+        assert '<script>' not in input_value and '</script>' not in input_value, 'Input contains unsanitized script tags!'
+        # Additionally, check that no alert dialog appeared (script execution)
+        # This can be done by listening for dialogs and failing if any appear
+        dialog_appeared = False
+        def on_dialog(dialog):
+            nonlocal dialog_appeared
+            dialog_appeared = True
+        frame.on('dialog', on_dialog)
+        # Refill the input to trigger any potential script execution
+        await search_input.fill('<script>alert(\'XSS Test\')</script>')
+        await page.wait_for_timeout(1000)
+        assert not dialog_appeared, 'XSS alert dialog was triggered, input is not sanitized!'
         await asyncio.sleep(5)
     
     finally:

@@ -97,6 +97,11 @@ export const supabase = (() => {
     return supabaseInstance;
   }
 
+  // Prevent multiple instances by checking global state
+  if (typeof window !== 'undefined' && (window as any).__supabaseInstance) {
+    return (window as any).__supabaseInstance;
+  }
+
   supabaseInstance = createClient(safeSupabaseUrl, safeSupabaseKey, {
     auth: {
       autoRefreshToken: true,
@@ -115,6 +120,11 @@ export const supabase = (() => {
       },
     },
   });
+
+  // Store instance globally to prevent multiple instances
+  if (typeof window !== 'undefined') {
+    (window as any).__supabaseInstance = supabaseInstance;
+  }
 
   // Intercept requests to add CSRF token
   const originalFrom = supabaseInstance.from.bind(supabaseInstance);

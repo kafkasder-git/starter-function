@@ -70,9 +70,18 @@ const tokenStore = new CSRFTokenStore();
 
 // Generate a secure random token
 function generateToken(): string {
-  // Use web crypto API for compatibility
+  // Use web crypto API for compatibility with fallback
+  if (typeof window !== 'undefined' && window.crypto && window.crypto.getRandomValues) {
+    const array = new Uint8Array(32);
+    window.crypto.getRandomValues(array);
+    return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+  }
+  
+  // Fallback for server-side or when crypto is not available
   const array = new Uint8Array(32);
-  crypto.getRandomValues(array);
+  for (let i = 0; i < array.length; i++) {
+    array[i] = Math.floor(Math.random() * 256);
+  }
   return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
 }
 

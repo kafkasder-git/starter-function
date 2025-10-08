@@ -45,7 +45,7 @@ async def run_test():
                 pass
         
         # Interact with the page elements to simulate user flow
-        # Input SYSADMIN credentials and login
+        # Input username 'isahamid095@gmail.com' and password and click login
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div/div/div[2]/div/div[2]/form/div/div/input').nth(0)
         await page.wait_for_timeout(3000); await elem.fill('isahamid095@gmail.com')
@@ -61,30 +61,45 @@ async def run_test():
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Access all system modules and verify successful access for SYSADMIN role
+        # Navigate to messaging or communication section to send message to FIN role user
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div[2]/div/aside/div/div/div[10]/div/button').nth(0)
+        elem = frame.locator('xpath=html/body/div/div/div[2]/div/aside/div/div/div[7]/div/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Logout SYSADMIN and login as VOL role
+        # Look for alternative navigation elements or menu items related to messaging or communication and click to access messaging interface
+        await page.mouse.wheel(0, window.innerHeight)
+        
+
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div/header/div[5]/button[2]').nth(0)
+        elem = frame.locator('xpath=html/body/div/div/div[2]/main/div/div/div/div/div[3]/div/div').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Attempt to access financial management pages to verify access restrictions for VOL role
+        # Use the search input (index 1) to search for 'Mesaj' or 'Message' to locate messaging functionality
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div[2]/div/aside/div/div/div[10]/div/button').nth(0)
+        elem = frame.locator('xpath=html/body/div/div/div/header/div[3]/div/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('Mesaj')
+        
+
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div/div/div[2]/div/aside/div/div/div/div/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Attempt to directly access financial management pages URL to verify HTTP 403 Forbidden response for VOL role
-        await page.goto('http://localhost:5173/financial-management', timeout=10000)
+        # Try clicking the sidebar icon with index 19 (which looks like a chat/message icon) to access messaging or communication section
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div/div/div[2]/div/aside/div/div/div[7]/div/button').nth(0)
+        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Final generic failing assertion since expected result is unknown
-        assert False, 'Test plan execution failed: generic failure assertion'
+        # Click 'Kurum İçi Mesajlaşma' button (index 50) to open internal messaging interface and send message to FIN role user
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[2]/div/div/div[2]/button[2]').nth(0)
+        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
+        
+
+        assert False, 'Test plan execution failed: generic failure assertion as expected result is unknown.'
         await asyncio.sleep(5)
     
     finally:

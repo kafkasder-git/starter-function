@@ -45,7 +45,7 @@ async def run_test():
                 pass
         
         # Interact with the page elements to simulate user flow
-        # Input SYSADMIN credentials and login
+        # Input username and password, then click login button
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div/div/div[2]/div/div[2]/form/div/div/input').nth(0)
         await page.wait_for_timeout(3000); await elem.fill('isahamid095@gmail.com')
@@ -61,29 +61,79 @@ async def run_test():
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Access all system modules and verify successful access for SYSADMIN role
+        # Scroll through sidebar to find and click the button or link for beneficiary registration form
+        await page.mouse.wheel(0, window.innerHeight)
+        
+
+        # Click on 'Yeni İhtiyaç Sahibi' button (index 38) to open beneficiary registration form
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div[2]/div/aside/div/div/div[10]/div/button').nth(0)
+        elem = frame.locator('xpath=html/body/div/div/div[2]/main/div/div/div/div/div[3]/div/div[2]/div/div/div/div[2]/div/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Logout SYSADMIN and login as VOL role
+        # Click 'Yeni İhtiyaç Sahibi Ekle' button (index 29) to open beneficiary registration form
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div/header/div[5]/button[2]').nth(0)
+        elem = frame.locator('xpath=html/body/div/div/div[2]/main/div/div/div/div/div/div/div/div[2]/div/button[2]').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Attempt to access financial management pages to verify access restrictions for VOL role
+        # Submit the beneficiary registration form with missing required fields to check validation messages
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div[2]/div/aside/div/div/div[10]/div/button').nth(0)
+        elem = frame.locator('xpath=html/body/div[3]/div[3]/button[2]').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Attempt to directly access financial management pages URL to verify HTTP 403 Forbidden response for VOL role
-        await page.goto('http://localhost:5173/financial-management', timeout=10000)
+        # Fill beneficiary registration form with valid data and submit to verify successful submission without errors
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('Test User')
         
 
-        # Final generic failing assertion since expected result is unknown
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[2]/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('12345678901')
+        
+
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('5551234567')
+        
+
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[4]/div/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('Istanbul')
+        
+
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[4]/div[2]/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('Turkey')
+        
+
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[5]/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('Test Address 123')
+        
+
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[6]/div/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('General Aid')
+        
+
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[6]/div[2]/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('Individual')
+        
+
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[7]/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('TR330006100519786457841326')
+        
+
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/div[3]/button[2]').nth(0)
+        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
+        
+
         assert False, 'Test plan execution failed: generic failure assertion'
         await asyncio.sleep(5)
     

@@ -435,6 +435,54 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
     }
   };
 
+  // Export function
+  const handleExport = async () => {
+    try {
+      // Create CSV data
+      const headers = [
+        'Ad Soyad',
+        'Kimlik No',
+        'Telefon',
+        'Şehir',
+        'Uyruk',
+        'Ülke',
+        'Adres',
+        'Kategori',
+        'Tür',
+        'IBAN',
+        'Durum',
+        'Kayıt Tarihi'
+      ];
+      
+      const csvData = beneficiaries.map(beneficiary => [
+        beneficiary.ad_soyad,
+        beneficiary.kimlik_no,
+        beneficiary.telefon_no,
+        beneficiary.sehri,
+        beneficiary.uyruk,
+        beneficiary.ulkesi,
+        beneficiary.adres,
+        beneficiary.kategori,
+        beneficiary.tur,
+        beneficiary.iban,
+        beneficiary.durum,
+        new Date(beneficiary.created_at).toLocaleDateString('tr-TR')
+      ]);
+
+      const csv = [headers, ...csvData].map(row => row.join(',')).join('\n');
+      const blob = new Blob([`\ufeff${csv}`], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `ihtiyac_sahipleri_${new Date().toISOString().split('T')[0]}.csv`;
+      link.click();
+      
+      toast.success('Veriler başarıyla dışa aktarıldı');
+    } catch (error) {
+      toast.error('Dışa aktarma sırasında bir hata oluştu');
+      console.error('Export error:', error);
+    }
+  };
+
   // OCR Scanner removed
 
   if (loading && beneficiaries.length === 0) {
@@ -454,6 +502,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
               variant="outline"
               size="sm"
               className="min-h-[44px] px-4 border-gray-300 hover:border-gray-400 order-2 sm:order-1 professional-card hover:shadow-md transition-shadow"
+              onClick={handleExport}
             >
               <Download className="w-4 h-4 mr-2" />
               <span className="hidden sm:inline">Dışa Aktar</span>

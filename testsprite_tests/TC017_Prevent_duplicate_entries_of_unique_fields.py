@@ -45,7 +45,7 @@ async def run_test():
                 pass
         
         # Interact with the page elements to simulate user flow
-        # Input SYSADMIN credentials and login
+        # Input username and password and click login button
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div/div/div[2]/div/div[2]/form/div/div/input').nth(0)
         await page.wait_for_timeout(3000); await elem.fill('isahamid095@gmail.com')
@@ -61,30 +61,56 @@ async def run_test():
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Access all system modules and verify successful access for SYSADMIN role
+        # Click 'Üye Kaydı' button to open new member registration form
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div[2]/div/aside/div/div/div[10]/div/button').nth(0)
+        elem = frame.locator('xpath=html/body/div/div/div[2]/main/div/div/div/div/div[3]/div/div[2]/div/div/div/div[2]/div/button[5]').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Logout SYSADMIN and login as VOL role
+        # Click 'Yeni Üye Ekle' button to open new member registration form
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div/header/div[5]/button[2]').nth(0)
+        elem = frame.locator('xpath=html/body/div/div/div[2]/main/div/div/div/div/div/div/div/div[2]/div/button[2]').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Attempt to access financial management pages to verify access restrictions for VOL role
+        # Fill the form with a TCKN that already exists in the system to trigger duplicate TCKN error
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div[2]/div/aside/div/div/div[10]/div/button').nth(0)
+        elem = frame.locator('xpath=html/body/div[3]/form/div/div/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('TestName')
+        
+
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/form/div/div[2]/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('TestSurname')
+        
+
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/form/div[2]/div/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('testemail@example.com')
+        
+
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/form/div[2]/div[2]/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('05551234567')
+        
+
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/form/div[4]/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('Istanbul')
+        
+
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/form/div[5]/div/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Attempt to directly access financial management pages URL to verify HTTP 403 Forbidden response for VOL role
-        await page.goto('http://localhost:5173/financial-management', timeout=10000)
+        # Navigate to donation or financial transactions section to test duplicate receipt number error
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div/div/div[2]/div/aside/div/div/div/div/button').nth(0)
+        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Final generic failing assertion since expected result is unknown
-        assert False, 'Test plan execution failed: generic failure assertion'
+        assert False, 'Test failed: Expected error message for duplicate entry not found.'
         await asyncio.sleep(5)
     
     finally:

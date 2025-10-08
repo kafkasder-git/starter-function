@@ -45,7 +45,7 @@ async def run_test():
                 pass
         
         # Interact with the page elements to simulate user flow
-        # Input SYSADMIN credentials and login
+        # Input username and password for ADMIN and click login
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div/div/div[2]/div/div[2]/form/div/div/input').nth(0)
         await page.wait_for_timeout(3000); await elem.fill('isahamid095@gmail.com')
@@ -61,29 +61,40 @@ async def run_test():
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Access all system modules and verify successful access for SYSADMIN role
+        # Navigate to beneficiary records or İhtiyaç Sahipleri section to delete a record
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div[2]/div/aside/div/div/div[10]/div/button').nth(0)
+        elem = frame.locator('xpath=html/body/div/div/div[2]/main/div/div/div/div/div[2]/div[3]/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Logout SYSADMIN and login as VOL role
+        # Retry clicking the 'İhtiyaç Sahipleri' button or find alternative navigation to beneficiary records
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div/header/div[5]/button[2]').nth(0)
+        elem = frame.locator('xpath=html/body/div/div/div[2]/main/div/div/div/div/div[2]/div[3]/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Attempt to access financial management pages to verify access restrictions for VOL role
+        # Click 'İhtiyaç Sahipleri' button (index 31) to navigate to beneficiary records
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div[2]/div/aside/div/div/div[10]/div/button').nth(0)
+        elem = frame.locator('xpath=html/body/div/div/div[2]/main/div/div/div/div/div[2]/div[3]/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Attempt to directly access financial management pages URL to verify HTTP 403 Forbidden response for VOL role
-        await page.goto('http://localhost:5173/financial-management', timeout=10000)
+        # Try alternative navigation to beneficiary records or report website issue and stop testing
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div/div/div[2]/main/div/div/div/div/div[3]/div/div[2]/div/div/div/div[2]/div/button').nth(0)
+        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Final generic failing assertion since expected result is unknown
+        # Try refreshing the page or logging out and logging back in to resolve the empty page issue
+        await page.goto('http://localhost:5173/', timeout=10000)
+        
+
+        # Click 'İhtiyaç Sahipleri' button (index 31) to navigate to beneficiary records
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div/div/div[2]/main/div/div/div/div/div[2]/div[3]/button').nth(0)
+        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
+        
+
         assert False, 'Test plan execution failed: generic failure assertion'
         await asyncio.sleep(5)
     

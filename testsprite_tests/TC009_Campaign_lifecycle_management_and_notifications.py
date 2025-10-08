@@ -45,7 +45,7 @@ async def run_test():
                 pass
         
         # Interact with the page elements to simulate user flow
-        # Input SYSADMIN credentials and login
+        # Input username and password, then click login button
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div/div/div[2]/div/div[2]/form/div/div/input').nth(0)
         await page.wait_for_timeout(3000); await elem.fill('isahamid095@gmail.com')
@@ -61,29 +61,32 @@ async def run_test():
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Access all system modules and verify successful access for SYSADMIN role
+        # Navigate to Campaign Management module to create a new fundraising campaign
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div/div/div[2]/div/aside/div/div/div[10]/div/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Logout SYSADMIN and login as VOL role
+        # Look for alternative navigation elements or menu items to access Campaign Management module
+        await page.mouse.wheel(0, window.innerHeight)
+        
+
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div/header/div[5]/button[2]').nth(0)
+        elem = frame.locator('xpath=html/body/div/div/div[2]/div/aside/div/div/div/div/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Attempt to access financial management pages to verify access restrictions for VOL role
+        # Use the 'Akıllı arama...' input (index 1) to search for 'Campaign' or equivalent to find Campaign Management module
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div[2]/div/aside/div/div/div[10]/div/button').nth(0)
+        elem = frame.locator('xpath=html/body/div/div/div/header/div[3]/div/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('Kampanya')
+        
+
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div/div/div[2]/div/aside/div/div/div/div/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Attempt to directly access financial management pages URL to verify HTTP 403 Forbidden response for VOL role
-        await page.goto('http://localhost:5173/financial-management', timeout=10000)
-        
-
-        # Final generic failing assertion since expected result is unknown
         assert False, 'Test plan execution failed: generic failure assertion'
         await asyncio.sleep(5)
     
