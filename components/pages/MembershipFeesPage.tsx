@@ -1,6 +1,6 @@
 /**
  * @fileoverview MembershipFeesPage Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -9,7 +9,6 @@ import { AlertTriangle, CheckCircle, CreditCard, Plus, Search } from 'lucide-rea
 import { motion } from 'motion/react';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { useIsMobile } from '../../hooks/useTouchDevice';
 import { MobileInfoCard, ResponsiveCardGrid } from '../ResponsiveCard';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
@@ -31,12 +30,11 @@ interface Member {
 
 /**
  * MembershipFeesPage function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
 export function MembershipFeesPage() {
-  const isMobile = useIsMobile();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
 
@@ -56,17 +54,17 @@ export function MembershipFeesPage() {
       paid: {
         label: 'Ödedi',
         variant: 'default' as const,
-        icon: <CheckCircle className="w-3 h-3" />,
+        icon: <CheckCircle className="h-3 w-3" />,
       },
       overdue: {
         label: 'Gecikmiş',
         variant: 'destructive' as const,
-        icon: <AlertTriangle className="w-3 h-3" />,
+        icon: <AlertTriangle className="h-3 w-3" />,
       },
       pending: {
         label: 'Beklemede',
         variant: 'secondary' as const,
-        icon: <AlertTriangle className="w-3 h-3" />,
+        icon: <AlertTriangle className="h-3 w-3" />,
       },
     };
     return configs[status];
@@ -81,46 +79,46 @@ export function MembershipFeesPage() {
   };
 
   return (
-    <div className="p-3 sm:p-6 lg:p-8 space-y-6 bg-slate-50/50 min-h-full safe-area">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div className="safe-area min-h-full space-y-6 bg-slate-50/50 p-3 sm:p-6 lg:p-8">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1 sm:space-y-2">
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 flex items-center gap-3">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-green-600 to-emerald-700 rounded-xl flex items-center justify-center">
-              <CreditCard className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+          <h1 className="flex items-center gap-3 text-2xl font-bold text-slate-800 sm:text-3xl">
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-green-600 to-emerald-700 sm:h-10 sm:w-10">
+              <CreditCard className="h-5 w-5 text-white sm:h-6 sm:w-6" />
             </div>
             Aidat Takibi
           </h1>
-          <p className="text-sm sm:text-base text-slate-600">
+          <p className="text-sm text-slate-600 sm:text-base">
             Üye aidatlarını takip edin ve yönetin
           </p>
         </div>
         <Button onClick={handleNewPayment} size="sm">
-          <Plus className="w-4 h-4 mr-2" />
+          <Plus className="mr-2 h-4 w-4" />
           Yeni Ödeme
         </Button>
       </div>
 
       <ResponsiveCardGrid cols={{ default: 2, sm: 4 }} gap="sm">
         <MobileInfoCard
-          icon={<CreditCard className="w-5 h-5" />}
+          icon={<CreditCard className="h-5 w-5" />}
           title="Toplam Üye"
           value={stats.totalMembers.toString()}
           color="text-blue-600"
         />
         <MobileInfoCard
-          icon={<CheckCircle className="w-5 h-5" />}
+          icon={<CheckCircle className="h-5 w-5" />}
           title="Ödeyen"
           value={stats.paidMembers.toString()}
           color="text-green-600"
         />
         <MobileInfoCard
-          icon={<AlertTriangle className="w-5 h-5" />}
+          icon={<AlertTriangle className="h-5 w-5" />}
           title="Geciken"
           value={stats.overdueMembers.toString()}
           color="text-red-600"
         />
         <MobileInfoCard
-          icon={<CreditCard className="w-5 h-5" />}
+          icon={<CreditCard className="h-5 w-5" />}
           title="Toplam Gelir"
           value={`₺${stats.totalRevenue.toLocaleString()}`}
           color="text-green-600"
@@ -129,10 +127,10 @@ export function MembershipFeesPage() {
 
       <Card>
         <CardContent className="p-4 sm:p-6">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div className="sm:col-span-2">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400" />
                 <Input
                   placeholder="Üye ara..."
                   value={searchQuery}
@@ -172,7 +170,7 @@ export function MembershipFeesPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
-                  className="flex items-center justify-between p-4 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
+                  className="flex items-center justify-between rounded-lg border border-slate-200 p-4 transition-colors hover:bg-slate-50"
                 >
                   <div>
                     <div className="font-medium text-slate-900">{member.name}</div>
@@ -185,7 +183,7 @@ export function MembershipFeesPage() {
                       • ₺{member.feeAmount}/ay
                     </div>
                     {member.monthsOwed > 0 && (
-                      <div className="text-xs text-red-600 mt-1">
+                      <div className="mt-1 text-xs text-red-600">
                         {member.monthsOwed} ay borcu var
                       </div>
                     )}

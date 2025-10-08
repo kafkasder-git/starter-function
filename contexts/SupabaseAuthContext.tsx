@@ -100,20 +100,26 @@ export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
               const csrfToken = generateCSRFToken(session.user.id);
               setCSRFToken(csrfToken);
               logger.info('CSRF token generated for user:', session.user.email);
-              
+
               // Log successful login
-              auditService.logLogin(session.user.id, session.user.email || 'unknown');
+              auditService
+                .logLogin(session.user.id, session.user.email ?? 'unknown')
+                .catch((err) => {
+                  logger.error('Error logging login:', err);
+                });
             }
-            logger.info('User signed in:', session?.user?.email);
+            logger.info('User signed in:', session.user.email);
             break;
           case 'SIGNED_OUT':
             // Revoke CSRF tokens on sign out
             if (user?.id) {
               revokeUserCSRFTokens(user.id);
               setCSRFToken(null);
-              
+
               // Log logout
-              auditService.logLogout(user.id, user.email || 'unknown');
+              auditService.logLogout(user.id, user.email ?? 'unknown').catch((err) => {
+                logger.error('Error logging logout:', err);
+              });
               logger.info('CSRF tokens revoked for user');
             }
             toast.success('Başarıyla çıkış yaptınız');
@@ -130,6 +136,12 @@ export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
           case 'USER_UPDATED':
             logger.info('User updated');
             break;
+          case 'INITIAL_SESSION':
+          case 'PASSWORD_RECOVERY':
+          case 'MFA_CHALLENGE_VERIFIED':
+            // Handle other auth events
+            logger.info('Auth event:', event);
+            break;
         }
       }
     });
@@ -140,6 +152,7 @@ export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
       mounted = false;
       subscription.unsubscribe();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Sign in with email and password
@@ -149,7 +162,8 @@ export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
 
     // Check if Supabase is properly configured
     if (!isSupabaseConfigured()) {
-      const errorMessage = 'Supabase konfigürasyonu eksik. Lütfen administrator ile iletişime geçin.';
+      const errorMessage =
+        'Supabase konfigürasyonu eksik. Lütfen administrator ile iletişime geçin.';
       setError(errorMessage);
       setIsLoading(false);
       toast.error(errorMessage);
@@ -157,7 +171,7 @@ export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
     }
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -199,7 +213,8 @@ export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
 
     // Check if Supabase is properly configured
     if (!isSupabaseConfigured()) {
-      const errorMessage = 'Supabase konfigürasyonu eksik. Lütfen administrator ile iletişime geçin.';
+      const errorMessage =
+        'Supabase konfigürasyonu eksik. Lütfen administrator ile iletişime geçin.';
       setError(errorMessage);
       setIsLoading(false);
       toast.error(errorMessage);
@@ -207,7 +222,7 @@ export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
     }
 
     try {
-      const { data, error } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -293,7 +308,8 @@ export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
 
     // Check if Supabase is properly configured
     if (!isSupabaseConfigured()) {
-      const errorMessage = 'Supabase konfigürasyonu eksik. Lütfen administrator ile iletişime geçin.';
+      const errorMessage =
+        'Supabase konfigürasyonu eksik. Lütfen administrator ile iletişime geçin.';
       setError(errorMessage);
       setIsLoading(false);
       toast.error(errorMessage);

@@ -213,13 +213,13 @@ export function BeneficiaryDetailPageComprehensive({
   const [isHelpRequestsModalOpen, setIsHelpRequestsModalOpen] = useState(false);
   const [helpRequests] = useState([]);
 
-  // Help Provided Modal States
-  const [isHelpProvidedModalOpen, setIsHelpProvidedModalOpen] = useState(false);
-  const [helpProvided] = useState([]);
+  // Help Provided Modal States (removed - not implemented)
+  // const [_isHelpProvidedModalOpen, _setIsHelpProvidedModalOpen] = useState(false);
+  // const [_helpProvided] = useState([]);
 
-  // Consent Modal States
-  const [isConsentModalOpen, setIsConsentModalOpen] = useState(false);
-  const [consents] = useState([]);
+  // Consent Modal States (removed - not implemented)
+  // const [_isConsentModalOpen, _setIsConsentModalOpen] = useState(false);
+  // const [_consents] = useState([]);
 
   // Completed Aids Modal States
   const [isCompletedAidsModalOpen, setIsCompletedAidsModalOpen] = useState(false);
@@ -418,34 +418,24 @@ export function BeneficiaryDetailPageComprehensive({
     setIsHelpRequestsModalOpen(false);
   };
 
-  // Help Provided Modal Handlers
+  // Help Provided Modal Handlers (removed - not implemented)
   const handleOpenHelpProvidedModal = () => {
-    setIsHelpProvidedModalOpen(true);
-  };
-  const handleCloseHelpProvidedModal = () => {
-    setIsHelpProvidedModalOpen(false);
+    // setIsHelpProvidedModalOpen(true);
+    toast.info('Bu özellik henüz aktif değil');
   };
 
-  // Consent Modal Handlers
+  // Consent Modal Handlers (removed - not implemented)
   const handleOpenConsentModal = () => {
-    setIsConsentModalOpen(true);
-  };
-  const handleCloseConsentModal = () => {
-    setIsConsentModalOpen(false);
+    // _setIsConsentModalOpen(true);
+    toast.info('Bu özellik henüz aktif değil');
   };
 
   // Completed Aids Modal Handlers
-  const handleOpenCompletedAidsModal = () => {
-    setIsCompletedAidsModalOpen(true);
-  };
   const handleCloseCompletedAidsModal = () => {
     setIsCompletedAidsModalOpen(false);
   };
 
   // Consent Declarations Modal Handlers
-  const handleOpenConsentDeclarationsModal = () => {
-    setIsConsentDeclarationsModalOpen(true);
-  };
   const handleCloseConsentDeclarationsModal = () => {
     setIsConsentDeclarationsModalOpen(false);
   };
@@ -611,7 +601,7 @@ export function BeneficiaryDetailPageComprehensive({
         try {
           await supabaseAdmin.rpc('exec_sql', { sql: policy.sql });
           logger.info('✅ Policy created:', policy.name);
-        } catch (error: any) {
+        } catch {
           // Policy zaten varsa hata verebilir, bu normal
           logger.info('ℹ️ Policy might already exist:', policy.name);
         }
@@ -974,11 +964,11 @@ export function BeneficiaryDetailPageComprehensive({
   };
 
   const getFileIcon = (fileType: string) => {
-    if (fileType.startsWith('image/')) return <ImageIcon className="w-4 h-4" />;
-    if (fileType.includes('pdf')) return <FileIcon className="w-4 h-4" />;
+    if (fileType.startsWith('image/')) return <ImageIcon className="h-4 w-4" />;
+    if (fileType.includes('pdf')) return <FileIcon className="h-4 w-4" />;
     if (fileType.includes('spreadsheet') || fileType.includes('excel'))
-      return <FileSpreadsheet className="w-4 h-4" />;
-    return <File className="w-4 h-4" />;
+      return <FileSpreadsheet className="h-4 w-4" />;
+    return <File className="h-4 w-4" />;
   };
 
   const filteredFiles =
@@ -997,9 +987,9 @@ export function BeneficiaryDetailPageComprehensive({
   // Show loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-neutral-100 flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-neutral-100">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4" />
+          <div className="border-primary mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2" />
           <p className="text-sm text-gray-600">İhtiyaç sahibi bilgileri yükleniyor...</p>
         </div>
       </div>
@@ -1009,11 +999,11 @@ export function BeneficiaryDetailPageComprehensive({
   // Show error state if no beneficiary data and not loading
   if (!loading && !beneficiaryData) {
     return (
-      <div className="min-h-screen bg-neutral-100 flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-neutral-100">
         <div className="text-center">
-          <AlertTriangle className="w-12 h-12 text-amber-500 mx-auto mb-4" />
-          <h2 className="text-lg font-semibold mb-2">İhtiyaç Sahibi Bulunamadı</h2>
-          <p className="text-sm text-gray-600 mb-4">Belirtilen ID ile bir kayıt bulunamadı.</p>
+          <AlertTriangle className="mx-auto mb-4 h-12 w-12 text-amber-500" />
+          <h2 className="mb-2 text-lg font-semibold">İhtiyaç Sahibi Bulunamadı</h2>
+          <p className="mb-4 text-sm text-gray-600">Belirtilen ID ile bir kayıt bulunamadı.</p>
           {onBack && (
             <Button onClick={onBack} variant="outline">
               Geri Dön
@@ -1061,16 +1051,16 @@ export function BeneficiaryDetailPageComprehensive({
               <>
                 <Button
                   onClick={handleSave}
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 text-sm font-medium rounded-md transition-colors"
+                  className="rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-700"
                 >
-                  <Save className="w-4 h-4 mr-2" />
+                  <Save className="mr-2 h-4 w-4" />
                   Kaydet
                 </Button>
                 <Button
                   onClick={handleCancel}
-                  className="bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 text-sm font-medium rounded-md transition-colors"
+                  className="rounded-md bg-rose-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-rose-700"
                 >
-                  <X className="w-4 h-4 mr-2" />
+                  <X className="mr-2 h-4 w-4" />
                   İptal
                 </Button>
               </>
@@ -1080,7 +1070,7 @@ export function BeneficiaryDetailPageComprehensive({
                   <Button
                     onClick={onBack}
                     variant="outline"
-                    className="px-4 py-2 text-sm font-medium rounded-md border-gray-300 hover:bg-gray-50 transition-colors"
+                    className="rounded-md border-gray-300 px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-50"
                   >
                     ← Geri
                   </Button>
@@ -1089,9 +1079,9 @@ export function BeneficiaryDetailPageComprehensive({
                   onClick={() => {
                     setEditMode(true);
                   }}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-sm font-medium rounded-md transition-colors"
+                  className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
                 >
-                  <Edit3 className="w-4 h-4 mr-2" />
+                  <Edit3 className="mr-2 h-4 w-4" />
                   Düzenle
                 </Button>
               </>
@@ -1102,37 +1092,37 @@ export function BeneficiaryDetailPageComprehensive({
 
       <div className="mx-auto grid max-w-[1400px] grid-cols-12 gap-4 px-4 py-4">
         {/* Main Form Content */}
-        <section className="col-span-12 lg:col-span-9 flex flex-col gap-4">
+        <section className="col-span-12 flex flex-col gap-4 lg:col-span-9">
           {/* Personal Information Section */}
-          <Card className="shadow-sm border border-gray-100 bg-white hover:shadow-md transition-shadow duration-200">
+          <Card className="border border-gray-100 bg-white shadow-sm transition-shadow duration-200 hover:shadow-md">
             <CardContent className="p-8">
               <div className="grid grid-cols-12 gap-6">
                 {/* Photo Section */}
                 <div className="col-span-12 sm:col-span-3">
                   <div className="space-y-4">
-                    <Label className="text-sm font-semibold text-gray-800 block">Fotoğraf</Label>
-                    <div className="photo-upload-area bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg hover:border-gray-400 transition-colors duration-200" />
+                    <Label className="block text-sm font-semibold text-gray-800">Fotoğraf</Label>
+                    <div className="photo-upload-area rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 transition-colors duration-200 hover:border-gray-400" />
                     <div className="flex items-center gap-2">
                       <Button size="sm" variant="outline" className="flex-1 text-xs">
-                        <Upload className="w-3 h-3 mr-1" />
+                        <Upload className="mr-1 h-3 w-3" />
                         Ekle
                       </Button>
                       <Button size="sm" variant="outline" className="flex-1 text-xs">
-                        <Trash2 className="w-3 h-3 mr-1" />
+                        <Trash2 className="mr-1 h-3 w-3" />
                         Sil
                       </Button>
                       <Button size="sm" variant="outline" className="flex-1 text-xs">
-                        <Edit3 className="w-3 h-3 mr-1" />
+                        <Edit3 className="mr-1 h-3 w-3" />
                         Düzenle
                       </Button>
                     </div>
                     <div className="space-y-3">
-                      <Label className="text-sm font-semibold text-gray-800 block">Öncelik</Label>
+                      <Label className="block text-sm font-semibold text-gray-800">Öncelik</Label>
                       <Select
                         disabled={!editMode}
                         value={(beneficiaryData?.priority_level as string) || 'medium'}
                       >
-                        <SelectTrigger className="h-10 text-sm border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200">
+                        <SelectTrigger className="h-10 border border-gray-300 text-sm transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
                           <SelectValue
                             placeholder={
                               beneficiaryData?.priority_level === 'high'
@@ -1157,13 +1147,13 @@ export function BeneficiaryDetailPageComprehensive({
                 </div>
 
                 {/* Identity Information */}
-                <div className="col-span-12 sm:col-span-9 grid grid-cols-12 gap-6">
-                  <div className="col-span-12 md:col-span-6 grid grid-cols-12 gap-4">
+                <div className="col-span-12 grid grid-cols-12 gap-6 sm:col-span-9">
+                  <div className="col-span-12 grid grid-cols-12 gap-4 md:col-span-6">
                     {/* Country & Status */}
                     <div className="col-span-4 space-y-2">
-                      <Label className="text-sm font-semibold text-gray-800 block">Ülke</Label>
+                      <Label className="block text-sm font-semibold text-gray-800">Ülke</Label>
                       <Select disabled={!editMode}>
-                        <SelectTrigger className="h-10 text-sm border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200">
+                        <SelectTrigger className="h-10 border border-gray-300 text-sm transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
                           <SelectValue placeholder="Türkiye" />
                         </SelectTrigger>
                         <SelectContent>
@@ -1175,12 +1165,12 @@ export function BeneficiaryDetailPageComprehensive({
                     </div>
 
                     <div className="col-span-8 space-y-2">
-                      <Label className="text-sm font-semibold text-gray-800 block">Durum</Label>
+                      <Label className="block text-sm font-semibold text-gray-800">Durum</Label>
                       <Select
                         disabled={!editMode}
                         value={(beneficiaryData?.status as string) || 'under_evaluation'}
                       >
-                        <SelectTrigger className="h-10 text-sm border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200">
+                        <SelectTrigger className="h-10 border border-gray-300 text-sm transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
                           <SelectValue
                             placeholder={
                               beneficiaryData?.status === '1' ||
@@ -1209,9 +1199,9 @@ export function BeneficiaryDetailPageComprehensive({
 
                     {/* Name Fields */}
                     <div className="col-span-6 space-y-2">
-                      <Label className="text-sm font-semibold text-gray-800 block">Adı</Label>
+                      <Label className="block text-sm font-semibold text-gray-800">Adı</Label>
                       <Input
-                        className="h-10 text-sm border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                        className="h-10 border border-gray-300 text-sm transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                         placeholder="Ad giriniz"
                         value={(editableData?.name as string) || ''}
                         onChange={(e) => {
@@ -1222,9 +1212,9 @@ export function BeneficiaryDetailPageComprehensive({
                     </div>
 
                     <div className="col-span-6 space-y-2">
-                      <Label className="text-sm font-semibold text-gray-800 block">Soyadı</Label>
+                      <Label className="block text-sm font-semibold text-gray-800">Soyadı</Label>
                       <Input
-                        className="h-10 text-sm border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                        className="h-10 border border-gray-300 text-sm transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                         placeholder="Soyad giriniz"
                         value={(editableData?.surname as string) || ''}
                         onChange={(e) => {
@@ -1236,9 +1226,9 @@ export function BeneficiaryDetailPageComprehensive({
 
                     {/* Nationality & Country */}
                     <div className="col-span-6 space-y-2">
-                      <Label className="text-sm font-semibold text-gray-800 block">Uyruk</Label>
+                      <Label className="block text-sm font-semibold text-gray-800">Uyruk</Label>
                       <Input
-                        className="h-10 text-sm border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                        className="h-10 border border-gray-300 text-sm transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                         placeholder="Uyruk giriniz"
                         value={(editableData?.nationality as string) || ''}
                         onChange={(e) => {
@@ -1252,9 +1242,9 @@ export function BeneficiaryDetailPageComprehensive({
                     </div>
 
                     <div className="col-span-6 space-y-2">
-                      <Label className="text-sm font-semibold text-gray-800 block">Ülke</Label>
+                      <Label className="block text-sm font-semibold text-gray-800">Ülke</Label>
                       <Input
-                        className="h-10 text-sm border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                        className="h-10 border border-gray-300 text-sm transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                         placeholder="Ülke giriniz"
                         value={(editableData?.country as string) || ''}
                         onChange={(e) => {
@@ -1266,12 +1256,12 @@ export function BeneficiaryDetailPageComprehensive({
 
                     {/* Email */}
                     <div className="col-span-12 space-y-2">
-                      <Label className="text-sm font-semibold text-gray-800 block">
+                      <Label className="block text-sm font-semibold text-gray-800">
                         E-Posta Adresi
                       </Label>
                       <Input
                         type="email"
-                        className="h-10 text-sm border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                        className="h-10 border border-gray-300 text-sm transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                         placeholder="E-posta giriniz"
                         readOnly={!editMode}
                       />
@@ -1279,9 +1269,9 @@ export function BeneficiaryDetailPageComprehensive({
 
                     {/* ID Number & Central Control */}
                     <div className="col-span-6 space-y-2">
-                      <Label className="text-sm font-semibold text-gray-800 block">Kimlik No</Label>
+                      <Label className="block text-sm font-semibold text-gray-800">Kimlik No</Label>
                       <Input
-                        className="h-10 text-sm border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                        className="h-10 border border-gray-300 text-sm transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                         placeholder="Kimlik No"
                         value={(editableData?.id_number as string) || ''}
                         onChange={(e) => {
@@ -1291,10 +1281,10 @@ export function BeneficiaryDetailPageComprehensive({
                       />
                     </div>
 
-                    <div className="col-span-6 space-y-2 flex items-end">
+                    <div className="col-span-6 flex items-end space-y-2">
                       <Button
                         variant="link"
-                        className="inline-action-link h-10 px-0 text-sm text-blue-600 hover:text-blue-800 underline font-medium transition-colors duration-200"
+                        className="inline-action-link h-10 px-0 text-sm font-medium text-blue-600 underline transition-colors duration-200 hover:text-blue-800"
                         disabled={!editMode}
                       >
                         Merkezi Kontrolü Yap
@@ -1303,11 +1293,11 @@ export function BeneficiaryDetailPageComprehensive({
 
                     {/* Marital Status & Religion */}
                     <div className="col-span-6 space-y-2">
-                      <Label className="text-sm font-semibold text-gray-800 block">
+                      <Label className="block text-sm font-semibold text-gray-800">
                         Medeni Hâli
                       </Label>
                       <Select disabled={!editMode}>
-                        <SelectTrigger className="h-10 text-sm border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200">
+                        <SelectTrigger className="h-10 border border-gray-300 text-sm transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
                           <SelectValue placeholder="Bekâr" />
                         </SelectTrigger>
                         <SelectContent>
@@ -1320,9 +1310,9 @@ export function BeneficiaryDetailPageComprehensive({
                     </div>
 
                     <div className="col-span-6 space-y-2">
-                      <Label className="text-sm font-semibold text-gray-800 block">Din</Label>
+                      <Label className="block text-sm font-semibold text-gray-800">Din</Label>
                       <Select disabled={!editMode}>
-                        <SelectTrigger className="h-10 text-sm border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200">
+                        <SelectTrigger className="h-10 border border-gray-300 text-sm transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
                           <SelectValue placeholder="İnanç" />
                         </SelectTrigger>
                         <SelectContent>
@@ -1335,11 +1325,11 @@ export function BeneficiaryDetailPageComprehensive({
 
                     {/* Spouse & Parent Info */}
                     <div className="col-span-6 space-y-2">
-                      <Label className="text-sm font-semibold text-gray-800 block">
+                      <Label className="block text-sm font-semibold text-gray-800">
                         Eş Bilgisi
                       </Label>
                       <Select disabled={!editMode}>
-                        <SelectTrigger className="h-10 text-sm border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200">
+                        <SelectTrigger className="h-10 border border-gray-300 text-sm transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
                           <SelectValue placeholder="Yok" />
                         </SelectTrigger>
                         <SelectContent>
@@ -1350,11 +1340,11 @@ export function BeneficiaryDetailPageComprehensive({
                     </div>
 
                     <div className="col-span-6 space-y-2">
-                      <Label className="text-sm font-semibold text-gray-800 block">
+                      <Label className="block text-sm font-semibold text-gray-800">
                         Baba / Anne
                       </Label>
                       <Select disabled={!editMode}>
-                        <SelectTrigger className="h-10 text-sm border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200">
+                        <SelectTrigger className="h-10 border border-gray-300 text-sm transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
                           <SelectValue placeholder="—" />
                         </SelectTrigger>
                         <SelectContent>
@@ -1368,11 +1358,11 @@ export function BeneficiaryDetailPageComprehensive({
 
                     {/* Sponsorship & File Number */}
                     <div className="col-span-6 space-y-2">
-                      <Label className="text-sm font-semibold text-gray-800 block">
+                      <Label className="block text-sm font-semibold text-gray-800">
                         Sponsorluk Türü
                       </Label>
                       <Select disabled={!editMode}>
-                        <SelectTrigger className="h-10 text-sm border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200">
+                        <SelectTrigger className="h-10 border border-gray-300 text-sm transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
                           <SelectValue placeholder="Yok" />
                         </SelectTrigger>
                         <SelectContent>
@@ -1384,11 +1374,11 @@ export function BeneficiaryDetailPageComprehensive({
                     </div>
 
                     <div className="col-span-6 space-y-2">
-                      <Label className="text-sm font-semibold text-gray-800 block">
+                      <Label className="block text-sm font-semibold text-gray-800">
                         Dosya Numarası
                       </Label>
                       <Input
-                        className="h-10 text-sm border border-gray-300 bg-gray-50 font-medium text-gray-700"
+                        className="h-10 border border-gray-300 bg-gray-50 text-sm font-medium text-gray-700"
                         value={beneficiaryData?.id ? `#${beneficiaryData.id}` : ''}
                         placeholder="Dosya No"
                         readOnly={true}
@@ -1398,18 +1388,18 @@ export function BeneficiaryDetailPageComprehensive({
                   </div>
 
                   {/* Contact Information */}
-                  <div className="col-span-12 md:col-span-6 grid grid-cols-12 gap-3">
+                  <div className="col-span-12 grid grid-cols-12 gap-3 md:col-span-6">
                     {/* Phone Number */}
                     <div className="col-span-6 space-y-2">
-                      <Label className="text-sm font-semibold text-gray-800 block">
+                      <Label className="block text-sm font-semibold text-gray-800">
                         Cep Telefonu
                       </Label>
                       <div className="flex">
-                        <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-sm text-gray-600">
+                        <span className="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-50 px-3 text-sm text-gray-600">
                           +90
                         </span>
                         <Input
-                          className="h-10 text-sm rounded-l-none border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                          className="h-10 rounded-l-none border border-gray-300 text-sm transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                           placeholder="5XX XXX XX XX"
                           value={(editableData?.phone as string) || ''}
                           onChange={(e) => {
@@ -1421,11 +1411,11 @@ export function BeneficiaryDetailPageComprehensive({
                     </div>
 
                     <div className="col-span-6 space-y-2">
-                      <Label className="text-sm font-semibold text-gray-800 block">
+                      <Label className="block text-sm font-semibold text-gray-800">
                         İletişim Tercihi
                       </Label>
                       <Select disabled={!editMode}>
-                        <SelectTrigger className="h-10 text-sm border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200">
+                        <SelectTrigger className="h-10 border border-gray-300 text-sm transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
                           <SelectValue placeholder="Telefon" />
                         </SelectTrigger>
                         <SelectContent>
@@ -1439,11 +1429,11 @@ export function BeneficiaryDetailPageComprehensive({
 
                     {/* Location */}
                     <div className="col-span-6 space-y-2">
-                      <Label className="text-sm font-semibold text-gray-800 block">
+                      <Label className="block text-sm font-semibold text-gray-800">
                         Şehir / Bölge
                       </Label>
                       <Input
-                        className="h-10 text-sm border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                        className="h-10 border border-gray-300 text-sm transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                         placeholder="Şehir giriniz"
                         value={(editableData?.city as string) || ''}
                         onChange={(e) => {
@@ -1454,9 +1444,9 @@ export function BeneficiaryDetailPageComprehensive({
                     </div>
 
                     <div className="col-span-6 space-y-2">
-                      <Label className="text-sm font-semibold text-gray-800 block">Yerleşim</Label>
+                      <Label className="block text-sm font-semibold text-gray-800">Yerleşim</Label>
                       <Input
-                        className="h-10 text-sm border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                        className="h-10 border border-gray-300 text-sm transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                         placeholder="Yerleşim yeri giriniz"
                         value={(editableData?.settlement as string) || ''}
                         onChange={(e) => {
@@ -1467,9 +1457,9 @@ export function BeneficiaryDetailPageComprehensive({
                     </div>
 
                     <div className="col-span-6 space-y-2">
-                      <Label className="text-sm font-semibold text-gray-800 block">Mahalle</Label>
+                      <Label className="block text-sm font-semibold text-gray-800">Mahalle</Label>
                       <Input
-                        className="h-10 text-sm border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                        className="h-10 border border-gray-300 text-sm transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                         placeholder="Mahalle giriniz"
                         value={(editableData?.neighborhood as string) || ''}
                         onChange={(e) => {
@@ -1483,11 +1473,11 @@ export function BeneficiaryDetailPageComprehensive({
                     </div>
 
                     <div className="col-span-6 space-y-2">
-                      <Label className="text-sm font-semibold text-gray-800 block">
+                      <Label className="block text-sm font-semibold text-gray-800">
                         Mahalle / Köy
                       </Label>
                       <Select disabled={!editMode}>
-                        <SelectTrigger className="h-10 text-sm border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200">
+                        <SelectTrigger className="h-10 border border-gray-300 text-sm transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
                           <SelectValue placeholder="—" />
                         </SelectTrigger>
                         <SelectContent>
@@ -1498,9 +1488,9 @@ export function BeneficiaryDetailPageComprehensive({
 
                     {/* Address */}
                     <div className="col-span-12 space-y-2">
-                      <Label className="text-sm font-semibold text-gray-800 block">Adres</Label>
+                      <Label className="block text-sm font-semibold text-gray-800">Adres</Label>
                       <Textarea
-                        className="text-sm resize-none border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                        className="resize-none border border-gray-300 text-sm transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                         rows={3}
                         placeholder="Adres detayı"
                         value={(editableData?.address as string) || ''}
@@ -1513,11 +1503,11 @@ export function BeneficiaryDetailPageComprehensive({
 
                     {/* Housing & Records */}
                     <div className="col-span-6 space-y-2">
-                      <Label className="text-sm font-semibold text-gray-800 block">
+                      <Label className="block text-sm font-semibold text-gray-800">
                         Ev / Arazi
                       </Label>
                       <Select disabled={!editMode}>
-                        <SelectTrigger className="h-10 text-sm border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200">
+                        <SelectTrigger className="h-10 border border-gray-300 text-sm transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
                           <SelectValue placeholder="Kiracı" />
                         </SelectTrigger>
                         <SelectContent>
@@ -1528,7 +1518,7 @@ export function BeneficiaryDetailPageComprehensive({
                       </Select>
                     </div>
 
-                    <div className="col-span-6 space-y-2 flex items-end">
+                    <div className="col-span-6 flex items-end space-y-2">
                       <div className="flex items-center space-x-2">
                         <Checkbox id="delete-record" disabled={!editMode} />
                         <Label
@@ -1542,11 +1532,11 @@ export function BeneficiaryDetailPageComprehensive({
 
                     {/* Family Information */}
                     <div className="col-span-6 space-y-2">
-                      <Label className="text-sm font-semibold text-gray-800 block">
+                      <Label className="block text-sm font-semibold text-gray-800">
                         Bağlı Yetim
                       </Label>
                       <Select disabled={!editMode}>
-                        <SelectTrigger className="h-10 text-sm border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200">
+                        <SelectTrigger className="h-10 border border-gray-300 text-sm transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
                           <SelectValue placeholder="Yok" />
                         </SelectTrigger>
                         <SelectContent>
@@ -1557,14 +1547,14 @@ export function BeneficiaryDetailPageComprehensive({
                     </div>
 
                     <div className="col-span-6 space-y-2">
-                      <Label className="text-sm font-semibold text-gray-800 block">
+                      <Label className="block text-sm font-semibold text-gray-800">
                         Ailedeki Kişi Sayısı
                       </Label>
                       <Select
                         disabled={!editMode}
                         value={(beneficiaryData?.family_size as number)?.toString() || ''}
                       >
-                        <SelectTrigger className="h-10 text-sm border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200">
+                        <SelectTrigger className="h-10 border border-gray-300 text-sm transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
                           <SelectValue
                             placeholder={
                               (beneficiaryData?.family_size as number)?.toString() || '—'
@@ -1592,10 +1582,10 @@ export function BeneficiaryDetailPageComprehensive({
           {/* Detailed Information Cards */}
           <div className="grid grid-cols-12 gap-4">
             {/* Identity Information */}
-            <Card className="col-span-12 md:col-span-6 xl:col-span-3 shadow-sm border-0 bg-white">
+            <Card className="col-span-12 border-0 bg-white shadow-sm md:col-span-6 xl:col-span-3">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                  <User className="w-4 h-4 text-primary" />
+                <CardTitle className="flex items-center gap-2 text-sm font-semibold">
+                  <User className="text-primary h-4 w-4" />
                   Kimlik Bilgileri
                 </CardTitle>
               </CardHeader>
@@ -1603,7 +1593,7 @@ export function BeneficiaryDetailPageComprehensive({
                 <div className="space-y-1">
                   <Label className="text-xs font-medium text-gray-700">Baba Adı</Label>
                   <Input
-                    className="h-9 text-sm border border-gray-300 focus:border-blue-500"
+                    className="h-9 border border-gray-300 text-sm focus:border-blue-500"
                     value={(editableData?.baba_adi as string) || ''}
                     onChange={(e) => {
                       setEditableData((prev: any) => ({ ...prev, baba_adi: e.target.value }));
@@ -1614,7 +1604,7 @@ export function BeneficiaryDetailPageComprehensive({
                 <div className="space-y-1">
                   <Label className="text-xs font-medium text-gray-700">Anne Adı</Label>
                   <Input
-                    className="h-9 text-sm border border-gray-300 focus:border-blue-500"
+                    className="h-9 border border-gray-300 text-sm focus:border-blue-500"
                     value={(editableData?.anne_adi as string) || ''}
                     onChange={(e) => {
                       setEditableData((prev: any) => ({ ...prev, anne_adi: e.target.value }));
@@ -1625,14 +1615,14 @@ export function BeneficiaryDetailPageComprehensive({
                 <div className="space-y-1">
                   <Label className="text-xs font-medium text-gray-700">İkametgah</Label>
                   <Input
-                    className="h-9 text-sm border border-gray-300 focus:border-blue-500"
+                    className="h-9 border border-gray-300 text-sm focus:border-blue-500"
                     readOnly={!editMode}
                   />
                 </div>
                 <div className="space-y-1">
                   <Label className="text-xs font-medium text-gray-700">Kimlik Belgesi Türü</Label>
                   <Select disabled={!editMode}>
-                    <SelectTrigger className="h-9 text-sm border border-gray-300 focus:border-blue-500">
+                    <SelectTrigger className="h-9 border border-gray-300 text-sm focus:border-blue-500">
                       <SelectValue placeholder="—" />
                     </SelectTrigger>
                     <SelectContent>
@@ -1644,28 +1634,28 @@ export function BeneficiaryDetailPageComprehensive({
                 <div className="space-y-1">
                   <Label className="text-xs font-medium text-gray-700">Kimlik Veriliş Yeri</Label>
                   <Input
-                    className="h-9 text-sm border border-gray-300 focus:border-blue-500"
+                    className="h-9 border border-gray-300 text-sm focus:border-blue-500"
                     readOnly={!editMode}
                   />
                 </div>
                 <div className="space-y-1">
                   <Label className="text-xs font-medium text-gray-700">Seri Numarası</Label>
                   <Input
-                    className="h-9 text-sm border border-gray-300 focus:border-blue-500"
+                    className="h-9 border border-gray-300 text-sm focus:border-blue-500"
                     readOnly={!editMode}
                   />
                 </div>
                 <div className="space-y-1">
                   <Label className="text-xs font-medium text-gray-700">Önceki Unvanı (Varsa)</Label>
                   <Input
-                    className="h-9 text-sm border border-gray-300 focus:border-blue-500"
+                    className="h-9 border border-gray-300 text-sm focus:border-blue-500"
                     readOnly={!editMode}
                   />
                 </div>
                 <div className="space-y-1">
                   <Label className="text-xs font-medium text-gray-700">Önceki İsmi (Varsa)</Label>
                   <Select disabled={!editMode}>
-                    <SelectTrigger className="h-9 text-sm border border-gray-300 focus:border-blue-500">
+                    <SelectTrigger className="h-9 border border-gray-300 text-sm focus:border-blue-500">
                       <SelectValue placeholder="Yok" />
                     </SelectTrigger>
                     <SelectContent>
@@ -1678,10 +1668,10 @@ export function BeneficiaryDetailPageComprehensive({
             </Card>
 
             {/* Passport and Visa */}
-            <Card className="col-span-12 md:col-span-6 xl:col-span-3 shadow-sm border-0 bg-white">
+            <Card className="col-span-12 border-0 bg-white shadow-sm md:col-span-6 xl:col-span-3">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                  <FileText className="w-4 h-4 text-primary" />
+                <CardTitle className="flex items-center gap-2 text-sm font-semibold">
+                  <FileText className="text-primary h-4 w-4" />
                   Pasaport ve Vize
                 </CardTitle>
               </CardHeader>
@@ -1689,14 +1679,14 @@ export function BeneficiaryDetailPageComprehensive({
                 <div className="space-y-1">
                   <Label className="text-xs font-medium text-gray-700">Pasaport Türü</Label>
                   <Input
-                    className="h-9 text-sm border border-gray-300 focus:border-blue-500"
+                    className="h-9 border border-gray-300 text-sm focus:border-blue-500"
                     readOnly={!editMode}
                   />
                 </div>
                 <div className="space-y-1">
                   <Label className="text-xs font-medium text-gray-700">Pasaport Numarası</Label>
                   <Input
-                    className="h-9 text-sm border border-gray-300 focus:border-blue-500"
+                    className="h-9 border border-gray-300 text-sm focus:border-blue-500"
                     readOnly={!editMode}
                   />
                 </div>
@@ -1706,7 +1696,7 @@ export function BeneficiaryDetailPageComprehensive({
                   </Label>
                   <Input
                     type="date"
-                    className="h-9 text-sm border border-gray-300 focus:border-blue-500"
+                    className="h-9 border border-gray-300 text-sm focus:border-blue-500"
                     readOnly={!editMode}
                   />
                 </div>
@@ -1714,14 +1704,14 @@ export function BeneficiaryDetailPageComprehensive({
                   <Label className="text-xs font-medium text-gray-700">Vize Geçiş Tarihi</Label>
                   <Input
                     type="date"
-                    className="h-9 text-sm border border-gray-300 focus:border-blue-500"
+                    className="h-9 border border-gray-300 text-sm focus:border-blue-500"
                     readOnly={!editMode}
                   />
                 </div>
                 <div className="space-y-1">
                   <Label className="text-xs font-medium text-gray-700">Vize Bitiş Tarihi</Label>
                   <Input
-                    className="h-9 text-sm border border-gray-300 focus:border-blue-500"
+                    className="h-9 border border-gray-300 text-sm focus:border-blue-500"
                     readOnly={!editMode}
                   />
                 </div>
@@ -1730,14 +1720,14 @@ export function BeneficiaryDetailPageComprehensive({
                     Giriş / Çıkış Bilgileri
                   </Label>
                   <Input
-                    className="h-9 text-sm border border-gray-300 focus:border-blue-500"
+                    className="h-9 border border-gray-300 text-sm focus:border-blue-500"
                     readOnly={!editMode}
                   />
                 </div>
                 <div className="space-y-1">
                   <Label className="text-xs font-medium text-gray-700">Yerel Dönüş Bilgisi</Label>
                   <Input
-                    className="h-9 text-sm border border-gray-300 focus:border-blue-500"
+                    className="h-9 border border-gray-300 text-sm focus:border-blue-500"
                     readOnly={!editMode}
                   />
                 </div>
@@ -1745,10 +1735,10 @@ export function BeneficiaryDetailPageComprehensive({
             </Card>
 
             {/* Personal Data */}
-            <Card className="col-span-12 md:col-span-6 xl:col-span-3 shadow-sm border-0 bg-white">
+            <Card className="col-span-12 border-0 bg-white shadow-sm md:col-span-6 xl:col-span-3">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-primary" />
+                <CardTitle className="flex items-center gap-2 text-sm font-semibold">
+                  <Calendar className="text-primary h-4 w-4" />
                   Kişisel Veriler
                 </CardTitle>
               </CardHeader>
@@ -1756,7 +1746,7 @@ export function BeneficiaryDetailPageComprehensive({
                 <div className="space-y-1">
                   <Label className="text-xs font-medium text-gray-700">Cinsiyet</Label>
                   <Select disabled={!editMode}>
-                    <SelectTrigger className="h-9 text-sm border border-gray-300 focus:border-blue-500">
+                    <SelectTrigger className="h-9 border border-gray-300 text-sm focus:border-blue-500">
                       <SelectValue placeholder="Kadın" />
                     </SelectTrigger>
                     <SelectContent>
@@ -1769,7 +1759,7 @@ export function BeneficiaryDetailPageComprehensive({
                   <Label className="text-xs font-medium text-gray-700">Doğum Tarihi</Label>
                   <Input
                     type="date"
-                    className="h-9 text-sm border border-gray-300 focus:border-blue-500"
+                    className="h-9 border border-gray-300 text-sm focus:border-blue-500"
                     value={(editableData?.dogum_tarihi as string) || ''}
                     onChange={(e) => {
                       setEditableData((prev: any) => ({ ...prev, dogum_tarihi: e.target.value }));
@@ -1780,7 +1770,7 @@ export function BeneficiaryDetailPageComprehensive({
                 <div className="space-y-1">
                   <Label className="text-xs font-medium text-gray-700">Doğum Yeri</Label>
                   <Input
-                    className="h-9 text-sm border border-gray-300 focus:border-blue-500"
+                    className="h-9 border border-gray-300 text-sm focus:border-blue-500"
                     value={(editableData?.dogum_yeri as string) || ''}
                     onChange={(e) => {
                       setEditableData((prev: any) => ({ ...prev, dogum_yeri: e.target.value }));
@@ -1791,7 +1781,7 @@ export function BeneficiaryDetailPageComprehensive({
                 <div className="space-y-1">
                   <Label className="text-xs font-medium text-gray-700">Kan Grubu</Label>
                   <Select disabled={!editMode}>
-                    <SelectTrigger className="h-9 text-sm border border-gray-300 focus:border-blue-500">
+                    <SelectTrigger className="h-9 border border-gray-300 text-sm focus:border-blue-500">
                       <SelectValue placeholder="—" />
                     </SelectTrigger>
                     <SelectContent>
@@ -1809,7 +1799,7 @@ export function BeneficiaryDetailPageComprehensive({
                 <div className="space-y-1">
                   <Label className="text-xs font-medium text-gray-700">Eğitim Durumu</Label>
                   <Select disabled={!editMode}>
-                    <SelectTrigger className="h-9 text-sm border border-gray-300 focus:border-blue-500">
+                    <SelectTrigger className="h-9 border border-gray-300 text-sm focus:border-blue-500">
                       <SelectValue placeholder="—" />
                     </SelectTrigger>
                     <SelectContent>
@@ -1824,7 +1814,7 @@ export function BeneficiaryDetailPageComprehensive({
                 <div className="space-y-1">
                   <Label className="text-xs font-medium text-gray-700">Medeni Hâl</Label>
                   <Select disabled={!editMode}>
-                    <SelectTrigger className="h-9 text-sm border border-gray-300 focus:border-blue-500">
+                    <SelectTrigger className="h-9 border border-gray-300 text-sm focus:border-blue-500">
                       <SelectValue placeholder="—" />
                     </SelectTrigger>
                     <SelectContent>
@@ -1838,7 +1828,7 @@ export function BeneficiaryDetailPageComprehensive({
                 <div className="space-y-1">
                   <Label className="text-xs font-medium text-gray-700">Din</Label>
                   <Select disabled={!editMode}>
-                    <SelectTrigger className="h-9 text-sm border border-gray-300 focus:border-blue-500">
+                    <SelectTrigger className="h-9 border border-gray-300 text-sm focus:border-blue-500">
                       <SelectValue placeholder="—" />
                     </SelectTrigger>
                     <SelectContent>
@@ -1851,7 +1841,7 @@ export function BeneficiaryDetailPageComprehensive({
                 <div className="space-y-1">
                   <Label className="text-xs font-medium text-gray-700">Askerlik Kaydı</Label>
                   <Select disabled={!editMode}>
-                    <SelectTrigger className="h-9 text-sm border border-gray-300 focus:border-blue-500">
+                    <SelectTrigger className="h-9 border border-gray-300 text-sm focus:border-blue-500">
                       <SelectValue placeholder="Yok" />
                     </SelectTrigger>
                     <SelectContent>
@@ -1865,10 +1855,10 @@ export function BeneficiaryDetailPageComprehensive({
             </Card>
 
             {/* Work and Income */}
-            <Card className="col-span-12 md:col-span-6 xl:col-span-3 shadow-sm border-0 bg-white">
+            <Card className="col-span-12 border-0 bg-white shadow-sm md:col-span-6 xl:col-span-3">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                  <Users className="w-4 h-4 text-primary" />
+                <CardTitle className="flex items-center gap-2 text-sm font-semibold">
+                  <Users className="text-primary h-4 w-4" />
                   İş ve Gelir Durumu
                 </CardTitle>
               </CardHeader>
@@ -1876,7 +1866,7 @@ export function BeneficiaryDetailPageComprehensive({
                 <div className="space-y-1">
                   <Label className="text-xs font-medium text-gray-700">Yaşadığı Yer</Label>
                   <Select disabled={!editMode}>
-                    <SelectTrigger className="h-9 text-sm border border-gray-300 focus:border-blue-500">
+                    <SelectTrigger className="h-9 border border-gray-300 text-sm focus:border-blue-500">
                       <SelectValue placeholder="Kira" />
                     </SelectTrigger>
                     <SelectContent>
@@ -1890,14 +1880,14 @@ export function BeneficiaryDetailPageComprehensive({
                   <div className="space-y-1">
                     <Label className="text-xs font-medium text-gray-700">Aylık Gelir</Label>
                     <Input
-                      className="h-9 text-sm border border-gray-300 focus:border-blue-500"
+                      className="h-9 border border-gray-300 text-sm focus:border-blue-500"
                       readOnly={!editMode}
                     />
                   </div>
                   <div className="space-y-1">
                     <Label className="text-xs font-medium text-gray-700">Aylık Gider</Label>
                     <Input
-                      className="h-9 text-sm border border-gray-300 focus:border-blue-500"
+                      className="h-9 border border-gray-300 text-sm focus:border-blue-500"
                       readOnly={!editMode}
                     />
                   </div>
@@ -1905,7 +1895,7 @@ export function BeneficiaryDetailPageComprehensive({
                 <div className="space-y-1">
                   <Label className="text-xs font-medium text-gray-700">Sosyal Güvence</Label>
                   <Select disabled={!editMode}>
-                    <SelectTrigger className="h-9 text-sm border border-gray-300 focus:border-blue-500">
+                    <SelectTrigger className="h-9 border border-gray-300 text-sm focus:border-blue-500">
                       <SelectValue placeholder="Yok" />
                     </SelectTrigger>
                     <SelectContent>
@@ -1918,7 +1908,7 @@ export function BeneficiaryDetailPageComprehensive({
                 <div className="space-y-1">
                   <Label className="text-xs font-medium text-gray-700">Çalıştığı Sektör</Label>
                   <Select disabled={!editMode}>
-                    <SelectTrigger className="h-9 text-sm border border-gray-300 focus:border-blue-500">
+                    <SelectTrigger className="h-9 border border-gray-300 text-sm focus:border-blue-500">
                       <SelectValue placeholder="—" />
                     </SelectTrigger>
                     <SelectContent>
@@ -1932,7 +1922,7 @@ export function BeneficiaryDetailPageComprehensive({
                 <div className="space-y-1">
                   <Label className="text-xs font-medium text-gray-700">İş Durumu</Label>
                   <Select disabled={!editMode}>
-                    <SelectTrigger className="h-9 text-sm border border-gray-300 focus:border-blue-500">
+                    <SelectTrigger className="h-9 border border-gray-300 text-sm focus:border-blue-500">
                       <SelectValue placeholder="İşsiz" />
                     </SelectTrigger>
                     <SelectContent>
@@ -1945,14 +1935,14 @@ export function BeneficiaryDetailPageComprehensive({
                 <div className="space-y-1">
                   <Label className="text-xs font-medium text-gray-700">Meslek Tanımı (kısa)</Label>
                   <Input
-                    className="h-9 text-sm border border-gray-300 focus:border-blue-500"
+                    className="h-9 border border-gray-300 text-sm focus:border-blue-500"
                     readOnly={!editMode}
                   />
                 </div>
                 <div className="space-y-1">
                   <Label className="text-xs font-medium text-gray-700">İlave Açıklamalar</Label>
                   <Textarea
-                    className="text-sm resize-none border border-gray-300 focus:border-blue-500"
+                    className="resize-none border border-gray-300 text-sm focus:border-blue-500"
                     rows={2}
                     readOnly={!editMode}
                   />
@@ -1994,20 +1984,20 @@ export function BeneficiaryDetailPageComprehensive({
           </div>
 
           {/* Health Status */}
-          <Card className="shadow-sm border-0 bg-white">
+          <Card className="border-0 bg-white shadow-sm">
             <CardHeader className="pb-4">
-              <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                <Heart className="w-4 h-4 text-primary" />
+              <CardTitle className="flex items-center gap-2 text-sm font-semibold">
+                <Heart className="text-primary h-4 w-4" />
                 Sağlık Durumu
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-12 gap-4">
-                <div className="col-span-12 lg:col-span-4 grid grid-cols-2 gap-3">
+                <div className="col-span-12 grid grid-cols-2 gap-3 lg:col-span-4">
                   <div className="space-y-1">
                     <Label className="text-xs font-medium text-gray-700">Kan Grubu</Label>
                     <Select disabled={!editMode}>
-                      <SelectTrigger className="h-9 text-sm border border-gray-300 focus:border-blue-500">
+                      <SelectTrigger className="h-9 border border-gray-300 text-sm focus:border-blue-500">
                         <SelectValue placeholder="—" />
                       </SelectTrigger>
                       <SelectContent>
@@ -2025,7 +2015,7 @@ export function BeneficiaryDetailPageComprehensive({
                   <div className="space-y-1">
                     <Label className="text-xs font-medium text-gray-700">Sigara Kullanımı</Label>
                     <Select disabled={!editMode}>
-                      <SelectTrigger className="h-9 text-sm border border-gray-300 focus:border-blue-500">
+                      <SelectTrigger className="h-9 border border-gray-300 text-sm focus:border-blue-500">
                         <SelectValue placeholder="—" />
                       </SelectTrigger>
                       <SelectContent>
@@ -2038,7 +2028,7 @@ export function BeneficiaryDetailPageComprehensive({
                   <div className="col-span-2 space-y-1">
                     <Label className="text-xs font-medium text-gray-700">Engel Durumu</Label>
                     <Select disabled={!editMode}>
-                      <SelectTrigger className="h-9 text-sm border border-gray-300 focus:border-blue-500">
+                      <SelectTrigger className="h-9 border border-gray-300 text-sm focus:border-blue-500">
                         <SelectValue placeholder="—" />
                       </SelectTrigger>
                       <SelectContent>
@@ -2055,7 +2045,7 @@ export function BeneficiaryDetailPageComprehensive({
                       Kullanılan Protezler
                     </Label>
                     <Input
-                      className="h-9 text-sm border border-gray-300 focus:border-blue-500"
+                      className="h-9 border border-gray-300 text-sm focus:border-blue-500"
                       readOnly={!editMode}
                     />
                   </div>
@@ -2064,7 +2054,7 @@ export function BeneficiaryDetailPageComprehensive({
                       Düzenli Kullanılan İlaçlar
                     </Label>
                     <Input
-                      className="h-9 text-sm border border-gray-300 focus:border-blue-500"
+                      className="h-9 border border-gray-300 text-sm focus:border-blue-500"
                       readOnly={!editMode}
                     />
                   </div>
@@ -2073,7 +2063,7 @@ export function BeneficiaryDetailPageComprehensive({
                       Geçirilen Ameliyatlar
                     </Label>
                     <Input
-                      className="h-9 text-sm border border-gray-300 focus:border-blue-500"
+                      className="h-9 border border-gray-300 text-sm focus:border-blue-500"
                       readOnly={!editMode}
                     />
                   </div>
@@ -2082,7 +2072,7 @@ export function BeneficiaryDetailPageComprehensive({
                       İlgili Notlar/Açıklamalar
                     </Label>
                     <Textarea
-                      className="text-sm resize-none border border-gray-300 focus:border-blue-500"
+                      className="resize-none border border-gray-300 text-sm focus:border-blue-500"
                       rows={3}
                       readOnly={!editMode}
                     />
@@ -2104,7 +2094,7 @@ export function BeneficiaryDetailPageComprehensive({
                         />
                         <Label
                           htmlFor={`health-${condition}`}
-                          className="text-xs font-normal cursor-pointer"
+                          className="cursor-pointer text-xs font-normal"
                         >
                           {condition}
                         </Label>
@@ -2119,10 +2109,10 @@ export function BeneficiaryDetailPageComprehensive({
           {/* Bottom Row: Emergency, Tags, Special, Record */}
           <div className="grid grid-cols-12 gap-4">
             {/* Emergency Contact */}
-            <Card className="col-span-12 lg:col-span-4 shadow-sm border-0 bg-white">
+            <Card className="col-span-12 border-0 bg-white shadow-sm lg:col-span-4">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                  <AlertTriangle className="w-4 h-4 text-primary" />
+                <CardTitle className="flex items-center gap-2 text-sm font-semibold">
+                  <AlertTriangle className="text-primary h-4 w-4" />
                   Acil Durum İletişimi
                 </CardTitle>
               </CardHeader>
@@ -2132,7 +2122,7 @@ export function BeneficiaryDetailPageComprehensive({
                     İletişime Geçilecek 1 (Yakın) Adı
                   </Label>
                   <Input
-                    className="h-9 text-sm border border-gray-300 focus:border-blue-500"
+                    className="h-9 border border-gray-300 text-sm focus:border-blue-500"
                     value={(editableData?.acil_iletisim_1_ad as string) || ''}
                     onChange={(e) => {
                       setEditableData((prev: any) => ({
@@ -2147,7 +2137,7 @@ export function BeneficiaryDetailPageComprehensive({
                   <div className="space-y-1">
                     <Label className="text-xs font-medium text-gray-700">Yakınlığı</Label>
                     <Input
-                      className="h-9 text-sm border border-gray-300 focus:border-blue-500"
+                      className="h-9 border border-gray-300 text-sm focus:border-blue-500"
                       value={(editableData?.acil_iletisim_1_yakinlik as string) || ''}
                       onChange={(e) => {
                         setEditableData((prev: any) => ({
@@ -2161,7 +2151,7 @@ export function BeneficiaryDetailPageComprehensive({
                   <div className="space-y-1">
                     <Label className="text-xs font-medium text-gray-700">Telefon</Label>
                     <Input
-                      className="h-9 text-sm border border-gray-300 focus:border-blue-500"
+                      className="h-9 border border-gray-300 text-sm focus:border-blue-500"
                       value={(editableData?.acil_iletisim_1_telefon as string) || ''}
                       onChange={(e) => {
                         setEditableData((prev: any) => ({
@@ -2178,7 +2168,7 @@ export function BeneficiaryDetailPageComprehensive({
                     İletişime Geçilecek 2 (Yakın) Adı
                   </Label>
                   <Input
-                    className="h-9 text-sm border border-gray-300 focus:border-blue-500"
+                    className="h-9 border border-gray-300 text-sm focus:border-blue-500"
                     value={(editableData?.acil_iletisim_2_ad as string) || ''}
                     onChange={(e) => {
                       setEditableData((prev: any) => ({
@@ -2193,7 +2183,7 @@ export function BeneficiaryDetailPageComprehensive({
                   <div className="space-y-1">
                     <Label className="text-xs font-medium text-gray-700">Yakınlığı</Label>
                     <Input
-                      className="h-9 text-sm border border-gray-300 focus:border-blue-500"
+                      className="h-9 border border-gray-300 text-sm focus:border-blue-500"
                       value={(editableData?.acil_iletisim_2_yakinlik as string) || ''}
                       onChange={(e) => {
                         setEditableData((prev: any) => ({
@@ -2207,7 +2197,7 @@ export function BeneficiaryDetailPageComprehensive({
                   <div className="space-y-1">
                     <Label className="text-xs font-medium text-gray-700">Telefon</Label>
                     <Input
-                      className="h-9 text-sm border border-gray-300 focus:border-blue-500"
+                      className="h-9 border border-gray-300 text-sm focus:border-blue-500"
                       value={(editableData?.acil_iletisim_2_telefon as string) || ''}
                       onChange={(e) => {
                         setEditableData((prev: any) => ({
@@ -2223,10 +2213,10 @@ export function BeneficiaryDetailPageComprehensive({
             </Card>
 
             {/* Tags */}
-            <Card className="col-span-12 lg:col-span-4 shadow-sm border-0 bg-white">
+            <Card className="col-span-12 border-0 bg-white shadow-sm lg:col-span-4">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                  <Target className="w-4 h-4 text-primary" />
+                <CardTitle className="flex items-center gap-2 text-sm font-semibold">
+                  <Target className="text-primary h-4 w-4" />
                   Etiketler
                 </CardTitle>
               </CardHeader>
@@ -2255,10 +2245,10 @@ export function BeneficiaryDetailPageComprehensive({
             </Card>
 
             {/* Special Situations */}
-            <Card className="col-span-12 lg:col-span-4 shadow-sm border-0 bg-white">
+            <Card className="col-span-12 border-0 bg-white shadow-sm lg:col-span-4">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                  <Shield className="w-4 h-4 text-primary" />
+                <CardTitle className="flex items-center gap-2 text-sm font-semibold">
+                  <Shield className="text-primary h-4 w-4" />
                   Özel Durumlar
                 </CardTitle>
               </CardHeader>
@@ -2282,37 +2272,37 @@ export function BeneficiaryDetailPageComprehensive({
           </div>
 
           {/* Record Information */}
-          <Card className="shadow-sm border-0 bg-white">
+          <Card className="border-0 bg-white shadow-sm">
             <CardHeader className="pb-4">
-              <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                <Info className="w-4 h-4 text-primary" />
+              <CardTitle className="flex items-center gap-2 text-sm font-semibold">
+                <Info className="text-primary h-4 w-4" />
                 Kayıt Bilgisi
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-12 gap-3">
-                <div className="col-span-12 md:col-span-3 space-y-1">
+                <div className="col-span-12 space-y-1 md:col-span-3">
                   <Label className="text-xs font-medium text-gray-700">Kayıt Zamanı</Label>
-                  <Input className="h-9 text-sm bg-muted/30" placeholder="—" readOnly />
+                  <Input className="bg-muted/30 h-9 text-sm" placeholder="—" readOnly />
                 </div>
-                <div className="col-span-12 md:col-span-3 space-y-1">
+                <div className="col-span-12 space-y-1 md:col-span-3">
                   <Label className="text-xs font-medium text-gray-700">Kayıt Eden</Label>
-                  <Input className="h-9 text-sm bg-muted/30" placeholder="—" readOnly />
+                  <Input className="bg-muted/30 h-9 text-sm" placeholder="—" readOnly />
                 </div>
-                <div className="col-span-12 md:col-span-3 space-y-1">
+                <div className="col-span-12 space-y-1 md:col-span-3">
                   <Label className="text-xs font-medium text-gray-700">IP Adresi</Label>
-                  <Input className="h-9 text-sm bg-muted/30" placeholder="—" readOnly />
+                  <Input className="bg-muted/30 h-9 text-sm" placeholder="—" readOnly />
                 </div>
-                <div className="col-span-12 md:col-span-3 space-y-1">
+                <div className="col-span-12 space-y-1 md:col-span-3">
                   <Label className="text-xs font-medium text-gray-700">Toplam Yardım (₺)</Label>
                   <Input
-                    className="h-9 text-sm bg-muted/30 font-medium"
+                    className="bg-muted/30 h-9 text-sm font-medium"
                     placeholder="0,00"
                     readOnly
                   />
                 </div>
               </div>
-              <p className="mt-4 text-xs text-gray-500 leading-relaxed">
+              <p className="mt-4 text-xs leading-relaxed text-gray-500">
                 1. İşaretlemeli veriler, bakmakla yükümlü olan ve olunan kişilerle ortaktır.
                 Herhangi birisinde güncelleme, hepsinde aynı şekilde güncellenir.
               </p>
@@ -2322,10 +2312,10 @@ export function BeneficiaryDetailPageComprehensive({
 
         {/* Connected Records Sidebar */}
         <aside className="col-span-12 lg:col-span-3">
-          <Card className="shadow-sm border-0 bg-white h-fit">
+          <Card className="h-fit border-0 bg-white shadow-sm">
             <CardHeader className="pb-4">
-              <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                <FileText className="w-4 h-4 text-primary" />
+              <CardTitle className="flex items-center gap-2 text-sm font-semibold">
+                <FileText className="text-primary h-4 w-4" />
                 Bağlantılı Kayıtlar
               </CardTitle>
             </CardHeader>
@@ -2335,7 +2325,7 @@ export function BeneficiaryDetailPageComprehensive({
                   <Button
                     key={record}
                     variant="outline"
-                    className="connected-record-button border-gray-200 text-gray-700 hover:border-primary/30 hover:text-primary"
+                    className="connected-record-button hover:border-primary/30 hover:text-primary border-gray-200 text-gray-700"
                     title=""
                     onClick={
                       record === 'Banka Hesapları'
@@ -2359,10 +2349,10 @@ export function BeneficiaryDetailPageComprehensive({
                                         : undefined
                     }
                   >
-                    <div className="flex items-center justify-between w-full">
+                    <div className="flex w-full items-center justify-between">
                       <span>{record}</span>
                       {record === 'Banka Hesapları' && (beneficiaryData?.iban as string) && (
-                        <div className="w-2 h-2 bg-green-500 rounded-full ml-2" />
+                        <div className="ml-2 h-2 w-2 rounded-full bg-green-500" />
                       )}
                     </div>
                   </Button>
@@ -2447,7 +2437,7 @@ export function BeneficiaryDetailPageComprehensive({
             <Button variant="outline" onClick={handleCloseBankAccountModal} className="px-6">
               İptal
             </Button>
-            <Button onClick={handleSaveBankAccount} className="px-6 bg-blue-600 hover:bg-blue-700">
+            <Button onClick={handleSaveBankAccount} className="bg-blue-600 px-6 hover:bg-blue-700">
               Kaydet
             </Button>
           </DialogFooter>
@@ -2456,10 +2446,10 @@ export function BeneficiaryDetailPageComprehensive({
 
       {/* Document Management Modal */}
       <Dialog open={isDocumentModalOpen} onOpenChange={setIsDocumentModalOpen}>
-        <DialogContent className="sm:max-w-[900px] max-h-[80vh] overflow-hidden">
+        <DialogContent className="max-h-[80vh] overflow-hidden sm:max-w-[900px]">
           <DialogHeader>
-            <DialogTitle className="text-lg font-semibold flex items-center gap-2">
-              <FileIcon className="w-5 h-5" />
+            <DialogTitle className="flex items-center gap-2 text-lg font-semibold">
+              <FileIcon className="h-5 w-5" />
               Doküman Yönetimi
             </DialogTitle>
           </DialogHeader>
@@ -2467,10 +2457,10 @@ export function BeneficiaryDetailPageComprehensive({
           <div className="space-y-6 py-4">
             {/* File Upload Section */}
             <div className="space-y-4">
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-gray-400 transition-colors">
-                <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Dosya Yükle</h3>
-                <p className="text-sm text-gray-600 mb-4">
+              <div className="rounded-lg border-2 border-dashed border-gray-300 p-8 text-center transition-colors hover:border-gray-400">
+                <Upload className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+                <h3 className="mb-2 text-lg font-medium text-gray-900">Dosya Yükle</h3>
+                <p className="mb-4 text-sm text-gray-600">
                   Dosyaları buraya sürükleyip bırakın veya seçmek için tıklayın
                 </p>
                 <div className="flex items-center justify-center gap-4">
@@ -2485,13 +2475,13 @@ export function BeneficiaryDetailPageComprehensive({
                   <label htmlFor="file-upload">
                     <Button className="bg-blue-600 hover:bg-blue-700" asChild>
                       <span>
-                        <Upload className="w-4 h-4 mr-2" />
+                        <Upload className="mr-2 h-4 w-4" />
                         Dosya Seç
                       </span>
                     </Button>
                   </label>
                 </div>
-                <p className="text-xs text-gray-500 mt-2">
+                <p className="mt-2 text-xs text-gray-500">
                   Desteklenen formatlar: PDF, DOC, DOCX, JPG, PNG, XLSX (Maks. 10MB)
                 </p>
               </div>
@@ -2503,9 +2493,9 @@ export function BeneficiaryDetailPageComprehensive({
                     <span>Yükleniyor...</span>
                     <span>{uploadProgress}%</span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div className="h-2 w-full rounded-full bg-gray-200">
                     <div
-                      className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                      className="h-2 rounded-full bg-blue-600 transition-all duration-300"
                       style={{ width: `${uploadProgress}%` }}
                     />
                   </div>
@@ -2515,8 +2505,8 @@ export function BeneficiaryDetailPageComprehensive({
 
             {/* Search and Filter */}
             <div className="flex items-center gap-4">
-              <div className="flex-1 relative">
-                <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <div className="relative flex-1">
+                <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
                 <Input
                   placeholder="Dosya ara..."
                   value={searchTerm}
@@ -2528,7 +2518,7 @@ export function BeneficiaryDetailPageComprehensive({
               </div>
               <Select value={selectedFileType} onValueChange={setSelectedFileType}>
                 <SelectTrigger className="w-40">
-                  <Filter className="w-4 h-4 mr-2" />
+                  <Filter className="mr-2 h-4 w-4" />
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -2541,22 +2531,22 @@ export function BeneficiaryDetailPageComprehensive({
             </div>
 
             {/* Files List */}
-            <div className="space-y-2 max-h-60 overflow-y-auto">
+            <div className="max-h-60 space-y-2 overflow-y-auto">
               {filteredFiles?.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
-                  <FileIcon className="w-12 h-12 mx-auto mb-2 text-gray-300" />
+                <div className="py-8 text-center text-gray-500">
+                  <FileIcon className="mx-auto mb-2 h-12 w-12 text-gray-300" />
                   <p>Henüz dosya yüklenmemiş</p>
                 </div>
               ) : (
                 filteredFiles?.map((file) => (
                   <div
                     key={file.id}
-                    className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50"
+                    className="flex items-center justify-between rounded-lg border p-3 hover:bg-gray-50"
                   >
                     <div className="flex items-center gap-3">
                       {getFileIcon(file.type)}
                       <div>
-                        <p className="font-medium text-sm">{file.name}</p>
+                        <p className="text-sm font-medium">{file.name}</p>
                         <p className="text-xs text-gray-500">
                           {file.size} • {file.uploadDate}
                         </p>
@@ -2571,7 +2561,7 @@ export function BeneficiaryDetailPageComprehensive({
                         }}
                         className="h-8 w-8 p-0"
                       >
-                        <Eye className="w-4 h-4" />
+                        <Eye className="h-4 w-4" />
                       </Button>
                       <Button
                         size="sm"
@@ -2581,7 +2571,7 @@ export function BeneficiaryDetailPageComprehensive({
                         }}
                         className="h-8 w-8 p-0"
                       >
-                        <Download className="w-4 h-4" />
+                        <Download className="h-4 w-4" />
                       </Button>
                       <Button
                         size="sm"
@@ -2591,7 +2581,7 @@ export function BeneficiaryDetailPageComprehensive({
                         }}
                         className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
                       >
-                        <Trash className="w-4 h-4" />
+                        <Trash className="h-4 w-4" />
                       </Button>
                     </div>
                   </div>
@@ -2600,7 +2590,7 @@ export function BeneficiaryDetailPageComprehensive({
             </div>
 
             {/* File Statistics */}
-            <div className="flex items-center justify-between text-sm text-gray-600 pt-4 border-t">
+            <div className="flex items-center justify-between border-t pt-4 text-sm text-gray-600">
               <span>Toplam {uploadedFiles?.length ?? 0} dosya</span>
               <span>
                 Toplam boyut:{' '}
@@ -2625,7 +2615,7 @@ export function BeneficiaryDetailPageComprehensive({
 
       {/* File Preview Modal */}
       <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
-        <DialogContent className="sm:max-w-[700px] max-h-[80vh]">
+        <DialogContent className="max-h-[80vh] sm:max-w-[700px]">
           <DialogHeader>
             <DialogTitle className="text-lg font-semibold">{previewFile?.name}</DialogTitle>
           </DialogHeader>
@@ -2636,18 +2626,18 @@ export function BeneficiaryDetailPageComprehensive({
                 <img
                   src={previewFile.url}
                   alt={previewFile.name}
-                  className="max-w-full max-h-96 mx-auto rounded-lg"
+                  className="mx-auto max-h-96 max-w-full rounded-lg"
                 />
               </div>
             ) : previewFile?.type.includes('pdf') ? (
-              <div className="text-center py-8">
-                <FileIcon className="w-16 h-16 mx-auto mb-4 text-gray-400" />
+              <div className="py-8 text-center">
+                <FileIcon className="mx-auto mb-4 h-16 w-16 text-gray-400" />
                 <p className="text-gray-600">PDF önizlemesi mevcut değil</p>
-                <p className="text-sm text-gray-500 mt-2">Dosyayı görüntülemek için indirin</p>
+                <p className="mt-2 text-sm text-gray-500">Dosyayı görüntülemek için indirin</p>
               </div>
             ) : (
-              <div className="text-center py-8">
-                <File className="w-16 h-16 mx-auto mb-4 text-gray-400" />
+              <div className="py-8 text-center">
+                <File className="mx-auto mb-4 h-16 w-16 text-gray-400" />
                 <p className="text-gray-600">Bu dosya türü için önizleme mevcut değil</p>
                 <div className="mt-4 text-sm text-gray-500">
                   <p>
@@ -2679,7 +2669,7 @@ export function BeneficiaryDetailPageComprehensive({
               }}
               className="bg-blue-600 hover:bg-blue-700"
             >
-              <Download className="w-4 h-4 mr-2" />
+              <Download className="mr-2 h-4 w-4" />
               İndir
             </Button>
           </DialogFooter>
@@ -2688,16 +2678,16 @@ export function BeneficiaryDetailPageComprehensive({
 
       {/* Dependent Person Modal */}
       <Dialog open={isDependentPersonModalOpen} onOpenChange={setIsDependentPersonModalOpen}>
-        <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[800px]">
           <DialogHeader>
-            <DialogTitle className="text-lg font-semibold flex items-center gap-2">
-              <Users className="w-5 h-5" />
+            <DialogTitle className="flex items-center gap-2 text-lg font-semibold">
+              <Users className="h-5 w-5" />
               Bağlı Kişiler Yönetimi
             </DialogTitle>
           </DialogHeader>
 
           {/* Mode Selection Tabs */}
-          <div className="flex items-center gap-1 p-1 bg-gray-100 rounded-lg">
+          <div className="flex items-center gap-1 rounded-lg bg-gray-100 p-1">
             <Button
               variant={modalMode === 'list' ? 'default' : 'ghost'}
               size="sm"
@@ -2761,18 +2751,18 @@ export function BeneficiaryDetailPageComprehensive({
                 </div>
 
                 {/* Connected Dependents List */}
-                <div className="space-y-3 max-h-96 overflow-y-auto">
+                <div className="max-h-96 space-y-3 overflow-y-auto">
                   {connectedDependents.length === 0 ? (
-                    <div className="text-center py-12">
-                      <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                      <h3 className="text-lg font-medium text-gray-900 mb-2">
+                    <div className="py-12 text-center">
+                      <Users className="mx-auto mb-4 h-16 w-16 text-gray-300" />
+                      <h3 className="mb-2 text-lg font-medium text-gray-900">
                         Henüz bağlı kişi yok
                       </h3>
-                      <p className="text-gray-500 mb-6">
+                      <p className="mb-6 text-gray-500">
                         Bu kişiyle ilişkili herhangi bir kayıt bulunmuyor. Yeni kişi ekleyebilir
                         veya mevcut kayıtlardan birini bağlayabilirsiniz.
                       </p>
-                      <div className="flex gap-3 justify-center">
+                      <div className="flex justify-center gap-3">
                         <Button
                           onClick={() => {
                             setModalMode('create');
@@ -2796,19 +2786,19 @@ export function BeneficiaryDetailPageComprehensive({
                     connectedDependents.map((person) => (
                       <div
                         key={person.id}
-                        className="p-4 border rounded-lg bg-white hover:shadow-md transition-shadow"
+                        className="rounded-lg border bg-white p-4 transition-shadow hover:shadow-md"
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-3">
-                              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                                <Users className="w-6 h-6 text-white" />
+                            <div className="mb-3 flex items-center gap-3">
+                              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600">
+                                <Users className="h-6 w-6 text-white" />
                               </div>
                               <div>
-                                <h3 className="font-semibold text-lg text-gray-900">
+                                <h3 className="text-lg font-semibold text-gray-900">
                                   {person.ad_soyad}
                                 </h3>
-                                <div className="flex items-center gap-2 mt-1">
+                                <div className="mt-1 flex items-center gap-2">
                                   <Badge
                                     variant={
                                       person.tur?.includes('Bakmakla Yükümlü')
@@ -2830,25 +2820,25 @@ export function BeneficiaryDetailPageComprehensive({
                               </div>
                             </div>
 
-                            <div className="grid grid-cols-3 gap-4 text-sm bg-gray-50 p-3 rounded-lg">
+                            <div className="grid grid-cols-3 gap-4 rounded-lg bg-gray-50 p-3 text-sm">
                               <div>
-                                <p className="text-gray-500 text-xs">TC Kimlik No</p>
+                                <p className="text-xs text-gray-500">TC Kimlik No</p>
                                 <p className="font-medium">{person.kimlik_no}</p>
                               </div>
                               <div>
-                                <p className="text-gray-500 text-xs">Telefon</p>
+                                <p className="text-xs text-gray-500">Telefon</p>
                                 <p className="font-medium">{person.telefon_no}</p>
                               </div>
                               <div>
-                                <p className="text-gray-500 text-xs">Bağlantı Tarihi</p>
+                                <p className="text-xs text-gray-500">Bağlantı Tarihi</p>
                                 <p className="font-medium">{person.baglanti_tarihi}</p>
                               </div>
                             </div>
                           </div>
 
-                          <div className="flex flex-col gap-2 ml-4">
+                          <div className="ml-4 flex flex-col gap-2">
                             <Button size="sm" variant="outline">
-                              <Eye className="w-3 h-3 mr-1" />
+                              <Eye className="mr-1 h-3 w-3" />
                               Detay
                             </Button>
                             <Button
@@ -2862,7 +2852,7 @@ export function BeneficiaryDetailPageComprehensive({
                                 )
                               }
                             >
-                              <X className="w-3 h-3 mr-1" />
+                              <X className="mr-1 h-3 w-3" />
                               Bağlantıyı Kaldır
                             </Button>
                           </div>
@@ -3021,13 +3011,13 @@ export function BeneficiaryDetailPageComprehensive({
             ) : (
               // Mevcut Kişi Seçimi
               <div className="space-y-4">
-                <div className="text-sm text-gray-600 mb-4">
+                <div className="mb-4 text-sm text-gray-600">
                   Sistemde kayıtlı kişilerden birini seçerek bu kişiyle ilişkilendirebilirsiniz.
                 </div>
 
                 {/* Search Bar */}
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                  <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
                   <Input
                     placeholder="Ad, soyad, TC, telefon, şehir veya uyruk ile ara..."
                     value={dependentSearchTerm}
@@ -3039,15 +3029,15 @@ export function BeneficiaryDetailPageComprehensive({
                 </div>
 
                 {/* Existing Dependents List */}
-                <div className="space-y-2 max-h-80 overflow-y-auto">
+                <div className="max-h-80 space-y-2 overflow-y-auto">
                   {isLoadingDependents ? (
-                    <div className="text-center py-8">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4" />
+                    <div className="py-8 text-center">
+                      <div className="border-primary mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2" />
                       <p className="text-sm text-gray-600">Kayıtlar yükleniyor...</p>
                     </div>
                   ) : filteredDependents.length === 0 ? (
-                    <div className="text-center py-8">
-                      <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                    <div className="py-8 text-center">
+                      <Users className="mx-auto mb-4 h-16 w-16 text-gray-300" />
                       <p className="text-gray-500">
                         {dependentSearchTerm
                           ? 'Arama kriterlerine uygun kişi bulunamadı'
@@ -3068,7 +3058,7 @@ export function BeneficiaryDetailPageComprehensive({
                     filteredDependents.map((person) => (
                       <div
                         key={person.id}
-                        className={`p-4 border rounded-lg cursor-pointer transition-all ${
+                        className={`cursor-pointer rounded-lg border p-4 transition-all ${
                           selectedDependentId === person.id
                             ? 'border-blue-500 bg-blue-50'
                             : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
@@ -3079,9 +3069,9 @@ export function BeneficiaryDetailPageComprehensive({
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-2">
-                              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                                <Users className="w-5 h-5 text-blue-600" />
+                            <div className="mb-2 flex items-center gap-3">
+                              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100">
+                                <Users className="h-5 w-5 text-blue-600" />
                               </div>
                               <div>
                                 <h3 className="font-semibold text-gray-900">{person.ad_soyad}</h3>
@@ -3107,29 +3097,29 @@ export function BeneficiaryDetailPageComprehensive({
                             <div className="grid grid-cols-3 gap-3 text-sm">
                               <div>
                                 <p className="text-gray-500">TC Kimlik No</p>
-                                <p className="font-medium text-xs">
+                                <p className="text-xs font-medium">
                                   {person.kimlik_no ?? person.Kimlik_No ?? '—'}
                                 </p>
                               </div>
                               <div>
                                 <p className="text-gray-500">Telefon</p>
-                                <p className="font-medium text-xs">
+                                <p className="text-xs font-medium">
                                   {person.telefon_no ?? person.Telefon_No ?? '—'}
                                 </p>
                               </div>
                               <div>
                                 <p className="text-gray-500">Şehir</p>
-                                <p className="font-medium text-xs">{person.sehri ?? '—'}</p>
+                                <p className="text-xs font-medium">{person.sehri ?? '—'}</p>
                               </div>
                               <div>
                                 <p className="text-gray-500">Uyruk</p>
-                                <p className="font-medium text-xs">
+                                <p className="text-xs font-medium">
                                   {person.uyruk ?? person.Uyruk ?? '—'}
                                 </p>
                               </div>
                               <div>
                                 <p className="text-gray-500">Kategori</p>
-                                <p className="font-medium text-xs">
+                                <p className="text-xs font-medium">
                                   {person.kategori ?? person.Kategori ?? '—'}
                                 </p>
                               </div>
@@ -3144,7 +3134,7 @@ export function BeneficiaryDetailPageComprehensive({
 
                           {selectedDependentId === person.id && (
                             <div className="ml-4">
-                              <CheckCircle2 className="w-5 h-5 text-blue-600" />
+                              <CheckCircle2 className="h-5 w-5 text-blue-600" />
                             </div>
                           )}
                         </div>
@@ -3155,7 +3145,7 @@ export function BeneficiaryDetailPageComprehensive({
 
                 {/* Relationship Selection for Existing Person */}
                 {selectedDependentId && (
-                  <div className="space-y-2 p-4 bg-blue-50 rounded-lg">
+                  <div className="space-y-2 rounded-lg bg-blue-50 p-4">
                     <Label className="text-sm font-medium">Bu kişiyle yakınlık dereceniz *</Label>
                     <Select
                       value={selectedRelationshipType}
@@ -3203,7 +3193,7 @@ export function BeneficiaryDetailPageComprehensive({
                 <Button
                   onClick={handleSaveAndGoToDetail}
                   disabled={isSavingDependent}
-                  className="px-6 bg-blue-600 hover:bg-blue-700"
+                  className="bg-blue-600 px-6 hover:bg-blue-700"
                 >
                   {isSavingDependent ? 'Kaydediliyor...' : 'Kaydet ve Detaya Git'}
                 </Button>
@@ -3212,7 +3202,7 @@ export function BeneficiaryDetailPageComprehensive({
               <Button
                 onClick={handleLinkExistingPerson}
                 disabled={(!selectedDependentId || !selectedRelationshipType) ?? isSavingDependent}
-                className="px-6 bg-green-600 hover:bg-green-700"
+                className="bg-green-600 px-6 hover:bg-green-700"
               >
                 {isSavingDependent ? 'Bağlanıyor...' : 'Kişiyi Bağla'}
               </Button>
@@ -3223,10 +3213,10 @@ export function BeneficiaryDetailPageComprehensive({
 
       {/* Photos Modal */}
       <Dialog open={isPhotosModalOpen} onOpenChange={setIsPhotosModalOpen}>
-        <DialogContent className="sm:max-w-[900px] max-h-[80vh] overflow-hidden">
+        <DialogContent className="max-h-[80vh] overflow-hidden sm:max-w-[900px]">
           <DialogHeader>
-            <DialogTitle className="text-lg font-semibold flex items-center gap-2">
-              <Camera className="w-5 h-5" />
+            <DialogTitle className="flex items-center gap-2 text-lg font-semibold">
+              <Camera className="h-5 w-5" />
               Fotoğraf Galerisi
             </DialogTitle>
           </DialogHeader>
@@ -3234,10 +3224,10 @@ export function BeneficiaryDetailPageComprehensive({
           <div className="space-y-6 py-4">
             {/* Photo Upload Section */}
             <div className="space-y-4">
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-gray-400 transition-colors">
-                <Camera className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Fotoğraf Yükle</h3>
-                <p className="text-sm text-gray-600 mb-4">
+              <div className="rounded-lg border-2 border-dashed border-gray-300 p-8 text-center transition-colors hover:border-gray-400">
+                <Camera className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+                <h3 className="mb-2 text-lg font-medium text-gray-900">Fotoğraf Yükle</h3>
+                <p className="mb-4 text-sm text-gray-600">
                   Fotoğrafları buraya sürükleyip bırakın veya seçmek için tıklayın
                 </p>
                 <div className="flex items-center justify-center gap-4">
@@ -3251,20 +3241,20 @@ export function BeneficiaryDetailPageComprehensive({
                   />
                   <label
                     htmlFor="photo-upload"
-                    className="cursor-pointer bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                    className="cursor-pointer rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
                   >
                     Fotoğraf Seç
                   </label>
                 </div>
                 {isUploadingPhoto && (
                   <div className="mt-4">
-                    <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div className="h-2 w-full rounded-full bg-gray-200">
                       <div
-                        className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                        className="h-2 rounded-full bg-blue-600 transition-all duration-300"
                         style={{ width: `${photoUploadProgress}%` }}
                       />
                     </div>
-                    <p className="text-sm text-gray-600 mt-2">
+                    <p className="mt-2 text-sm text-gray-600">
                       Yükleniyor... {photoUploadProgress}%
                     </p>
                   </div>
@@ -3278,57 +3268,57 @@ export function BeneficiaryDetailPageComprehensive({
                 <h3 className="text-lg font-medium">Fotoğraflar ({photos?.length ?? 0})</h3>
                 <div className="flex items-center gap-2">
                   <Button variant="outline" size="sm">
-                    <Grid className="w-4 h-4 mr-2" />
+                    <Grid className="mr-2 h-4 w-4" />
                     Izgara
                   </Button>
                 </div>
               </div>
 
               {photos?.length === 0 ? (
-                <div className="text-center py-8">
-                  <Camera className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                <div className="py-8 text-center">
+                  <Camera className="mx-auto mb-4 h-16 w-16 text-gray-300" />
                   <p className="text-gray-500">Henüz fotoğraf yüklenmemiş</p>
                 </div>
               ) : (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-h-96 overflow-y-auto">
+                <div className="grid max-h-96 grid-cols-2 gap-4 overflow-y-auto md:grid-cols-3 lg:grid-cols-4">
                   {photos?.map((photo) => (
-                    <div key={photo.id} className="relative group">
-                      <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
+                    <div key={photo.id} className="group relative">
+                      <div className="aspect-square overflow-hidden rounded-lg bg-gray-100">
                         <img
                           src={photo.url}
                           alt={photo.name}
-                          className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform"
+                          className="h-full w-full cursor-pointer object-cover transition-transform hover:scale-105"
                           onClick={() => {
                             handlePhotoPreview(photo);
                           }}
                         />
                       </div>
-                      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="absolute top-2 right-2 opacity-0 transition-opacity group-hover:opacity-100">
                         <div className="flex gap-1">
                           <Button
                             size="sm"
                             variant="secondary"
-                            className="h-8 w-8 p-0 bg-white/90 hover:bg-white"
+                            className="h-8 w-8 bg-white/90 p-0 hover:bg-white"
                             onClick={() => {
                               handlePhotoDownload(photo);
                             }}
                           >
-                            <Download className="w-3 h-3" />
+                            <Download className="h-3 w-3" />
                           </Button>
                           <Button
                             size="sm"
                             variant="destructive"
-                            className="h-8 w-8 p-0 bg-red-500/90 hover:bg-red-600"
+                            className="h-8 w-8 bg-red-500/90 p-0 hover:bg-red-600"
                             onClick={() => {
                               handlePhotoDelete(photo.id);
                             }}
                           >
-                            <Trash2 className="w-3 h-3" />
+                            <Trash2 className="h-3 w-3" />
                           </Button>
                         </div>
                       </div>
                       <div className="mt-2">
-                        <p className="text-xs font-medium truncate">{photo.name}</p>
+                        <p className="truncate text-xs font-medium">{photo.name}</p>
                         <p className="text-xs text-gray-500">
                           {photo.size} • {photo.uploadDate}
                         </p>
@@ -3350,7 +3340,7 @@ export function BeneficiaryDetailPageComprehensive({
 
       {/* Photo Preview Modal */}
       <Dialog open={isPhotoPreviewOpen} onOpenChange={setIsPhotoPreviewOpen}>
-        <DialogContent className="sm:max-w-[800px] max-h-[90vh]">
+        <DialogContent className="max-h-[90vh] sm:max-w-[800px]">
           <DialogHeader>
             <DialogTitle className="text-lg font-semibold">{selectedPhoto?.name}</DialogTitle>
           </DialogHeader>
@@ -3361,7 +3351,7 @@ export function BeneficiaryDetailPageComprehensive({
                 <img
                   src={selectedPhoto.url}
                   alt={selectedPhoto.name}
-                  className="max-w-full max-h-96 mx-auto rounded-lg"
+                  className="mx-auto max-h-96 max-w-full rounded-lg"
                 />
                 <div className="mt-4 text-sm text-gray-500">
                   <p>
@@ -3385,10 +3375,12 @@ export function BeneficiaryDetailPageComprehensive({
               Kapat
             </Button>
             <Button
-              onClick={() => selectedPhoto && handlePhotoDownload(selectedPhoto)}
+              onClick={() => {
+                if (selectedPhoto) handlePhotoDownload(selectedPhoto);
+              }}
               className="bg-blue-600 hover:bg-blue-700"
             >
-              <Download className="w-4 h-4 mr-2" />
+              <Download className="mr-2 h-4 w-4" />
               İndir
             </Button>
           </DialogFooter>
@@ -3397,10 +3389,10 @@ export function BeneficiaryDetailPageComprehensive({
 
       {/* Donors Modal */}
       <Dialog open={isDonorsModalOpen} onOpenChange={setIsDonorsModalOpen}>
-        <DialogContent className="sm:max-w-[1000px] max-h-[80vh] overflow-hidden">
+        <DialogContent className="max-h-[80vh] overflow-hidden sm:max-w-[1000px]">
           <DialogHeader>
-            <DialogTitle className="text-lg font-semibold flex items-center gap-2">
-              <Heart className="w-5 h-5" />
+            <DialogTitle className="flex items-center gap-2 text-lg font-semibold">
+              <Heart className="h-5 w-5" />
               Bağışçılar
             </DialogTitle>
           </DialogHeader>
@@ -3408,8 +3400,8 @@ export function BeneficiaryDetailPageComprehensive({
           <div className="space-y-6 py-4">
             {/* Search and Filter Section */}
             <div className="flex items-center gap-4">
-              <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <div className="relative flex-1">
+                <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
                 <Input
                   placeholder="Bağışçı ara (isim, email)..."
                   value={donorSearchTerm}
@@ -3420,14 +3412,14 @@ export function BeneficiaryDetailPageComprehensive({
                 />
               </div>
               <Button variant="outline" size="sm">
-                <Filter className="w-4 h-4 mr-2" />
+                <Filter className="mr-2 h-4 w-4" />
                 Filtrele
               </Button>
             </div>
 
             {/* Donors Table */}
-            <div className="border rounded-lg overflow-hidden">
-              <div className="bg-gray-50 px-6 py-3 border-b">
+            <div className="overflow-hidden rounded-lg border">
+              <div className="border-b bg-gray-50 px-6 py-3">
                 <div className="grid grid-cols-6 gap-4 text-sm font-medium text-gray-700">
                   <div>Bağışçı</div>
                   <div>İletişim</div>
@@ -3440,8 +3432,8 @@ export function BeneficiaryDetailPageComprehensive({
 
               <div className="max-h-96 overflow-y-auto">
                 {filteredDonors?.length === 0 ? (
-                  <div className="text-center py-8">
-                    <Heart className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                  <div className="py-8 text-center">
+                    <Heart className="mx-auto mb-4 h-16 w-16 text-gray-300" />
                     <p className="text-gray-500">
                       {donorSearchTerm
                         ? 'Arama kriterlerine uygun bağışçı bulunamadı'
@@ -3452,9 +3444,9 @@ export function BeneficiaryDetailPageComprehensive({
                   filteredDonors?.map((donor) => (
                     <div
                       key={donor.id}
-                      className="px-6 py-4 border-b hover:bg-gray-50 transition-colors"
+                      className="border-b px-6 py-4 transition-colors hover:bg-gray-50"
                     >
-                      <div className="grid grid-cols-6 gap-4 items-center">
+                      <div className="grid grid-cols-6 items-center gap-4">
                         <div>
                           <p className="font-medium text-gray-900">{donor.name}</p>
                         </div>
@@ -3474,7 +3466,7 @@ export function BeneficiaryDetailPageComprehensive({
                         <div>
                           <div className="flex gap-2">
                             <Button size="sm" variant="outline">
-                              <Eye className="w-3 h-3 mr-1" />
+                              <Eye className="mr-1 h-3 w-3" />
                               Detay
                             </Button>
                           </div>
@@ -3487,7 +3479,7 @@ export function BeneficiaryDetailPageComprehensive({
             </div>
 
             {/* Summary */}
-            <div className="bg-blue-50 p-4 rounded-lg">
+            <div className="rounded-lg bg-blue-50 p-4">
               <div className="grid grid-cols-3 gap-4 text-center">
                 <div>
                   <p className="text-2xl font-bold text-blue-600">{donors.length}</p>
@@ -3525,10 +3517,10 @@ export function BeneficiaryDetailPageComprehensive({
 
       {/* Sponsors Modal */}
       <Dialog open={isSponsorsModalOpen} onOpenChange={setIsSponsorsModalOpen}>
-        <DialogContent className="sm:max-w-[1000px] max-h-[80vh] overflow-hidden">
+        <DialogContent className="max-h-[80vh] overflow-hidden sm:max-w-[1000px]">
           <DialogHeader>
-            <DialogTitle className="text-lg font-semibold flex items-center gap-2">
-              <Shield className="w-5 h-5" />
+            <DialogTitle className="flex items-center gap-2 text-lg font-semibold">
+              <Shield className="h-5 w-5" />
               Sponsorlar
             </DialogTitle>
           </DialogHeader>
@@ -3537,23 +3529,23 @@ export function BeneficiaryDetailPageComprehensive({
             {/* Sponsors Cards */}
             <div className="space-y-4">
               {sponsors.length === 0 ? (
-                <div className="text-center py-8">
-                  <Shield className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                <div className="py-8 text-center">
+                  <Shield className="mx-auto mb-4 h-16 w-16 text-gray-300" />
                   <p className="text-gray-500">Henüz sponsor kaydı bulunmuyor</p>
                 </div>
               ) : (
-                <div className="grid gap-4 max-h-96 overflow-y-auto">
+                <div className="grid max-h-96 gap-4 overflow-y-auto">
                   {sponsors?.map((sponsor) => (
-                    <Card key={sponsor.id} className="hover:shadow-md transition-shadow">
+                    <Card key={sponsor.id} className="transition-shadow hover:shadow-md">
                       <CardContent className="p-6">
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-3">
-                              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                                <Shield className="w-6 h-6 text-blue-600" />
+                            <div className="mb-3 flex items-center gap-3">
+                              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100">
+                                <Shield className="h-6 w-6 text-blue-600" />
                               </div>
                               <div>
-                                <h3 className="font-semibold text-lg text-gray-900">
+                                <h3 className="text-lg font-semibold text-gray-900">
                                   {sponsor.name}
                                 </h3>
                                 <Badge variant="outline" className="text-xs">
@@ -3562,7 +3554,7 @@ export function BeneficiaryDetailPageComprehensive({
                               </div>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4 mb-4">
+                            <div className="mb-4 grid grid-cols-2 gap-4">
                               <div>
                                 <p className="text-sm text-gray-500">İletişim</p>
                                 <p className="text-sm font-medium">{sponsor.contact}</p>
@@ -3576,7 +3568,7 @@ export function BeneficiaryDetailPageComprehensive({
                               </div>
                             </div>
 
-                            <div className="grid grid-cols-3 gap-4 mb-4">
+                            <div className="mb-4 grid grid-cols-3 gap-4">
                               <div>
                                 <p className="text-sm text-gray-500">Başlangıç</p>
                                 <p className="text-sm font-medium">{sponsor.startDate}</p>
@@ -3599,13 +3591,13 @@ export function BeneficiaryDetailPageComprehensive({
                             </div>
                           </div>
 
-                          <div className="flex flex-col gap-2 ml-4">
+                          <div className="ml-4 flex flex-col gap-2">
                             <Button size="sm" variant="outline">
-                              <Eye className="w-3 h-3 mr-1" />
+                              <Eye className="mr-1 h-3 w-3" />
                               Detay
                             </Button>
                             <Button size="sm" variant="outline">
-                              <Edit3 className="w-3 h-3 mr-1" />
+                              <Edit3 className="mr-1 h-3 w-3" />
                               Düzenle
                             </Button>
                           </div>
@@ -3619,7 +3611,7 @@ export function BeneficiaryDetailPageComprehensive({
 
             {/* Summary */}
             {sponsors.length > 0 && (
-              <div className="bg-green-50 p-4 rounded-lg">
+              <div className="rounded-lg bg-green-50 p-4">
                 <div className="grid grid-cols-3 gap-4 text-center">
                   <div>
                     <p className="text-2xl font-bold text-green-600">{sponsors.length}</p>
@@ -3654,7 +3646,7 @@ export function BeneficiaryDetailPageComprehensive({
               Kapat
             </Button>
             <Button className="bg-blue-600 hover:bg-blue-700">
-              <Shield className="w-4 h-4 mr-2" />
+              <Shield className="mr-2 h-4 w-4" />
               Yeni Sponsor Ekle
             </Button>
           </DialogFooter>
@@ -3663,10 +3655,10 @@ export function BeneficiaryDetailPageComprehensive({
 
       {/* Help Requests Modal */}
       <Dialog open={isHelpRequestsModalOpen} onOpenChange={setIsHelpRequestsModalOpen}>
-        <DialogContent className="sm:max-w-[1000px] max-h-[80vh] overflow-hidden">
+        <DialogContent className="max-h-[80vh] overflow-hidden sm:max-w-[1000px]">
           <DialogHeader>
-            <DialogTitle className="text-lg font-semibold flex items-center gap-2">
-              <AlertTriangle className="w-5 h-5" />
+            <DialogTitle className="flex items-center gap-2 text-lg font-semibold">
+              <AlertTriangle className="h-5 w-5" />
               Yardım Talepleri
             </DialogTitle>
           </DialogHeader>
@@ -3675,20 +3667,20 @@ export function BeneficiaryDetailPageComprehensive({
             {/* Help Requests List */}
             <div className="space-y-4">
               {helpRequests.length === 0 ? (
-                <div className="text-center py-8">
-                  <AlertTriangle className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                <div className="py-8 text-center">
+                  <AlertTriangle className="mx-auto mb-4 h-16 w-16 text-gray-300" />
                   <p className="text-gray-500">Henüz yardım talebi bulunmuyor</p>
                 </div>
               ) : (
-                <div className="space-y-3 max-h-96 overflow-y-auto">
+                <div className="max-h-96 space-y-3 overflow-y-auto">
                   {helpRequests?.map((request) => (
-                    <Card key={request.id} className="hover:shadow-md transition-shadow">
+                    <Card key={request.id} className="transition-shadow hover:shadow-md">
                       <CardContent className="p-4">
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-2">
-                              <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-                                <AlertTriangle className="w-5 h-5 text-orange-600" />
+                            <div className="mb-2 flex items-center gap-3">
+                              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-orange-100">
+                                <AlertTriangle className="h-5 w-5 text-orange-600" />
                               </div>
                               <div>
                                 <h3 className="font-semibold text-gray-900">{request.title}</h3>
@@ -3696,7 +3688,7 @@ export function BeneficiaryDetailPageComprehensive({
                               </div>
                             </div>
 
-                            <div className="grid grid-cols-4 gap-4 mt-3">
+                            <div className="mt-3 grid grid-cols-4 gap-4">
                               <div>
                                 <p className="text-xs text-gray-500">Durum</p>
                                 <Badge
@@ -3742,14 +3734,14 @@ export function BeneficiaryDetailPageComprehensive({
                             </div>
                           </div>
 
-                          <div className="flex flex-col gap-2 ml-4">
+                          <div className="ml-4 flex flex-col gap-2">
                             <Button size="sm" variant="outline">
-                              <Eye className="w-3 h-3 mr-1" />
+                              <Eye className="mr-1 h-3 w-3" />
                               Detay
                             </Button>
                             {request.status === 'Beklemede' && (
                               <Button size="sm" className="bg-green-600 hover:bg-green-700">
-                                <CheckCircle2 className="w-3 h-3 mr-1" />
+                                <CheckCircle2 className="mr-1 h-3 w-3" />
                                 Tamamla
                               </Button>
                             )}
@@ -3764,7 +3756,7 @@ export function BeneficiaryDetailPageComprehensive({
 
             {/* Summary */}
             {helpRequests.length > 0 && (
-              <div className="bg-orange-50 p-4 rounded-lg">
+              <div className="rounded-lg bg-orange-50 p-4">
                 <div className="grid grid-cols-4 gap-4 text-center">
                   <div>
                     <p className="text-2xl font-bold text-orange-600">{helpRequests.length}</p>
@@ -3798,7 +3790,7 @@ export function BeneficiaryDetailPageComprehensive({
               Kapat
             </Button>
             <Button className="bg-blue-600 hover:bg-blue-700">
-              <AlertTriangle className="w-4 h-4 mr-2" />
+              <AlertTriangle className="mr-2 h-4 w-4" />
               Yeni Talep Ekle
             </Button>
           </DialogFooter>
@@ -3807,10 +3799,10 @@ export function BeneficiaryDetailPageComprehensive({
 
       {/* Completed Aids Modal */}
       <Dialog open={isCompletedAidsModalOpen} onOpenChange={setIsCompletedAidsModalOpen}>
-        <DialogContent className="sm:max-w-[1000px] max-h-[80vh] overflow-hidden">
+        <DialogContent className="max-h-[80vh] overflow-hidden sm:max-w-[1000px]">
           <DialogHeader>
-            <DialogTitle className="text-lg font-semibold flex items-center gap-2">
-              <Heart className="w-5 h-5" />
+            <DialogTitle className="flex items-center gap-2 text-lg font-semibold">
+              <Heart className="h-5 w-5" />
               Yapılan Yardımlar
             </DialogTitle>
           </DialogHeader>
@@ -3819,20 +3811,20 @@ export function BeneficiaryDetailPageComprehensive({
             {/* Completed Aids List */}
             <div className="space-y-4">
               {completedAids.length === 0 ? (
-                <div className="text-center py-8">
-                  <Heart className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                <div className="py-8 text-center">
+                  <Heart className="mx-auto mb-4 h-16 w-16 text-gray-300" />
                   <p className="text-gray-500">Henüz yapılan yardım bulunmuyor</p>
                 </div>
               ) : (
-                <div className="space-y-3 max-h-96 overflow-y-auto">
+                <div className="max-h-96 space-y-3 overflow-y-auto">
                   {completedAids?.map((aid) => (
-                    <Card key={aid.id} className="hover:shadow-md transition-shadow">
+                    <Card key={aid.id} className="transition-shadow hover:shadow-md">
                       <CardContent className="p-4">
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-2">
-                              <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                                <Heart className="w-5 h-5 text-green-600" />
+                            <div className="mb-2 flex items-center gap-3">
+                              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-100">
+                                <Heart className="h-5 w-5 text-green-600" />
                               </div>
                               <div>
                                 <h3 className="font-semibold text-gray-900">{aid.description}</h3>
@@ -3842,7 +3834,7 @@ export function BeneficiaryDetailPageComprehensive({
                               </div>
                             </div>
 
-                            <div className="grid grid-cols-4 gap-4 mt-3">
+                            <div className="mt-3 grid grid-cols-4 gap-4">
                               <div>
                                 <p className="text-xs text-gray-500">Tarih</p>
                                 <p className="text-sm font-medium">{aid.date}</p>
@@ -3873,20 +3865,20 @@ export function BeneficiaryDetailPageComprehensive({
                             </div>
 
                             {aid.notes && (
-                              <div className="mt-3 p-2 bg-gray-50 rounded">
-                                <p className="text-xs text-gray-500 mb-1">Notes</p>
+                              <div className="mt-3 rounded bg-gray-50 p-2">
+                                <p className="mb-1 text-xs text-gray-500">Notes</p>
                                 <p className="text-sm text-gray-700">{aid.notes}</p>
                               </div>
                             )}
                           </div>
 
-                          <div className="flex flex-col gap-2 ml-4">
+                          <div className="ml-4 flex flex-col gap-2">
                             <Button size="sm" variant="outline">
-                              <Eye className="w-3 h-3 mr-1" />
+                              <Eye className="mr-1 h-3 w-3" />
                               Detay
                             </Button>
                             <Button size="sm" variant="outline">
-                              <Download className="w-3 h-3 mr-1" />
+                              <Download className="mr-1 h-3 w-3" />
                               Rapor
                             </Button>
                           </div>
@@ -3900,7 +3892,7 @@ export function BeneficiaryDetailPageComprehensive({
 
             {/* Summary */}
             {completedAids.length > 0 && (
-              <div className="bg-green-50 p-4 rounded-lg">
+              <div className="rounded-lg bg-green-50 p-4">
                 <div className="grid grid-cols-4 gap-4 text-center">
                   <div>
                     <p className="text-2xl font-bold text-green-600">{completedAids.length}</p>
@@ -3934,7 +3926,7 @@ export function BeneficiaryDetailPageComprehensive({
               Kapat
             </Button>
             <Button className="bg-blue-600 hover:bg-blue-700">
-              <Heart className="w-4 h-4 mr-2" />
+              <Heart className="mr-2 h-4 w-4" />
               Yeni Yardım Ekle
             </Button>
           </DialogFooter>
@@ -3946,10 +3938,10 @@ export function BeneficiaryDetailPageComprehensive({
         open={isConsentDeclarationsModalOpen}
         onOpenChange={setIsConsentDeclarationsModalOpen}
       >
-        <DialogContent className="sm:max-w-[900px] max-h-[80vh] overflow-hidden">
+        <DialogContent className="max-h-[80vh] overflow-hidden sm:max-w-[900px]">
           <DialogHeader>
-            <DialogTitle className="text-lg font-semibold flex items-center gap-2">
-              <Shield className="w-5 h-5" />
+            <DialogTitle className="flex items-center gap-2 text-lg font-semibold">
+              <Shield className="h-5 w-5" />
               Rıza Beyanları
             </DialogTitle>
           </DialogHeader>
@@ -3958,20 +3950,20 @@ export function BeneficiaryDetailPageComprehensive({
             {/* Consent Declarations List */}
             <div className="space-y-4">
               {consentDeclarations.length === 0 ? (
-                <div className="text-center py-8">
-                  <Shield className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                <div className="py-8 text-center">
+                  <Shield className="mx-auto mb-4 h-16 w-16 text-gray-300" />
                   <p className="text-gray-500">Henüz rıza beyanı bulunmuyor</p>
                 </div>
               ) : (
-                <div className="space-y-3 max-h-96 overflow-y-auto">
+                <div className="max-h-96 space-y-3 overflow-y-auto">
                   {consentDeclarations?.map((consent) => (
-                    <Card key={consent.id} className="hover:shadow-md transition-shadow">
+                    <Card key={consent.id} className="transition-shadow hover:shadow-md">
                       <CardContent className="p-4">
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-2">
+                            <div className="mb-2 flex items-center gap-3">
                               <div
-                                className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                                className={`flex h-10 w-10 items-center justify-center rounded-lg ${
                                   consent.status === 'Onaylandı'
                                     ? 'bg-green-100'
                                     : consent.status === 'Beklemede'
@@ -3980,7 +3972,7 @@ export function BeneficiaryDetailPageComprehensive({
                                 }`}
                               >
                                 <Shield
-                                  className={`w-5 h-5 ${
+                                  className={`h-5 w-5 ${
                                     consent.status === 'Onaylandı'
                                       ? 'text-green-600'
                                       : consent.status === 'Beklemede'
@@ -3995,7 +3987,7 @@ export function BeneficiaryDetailPageComprehensive({
                               </div>
                             </div>
 
-                            <div className="grid grid-cols-3 gap-4 mt-3">
+                            <div className="mt-3 grid grid-cols-3 gap-4">
                               <div>
                                 <p className="text-xs text-gray-500">Durum</p>
                                 <Badge
@@ -4023,26 +4015,26 @@ export function BeneficiaryDetailPageComprehensive({
                               </div>
                             </div>
                             {consent.details && (
-                              <div className="mt-3 p-2 bg-gray-50 rounded">
-                                <p className="text-xs text-gray-500 mb-1">Detaylar</p>
+                              <div className="mt-3 rounded bg-gray-50 p-2">
+                                <p className="mb-1 text-xs text-gray-500">Detaylar</p>
                                 <p className="text-sm text-gray-700">{consent.details}</p>
                               </div>
                             )}
                           </div>
 
-                          <div className="flex flex-col gap-2 ml-4">
+                          <div className="ml-4 flex flex-col gap-2">
                             <Button size="sm" variant="outline">
-                              <Eye className="w-3 h-3 mr-1" />
+                              <Eye className="mr-1 h-3 w-3" />
                               Görüntüle
                             </Button>
                             {consent.status === 'Beklemede' && (
                               <Button size="sm" className="bg-green-600 hover:bg-green-700">
-                                <CheckCircle2 className="w-3 h-3 mr-1" />
+                                <CheckCircle2 className="mr-1 h-3 w-3" />
                                 Onayla
                               </Button>
                             )}
                             <Button size="sm" variant="outline">
-                              <Download className="w-3 h-3 mr-1" />
+                              <Download className="mr-1 h-3 w-3" />
                               İndir
                             </Button>
                           </div>
@@ -4056,7 +4048,7 @@ export function BeneficiaryDetailPageComprehensive({
 
             {/* Summary */}
             {consentDeclarations.length > 0 && (
-              <div className="bg-blue-50 p-4 rounded-lg">
+              <div className="rounded-lg bg-blue-50 p-4">
                 <div className="grid grid-cols-4 gap-4 text-center">
                   <div>
                     <p className="text-2xl font-bold text-blue-600">{consentDeclarations.length}</p>
@@ -4090,7 +4082,7 @@ export function BeneficiaryDetailPageComprehensive({
               Kapat
             </Button>
             <Button className="bg-blue-600 hover:bg-blue-700">
-              <Shield className="w-4 h-4 mr-2" />
+              <Shield className="mr-2 h-4 w-4" />
               Yeni Beyan Ekle
             </Button>
           </DialogFooter>
