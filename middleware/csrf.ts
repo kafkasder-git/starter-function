@@ -72,9 +72,13 @@ const tokenStore = new CSRFTokenStore();
 function generateToken(): string {
   // Use web crypto API for compatibility with fallback
   if (typeof window !== 'undefined' && window.crypto && window.crypto.getRandomValues) {
-    const array = new Uint8Array(32);
-    window.crypto.getRandomValues(array);
-    return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+    try {
+      const array = new Uint8Array(32);
+      window.crypto.getRandomValues(array);
+      return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+    } catch (error) {
+      console.warn('Crypto.getRandomValues failed, using fallback:', error);
+    }
   }
   
   // Fallback for server-side or when crypto is not available

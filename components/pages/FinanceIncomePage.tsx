@@ -30,6 +30,8 @@ import { Label } from '../ui/label';
 import { Progress } from '../ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Textarea } from '../ui/textarea';
+import { ProtectedRoute } from '../auth/ProtectedRoute';
+import { Permission } from '../../types/auth';
 
 interface Transaction {
   id: number;
@@ -56,6 +58,14 @@ interface MonthlyData {
  * @returns {void} Nothing
  */
 export function FinanceIncomePage() {
+  return (
+    <ProtectedRoute requiredPermission={Permission.MANAGE_FINANCIAL}>
+      <FinanceIncomePageContent />
+    </ProtectedRoute>
+  );
+}
+
+function FinanceIncomePageContent() {
   const isMobile = useIsMobile();
   const [selectedPeriod, setSelectedPeriod] = useState('thisMonth');
   const [selectedCategory, setSelectedCategory] = useState('all');

@@ -46,6 +46,7 @@ export enum Permission {
   CREATE_FINANCE = 'create_finance',
   EDIT_FINANCE = 'edit_finance',
   DELETE_FINANCE = 'delete_finance',
+  MANAGE_FINANCIAL = 'manage_financial',
 
   // Messages
   VIEW_MESSAGES = 'view_messages',
@@ -114,6 +115,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     Permission.VIEW_FINANCE,
     Permission.CREATE_FINANCE,
     Permission.EDIT_FINANCE,
+    Permission.MANAGE_FINANCIAL,
     Permission.VIEW_MESSAGES,
     Permission.SEND_MESSAGES,
     Permission.VIEW_EVENTS,

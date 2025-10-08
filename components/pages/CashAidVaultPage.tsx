@@ -28,6 +28,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
+import { ProtectedRoute } from '../auth/ProtectedRoute';
+import { Permission } from '../../types/auth';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { Textarea } from '../ui/textarea';
@@ -54,6 +56,14 @@ const initialTransactions: VaultTransaction[] = [];
  * @returns {void} Nothing
  */
 export function CashAidVaultPage() {
+  return (
+    <ProtectedRoute requiredPermission={Permission.MANAGE_FINANCIAL}>
+      <CashAidVaultPageContent />
+    </ProtectedRoute>
+  );
+}
+
+function CashAidVaultPageContent() {
   const [transactions, setTransactions] = useState<VaultTransaction[]>(initialTransactions);
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState<string>('all');

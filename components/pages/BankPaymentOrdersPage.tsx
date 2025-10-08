@@ -28,6 +28,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
+import { ProtectedRoute } from '../auth/ProtectedRoute';
+import { Permission } from '../../types/auth';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { Textarea } from '../ui/textarea';
@@ -64,6 +66,14 @@ const initialPaymentOrders: PaymentOrder[] = [];
  * @returns {void} Nothing
  */
 export function BankPaymentOrdersPage() {
+  return (
+    <ProtectedRoute requiredPermission={Permission.MANAGE_FINANCIAL}>
+      <BankPaymentOrdersPageContent />
+    </ProtectedRoute>
+  );
+}
+
+function BankPaymentOrdersPageContent() {
   const [paymentOrders, setPaymentOrders] = useState<PaymentOrder[]>(initialPaymentOrders);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
