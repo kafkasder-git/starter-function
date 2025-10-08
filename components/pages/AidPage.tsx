@@ -55,6 +55,17 @@ export function AidPage() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [priorityFilter, setPriorityFilter] = useState('all');
   const [aidRequests] = useState<AidRequest[]>(initialAidRequests);
+  const [showNewRequestDialog, setShowNewRequestDialog] = useState(false);
+
+  const handleNewRequest = () => {
+    setShowNewRequestDialog(true);
+    // TODO: Open new request dialog
+  };
+
+  const handleExport = () => {
+    // TODO: Export data
+    console.log('Exporting aid requests...');
+  };
 
   const filteredRequests = aidRequests.filter((request) => {
     const matchesSearch =
@@ -132,11 +143,11 @@ export function AidPage() {
       subtitle="Gelen yardım taleplerini değerlendirin ve yönetin"
       actions={
         <div className="flex gap-2">
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={handleExport}>
             <Download className="w-4 h-4 mr-2" />
             Dışa Aktar
           </Button>
-          <Button size="sm">
+          <Button size="sm" onClick={handleNewRequest}>
             <Plus className="w-4 h-4 mr-2" />
             Yeni Talep
           </Button>
