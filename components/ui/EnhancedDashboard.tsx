@@ -238,7 +238,8 @@ const EnhancedDashboard = memo(
     // Load dashboard data
     useEffect(() => {
       loadData();
-    }, [loadData]);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const handleRefresh = useCallback(() => {
       setLoading(true);

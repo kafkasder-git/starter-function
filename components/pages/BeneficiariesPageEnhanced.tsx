@@ -318,7 +318,8 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
     if (beneficiaries.length > 0) {
       loadStats();
     }
-  }, [beneficiaries, loadStats]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [beneficiaries.length]);
 
   // Reload on filter changes with debounce
   useEffect(() => {
@@ -330,9 +331,10 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [searchTerm, statusFilter, cityFilter, sortBy, loadBeneficiaries]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchTerm, statusFilter, cityFilter, sortBy]);
 
-  const _getStatusBadge = (status: string) => {
+  const getStatusBadge = (status: string) => {
     const statusInfo =
       statusMapping[status as keyof typeof statusMapping] || statusMapping.inactive;
     return <Badge className={statusInfo.className}>{statusInfo.label}</Badge>;
