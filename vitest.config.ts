@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [react()],
   test: {
     environment: 'jsdom',
-    setupFiles: ['./tests/setup.ts'],
+    setupFiles: [path.resolve(__dirname, './tests/setup.ts')],
     globals: true,
     include: [
       '**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
