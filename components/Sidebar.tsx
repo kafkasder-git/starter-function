@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useSupabaseAuth } from '../contexts/SupabaseAuthContext';
+import { useNavigation } from './app/NavigationManager';
 import { Badge } from './ui/badge';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
@@ -73,6 +74,9 @@ export function Sidebar({
 
   // Auth context for permission checks
   const { user } = useSupabaseAuth();
+  
+  // Navigation context
+  const navigation = useNavigation();
 
   // Permission checks
   const canViewReports =
@@ -309,8 +313,18 @@ export function Sidebar({
   const handleSubPageClick = (href: string, moduleId: string) => {
     // Special handling for user management module
     if (moduleId === 'user-management') {
+      navigation.navigateToUserManagement();
       onNavigateToUserManagement?.();
+    } else if (moduleId === 'settings') {
+      navigation.navigateToSettings();
+    } else if (moduleId === 'profile') {
+      navigation.navigateToProfile();
     } else {
+      // Set active module and subpage
+      navigation.moduleChange(moduleId);
+      navigation.subPageChange(href);
+      
+      // Also call legacy callbacks for backward compatibility
       onModuleChange?.(moduleId);
       onSubPageChange?.(href);
     }
