@@ -52,7 +52,7 @@
     "test:e2e:report:open": "playwright show-report",
     "cloudflare:build": "npm run build",
     "cloudflare:deploy": "npx wrangler pages deploy dist",
-    "cloudflare:deploy:prod": "npx wrangler pages deploy dist --project-name=kafkasder-panel",
+    "cloudflare:deploy:prod": "npx wrangler pages deploy dist --project-name=kafkasderpanel",
     "cloudflare:dev": "npx wrangler pages dev dist",
     "cloudflare:preview": "npx wrangler pages dev dist --local",
     "deploy": "npm run cloudflare:deploy",

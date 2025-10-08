@@ -23,14 +23,14 @@ name = "kafkasder-panel-staging"
 command = "npm run build"
 cwd = "."
 
-# Environment variables for development
-# NOTE: For production, set these in Cloudflare Pages dashboard
-# Settings > Environment variables
-[vars]
-VITE_SUPABASE_URL = "https://gyburnfaszhxcxdnwogj.supabase.co"
-VITE_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd5YnVybmZhc3poeGN4ZG53b2dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc4ODI2ODMsImV4cCI6MjA3MzQ1ODY4M30.R-AD4ABGXGI1v_VoVqeRDVs9Wio-GJ0HUVRrP0iGG4k"
-VITE_APP_NAME = "Kafkasder Management System"
-VITE_APP_VERSION = "1.0.0"
+# NOTE: Environment variables for Vite must be set in Cloudflare Pages Dashboard
+# Settings > Environment variables > Production environment
+# Required variables:
+#   - VITE_SUPABASE_URL
+#   - VITE_SUPABASE_ANON_KEY
+#   - VITE_APP_NAME
+#   - VITE_APP_VERSION
+#   - NODE_VERSION (set to "20")
 
 # Custom headers for security and caching
 [[pages.headers]]

@@ -35,6 +35,9 @@ yarn-error.log*
 *.swo
 *~
 
+# Cursor IDE - MCP Configuration (contains sensitive tokens)
+.cursor/environment.json
+
 # OS
 Thumbs.db
 
