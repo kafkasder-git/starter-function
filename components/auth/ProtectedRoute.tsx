@@ -7,7 +7,7 @@
 
 import type { ReactNode } from 'react';
 import { useSupabaseAuth } from '../../contexts/SupabaseAuthContext';
-import { UserRole, type Permission } from '../../types/auth';
+import { UserRole, type Permission, ROLE_PERMISSIONS } from '../../types/auth';
 import { UnauthorizedPage } from './UnauthorizedPage';
 import { LoadingSpinner } from '../LoadingSpinner';
 import { LoginPage } from './LoginPage';
@@ -33,11 +33,54 @@ export function ProtectedRoute({
   requiredRole,
   fallback,
 }: ProtectedRouteProps) {
-  const { isAuthenticated, isLoading } = useSupabaseAuth();
+  const { isAuthenticated, isLoading, user } = useSupabaseAuth();
 
-  // Temporary: Basic auth check only for now
-  const checkPermission = () => isAuthenticated;
-  const hasRole = () => isAuthenticated;
+  // Get user role from Supabase user metadata
+  const getUserRole = (): UserRole | null => {
+    if (!user) return null;
+    
+    // Try to get role from user metadata
+    const role = user.user_metadata?.role as UserRole;
+    if (role && Object.values(UserRole).includes(role)) {
+      return role;
+    }
+    
+    // Default to VIEWER if no role is set
+    return UserRole.VIEWER;
+  };
+
+  const userRole = getUserRole();
+
+  // Check if user has required permission
+  const checkPermission = (permission: Permission): boolean => {
+    if (!userRole) return false;
+    
+    const rolePermissions = ROLE_PERMISSIONS[userRole];
+    return rolePermissions.includes(permission);
+  };
+
+  // Check if user has required role
+  const hasRole = (role: UserRole): boolean => {
+    if (!userRole) return false;
+    
+    // Admin has access to all roles
+    if (userRole === UserRole.ADMIN) return true;
+    
+    // Check exact role match
+    if (userRole === role) return true;
+    
+    // Manager can access operator and viewer
+    if (userRole === UserRole.MANAGER && (role === UserRole.OPERATOR || role === UserRole.VIEWER)) {
+      return true;
+    }
+    
+    // Operator can access viewer
+    if (userRole === UserRole.OPERATOR && role === UserRole.VIEWER) {
+      return true;
+    }
+    
+    return false;
+  };
 
   // Show loading while checking authentication
   if (isLoading) {
@@ -57,13 +100,13 @@ export function ProtectedRoute({
   }
 
   // Check role requirement
-  if (requiredRole && !hasRole()) {
-    return <UnauthorizedPage requiredRole={requiredRole} />;
+  if (requiredRole && !hasRole(requiredRole)) {
+    return <UnauthorizedPage requiredRole={requiredRole} currentRole={userRole} />;
   }
 
   // Check permission requirement
-  if (requiredPermission && !checkPermission()) {
-    return <UnauthorizedPage requiredPermission={requiredPermission} />;
+  if (requiredPermission && !checkPermission(requiredPermission)) {
+    return <UnauthorizedPage requiredPermission={requiredPermission} currentRole={userRole} />;
   }
 
   return <>{children}</>;
@@ -98,15 +141,28 @@ export function ManagerRoute({ children }: { children: ReactNode }) {
  */
 export function PermissionGuard({
   children,
+  permission,
   fallback,
 }: {
   children: ReactNode;
   permission: Permission;
   fallback?: ReactNode;
 }) {
-  const { isAuthenticated } = useSupabaseAuth();
+  const { isAuthenticated, user } = useSupabaseAuth();
 
   if (!isAuthenticated) {
+    return fallback ?? null;
+  }
+
+  // Get user role
+  const role = user?.user_metadata?.role as UserRole;
+  const userRole = role && Object.values(UserRole).includes(role) ? role : UserRole.VIEWER;
+
+  // Check permission
+  const rolePermissions = ROLE_PERMISSIONS[userRole];
+  const hasPermission = rolePermissions.includes(permission);
+
+  if (!hasPermission) {
     return fallback ?? null;
   }
 

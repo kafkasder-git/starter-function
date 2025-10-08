@@ -16,6 +16,7 @@ import { Permission, UserRole } from '../../types/auth';
 interface UnauthorizedPageProps {
   requiredRole?: UserRole;
   requiredPermission?: Permission;
+  currentRole?: UserRole | null;
   onBack?: () => void;
   onGoHome?: () => void;
 }
@@ -71,6 +72,7 @@ const PERMISSION_LABELS: Record<Permission, string> = {
 export function UnauthorizedPage({
   requiredRole,
   requiredPermission,
+  currentRole,
   onBack,
   onGoHome,
 }: UnauthorizedPageProps) {
@@ -159,9 +161,9 @@ export function UnauthorizedPage({
                       <span className="text-slate-900 font-medium text-sm">{user.name}</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-slate-600 text-sm">Rol:</span>
+                      <span className="text-slate-600 text-sm">Mevcut Rol:</span>
                       <Badge variant="outline" className="text-xs">
-                        {ROLE_LABELS[user.role]}
+                        {currentRole ? ROLE_LABELS[currentRole] : user.role ? ROLE_LABELS[user.role] : 'Görüntüleyici'}
                       </Badge>
                     </div>
                   </div>

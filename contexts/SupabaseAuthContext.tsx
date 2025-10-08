@@ -8,7 +8,9 @@
 import type { Session, User } from '@supabase/supabase-js';
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { toast } from 'sonner';
-import { isSupabaseConfigured, supabase } from '../lib/supabase';
+import { isSupabaseConfigured, supabase, setCSRFToken } from '../lib/supabase';
+import { generateCSRFToken, revokeUserCSRFTokens } from '../middleware/csrf';
+import { auditService } from '../services/auditService';
 
 import { logger } from '../lib/logging/logger';
 // Supabase Auth Context Types
@@ -93,13 +95,36 @@ export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
         // Handle auth events
         switch (event) {
           case 'SIGNED_IN':
-            // Removed welcome toast notification
+            // Generate CSRF token on sign in
+            if (session?.user?.id) {
+              const csrfToken = generateCSRFToken(session.user.id);
+              setCSRFToken(csrfToken);
+              logger.info('CSRF token generated for user:', session.user.email);
+              
+              // Log successful login
+              auditService.logLogin(session.user.id, session.user.email || 'unknown');
+            }
             logger.info('User signed in:', session?.user?.email);
             break;
           case 'SIGNED_OUT':
+            // Revoke CSRF tokens on sign out
+            if (user?.id) {
+              revokeUserCSRFTokens(user.id);
+              setCSRFToken(null);
+              
+              // Log logout
+              auditService.logLogout(user.id, user.email || 'unknown');
+              logger.info('CSRF tokens revoked for user');
+            }
             toast.success('Başarıyla çıkış yaptınız');
             break;
           case 'TOKEN_REFRESHED':
+            // Refresh CSRF token on auth token refresh
+            if (session?.user?.id) {
+              const csrfToken = generateCSRFToken(session.user.id);
+              setCSRFToken(csrfToken);
+              logger.info('CSRF token refreshed');
+            }
             logger.info('Token refreshed');
             break;
           case 'USER_UPDATED':

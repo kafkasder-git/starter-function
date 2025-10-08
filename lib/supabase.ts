@@ -67,20 +67,75 @@ const safeSupabaseUrl = normalizedUrl.startsWith('http')
   : 'https://placeholder.supabase.co';
 const safeSupabaseKey = normalizedKey ? normalizedKey : 'placeholder-key';
 
-// Supabase client instance oluştur
-export const supabase = createClient(safeSupabaseUrl, safeSupabaseKey, {
-  auth: {
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: true,
-    flowType: 'pkce',
-  },
-  realtime: {
-    params: {
-      eventsPerSecond: 10,
+// CSRF token storage
+let csrfToken: string | null = null;
+
+/**
+ * Set CSRF token for Supabase requests
+ */
+export function setCSRFToken(token: string | null) {
+  csrfToken = token;
+  if (token) {
+    sessionStorage.setItem('csrf_token', token);
+  } else {
+    sessionStorage.removeItem('csrf_token');
+  }
+}
+
+/**
+ * Get current CSRF token
+ */
+export function getCSRFToken(): string | null {
+  return csrfToken || sessionStorage.getItem('csrf_token');
+}
+
+// Supabase client instance oluştur - Singleton pattern
+let supabaseInstance: ReturnType<typeof createClient> | null = null;
+
+export const supabase = (() => {
+  if (supabaseInstance) {
+    return supabaseInstance;
+  }
+
+  supabaseInstance = createClient(safeSupabaseUrl, safeSupabaseKey, {
+    auth: {
+      autoRefreshToken: true,
+      persistSession: true,
+      detectSessionInUrl: true,
+      flowType: 'pkce',
     },
-  },
-});
+    realtime: {
+      params: {
+        eventsPerSecond: 10,
+      },
+    },
+    global: {
+      headers: {
+        // Custom headers will be added per request
+      },
+    },
+  });
+
+  // Intercept requests to add CSRF token
+  const originalFrom = supabaseInstance.from.bind(supabaseInstance);
+  supabaseInstance.from = function(table: string) {
+    const query = originalFrom(table);
+    const token = getCSRFToken();
+    
+    if (token) {
+      // Add CSRF token to headers for all requests
+      const originalHeaders = query.headers || {};
+      query.headers = {
+        ...originalHeaders,
+        'x-csrf-token': token,
+      };
+    }
+    
+    return query;
+  };
+
+  return supabaseInstance;
+})();
 
 // Admin client (service role key ile) - RLS bypass için
 export const supabaseAdmin = createClient(
