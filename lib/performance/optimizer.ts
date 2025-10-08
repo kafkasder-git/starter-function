@@ -193,7 +193,11 @@ export class VirtualScroller {
     const visibleItems = this.items.slice(this.startIndex, endIndex);
     
     // Render logic here
-    console.log('Rendering items:', this.startIndex, 'to', endIndex);
+    if (typeof window !== 'undefined') {
+      import('../logging/logger').then(({ logger }) => {
+        logger.info('Rendering items:', this.startIndex, 'to', endIndex);
+      });
+    }
     
     return visibleItems;
   }
@@ -240,7 +244,11 @@ export async function loadComponent<T>(
     const module = await importFn();
     return module.default;
   } catch (error) {
-    console.error('Failed to load component:', error);
+    if (typeof window !== 'undefined') {
+      import('../logging/logger').then(({ logger }) => {
+        logger.error('Failed to load component:', error);
+      });
+    }
     throw error;
   }
 }
@@ -250,16 +258,28 @@ export async function loadComponent<T>(
  */
 export async function registerServiceWorker(swPath: string = '/sw.js') {
   if (!('serviceWorker' in navigator)) {
-    console.warn('Service Worker not supported');
+    if (typeof window !== 'undefined') {
+      import('../logging/logger').then(({ logger }) => {
+        logger.warn('Service Worker not supported');
+      });
+    }
     return null;
   }
 
   try {
     const registration = await navigator.serviceWorker.register(swPath);
-    console.log('Service Worker registered:', registration);
+    if (typeof window !== 'undefined') {
+      import('../logging/logger').then(({ logger }) => {
+        logger.info('Service Worker registered:', registration);
+      });
+    }
     return registration;
   } catch (error) {
-    console.error('Service Worker registration failed:', error);
+    if (typeof window !== 'undefined') {
+      import('../logging/logger').then(({ logger }) => {
+        logger.error('Service Worker registration failed:', error);
+      });
+    }
     return null;
   }
 }

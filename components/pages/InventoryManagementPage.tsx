@@ -81,160 +81,11 @@ interface AssociationPartner {
   tags: string[];
 }
 
-// TODO: Implement API call to fetch associations
-
-const associations: AssociationPartner[] = [
-  {
-    id: 1,
-    name: 'Toplum Kalkınma Derneği',
-    type: 'dernek',
-    focusArea: 'sosyal-yardım',
-    location: 'Ankara',
-    contactPerson: 'Hasan Çelik',
-    position: 'Başkan',
-    phone: '0312 555 0101',
-    email: 'info@toplumkalkinma.org',
-    address: 'Kızılay, Ankara',
-    status: 'aktif',
-    collaborationType: 'proje-ortaklığı',
-    establishedDate: '2005-04-08',
-    memberCount: 150,
-    budget: 250000,
-    lastCollaboration: '2024-01-15',
-    rating: 4,
-    website: 'www.toplumkalkinma.org',
-    socialMedia: {
-      facebook: 'toplumkalkinma',
-      twitter: 'toplumkalkinma',
-    },
-    description: 'Sosyal kalkınma ve toplumsal dayanışma alanında faaliyet gösteren dernek',
-    specialties: ['sosyal-yardım', 'mikro-kredi', 'mesleki-eğitim', 'kadın-girişimciliği'],
-    sharedProjects: [
-      { name: 'Kadın Girişimcilik Projesi', year: '2023', status: 'tamamlandı' },
-      { name: 'Gençlik Eğitim Programı', year: '2024', status: 'devam-ediyor' },
-    ],
-    tags: ['sosyal-kalkınma', 'girişimcilik', 'kadın', 'eğitim'],
-  },
-  {
-    id: 2,
-    name: 'Çocuk Eğitimi Vakfı',
-    type: 'vakıf',
-    focusArea: 'eğitim',
-    location: 'İstanbul',
-    contactPerson: 'Dr. Fatma Demir',
-    position: 'Genel Müdür',
-    phone: '0212 555 0202',
-    email: 'info@cocu keğitimi.org',
-    address: 'Beşiktaş, İstanbul',
-    status: 'aktif',
-    collaborationType: 'kaynak-paylaşımı',
-    establishedDate: '1998-09-15',
-    memberCount: 85,
-    budget: 450000,
-    lastCollaboration: '2024-01-20',
-    rating: 5,
-    website: 'www.cocukegitimi.org',
-    socialMedia: {
-      facebook: 'cocukegitimivakfi',
-      instagram: 'cocukegitimi',
-    },
-    description: 'Çocuk eğitimi ve gelişimi alanında uzmanlaşmış vakıf',
-    specialties: ['okul-öncesi', 'özel-eğitim', 'materyal-geliştirme', 'öğretmen-eğitimi'],
-    sharedProjects: [
-      { name: 'Eğitim Materyali Paylaşımı', year: '2023', status: 'tamamlandı' },
-      { name: 'Öğretmen Değişim Programı', year: '2024', status: 'devam-ediyor' },
-      { name: 'Yaz Okulu Projesi', year: '2024', status: 'planlanıyor' },
-    ],
-    tags: ['çocuk', 'eğitim', 'okul-öncesi', 'özel-eğitim'],
-  },
-  {
-    id: 3,
-    name: 'Yaşlı Bakım Derneği',
-    type: 'dernek',
-    focusArea: 'yaşlı',
-    location: 'İzmir',
-    contactPerson: 'Mehmet Özkan',
-    position: 'Koordinatör',
-    phone: '0232 555 0303',
-    email: 'koordinasyon@yaslibakım.org',
-    address: 'Konak, İzmir',
-    status: 'aktif',
-    collaborationType: 'deneyim-paylaşımı',
-    establishedDate: '2010-11-22',
-    memberCount: 65,
-    budget: 180000,
-    lastCollaboration: '2024-01-18',
-    rating: 4,
-    website: 'www.yaslibakim.org',
-    description: 'Yaşlı bakım hizmetleri ve yaşlı hakları alanında çalışan dernek',
-    specialties: ['evde-bakım', 'sosyal-aktivite', 'sağlık-takibi', 'aile-danışmanlığı'],
-    sharedProjects: [
-      { name: 'Yaşlı Bakım Eğitimi', year: '2023', status: 'tamamlandı' },
-      { name: 'Gönüllü Eğitim Programı', year: '2024', status: 'devam-ediyor' },
-    ],
-    tags: ['yaşlı', 'bakım', 'sağlık', 'gönüllülük'],
-  },
-  {
-    id: 4,
-    name: 'Gençlik ve Spor Platformu',
-    type: 'platform',
-    focusArea: 'gençlik',
-    location: 'Antalya',
-    contactPerson: 'Zeynep Kaya',
-    position: 'Platform Sözcüsü',
-    phone: '0242 555 0404',
-    email: 'iletisim@genclikplatformu.org',
-    address: 'Muratpaşa, Antalya',
-    status: 'işbirliği-arayışı',
-    collaborationType: 'ortak-etkinlik',
-    establishedDate: '2015-06-10',
-    memberCount: 200,
-    budget: 120000,
-    rating: 4,
-    website: 'www.genclikplatformu.org',
-    socialMedia: {
-      instagram: 'genclikplatformu',
-      twitter: 'genclikplatform',
-    },
-    description: 'Gençlik ve spor etkinlikleri organize eden platform',
-    specialties: ['spor-etkinlikleri', 'gençlik-kampları', 'liderlik-eğitimi', 'sosyal-sorumluluk'],
-    sharedProjects: [{ name: 'Gençlik Liderleri Kampı', year: '2024', status: 'planlanıyor' }],
-    tags: ['gençlik', 'spor', 'liderlik', 'etkinlik'],
-  },
-  {
-    id: 5,
-    name: 'Çevre Koruma Birliği',
-    type: 'birlik',
-    focusArea: 'çevre',
-    location: 'Bursa',
-    contactPerson: 'Dr. Ahmet Yılmaz',
-    position: 'Başkan',
-    phone: '0224 555 0505',
-    email: 'baskan@cevrekoruma.org',
-    address: 'Nilüfer, Bursa',
-    status: 'aktif',
-    collaborationType: 'network',
-    establishedDate: '2008-03-14',
-    memberCount: 300,
-    budget: 350000,
-    lastCollaboration: '2024-01-12',
-    rating: 5,
-    website: 'www.cevrekoruma.org',
-    socialMedia: {
-      facebook: 'cevrekorumabirligi',
-      instagram: 'cevrekoruma',
-      twitter: 'cevrekoruma',
-    },
-    description: 'Çevre koruma ve sürdürülebilirlik konularında faaliyet gösteren birlik',
-    specialties: ['geri-dönüşüm', 'çevre-eğitimi', 'doğa-koruma', 'sürdürülebilirlik'],
-    sharedProjects: [
-      { name: 'Geri Dönüşüm Kampanyası', year: '2023', status: 'tamamlandı' },
-      { name: 'Çevre Bilinci Eğitimi', year: '2024', status: 'devam-ediyor' },
-      { name: 'Yeşil Şehir Projesi', year: '2024', status: 'planlanıyor' },
-    ],
-    tags: ['çevre', 'sürdürülebilirlik', 'eğitim', 'geri-dönüşüm'],
-  },
-];
+// Service call to fetch associations
+const fetchAssociations = async (): Promise<AssociationPartner[]> => {
+  // TODO: Replace with actual API call
+  return [];
+};
 
 /**
  * PartnerAssociationsPage function
@@ -243,9 +94,8 @@ const associations: AssociationPartner[] = [
  * @returns {void} Nothing
  */
 export default function PartnerAssociationsPage() {
-  const [associationsList] = useState<AssociationPartner[]>(associations);
-  const [filteredAssociations, setFilteredAssociations] =
-    useState<AssociationPartner[]>(associations);
+  const [associationsList, setAssociationsList] = useState<AssociationPartner[]>([]);
+  const [filteredAssociations, setFilteredAssociations] = useState<AssociationPartner[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<string>('all');
   const [filterFocusArea, setFilterFocusArea] = useState<string>('all');
@@ -254,9 +104,28 @@ export default function PartnerAssociationsPage() {
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('all');
 
+  // Load associations data
+  useEffect(() => {
+    const loadAssociations = async () => {
+      try {
+        const data = await fetchAssociations();
+        setAssociationsList(data);
+        setFilteredAssociations(data);
+      } catch (error) {
+        // Use logger instead of console.error
+        if (typeof window !== 'undefined') {
+          import('../../lib/logging/logger').then(({ logger }) => {
+            logger.error('Error loading associations:', error);
+          });
+        }
+      }
+    };
+    loadAssociations();
+  }, []);
+
   // Filtering logic
   useEffect(() => {
-    let filtered = associations;
+    let filtered = associationsList;
 
     // Search filter
     if (searchTerm) {
@@ -300,7 +169,7 @@ export default function PartnerAssociationsPage() {
     }
 
     setFilteredAssociations(filtered);
-  }, [searchTerm, filterType, filterFocusArea, filterStatus, activeTab]);
+  }, [associationsList, searchTerm, filterType, filterFocusArea, filterStatus, activeTab]);
 
   const getStatusBadge = (status: AssociationPartner['status']) => {
     let label: string;

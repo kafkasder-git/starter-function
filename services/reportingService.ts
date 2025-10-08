@@ -663,17 +663,6 @@ export class ReportingService {
     });
   }
 
-  private async fetchFinancialData(dateRange: DateRange): Promise<unknown> {
-    return await this.generateFinancialReport(dateRange);
-  }
-
-  private async fetchDonationData(dateRange: DateRange): Promise<unknown> {
-    return await this.generateDonationAnalytics(dateRange);
-  }
-
-  private async fetchImpactData(dateRange: DateRange): Promise<unknown> {
-    return await this.generateImpactReport(dateRange);
-  }
 
   private async fetchMemberData(dateRange: DateRange): Promise<unknown> {
     // Placeholder for member data fetching

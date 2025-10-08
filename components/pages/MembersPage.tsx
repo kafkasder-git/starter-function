@@ -95,9 +95,9 @@ export function MembersPage() {
       setLoading(true);
 
       const filters = {
-        membershipStatus: statusFilter !== 'all' ? statusFilter : undefined,
-        membershipType: typeFilter !== 'all' ? typeFilter : undefined,
-        searchTerm: searchTerm.trim() ?? undefined,
+        ...(statusFilter !== 'all' && { membershipStatus: statusFilter }),
+        ...(typeFilter !== 'all' && { membershipType: typeFilter }),
+        ...(searchTerm.trim() && { searchTerm: searchTerm.trim() }),
       };
 
       const result = await membersService.getMembers(currentPage, pageSize, filters);

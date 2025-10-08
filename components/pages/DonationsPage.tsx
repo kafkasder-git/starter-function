@@ -107,10 +107,10 @@ export function DonationsPage() {
       setLoading(true);
 
       const filters: DonationsFilters = {
-        searchTerm: searchTerm.trim() ?? undefined,
-        status: statusFilter !== 'all' ? statusFilter : undefined,
-        donationType: donationTypeFilter !== 'all' ? donationTypeFilter : undefined,
-        paymentMethod: paymentMethodFilter !== 'all' ? paymentMethodFilter : undefined,
+        ...(searchTerm.trim() && { searchTerm: searchTerm.trim() }),
+        ...(statusFilter !== 'all' && { status: statusFilter }),
+        ...(donationTypeFilter !== 'all' && { donationType: donationTypeFilter }),
+        ...(paymentMethodFilter !== 'all' && { paymentMethod: paymentMethodFilter }),
       };
 
       const result = await donationsService.getDonations(currentPage, pageSize, filters);
@@ -290,10 +290,10 @@ export function DonationsPage() {
             onClick={async () => {
               try {
                 const exportFilters: DonationsFilters = {
-                  searchTerm: searchTerm.trim() || undefined,
-                  status: statusFilter !== 'all' ? statusFilter : undefined,
-                  donationType: donationTypeFilter !== 'all' ? donationTypeFilter : undefined,
-                  paymentMethod: paymentMethodFilter !== 'all' ? paymentMethodFilter : undefined,
+                  ...(searchTerm.trim() && { searchTerm: searchTerm.trim() }),
+                  ...(statusFilter !== 'all' && { status: statusFilter }),
+                  ...(donationTypeFilter !== 'all' && { donationType: donationTypeFilter }),
+                  ...(paymentMethodFilter !== 'all' && { paymentMethod: paymentMethodFilter }),
                 };
                 const result = await donationsService.exportDonations(exportFilters);
                 if (result.data) {

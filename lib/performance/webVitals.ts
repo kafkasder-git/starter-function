@@ -19,9 +19,14 @@ interface PerformanceMetric {
  * Send metric to analytics
  */
 function sendToAnalytics(metric: PerformanceMetric) {
-  // Log to console in development
+  // Log in development
   if (import.meta.env.DEV) {
-    console.log('📊 Web Vital:', metric);
+    // Use logger instead of console.log
+    if (typeof window !== 'undefined') {
+      import('../logging/logger').then(({ logger }) => {
+        logger.info('📊 Web Vital:', metric);
+      });
+    }
   }
 
   // Send to Sentry
@@ -48,7 +53,13 @@ function sendToAnalytics(metric: PerformanceMetric) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(metric),
       keepalive: true,
-    }).catch(console.error);
+    }).catch((error) => {
+      if (typeof window !== 'undefined') {
+        import('../logging/logger').then(({ logger }) => {
+          logger.error('Analytics error:', error);
+        });
+      }
+    });
   }
 }
 
@@ -115,9 +126,17 @@ export function initWebVitals() {
     // Time to First Byte
     getTTFB(handleMetric);
 
-    console.log('✅ Web Vitals tracking initialized');
+    if (typeof window !== 'undefined') {
+      import('../logging/logger').then(({ logger }) => {
+        logger.info('✅ Web Vitals tracking initialized');
+      });
+    }
   } catch (error) {
-    console.error('Failed to initialize Web Vitals:', error);
+    if (typeof window !== 'undefined') {
+      import('../logging/logger').then(({ logger }) => {
+        logger.error('Failed to initialize Web Vitals:', error);
+      });
+    }
   }
 }
 
@@ -165,10 +184,14 @@ export function monitorLongTasks() {
     const observer = new PerformanceObserver((list) => {
       for (const entry of list.getEntries()) {
         if (entry.duration > 50) {
-          console.warn('⚠️ Long task detected:', {
-            duration: entry.duration,
-            startTime: entry.startTime,
-          });
+          if (typeof window !== 'undefined') {
+            import('../logging/logger').then(({ logger }) => {
+              logger.warn('⚠️ Long task detected:', {
+                duration: entry.duration,
+                startTime: entry.startTime,
+              });
+            });
+          }
 
           captureMessage(
             `Long task: ${entry.duration}ms`,
@@ -180,7 +203,11 @@ export function monitorLongTasks() {
 
     observer.observe({ entryTypes: ['longtask'] });
   } catch (error) {
-    console.error('Failed to monitor long tasks:', error);
+    if (typeof window !== 'undefined') {
+      import('../logging/logger').then(({ logger }) => {
+        logger.error('Failed to monitor long tasks:', error);
+      });
+    }
   }
 }
 
@@ -197,11 +224,15 @@ export function monitorResourceTiming() {
   const slowResources = resources.filter(resource => resource.duration > 1000);
   
   if (slowResources.length > 0) {
-    console.warn('⚠️ Slow resources detected:', slowResources.map(r => ({
-      name: r.name,
-      duration: r.duration,
-      size: r.transferSize,
-    })));
+    if (typeof window !== 'undefined') {
+      import('../logging/logger').then(({ logger }) => {
+        logger.warn('⚠️ Slow resources detected:', slowResources.map(r => ({
+          name: r.name,
+          duration: r.duration,
+          size: r.transferSize,
+        })));
+      });
+    }
   }
 
   return {

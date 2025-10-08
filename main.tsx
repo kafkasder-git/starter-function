@@ -8,7 +8,13 @@ import './styles/globals.css';
 if (typeof window !== 'undefined') {
   // Handle unhandled promise rejections
   window.addEventListener('unhandledrejection', (event) => {
-    console.error('Unhandled promise rejection:', event.reason);
+    // Use logger instead of console.error
+    if (typeof window !== 'undefined') {
+      // Import logger dynamically
+      import('./lib/logging/logger').then(({ logger }) => {
+        logger.error('Unhandled promise rejection:', event.reason);
+      });
+    }
 
     // Show user-friendly error message
     const errorContainer = document.getElementById('global-error-container');
@@ -43,11 +49,20 @@ if (typeof window !== 'undefined') {
 
   // Handle JavaScript errors
   window.addEventListener('error', (event) => {
-    console.error('Global error:', event.error);
+    // Use logger instead of console.error
+    if (typeof window !== 'undefined') {
+      import('./lib/logging/logger').then(({ logger }) => {
+        logger.error('Global error:', event.error);
+      });
+    }
 
     // Don't reload on script loading errors
     if (event.filename?.includes('chunk')) {
-      console.warn('Chunk loading error detected, attempting reload...');
+      if (typeof window !== 'undefined') {
+        import('./lib/logging/logger').then(({ logger }) => {
+          logger.warn('Chunk loading error detected, attempting reload...');
+        });
+      }
       setTimeout(() => {
         window.location.reload();
       }, 1000);
@@ -63,7 +78,12 @@ try {
     </React.StrictMode>,
   );
 } catch (error) {
-  console.error('Failed to initialize app:', error);
+  // Use logger instead of console.error
+  if (typeof window !== 'undefined') {
+    import('./lib/logging/logger').then(({ logger }) => {
+      logger.error('Failed to initialize app:', error);
+    });
+  }
 
   // Fallback UI for critical errors
   const root = document.getElementById('root');

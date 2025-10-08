@@ -257,14 +257,14 @@ export class ErrorHandler {
       this.errorLog = this.errorLog.slice(0, this.maxLogSize);
     }
 
-    // Console logging for development
+    // Logging for development
     if (import.meta.env.DEV) {
-      console.group(`🚨 ${error.severity} Error: ${error.type}`);
+      logger.group(`🚨 ${error.severity} Error: ${error.type}`);
       logger.error('Message:', error.message);
       logger.error('User Message:', error.userMessage);
       logger.error('Details:', error.details);
       logger.error('Stack:', error.stack);
-      console.groupEnd();
+      logger.groupEnd();
     }
   }
 
