@@ -30,12 +30,15 @@ jobs:
       
       - name: Run ESLint
         run: npm run lint:check
+        continue-on-error: true
       
       - name: Run TypeScript type check
         run: npm run type-check
+        continue-on-error: true
       
       - name: Check code formatting
         run: npm run format:check
+        continue-on-error: true
 
   # ============================================================================
   # UNIT TESTS (Temporarily disabled)

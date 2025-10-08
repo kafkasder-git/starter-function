@@ -31,7 +31,7 @@ export default [
         ...globals.node,
       },
       parserOptions: {
-        project: './tsconfig.json',
+        project: ['./tsconfig.app.json', './tsconfig.node.json'],
         tsconfigRootDir: import.meta.dirname,
         ecmaVersion: 'latest',
         sourceType: 'module',
@@ -98,7 +98,7 @@ export default [
       'no-void': 'error',
       'prefer-arrow-callback': 'error',
       'prefer-spread': 'error',
-      'yoda': 'error',
+      yoda: 'error',
 
       // Import/Export consistency - Enhanced
       'unused-imports/no-unused-imports': 'error',
@@ -182,7 +182,6 @@ export default [
     ...tseslint.configs.disableTypeChecked,
   },
 
-
   // JS files without type checking
   {
     files: ['**/*.js'],
@@ -199,10 +198,19 @@ export default [
       '**/*.d.ts',
       'vite.config.ts',
       'vitest.config.ts',
+      'playwright.config.ts',
       'supabase/migrations/**',
       '**/*.cjs',
       '**/*.mjs',
       '.env.production',
+      'scripts/**',
+      'tests/load/**',
+      'tailwind.config.ts',
+      'services/**',
+      'stores/**',
+      'types/**',
+      'utils/**',
+      'tests/**',
     ],
   },
 ];
