@@ -225,7 +225,10 @@ export const ProfilePage = createLazyComponent(
   'ProfilePage',
 );
 
-// SystemSettingsPage removed
+export const SystemSettingsPage = createLazyComponent(
+  () => import('../pages/SystemSettingsPage').then((m) => ({ default: m.SystemSettingsPage })),
+  'SystemSettingsPage',
+);
 
 export const UserManagementPage = createLazyComponent(
   () =>
@@ -393,7 +396,9 @@ export const ROUTE_REGISTRY: Record<string, Record<string, RouteConfig>> = {
     default: { component: ProfilePage, skeletonVariant: 'detail' },
   },
 
-  // Settings module removed
+  settings: {
+    default: { component: SystemSettingsPage, skeletonVariant: 'detail' },
+  },
 
   'user-management': {
     default: { component: UserManagementPage, skeletonVariant: 'table' },
