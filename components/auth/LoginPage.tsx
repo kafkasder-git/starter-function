@@ -8,7 +8,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { toast } from 'sonner';
-import { Eye, EyeOff, Lock, Mail, Shield, AlertCircle } from 'lucide-react';
+import { Eye, EyeOff, Lock, Mail, Shield, AlertCircle, X } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
@@ -41,12 +41,13 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
   const [resetEmail, setResetEmail] = useState('');
   const [isResetting, setIsResetting] = useState(false);
 
-  // Clear errors when user starts typing
+  // Clear errors when user starts typing or submits form
   useEffect(() => {
     if (error) {
+      // Only auto-clear after 10 seconds instead of 5
       const timer = setTimeout(() => {
         clearError();
-      }, 5000);
+      }, 10000);
       return () => {
         clearTimeout(timer);
       };
@@ -57,7 +58,7 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
     const errors: Record<string, string> = {};
 
     if (!credentials.email) {
-      errors.email = 'Kullanıcı adı gerekli';
+      errors.email = 'Kullanıcı adı veya email gerekli';
     }
 
     if (!credentials.password) {
@@ -78,7 +79,7 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
     }
 
     try {
-      await signIn(credentials.email, credentials.password);
+      await signIn(credentials.email, credentials.password, credentials.rememberMe);
       onLoginSuccess?.();
     } catch {
       // Error is handled in SupabaseAuthContext
@@ -149,7 +150,7 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
-              className="from-primary mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br via-blue-600 to-blue-800 shadow-lg"
+              className="from-primary mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br via-blue-600 to-blue-800 shadow-lg motion-safe:animate-pulse"
             >
               <Shield className="h-8 w-8 text-white" />
             </motion.div>
@@ -171,9 +172,17 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.2 }}
               >
-                <Alert variant="destructive" className="border-red-300">
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertDescription>{error}</AlertDescription>
+                <Alert variant="destructive" className="border-red-300 flex items-start gap-2">
+                  <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                  <AlertDescription className="flex-1">{error}</AlertDescription>
+                  <button
+                    type="button"
+                    onClick={clearError}
+                    className="text-red-500 hover:text-red-700 transition-colors flex-shrink-0"
+                    aria-label="Hata mesajını kapat"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
                 </Alert>
               </motion.div>
             )}
@@ -181,14 +190,14 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email" className="font-semibold text-slate-700">
-                  Kullanıcı Adı
+                  Kullanıcı Adı / Email
                 </Label>
                 <div className="relative">
                   <Mail className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-slate-500" />
                   <Input
                     id="email"
                     type="text"
-                    placeholder="admin, manager, operator, viewer"
+                    placeholder="admin, manager, operator, viewer veya email adresi"
                     value={credentials.email}
                     onChange={(e) => {
                       handleInputChange('email', e.target.value);

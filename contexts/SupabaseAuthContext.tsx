@@ -20,7 +20,7 @@ interface SupabaseAuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
-  signIn: (email: string, password: string) => Promise<void>;
+  signIn: (email: string, password: string, rememberMe?: boolean) => Promise<void>;
   signUp: (email: string, password: string, name: string) => Promise<void>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
@@ -156,7 +156,7 @@ export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
   }, []);
 
   // Sign in with email and password
-  const signIn = async (email: string, password: string): Promise<void> => {
+  const signIn = async (email: string, password: string, rememberMe = false): Promise<void> => {
     setIsLoading(true);
     setError(null);
 
@@ -174,6 +174,10 @@ export function SupabaseAuthProvider({ children }: SupabaseAuthProviderProps) {
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
+      }, {
+        // If rememberMe is true, persist session across browser sessions
+        // If false, session will be cleared when browser is closed
+        persistSession: rememberMe
       });
 
       if (error) {
