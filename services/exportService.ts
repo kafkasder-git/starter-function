@@ -12,8 +12,9 @@ import type {
   ReportResponse,
   AnalyticsData,
   FinancialData,
-  ExportFormat,
 } from '../types/reporting';
+
+import { ExportFormat } from '../types/reporting';
 
 import {
   ChartExportUtils,

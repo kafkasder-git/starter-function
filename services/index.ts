@@ -9,7 +9,7 @@ import nativeFeaturesService from './nativeFeaturesService';
 import userManagementService from './userManagementService';
 import membersService from './membersService';
 import donationsService from './donationsService';
-import beneficiariesService from './beneficiariesService';
+import { beneficiariesService } from './beneficiariesService';
 import kumbaraService from './kumbaraService';
 import notificationService from './notificationService';
 import fileStorageService from './fileStorageService';
@@ -42,7 +42,7 @@ export { default as userManagementService } from './userManagementService';
 // Main entity services
 export { default as membersService } from './membersService';
 export { default as donationsService } from './donationsService';
-export { default as beneficiariesService } from './beneficiariesService';
+export { beneficiariesService } from './beneficiariesService';
 export { default as kumbaraService } from './kumbaraService';
 
 // Support services

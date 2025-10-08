@@ -1,5 +1,27 @@
 // Monitoring Types - Integration with existing monitoring system
-import type { MCPMetrics, MCPHealthCheck, MCPError, MCPErrorType } from './mcp';
+
+// MCP Types (placeholder definitions)
+export type MCPErrorType = 'connection' | 'timeout' | 'validation' | 'server' | 'unknown';
+
+export interface MCPError {
+  type: MCPErrorType;
+  message: string;
+  timestamp: Date;
+  details?: unknown;
+}
+
+export interface MCPMetrics {
+  requestCount: number;
+  errorCount: number;
+  averageResponseTime: number;
+  uptime: number;
+}
+
+export interface MCPHealthCheck {
+  status: 'healthy' | 'degraded' | 'unhealthy';
+  timestamp: Date;
+  checks: Record<string, boolean>;
+}
 
 // Base monitoring types (compatible with existing production-monitoring.js)
 export interface BaseMonitoringConfig {
