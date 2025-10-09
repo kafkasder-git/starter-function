@@ -55,17 +55,8 @@ export { default as intelligentStatsService } from './intelligentStatsService';
 // =============================================================================
 
 // Email/SMS notification service
-export {
-  emailSMSService,
-  sendEmail,
-  sendSMS,
-  sendWithTemplate,
-  getNotificationTemplates,
-  testNotificationConfig,
-  type NotificationData,
-  type NotificationTemplate,
-  type NotificationResult,
-} from './emailSMSService';
+export { EmailSMSService } from './emailSMSService';
+export { default as emailSMSService } from './emailSMSService';
 
 // In-app notifications
 export { default as notificationService } from './notificationService';
@@ -99,15 +90,12 @@ export {
 // Query optimization service
 export {
   queryOptimizationService,
-  executeOptimizedQuery,
   executePreparedStatement,
   getQueryAnalytics,
   suggestIndexOptimizations,
-  type QueryMetrics,
-  type QueryAnalysis,
-  type PreparedStatement,
-  type QueryOptimizationConfig,
+  QueryOptimizationService,
 } from './queryOptimizationService';
+export { default as QueryOptimizationServiceClass } from './queryOptimizationService';
 
 // Index management service
 export {
@@ -169,18 +157,8 @@ export {
 } from './cachingService';
 
 // Performance monitoring service
-export {
-  performanceMonitoringService,
-  getPerformanceReport,
-  getActiveAlerts,
-  getMetricsHistory,
-  exportPerformanceData,
-  updatePerformanceConfig,
-  type PerformanceMetrics,
-  type PerformanceAlert,
-  type PerformanceReport,
-  type PerformanceConfig,
-} from './performanceMonitoringService';
+export { performanceMonitoringService } from './performanceMonitoringService';
+export { default as performanceMonitoringServiceDefault } from './performanceMonitoringService';
 
 // =============================================================================
 // UTILITY SERVICES
@@ -189,14 +167,8 @@ export {
 // AI services removed
 
 // Monitoring and analytics
-export {
-  trackEvent,
-  trackError,
-  trackAnalytics,
-  trackPageView,
-  trackFeatureUsage,
-} from './monitoringService';
-export { default as monitoring } from './monitoringService';
+export { monitoring } from './monitoringService';
+export { default as monitoringService } from './monitoringService';
 
 // Export service
 export { default as exportService } from './exportService';
@@ -215,7 +187,7 @@ export { default as nativeFeaturesService } from './nativeFeaturesService';
 // =============================================================================
 
 // These services will be replaced by the new comprehensive services above
-export { default as ihtiyacSahipleriService } from './ihtiyacSahipleriService';
+export { ihtiyacSahipleriService } from './ihtiyacSahipleriService';
 
 // =============================================================================
 // TYPE DEFINITIONS
@@ -328,17 +300,18 @@ export const checkServiceHealth = async () => {
 
     try {
       // Call a lightweight method to test service health
-      if (method === 'trackEvent') {
-        (service as unknown as ServiceWithMethod)[method]('health_check', { service: name });
-      } else if (method === 'testConfiguration' || method === 'testStorage') {
-        await (service as unknown as ServiceWithMethod)[method]();
-      } else if (method === 'getDatabaseIndexes') {
-        // Call with empty string for schema to test basic functionality
-        await (service as unknown as ServiceWithMethod)[method]('');
-      } else {
-        // For data services, just check if method exists and call it
-        if (typeof (service as unknown as ServiceWithMethod)[method] === 'function') {
-          await (service as unknown as ServiceWithMethod)[method]();
+      const methodFn = (service as unknown as ServiceWithMethod)?.[method];
+      if (typeof methodFn === 'function') {
+        if (method === 'trackEvent') {
+          methodFn('health_check', { service: name });
+        } else if (method === 'testConfiguration' || method === 'testStorage') {
+          await methodFn();
+        } else if (method === 'getDatabaseIndexes') {
+          // Call with empty string for schema to test basic functionality
+          await methodFn('');
+        } else {
+          // For data services, just check if method exists and call it
+          await methodFn();
         }
       }
 

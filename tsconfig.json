@@ -3,7 +3,7 @@
     "target": "ES2022",
     "module": "ESNext",
     "moduleResolution": "bundler",
-    
+
     /* Strict Type Checking - All enabled for maximum safety */
     "strict": true,
     "strictNullChecks": true,
@@ -17,18 +17,18 @@
     "noUncheckedIndexedAccess": true, // Comment 1: Add undefined to indexed access
     "noFallthroughCasesInSwitch": true, // Comment 9: Prevent switch fallthrough bugs
     "noPropertyAccessFromIndexSignature": false, // Keep false for flexibility with dynamic objects
-    
+
     /* Control Flow Analysis */
     "allowUnusedLabels": false, // Comment 3: Disallow unused labels
     "allowUnreachableCode": false, // Comment 3: Disallow unreachable code
-    
+
     /* Module Resolution */
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true, // Comment 10: Keep true for dev speed, CI checks without this
     "resolveJsonModule": true,
     "isolatedModules": true,
     "verbatimModuleSyntax": true, // Comment 8: Modern ESM import behavior
-    
+
     /* Path Mapping - Comment 5: Explicit aliases for clarity */
     "baseUrl": ".",
     "paths": {
@@ -41,17 +41,17 @@
       "@types/*": ["./types/*"],
       "@utils/*": ["./utils/*"]
     },
-    
+
     /* React & Bundler specific */
     "jsx": "react-jsx",
-    "types": ["vite/client"],
+    "types": ["react", "react-dom", "vite/client"],
     "noEmit": true,
 
     /* Performance and optimization - Comment 7: Composite builds */
     "incremental": true,
     "composite": false, // Will be true in project-specific configs
     "tsBuildInfoFile": "node_modules/.tmp/tsconfig.tsbuildinfo",
-    
+
     /* Code generation - Comment 11: Source maps controlled by Vite */
     "declaration": false,
     "declarationMap": false,
@@ -59,18 +59,18 @@
     "removeComments": false,
     "importHelpers": true,
     "downlevelIteration": true
-    
+
     /* Comment 2: Decorators removed - not used in codebase */
     /* "experimentalDecorators": true, */
     /* "emitDecoratorMetadata": true */
   },
-  
+
   /* Comment 4 & 7: Use project references for better organization */
   "references": [
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" }
   ],
-  
+
   "files": [],
   "include": [],
   "exclude": []
