@@ -290,4 +290,208 @@ describe('authStore', () => {
       expect(state.isAuthenticated).toBe(true);
     });
   });
+
+  describe('Session Management', () => {
+    beforeEach(() => {
+      // Mock supabase
+      vi.mock('../../lib/supabase', () => ({
+        supabase: {
+          auth: {
+            refreshSession: vi.fn(),
+          },
+        },
+      }));
+    });
+
+    it('should refresh session successfully', async () => {
+      const { refreshSession } = useAuthStore.getState();
+      const mockSession = {
+        access_token: 'new-token',
+        refresh_token: 'new-refresh',
+        expires_at: Date.now() / 1000 + 3600,
+        token_type: 'Bearer',
+        user: {
+          id: '123',
+          email: 'test@example.com',
+        },
+      };
+
+      // Mock successful refresh
+      const { supabase } = await import('../../lib/supabase');
+      vi.mocked(supabase.auth.refreshSession).mockResolvedValue({
+        data: { session: mockSession },
+        error: null,
+      });
+
+      await refreshSession();
+      const state = useAuthStore.getState();
+
+      expect(state.session).toEqual(mockSession);
+      expect(state.error).toBe(null);
+    });
+
+    it('should handle refresh session failure', async () => {
+      const { refreshSession } = useAuthStore.getState();
+
+      // Mock failed refresh
+      const { supabase } = await import('../../lib/supabase');
+      vi.mocked(supabase.auth.refreshSession).mockResolvedValue({
+        data: { session: null },
+        error: new Error('Refresh failed'),
+      });
+
+      await refreshSession();
+      const state = useAuthStore.getState();
+
+      expect(state.user).toBe(null);
+      expect(state.session).toBe(null);
+      expect(state.isAuthenticated).toBe(false);
+    });
+
+    it('should prevent concurrent refresh attempts', async () => {
+      const { refreshSession } = useAuthStore.getState();
+
+      // Mock slow refresh
+      const { supabase } = await import('../../lib/supabase');
+      let resolveRefresh: (value: any) => void;
+      const refreshPromise = new Promise(resolve => {
+        resolveRefresh = resolve;
+      });
+      vi.mocked(supabase.auth.refreshSession).mockReturnValue(refreshPromise);
+
+      // Start two concurrent refresh attempts
+      const promise1 = refreshSession();
+      const promise2 = refreshSession();
+
+      // Should return the same promise
+      expect(promise1).toBe(promise2);
+
+      // Complete the refresh
+      resolveRefresh!({
+        data: { session: null },
+        error: null,
+      });
+
+      await Promise.all([promise1, promise2]);
+    });
+
+    it('should check session expiry and logout if expired', () => {
+      const { setSession, checkSessionExpiry, logout } = useAuthStore.getState();
+
+      // Set expired session
+      setSession({
+        access_token: 'token',
+        refresh_token: 'refresh',
+        expires_at: Date.now() / 1000 - 3600, // 1 hour ago
+        token_type: 'Bearer',
+        user: { id: '123', email: 'test@example.com' },
+      });
+
+      checkSessionExpiry();
+      const state = useAuthStore.getState();
+
+      expect(state.user).toBe(null);
+      expect(state.session).toBe(null);
+      expect(state.isAuthenticated).toBe(false);
+    });
+
+    it('should refresh session if it should be refreshed', async () => {
+      const { setSession, checkSessionExpiry } = useAuthStore.getState();
+
+      // Set session that should be refreshed (expires in 5 minutes)
+      setSession({
+        access_token: 'token',
+        refresh_token: 'refresh',
+        expires_at: Date.now() / 1000 + 300, // 5 minutes
+        token_type: 'Bearer',
+        user: { id: '123', email: 'test@example.com' },
+      });
+
+      // Mock successful refresh
+      const { supabase } = await import('../../lib/supabase');
+      const mockSession = {
+        access_token: 'new-token',
+        refresh_token: 'new-refresh',
+        expires_at: Date.now() / 1000 + 3600,
+        token_type: 'Bearer',
+        user: { id: '123', email: 'test@example.com' },
+      };
+      vi.mocked(supabase.auth.refreshSession).mockResolvedValue({
+        data: { session: mockSession },
+        error: null,
+      });
+
+      checkSessionExpiry();
+
+      // Wait for async refresh
+      await new Promise(resolve => setTimeout(resolve, 0));
+      const state = useAuthStore.getState();
+
+      expect(state.session).toEqual(mockSession);
+    });
+
+    it('should not check session expiry when not authenticated', () => {
+      const { checkSessionExpiry, logout } = useAuthStore.getState();
+
+      // Ensure no user is set
+      const state = useAuthStore.getState();
+      expect(state.isAuthenticated).toBe(false);
+
+      // Should not call logout
+      const logoutSpy = vi.spyOn(useAuthStore.getState(), 'logout');
+      checkSessionExpiry();
+
+      expect(logoutSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Session Expiry Edge Cases', () => {
+    it('should handle session with no expires_at', () => {
+      const { setSession, checkSessionExpiry } = useAuthStore.getState();
+
+      setSession({
+        access_token: 'token',
+        refresh_token: 'refresh',
+        expires_at: undefined,
+        token_type: 'Bearer',
+        user: { id: '123', email: 'test@example.com' },
+      });
+
+      // Should not crash
+      expect(() => checkSessionExpiry()).not.toThrow();
+    });
+
+    it('should handle session with null expires_at', () => {
+      const { setSession, checkSessionExpiry } = useAuthStore.getState();
+
+      setSession({
+        access_token: 'token',
+        refresh_token: 'refresh',
+        expires_at: null,
+        token_type: 'Bearer',
+        user: { id: '123', email: 'test@example.com' },
+      });
+
+      // Should not crash
+      expect(() => checkSessionExpiry()).not.toThrow();
+    });
+
+    it('should handle session with zero expires_at', () => {
+      const { setSession, checkSessionExpiry } = useAuthStore.getState();
+
+      setSession({
+        access_token: 'token',
+        refresh_token: 'refresh',
+        expires_at: 0,
+        token_type: 'Bearer',
+        user: { id: '123', email: 'test@example.com' },
+      });
+
+      checkSessionExpiry();
+      const state = useAuthStore.getState();
+
+      expect(state.user).toBe(null);
+      expect(state.isAuthenticated).toBe(false);
+    });
+  });
 });

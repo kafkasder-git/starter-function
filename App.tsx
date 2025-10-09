@@ -19,6 +19,8 @@ import { useCallback, useEffect, useState, memo, useMemo } from 'react';
 
 // Core System Imports
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { NetworkErrorBoundary } from './components/NetworkErrorBoundary';
+import { NetworkStatus } from './components/NetworkStatus';
 import { ToastProvider } from './components/ToastProvider';
 import { useAuthStore } from './stores/authStore';
 
@@ -68,7 +70,7 @@ const AppContent = memo(() => {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   // Keyboard shortcuts
-  const { isOpen: isShortcutsOpen, openShortcuts, closeShortcuts } = useKeyboardShortcuts();
+  const { isOpen: isShortcutsOpen, closeShortcuts } = useKeyboardShortcuts();
 
   // User preferences for theme management
   const { preferences } = useUserPreferences();
@@ -176,22 +178,28 @@ const AppContent = memo(() => {
   }
 
   return (
-    <ProtectedRoute requireAuth={true}>
-      <div className="flex h-screen flex-col overflow-hidden bg-gradient-to-br from-slate-50 via-gray-50 to-slate-100">
-        {/* Header */}
-        <div className="relative z-40 shadow-lg" data-testid="header" data-onboarding="header">
-          <Header
-            onNavigateToProfile={navigation.navigateToProfile}
-            onNavigateToSettings={navigation.navigateToSettings}
-            onNavigateToUserManagement={navigation.navigateToUserManagement}
-            onNavigate={navigation.moduleChange}
-            onQuickAction={handleQuickAction}
-            currentModule={navigation.activeModule}
-            onMobileMenuToggle={() => {
-              setIsMobileSidebarOpen(!isMobileSidebarOpen);
-            }}
-          />
-        </div>
+    <NetworkErrorBoundary>
+      <ProtectedRoute requireAuth={true}>
+        <div className="flex h-screen flex-col overflow-hidden bg-gradient-to-br from-slate-50 via-gray-50 to-slate-100">
+          {/* Network Status */}
+          <div className="relative z-50">
+            <NetworkStatus compact={true} />
+          </div>
+          
+          {/* Header */}
+          <div className="relative z-40 shadow-lg" data-testid="header" data-onboarding="header">
+            <Header
+              onNavigateToProfile={navigation.navigateToProfile}
+              onNavigateToSettings={navigation.navigateToSettings}
+              onNavigateToUserManagement={navigation.navigateToUserManagement}
+              onNavigate={navigation.moduleChange}
+              onQuickAction={handleQuickAction}
+              currentModule={navigation.activeModule}
+              onMobileMenuToggle={() => {
+                setIsMobileSidebarOpen(!isMobileSidebarOpen);
+              }}
+            />
+          </div>
 
         {/* Main Layout */}
         <div className="relative flex flex-1 overflow-hidden">
@@ -241,8 +249,9 @@ const AppContent = memo(() => {
 
         {/* Notification Center */}
         {/* NotificationCenter removed - using SmartNotificationCenter in Header */}
-      </div>
-    </ProtectedRoute>
+        </div>
+      </ProtectedRoute>
+    </NetworkErrorBoundary>
   );
 });
 

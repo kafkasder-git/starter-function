@@ -6,8 +6,12 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { generateCSRFToken } from '../middleware/csrf';
-import { useSupabaseAuth } from '../contexts/SupabaseAuthContext';
+import { useAuthStore } from '../stores/authStore';
+
+// Simple CSRF token generator
+const generateCSRFToken = (userId: string): string => {
+  return `${userId}-${Date.now()}-${Math.random().toString(36).substring(2)}`;
+};
 
 interface CSRFTokenState {
   token: string | null;
@@ -20,7 +24,7 @@ interface CSRFTokenState {
  * Automatically generates and refreshes CSRF tokens for authenticated users
  */
 export function useCSRFToken() {
-  const { user, isAuthenticated } = useSupabaseAuth();
+  const { user, isAuthenticated } = useAuthStore();
   const [state, setState] = useState<CSRFTokenState>({
     token: null,
     isLoading: false,

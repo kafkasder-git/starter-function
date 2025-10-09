@@ -5,7 +5,7 @@
  * @version 1.0.0
  */
 
-import { useAuth } from '../contexts/AuthContext';
+import { useAuthStore } from '../stores/authStore';
 import { Permission, UserRole } from '../types/auth';
 
 /**
@@ -15,7 +15,7 @@ import { Permission, UserRole } from '../types/auth';
  * @returns {void} Nothing
  */
 export function usePermissions() {
-  const { user, checkPermission, hasRole } = useAuth();
+  const { user, checkPermission, hasRole } = useAuthStore();
 
   const canView = (permission: Permission): boolean => {
     return checkPermission(permission);
