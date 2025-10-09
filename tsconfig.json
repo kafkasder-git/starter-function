@@ -44,7 +44,7 @@
 
     /* React & Bundler specific */
     "jsx": "react-jsx",
-    "types": ["react", "react-dom", "vite/client"],
+    "types": ["vite/client"],
     "noEmit": true,
 
     /* Performance and optimization - Comment 7: Composite builds */
