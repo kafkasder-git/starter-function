@@ -58,18 +58,18 @@ export interface AutomationRule {
   status: AutomationStatus;
   trigger: {
     type: TriggerType;
-    config: any;
+    config: Record<string, unknown>;
   };
   actions: {
     id: string;
     type: string;
-    config: any;
+    config: Record<string, unknown>;
     order: number;
   }[];
   conditions?: {
     field: string;
     operator: string;
-    value: any;
+    value: string | number | boolean | Date;
   }[];
   schedule?: {
     frequency: 'daily' | 'weekly' | 'monthly' | 'custom';

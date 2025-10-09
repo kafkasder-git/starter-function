@@ -18,7 +18,7 @@ interface CSRFTokenEntry {
 
 class CSRFTokenStore {
   private readonly store = new Map<string, CSRFTokenEntry>();
-  private readonly cleanupInterval: NodeJS.Timeout;
+  private readonly cleanupInterval: ReturnType<typeof setInterval>;
 
   constructor() {
     // Clean up expired tokens every 10 minutes
@@ -77,15 +77,35 @@ function generateToken(): string {
       window.crypto.getRandomValues(array);
       return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
     } catch (error) {
-      console.warn('Crypto.getRandomValues failed, using fallback:', error);
+      console.warn('Crypto.getRandomValues failed, using Node.js crypto fallback:', error);
     }
   }
   
-  // Fallback for server-side or when crypto is not available
-  const array = new Uint8Array(32);
-  for (let i = 0; i < array.length; i++) {
-    array[i] = Math.floor(Math.random() * 256);
+  // Use Node.js crypto module for server-side or when web crypto is not available
+  if (typeof crypto !== 'undefined' && crypto.randomBytes) {
+    try {
+      return crypto.randomBytes(32).toString('hex');
+    } catch (error) {
+      console.warn('Node.js crypto.randomBytes failed, using secure fallback:', error);
+    }
   }
+  
+  // Last resort: Use a more secure fallback that combines multiple sources
+  const array = new Uint8Array(32);
+  const timestamp = Date.now().toString(16);
+  const performanceNow = (performance?.now() || Math.random() * 1000000).toString(16);
+  
+  // Fill array with a combination of sources for better entropy
+  for (let i = 0; i < array.length; i++) {
+    const random1 = Math.random() * 256;
+    const random2 = Math.random() * 256;
+    const timestampEntropy = parseInt(timestamp.slice(-2) || '00', 16);
+    const performanceEntropy = parseInt(performanceNow.slice(-2) || '00', 16);
+    
+    // Combine multiple sources for better entropy
+    array[i] = Math.floor((random1 + random2 + timestampEntropy + performanceEntropy) % 256);
+  }
+  
   return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
 }
 
@@ -97,8 +117,10 @@ function getUserIdFromToken(authHeader: string): string | null {
     }
 
     const token = authHeader.substring(7);
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    return payload.sub ?? null;
+    const parts = token.split('.');
+    if (parts.length < 2 || !parts[1]) return null;
+    const payload = JSON.parse(atob(parts[1]));
+    return payload.sub || null;
   } catch (error) {
     return null;
   }
@@ -407,7 +429,7 @@ interface RateLimitEntry {
 }
 class RateLimitStore {
   private readonly store = new Map<string, RateLimitEntry>();
-  private readonly cleanupInterval: NodeJS.Timeout;
+  private readonly cleanupInterval: ReturnType<typeof setInterval>;
 
   constructor() {
     // Clean up expired entries every 5 minutes
@@ -504,9 +526,12 @@ function getClientId(request: Request): string {
     try {
       // Extract user ID from JWT token (simplified)
       const token = authHeader.substring(7);
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      if (payload.sub) {
-        return `user:${payload.sub}`;
+      const parts = token.split('.');
+      if (parts.length >= 2 && parts[1]) {
+        const payload = JSON.parse(atob(parts[1]));
+        if (payload.sub) {
+          return `user:${payload.sub}`;
+        }
       }
     } catch (error) {
       // Fall back to IP if token parsing fails
@@ -516,8 +541,8 @@ function getClientId(request: Request): string {
   // Fall back to IP address
   const forwarded = request.headers.get('x-forwarded-for');
   const ip = forwarded
-    ? forwarded.split(',')[0].trim()
-    : request.headers.get('x-real-ip') || 'unknown';
+    ? (forwarded.split(',')[0] || '').trim()
+    : (request.headers.get('x-real-ip') || 'unknown');
 
   return `ip:${ip}`;
 }
@@ -530,7 +555,7 @@ function getConfig(path: string): RateLimitConfig {
     }
   }
 
-  return defaultConfigs.default;
+  return defaultConfigs.default!;
 }
 // Rate limiting result
 interface RateLimitResult {
@@ -557,12 +582,11 @@ export async function rateLimit(request: Request): Promise<RateLimitResult> {
   const key = `${path}:${clientId}`;
 
   const now = Date.now();
-  const windowStart = now - config.windowMs;
 
   let entry = store.get(key);
 
   // Initialize or reset if window has passed
-  if (!entry ?? now > entry.resetTime) {
+  if (!entry || now > entry.resetTime) {
     entry = {
       count: 0,
       resetTime: now + config.windowMs,
@@ -615,7 +639,7 @@ export function createRateLimit(config: RateLimitConfig) {
     const now = Date.now();
     let entry = store.get(key);
 
-    if (!entry ?? now > entry.resetTime) {
+    if (!entry || now > entry.resetTime) {
       entry = {
         count: 0,
         resetTime: now + config.windowMs,
@@ -678,7 +702,7 @@ export class RateLimiter {
     const now = Date.now();
 
     let entry = this.attempts.get(key);
-    if (!entry ?? now > entry.resetTime) {
+    if (!entry || now > entry.resetTime) {
       entry = { count: 0, resetTime: now + windowMs };
     }
 

@@ -44,7 +44,7 @@ export function RecentActivity() {
       aid: <HelpingHand className="w-4 h-4" />,
       event: <Calendar className="w-4 h-4" />,
     };
-    return icons[type];
+    return type in icons ? icons[type as keyof typeof icons] : icons.donation;
   };
 
   const getActivityColor = (type: Activity['type']) => {
@@ -54,7 +54,7 @@ export function RecentActivity() {
       aid: 'text-purple-600 bg-purple-50',
       event: 'text-green-600 bg-green-50',
     };
-    return colors[type];
+    return type in colors ? colors[type as keyof typeof colors] : colors.donation;
   };
 
   const getStatusBadge = (status?: Activity['status']) => {
@@ -73,8 +73,8 @@ export function RecentActivity() {
     };
 
     return (
-      <Badge className={variants[status]} variant="secondary">
-        {labels[status]}
+      <Badge className={status in variants ? variants[status as keyof typeof variants] : variants.completed} variant="secondary">
+        {status in labels ? labels[status as keyof typeof labels] : labels.completed}
       </Badge>
     );
   };

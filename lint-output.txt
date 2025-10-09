@@ -1,0 +1,1112 @@
+
+> kafkasder-management-panel@1.0.0 lint
+> eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0
+
+
+/home/isaha/panel/components/AnimatedContainer.tsx
+  73:26  warning  Generic Object Injection Sink             security/detect-object-injection
+  73:54  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/isaha/panel/components/ErrorBoundary.tsx
+  111:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/home/isaha/panel/components/Header.tsx
+  298:30  warning  Unnecessary optional chain on a non-nullish value  @typescript-eslint/no-unnecessary-condition
+  298:45  warning  Unnecessary optional chain on a non-nullish value  @typescript-eslint/no-unnecessary-condition
+  298:59  warning  Unnecessary optional chain on a non-nullish value  @typescript-eslint/no-unnecessary-condition
+  300:75  warning  Unnecessary optional chain on a non-nullish value  @typescript-eslint/no-unnecessary-condition
+  306:28  warning  Unnecessary optional chain on a non-nullish value  @typescript-eslint/no-unnecessary-condition
+  343:22  warning  Unnecessary optional chain on a non-nullish value  @typescript-eslint/no-unnecessary-condition
+
+/home/isaha/panel/components/LoadingSpinner.tsx
+  30:63  warning  Function Call Object Injection Sink  security/detect-object-injection
+
+/home/isaha/panel/components/RecentActivity.tsx
+  47:12  warning  Generic Object Injection Sink  security/detect-object-injection
+  57:12  warning  Generic Object Injection Sink  security/detect-object-injection
+  76:25  warning  Generic Object Injection Sink  security/detect-object-injection
+  77:10  warning  Generic Object Injection Sink  security/detect-object-injection
+
+/home/isaha/panel/components/ResponsiveCard.tsx
+  228:9   warning  Function Call Object Injection Sink  security/detect-object-injection
+  233:39  warning  Function Call Object Injection Sink  security/detect-object-injection
+
+/home/isaha/panel/components/SafeWrapper.tsx
+  50:29  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  80:58  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  87:34  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  92:53  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined         @typescript-eslint/no-unnecessary-condition
+
+/home/isaha/panel/components/__tests__/Button.test.tsx
+  17:4  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/isaha/panel/components/accessibility/AccessibilityEnhancements.tsx
+  135:6   warning  React Hook useEffect has a missing dependency: 'applyAccessibilitySettings'. Either include it or remove the dependency array                                   react-hooks/exhaustive-deps
+  203:47  warning  Unexpected any. Specify a different type                                                                                                                        @typescript-eslint/no-explicit-any
+  234:6   warning  React Hook useCallback has missing dependencies: 'announceToScreenReader' and 'performAccessibilityChecks'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  417:34  warning  Forbidden non-null assertion                                                                                                                                    @typescript-eslint/no-non-null-assertion
+  420:15  warning  Unnecessary conditional, value is always truthy                                                                                                                 @typescript-eslint/no-unnecessary-condition
+
+/home/isaha/panel/components/app/AppNavigation.tsx
+   11:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+   12:38  warning  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+   16:17  warning  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  175:16  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined                              @typescript-eslint/no-unnecessary-condition
+  183:16  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined                              @typescript-eslint/no-unnecessary-condition
+  191:16  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined                              @typescript-eslint/no-unnecessary-condition
+  199:16  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined                              @typescript-eslint/no-unnecessary-condition
+  245:40  warning  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  246:26  warning  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  253:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  400:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  401:24  warning  Variable Assigned to Object Injection Sink                                                                                      security/detect-object-injection
+  411:25  warning  Generic Object Injection Sink                                                                                                   security/detect-object-injection
+  412:12  warning  Generic Object Injection Sink                                                                                                   security/detect-object-injection
+
+/home/isaha/panel/components/app/NavigationManager.tsx
+   58:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components          react-refresh/only-export-components
+  123:5   warning  React Hook useCallback has an unnecessary dependency: 'navigationState.activeModule'. Either exclude it or remove the dependency array  react-hooks/exhaustive-deps
+
+/home/isaha/panel/components/app/PageRenderer.tsx
+  52:42  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  53:14  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  72:9   warning  Unnecessary conditional, value is always truthy                                                            @typescript-eslint/no-unnecessary-condition
+  75:80  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+
+/home/isaha/panel/components/auth/LoginPage.tsx
+  93:9  warning  Generic Object Injection Sink  security/detect-object-injection
+
+/home/isaha/panel/components/auth/PermissionGuard.tsx
+   48:16  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+   60:16  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+   70:18  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+   86:18  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  201:10  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined         @typescript-eslint/no-unnecessary-condition
+  201:10  warning  Generic Object Injection Sink                                                                              security/detect-object-injection
+  212:10  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined         @typescript-eslint/no-unnecessary-condition
+  212:10  warning  Generic Object Injection Sink                                                                              security/detect-object-injection
+
+/home/isaha/panel/components/auth/ProtectedRoute.tsx
+   43:36  warning  Unnecessary optional chain on a non-nullish value                                                          @typescript-eslint/no-unnecessary-condition
+   44:9   warning  Unnecessary conditional, value is always truthy                                                            @typescript-eslint/no-unnecessary-condition
+   58:29  warning  Variable Assigned to Object Injection Sink                                                                 security/detect-object-injection
+   99:21  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  158:35  warning  Unnecessary optional chain on a non-nullish value                                                          @typescript-eslint/no-unnecessary-condition
+  159:20  warning  Unnecessary conditional, value is always truthy                                                            @typescript-eslint/no-unnecessary-condition
+  162:27  warning  Variable Assigned to Object Injection Sink                                                                 security/detect-object-injection
+
+/home/isaha/panel/components/auth/UnauthorizedPage.tsx
+  141:56  warning  Generic Object Injection Sink                    security/detect-object-injection
+  146:57  warning  Generic Object Injection Sink                    security/detect-object-injection
+  166:40  warning  Generic Object Injection Sink                    security/detect-object-injection
+  166:67  warning  Unnecessary conditional, value is always truthy  @typescript-eslint/no-unnecessary-condition
+
+/home/isaha/panel/components/automation/SmartAutomationSystem.tsx
+   61:13  warning  Unexpected any. Specify a different type                                                            @typescript-eslint/no-explicit-any
+   66:13  warning  Unexpected any. Specify a different type                                                            @typescript-eslint/no-explicit-any
+   72:12  warning  Unexpected any. Specify a different type                                                            @typescript-eslint/no-explicit-any
+  700:25  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined  @typescript-eslint/no-unnecessary-condition
+
+/home/isaha/panel/components/beneficiary/BeneficiaryAidHistory.tsx
+   38:18  error    '_beneficiaryId' is defined but never used  @typescript-eslint/no-unused-vars
+  219:74  warning  Unexpected any. Specify a different type    @typescript-eslint/no-explicit-any
+
+/home/isaha/panel/components/beneficiary/BeneficiaryDocuments.tsx
+  29:15  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  41:3   error    'beneficiaryId' is defined but never used                                                                  @typescript-eslint/no-unused-vars
+  41:3   warning  'beneficiaryId' is defined but never used. Allowed unused args must match /^_/u                            unused-imports/no-unused-vars
+  47:54  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  52:50  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  55:49  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+
+/home/isaha/panel/components/beneficiary/BeneficiaryFamily.tsx
+  43:18  error  '_beneficiaryId' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/isaha/panel/components/beneficiary/BeneficiaryFinancial.tsx
+  16:16  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  18:36  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/isaha/panel/components/beneficiary/BeneficiaryHeader.tsx
+  14:16  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/isaha/panel/components/beneficiary/BeneficiaryHealthInfo.tsx
+   19:16  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+   21:36  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+   52:35  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  187:32  warning  Generic Object Injection Sink                                                                              security/detect-object-injection
+
+/home/isaha/panel/components/beneficiary/BeneficiaryPersonalInfo.tsx
+  16:16  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  18:36  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/isaha/panel/components/beneficiary/__tests__/BeneficiaryOptimized.test.tsx
+  93:37  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/isaha/panel/components/charts/LazyCharts.tsx
+  55:45  warning  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  61:38  warning  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  67:38  warning  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  73:37  warning  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  79:37  warning  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  86:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  86:44  warning  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+
+/home/isaha/panel/components/data/ExportModal.tsx
+   41:9   warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+   65:13  warning  Unnecessary conditional, value is always truthy                                                            @typescript-eslint/no-unnecessary-condition
+   65:13  warning  Generic Object Injection Sink                                                                              security/detect-object-injection
+   65:39  warning  Unnecessary optional chain on a non-nullish value                                                          @typescript-eslint/no-unnecessary-condition
+   67:20  warning  Unnecessary conditional, value is always truthy                                                            @typescript-eslint/no-unnecessary-condition
+   67:20  warning  Generic Object Injection Sink                                                                              security/detect-object-injection
+   67:46  warning  Unnecessary optional chain on a non-nullish value                                                          @typescript-eslint/no-unnecessary-condition
+   82:24  error    '_isExporting' is assigned a value but never used                                                          @typescript-eslint/no-unused-vars
+   82:48  error    '_progress' is assigned a value but never used                                                             @typescript-eslint/no-unused-vars
+   83:18  error    'progress' is defined but never used                                                                       @typescript-eslint/no-unused-vars
+   83:18  warning  'progress' is defined but never used. Allowed unused args must match /^_/u                                 unused-imports/no-unused-vars
+  147:28  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  148:24  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  177:73  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  248:16  warning  Generic Object Injection Sink                                                                              security/detect-object-injection
+  248:46  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  328:73  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  346:70  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  404:30  warning  Forbidden non-null assertion                                                                               @typescript-eslint/no-non-null-assertion
+  404:69  warning  Forbidden non-null assertion                                                                               @typescript-eslint/no-non-null-assertion
+  457:24  warning  Generic Object Injection Sink                                                                              security/detect-object-injection
+  457:54  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  470:33  warning  Generic Object Injection Sink                                                                              security/detect-object-injection
+  470:45  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+
+/home/isaha/panel/components/forms/BeneficiaryForm.tsx
+  174:56  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  190:56  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  195:45  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  208:45  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  441:79  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  462:79  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  576:40  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  647:31  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  672:98  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+
+/home/isaha/panel/components/forms/DocumentUpload.tsx
+   81:94   warning  Generic Object Injection Sink                                                                                       security/detect-object-injection
+   81:114  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator           @typescript-eslint/prefer-nullish-coalescing
+   98:36   error    'file' is defined but never used                                                                                    @typescript-eslint/no-unused-vars
+   98:36   warning  'file' is defined but never used. Allowed unused args must match /^_/u                                              unused-imports/no-unused-vars
+  273:58   warning  Generic Object Injection Sink                                                                                       security/detect-object-injection
+  273:78   warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator           @typescript-eslint/prefer-nullish-coalescing
+  328:34   error    Returning a void expression from an arrow function shorthand is forbidden. Please add braces to the arrow function  @typescript-eslint/no-confusing-void-expression
+
+/home/isaha/panel/components/forms/FormField.tsx
+   44:11  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+   45:18  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+   71:22  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+   87:21  error    '_defaultValue' is defined but never used                                                                  @typescript-eslint/no-unused-vars
+   95:18  error    '_className' is defined but never used                                                                     @typescript-eslint/no-unused-vars
+  101:16  error    '_tooltip' is defined but never used                                                                       @typescript-eslint/no-unused-vars
+  107:14  error    '_dirty' is assigned a value but never used                                                                @typescript-eslint/no-unused-vars
+  135:37  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  185:15  error    Switch is not exhaustive. Cases not matched: "input"                                                       @typescript-eslint/switch-exhaustiveness-check
+  330:39  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+
+/home/isaha/panel/components/forms/FormProvider.tsx
+   17:26  warning  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+   30:22  warning  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+   37:45  warning  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+   38:45  warning  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+   42:40  warning  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+   43:41  warning  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+   55:34  warning  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+   59:38  warning  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+   71:15  error    '_debounceMs' is assigned a value but never used                                                                                @typescript-eslint/no-unused-vars
+   88:58  warning  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+   89:25  warning  Variable Assigned to Object Injection Sink                                                                                      security/detect-object-injection
+  133:52  warning  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  134:5   warning  Generic Object Injection Sink                                                                                                   security/detect-object-injection
+  140:11  warning  Generic Object Injection Sink                                                                                                   security/detect-object-injection
+  142:18  warning  Generic Object Injection Sink                                                                                                   security/detect-object-injection
+  151:5   warning  Generic Object Injection Sink                                                                                                   security/detect-object-injection
+  154:32  warning  Function Call Object Injection Sink                                                                                             security/detect-object-injection
+  156:11  warning  Generic Object Injection Sink                                                                                                   security/detect-object-injection
+  158:18  warning  Generic Object Injection Sink                                                                                                   security/detect-object-injection
+  195:12  warning  Generic Object Injection Sink                                                                                                   security/detect-object-injection
+  195:40  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator                       @typescript-eslint/prefer-nullish-coalescing
+  198:12  warning  Generic Object Injection Sink                                                                                                   security/detect-object-injection
+  199:14  warning  Generic Object Injection Sink                                                                                                   security/detect-object-injection
+  239:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  248:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  249:43  warning  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  250:46  warning  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  257:58  warning  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+
+/home/isaha/panel/components/forms/MobileFormField.tsx
+   59:26  warning  Unexpected any. Specify a different type                                                                                                        @typescript-eslint/no-explicit-any
+   70:17  error    Switch is not exhaustive. Cases not matched: undefined | "time" | "text" | "date" | "password" | "datetime-local"                               @typescript-eslint/switch-exhaustiveness-check
+   95:17  error    Switch is not exhaustive. Cases not matched: undefined | "search" | "time" | "text" | "date" | "email" | "password" | "datetime-local" | "url"  @typescript-eslint/switch-exhaustiveness-check
+  389:23  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined                                              @typescript-eslint/no-unnecessary-condition
+
+/home/isaha/panel/components/kumbara/KumbaraForm.tsx
+  218:12  error    '_watch' is assigned a value but never used                                                         @typescript-eslint/no-unused-vars
+  250:21  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined  @typescript-eslint/no-unnecessary-condition
+  553:21  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined  @typescript-eslint/no-unnecessary-condition
+  643:56  warning  Unexpected any. Specify a different type                                                            @typescript-eslint/no-explicit-any
+
+/home/isaha/panel/components/mobile/SmartMobileForm.tsx
+   36:16  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+   50:20  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  132:9   error    Unexpected constant nullishness on the left-hand side of a `??` expression                                 no-constant-binary-expression
+  132:9   warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined         @typescript-eslint/no-unnecessary-condition
+  144:22  warning  Generic Object Injection Sink                                                                              security/detect-object-injection
+  144:42  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  198:68  warning  Generic Object Injection Sink                                                                              security/detect-object-injection
+  200:30  warning  Variable Assigned to Object Injection Sink                                                                 security/detect-object-injection
+  215:41  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  266:14  warning  Unnecessary conditional, value is always truthy                                                            @typescript-eslint/no-unnecessary-condition
+
+/home/isaha/panel/components/notifications/NotificationBell.tsx
+  39:10  error    '_storeReady' is assigned a value but never used                                                    @typescript-eslint/no-unused-vars
+  54:10  error    '_unreadCount' is assigned a value but never used                                                   @typescript-eslint/no-unused-vars
+  61:20  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined  @typescript-eslint/no-unnecessary-condition
+  84:18  warning  Variable Assigned to Object Injection Sink                                                          security/detect-object-injection
+
+/home/isaha/panel/components/notifications/PushNotificationManager.tsx
+   85:14  error    'err' is defined but never used                                                                     @typescript-eslint/no-unused-vars
+   85:14  warning  'err' is defined but never used                                                                     unused-imports/no-unused-vars
+  138:13  error    Switch is not exhaustive. Cases not matched: "default"                                              @typescript-eslint/switch-exhaustiveness-check
+  209:27  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined  @typescript-eslint/no-unnecessary-condition
+
+/home/isaha/panel/components/notifications/SmartNotificationCenter.tsx
+   65:29  warning  Unexpected any. Specify a different type                                              @typescript-eslint/no-explicit-any
+  123:3   error    'className' is assigned a value but never used                                        @typescript-eslint/no-unused-vars
+  123:3   warning  'className' is assigned a value but never used. Allowed unused args must match /^_/u  unused-imports/no-unused-vars
+  131:49  warning  Unnecessary conditional, value is always truthy                                       @typescript-eslint/no-unnecessary-condition
+  133:34  warning  Unexpected empty method 'triggerHapticFeedback'                                       @typescript-eslint/no-empty-function
+  218:26  warning  Unnecessary conditional, value is always truthy                                       @typescript-eslint/no-unnecessary-condition
+
+/home/isaha/panel/components/notifications/SmartNotificationSystem.tsx
+  191:9   error    'notificationRef' is assigned a value but never used                                                @typescript-eslint/no-unused-vars
+  191:9   warning  'notificationRef' is assigned a value but never used. Allowed unused vars must match /^_/u          unused-imports/no-unused-vars
+  334:26  warning  Unexpected any. Specify a different type                                                            @typescript-eslint/no-explicit-any
+  450:44  warning  Unexpected any. Specify a different type                                                            @typescript-eslint/no-explicit-any
+  608:24  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined  @typescript-eslint/no-unnecessary-condition
+
+/home/isaha/panel/components/notifications/integration-guide.tsx
+  232:28  error  Placing a void expression inside another expression is forbidden. Move it to its own statement instead  @typescript-eslint/no-confusing-void-expression
+  355:9   error  void operator shouldn't be used on void; it should convey that a return value is being ignored          @typescript-eslint/no-meaningless-void-operator
+  355:9   error  Expected 'undefined' and instead saw 'void'                                                             no-void
+  355:14  error  Placing a void expression inside another expression is forbidden. Move it to its own statement instead  @typescript-eslint/no-confusing-void-expression
+
+/home/isaha/panel/components/pages/AidApplicationsPage.tsx
+  83:20  warning  Variable Assigned to Object Injection Sink  security/detect-object-injection
+  95:20  warning  Variable Assigned to Object Injection Sink  security/detect-object-injection
+
+/home/isaha/panel/components/pages/AidPage.tsx
+   58:10  error    'showNewRequestDialog' is assigned a value but never used                                        @typescript-eslint/no-unused-vars
+   58:10  warning  'showNewRequestDialog' is assigned a value but never used. Allowed unused vars must match /^_/u  unused-imports/no-unused-vars
+   67:5   warning  Unexpected console statement                                                                     no-console
+   97:28  warning  Generic Object Injection Sink                                                                    security/detect-object-injection
+   98:10  warning  Generic Object Injection Sink                                                                    security/detect-object-injection
+  113:45  warning  Generic Object Injection Sink                                                                    security/detect-object-injection
+  130:43  warning  Generic Object Injection Sink                                                                    security/detect-object-injection
+
+/home/isaha/panel/components/pages/AllAidListPage.tsx
+  70:20  warning  Variable Assigned to Object Injection Sink       security/detect-object-injection
+  81:12  warning  Unnecessary conditional, value is always truthy  @typescript-eslint/no-unnecessary-condition
+
+/home/isaha/panel/components/pages/BankPaymentOrdersPage.tsx
+  103:20  warning  Variable Assigned to Object Injection Sink                                                          security/detect-object-injection
+  117:12  warning  Generic Object Injection Sink                                                                       security/detect-object-injection
+  171:22  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined  @typescript-eslint/no-unnecessary-condition
+  174:16  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined  @typescript-eslint/no-unnecessary-condition
+
+/home/isaha/panel/components/pages/BeneficiariesPageEnhanced.tsx
+  166:21  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined         @typescript-eslint/no-unnecessary-condition
+  183:44  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  214:33  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  226:30  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined         @typescript-eslint/no-unnecessary-condition
+  259:34  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  262:52  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  292:11  warning  Unnecessary conditional, value is always truthy                                                            @typescript-eslint/no-unnecessary-condition
+  336:9   error    'getStatusBadge' is assigned a value but never used                                                        @typescript-eslint/no-unused-vars
+  336:9   warning  'getStatusBadge' is assigned a value but never used. Allowed unused vars must match /^_/u                  unused-imports/no-unused-vars
+  338:7   warning  Unnecessary conditional, value is always truthy                                                            @typescript-eslint/no-unnecessary-condition
+  344:27  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined         @typescript-eslint/no-unnecessary-condition
+  344:39  warning  Unnecessary optional chain on a non-nullish value                                                          @typescript-eslint/no-unnecessary-condition
+  353:15  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined         @typescript-eslint/no-unnecessary-condition
+  353:27  warning  Unnecessary optional chain on a non-nullish value                                                          @typescript-eslint/no-unnecessary-condition
+  356:10  warning  Unnecessary conditional, value is always truthy                                                            @typescript-eslint/no-unnecessary-condition
+  356:22  warning  Unnecessary optional chain on a non-nullish value                                                          @typescript-eslint/no-unnecessary-condition
+  380:20  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined         @typescript-eslint/no-unnecessary-condition
+  381:21  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined         @typescript-eslint/no-unnecessary-condition
+  382:16  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined         @typescript-eslint/no-unnecessary-condition
+  382:36  warning  Unnecessary optional chain on a non-nullish value                                                          @typescript-eslint/no-unnecessary-condition
+  383:16  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined         @typescript-eslint/no-unnecessary-condition
+  383:36  warning  Unnecessary optional chain on a non-nullish value                                                          @typescript-eslint/no-unnecessary-condition
+  384:17  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined         @typescript-eslint/no-unnecessary-condition
+  384:38  warning  Unnecessary optional chain on a non-nullish value                                                          @typescript-eslint/no-unnecessary-condition
+  385:16  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined         @typescript-eslint/no-unnecessary-condition
+  386:19  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined         @typescript-eslint/no-unnecessary-condition
+  386:42  warning  Unnecessary optional chain on a non-nullish value                                                          @typescript-eslint/no-unnecessary-condition
+  387:14  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined         @typescript-eslint/no-unnecessary-condition
+  387:32  warning  Unnecessary optional chain on a non-nullish value                                                          @typescript-eslint/no-unnecessary-condition
+  388:15  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined         @typescript-eslint/no-unnecessary-condition
+  388:34  warning  Unnecessary optional chain on a non-nullish value                                                          @typescript-eslint/no-unnecessary-condition
+  481:7   warning  Unexpected console statement                                                                               no-console
+  720:73  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined         @typescript-eslint/no-unnecessary-condition
+  731:74  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined         @typescript-eslint/no-unnecessary-condition
+  743:24  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined         @typescript-eslint/no-unnecessary-condition
+  756:24  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined         @typescript-eslint/no-unnecessary-condition
+  769:26  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined         @typescript-eslint/no-unnecessary-condition
+
+/home/isaha/panel/components/pages/BeneficiaryDetailPageComprehensive.tsx
+   180:40  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+   200:54  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+   246:28  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined         @typescript-eslint/no-unnecessary-condition
+   248:42  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+   325:21  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+   362:18  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined         @typescript-eslint/no-unnecessary-condition
+   362:24  warning  Unnecessary optional chain on a non-nullish value                                                          @typescript-eslint/no-unnecessary-condition
+   370:36  warning  Unnecessary conditional, value is always truthy                                                            @typescript-eslint/no-unnecessary-condition
+   379:38  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+   385:26  warning  Unnecessary conditional, value is always truthy                                                            @typescript-eslint/no-unnecessary-condition
+   389:39  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+   445:5   warning  Unnecessary conditional, value is always truthy                                                            @typescript-eslint/no-unnecessary-condition
+   445:11  warning  Unnecessary optional chain on a non-nullish value                                                          @typescript-eslint/no-unnecessary-condition
+   447:74  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+   456:60  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+   457:61  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+   458:61  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+   459:62  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+   460:62  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+   461:57  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+   462:57  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+   530:33  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+   531:30  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+   535:21  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+   609:21  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+   640:11  warning  Unnecessary conditional, value is always truthy                                                            @typescript-eslint/no-unnecessary-condition
+   646:75  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+   663:21  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined         @typescript-eslint/no-unnecessary-condition
+   665:57  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+   668:25  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined         @typescript-eslint/no-unnecessary-condition
+   671:57  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+   675:62  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+   695:21  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+   715:36  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+   726:21  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+   883:21  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+   912:21  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+   942:43  warning  Unnecessary conditional, value is always truthy                                                            @typescript-eslint/no-unnecessary-condition
+   952:33  warning  Unnecessary conditional, value is always truthy                                                            @typescript-eslint/no-unnecessary-condition
+   956:36  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+   961:37  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+   975:5   warning  Unnecessary conditional, value is always truthy                                                            @typescript-eslint/no-unnecessary-condition
+   975:18  warning  Unnecessary optional chain on a non-nullish value                                                          @typescript-eslint/no-unnecessary-condition
+  1000:7   warning  Unnecessary conditional, value is always truthy                                                            @typescript-eslint/no-unnecessary-condition
+  1208:50  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  1221:50  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  1235:50  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  1251:50  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  1278:50  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  1406:52  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  1440:50  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  1453:50  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  1466:50  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  1498:50  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  1555:72  warning  Unnecessary optional chain on a non-nullish value                                                          @typescript-eslint/no-unnecessary-condition
+  1560:71  warning  Unnecessary optional chain on a non-nullish value                                                          @typescript-eslint/no-unnecessary-condition
+  1599:46  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  1610:46  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  1765:46  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  1776:46  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  2089:36  warning  Generic Object Injection Sink                                                                              security/detect-object-injection
+  2128:46  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  2143:48  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  2157:48  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  2174:46  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  2189:48  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  2203:48  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  2324:34  warning  Unnecessary optional chain on a non-nullish value                                                          @typescript-eslint/no-unnecessary-condition
+  2535:29  warning  Unnecessary optional chain on a non-nullish value                                                          @typescript-eslint/no-unnecessary-condition
+  2541:30  warning  Unnecessary optional chain on a non-nullish value                                                          @typescript-eslint/no-unnecessary-condition
+  2594:29  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined         @typescript-eslint/no-unnecessary-condition
+  2594:42  warning  Unnecessary optional chain on a non-nullish value                                                          @typescript-eslint/no-unnecessary-condition
+  2597:19  warning  Unnecessary conditional, value is always truthy                                                            @typescript-eslint/no-unnecessary-condition
+  2939:46  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  2980:46  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  3204:28  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined         @typescript-eslint/no-unnecessary-condition
+  3268:67  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined         @typescript-eslint/no-unnecessary-condition
+  3268:73  warning  Unnecessary optional chain on a non-nullish value                                                          @typescript-eslint/no-unnecessary-condition
+  3277:22  warning  Unnecessary optional chain on a non-nullish value                                                          @typescript-eslint/no-unnecessary-condition
+  3284:26  warning  Unnecessary optional chain on a non-nullish value                                                          @typescript-eslint/no-unnecessary-condition
+  3434:32  warning  Unnecessary optional chain on a non-nullish value                                                          @typescript-eslint/no-unnecessary-condition
+  3444:33  warning  Unnecessary optional chain on a non-nullish value                                                          @typescript-eslint/no-unnecessary-condition
+  3538:28  warning  Unnecessary optional chain on a non-nullish value                                                          @typescript-eslint/no-unnecessary-condition
+  3676:32  warning  Unnecessary optional chain on a non-nullish value                                                          @typescript-eslint/no-unnecessary-condition
+  3820:33  warning  Unnecessary optional chain on a non-nullish value                                                          @typescript-eslint/no-unnecessary-condition
+  3959:39  warning  Unnecessary optional chain on a non-nullish value                                                          @typescript-eslint/no-unnecessary-condition
+
+/home/isaha/panel/components/pages/BursStudentsPage.tsx
+  118:12  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined  @typescript-eslint/no-unnecessary-condition
+  118:12  warning  Generic Object Injection Sink                                                                       security/detect-object-injection
+
+/home/isaha/panel/components/pages/CampaignManagementPage.tsx
+   90:7   warning  Unexpected console statement                                                                                        no-console
+  101:20  warning  Variable Assigned to Object Injection Sink                                                                          security/detect-object-injection
+  141:36  error    Returning a void expression from an arrow function shorthand is forbidden. Please add braces to the arrow function  @typescript-eslint/no-confusing-void-expression
+  150:36  error    Returning a void expression from an arrow function shorthand is forbidden. Please add braces to the arrow function  @typescript-eslint/no-confusing-void-expression
+  161:38  error    Returning a void expression from an arrow function shorthand is forbidden. Please add braces to the arrow function  @typescript-eslint/no-confusing-void-expression
+  170:38  error    Returning a void expression from an arrow function shorthand is forbidden. Please add braces to the arrow function  @typescript-eslint/no-confusing-void-expression
+  182:38  error    Returning a void expression from an arrow function shorthand is forbidden. Please add braces to the arrow function  @typescript-eslint/no-confusing-void-expression
+  191:38  error    Returning a void expression from an arrow function shorthand is forbidden. Please add braces to the arrow function  @typescript-eslint/no-confusing-void-expression
+  197:56  error    Returning a void expression from an arrow function shorthand is forbidden. Please add braces to the arrow function  @typescript-eslint/no-confusing-void-expression
+  267:40  error    Returning a void expression from an arrow function shorthand is forbidden. Please add braces to the arrow function  @typescript-eslint/no-confusing-void-expression
+
+/home/isaha/panel/components/pages/CaseManagementPage.tsx
+  126:34  warning  Variable Assigned to Object Injection Sink  security/detect-object-injection
+  143:34  warning  Variable Assigned to Object Injection Sink  security/detect-object-injection
+
+/home/isaha/panel/components/pages/CashAidTransactionsPage.tsx
+  65:20  warning  Variable Assigned to Object Injection Sink  security/detect-object-injection
+  76:20  warning  Variable Assigned to Object Injection Sink  security/detect-object-injection
+
+/home/isaha/panel/components/pages/CashAidVaultPage.tsx
+  95:83  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+
+/home/isaha/panel/components/pages/DonationsPage.tsx
+  125:32  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  188:24  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined         @typescript-eslint/no-unnecessary-condition
+  188:24  warning  Generic Object Injection Sink                                                                              security/detect-object-injection
+  201:22  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined         @typescript-eslint/no-unnecessary-condition
+  201:46  warning  Unnecessary optional chain on a non-nullish value                                                          @typescript-eslint/no-unnecessary-condition
+  202:22  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined         @typescript-eslint/no-unnecessary-condition
+  202:46  warning  Unnecessary optional chain on a non-nullish value                                                          @typescript-eslint/no-unnecessary-condition
+  205:19  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined         @typescript-eslint/no-unnecessary-condition
+  205:40  warning  Unnecessary optional chain on a non-nullish value                                                          @typescript-eslint/no-unnecessary-condition
+  206:22  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined         @typescript-eslint/no-unnecessary-condition
+  206:46  warning  Unnecessary optional chain on a non-nullish value                                                          @typescript-eslint/no-unnecessary-condition
+  313:35  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  314:35  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  598:24  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined         @typescript-eslint/no-unnecessary-condition
+  611:71  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined         @typescript-eslint/no-unnecessary-condition
+  623:73  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined         @typescript-eslint/no-unnecessary-condition
+  636:24  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined         @typescript-eslint/no-unnecessary-condition
+
+/home/isaha/panel/components/pages/EventsPage.tsx
+  102:12  warning  Generic Object Injection Sink  security/detect-object-injection
+  112:12  warning  Generic Object Injection Sink  security/detect-object-injection
+
+/home/isaha/panel/components/pages/FinanceIncomePage.tsx
+  122:59  warning  Unexpected any. Specify a different type                                                                        @typescript-eslint/no-explicit-any
+  124:7   warning  Prefer using nullish coalescing operator (`??=`) instead of an assignment expression, as it is simpler to read  @typescript-eslint/prefer-nullish-coalescing
+  124:12  warning  Generic Object Injection Sink                                                                                   security/detect-object-injection
+  125:9   warning  Generic Object Injection Sink                                                                                   security/detect-object-injection
+  133:9   warning  Generic Object Injection Sink                                                                                   security/detect-object-injection
+  134:9   warning  Generic Object Injection Sink                                                                                   security/detect-object-injection
+  209:12  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined              @typescript-eslint/no-unnecessary-condition
+  209:12  warning  Generic Object Injection Sink                                                                                   security/detect-object-injection
+
+/home/isaha/panel/components/pages/HospitalReferralPage.tsx
+  101:20  warning  Variable Assigned to Object Injection Sink  security/detect-object-injection
+  112:20  warning  Variable Assigned to Object Injection Sink  security/detect-object-injection
+  124:12  warning  Generic Object Injection Sink               security/detect-object-injection
+
+/home/isaha/panel/components/pages/InKindAidTransactionsPage.tsx
+   91:20  warning  Variable Assigned to Object Injection Sink       security/detect-object-injection
+  102:20  warning  Variable Assigned to Object Injection Sink       security/detect-object-injection
+  114:12  warning  Unnecessary conditional, value is always truthy  @typescript-eslint/no-unnecessary-condition
+
+/home/isaha/panel/components/pages/KumbaraPage.tsx
+  83:33  warning  Generic Object Injection Sink  security/detect-object-injection
+
+/home/isaha/panel/components/pages/LawsuitTrackingPage.tsx
+  106:34  warning  Variable Assigned to Object Injection Sink                                                          security/detect-object-injection
+  125:34  warning  Variable Assigned to Object Injection Sink                                                          security/detect-object-injection
+  139:12  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined  @typescript-eslint/no-unnecessary-condition
+  139:12  warning  Generic Object Injection Sink                                                                       security/detect-object-injection
+
+/home/isaha/panel/components/pages/LegalConsultationPage.tsx
+   13:11  error    'LegalConsultation' is defined but never used                                                                  @typescript-eslint/no-unused-vars
+   13:11  warning  'LegalConsultation' is defined but never used. Allowed unused vars must match /^_/u                            unused-imports/no-unused-vars
+   52:7   error    'getConsultations' is assigned a value but never used                                                          @typescript-eslint/no-unused-vars
+   52:7   warning  'getConsultations' is assigned a value but never used. Allowed unused vars must match /^_/u                    unused-imports/no-unused-vars
+   74:5   error    'hasResults' is assigned a value but never used                                                                @typescript-eslint/no-unused-vars
+   74:5   warning  'hasResults' is assigned a value but never used. Allowed unused vars must match /^_/u                          unused-imports/no-unused-vars
+   95:24  warning  Unnecessary conditional, value is always truthy                                                                @typescript-eslint/no-unnecessary-condition
+  104:6   warning  React Hook useMemo has a missing dependency: 'filterConfig'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/home/isaha/panel/components/pages/LegalDocumentsPage.tsx
+   93:34  warning  Variable Assigned to Object Injection Sink      security/detect-object-injection
+  111:34  warning  Variable Assigned to Object Injection Sink      security/detect-object-injection
+  121:27  warning  Unnecessary conditional, value is always falsy  @typescript-eslint/no-unnecessary-condition
+  121:45  warning  Unnecessary conditional, value is always falsy  @typescript-eslint/no-unnecessary-condition
+
+/home/isaha/panel/components/pages/ProfilePage.tsx
+  284:21  error  Expected 'undefined' and instead saw 'void'  no-void
+  544:23  error  Expected 'undefined' and instead saw 'void'  no-void
+  699:23  error  Expected 'undefined' and instead saw 'void'  no-void
+
+/home/isaha/panel/components/pages/SystemSettingsPage.tsx
+  97:7  warning  Unexpected console statement  no-console
+
+/home/isaha/panel/components/pages/UserManagementPageReal.tsx
+  337:111  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  350:115  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  471:70   warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+
+/home/isaha/panel/components/pwa/OfflineIndicator.tsx
+   43:44  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined         @typescript-eslint/no-unnecessary-condition
+   43:53  warning  Unnecessary optional chain on a non-nullish value                                                          @typescript-eslint/no-unnecessary-condition
+   48:55  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+   49:56  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+   81:9   error    Unexpected constant nullishness on the left-hand side of a `??` expression                                 no-constant-binary-expression
+   81:9   warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined         @typescript-eslint/no-unnecessary-condition
+   99:13  error    'response' is assigned a value but never used                                                              @typescript-eslint/no-unused-vars
+   99:13  warning  'response' is assigned a value but never used. Allowed unused vars must match /^_/u                        unused-imports/no-unused-vars
+  108:14  error    'error' is defined but never used                                                                          @typescript-eslint/no-unused-vars
+  108:14  warning  'error' is defined but never used                                                                          unused-imports/no-unused-vars
+  276:61  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  314:44  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined         @typescript-eslint/no-unnecessary-condition
+  314:53  warning  Unnecessary optional chain on a non-nullish value                                                          @typescript-eslint/no-unnecessary-condition
+  335:55  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+
+/home/isaha/panel/components/search/AdvancedSearch.tsx
+  110:9   warning  Unnecessary conditional, the types have no overlap                                                         @typescript-eslint/no-unnecessary-condition
+  111:9   warning  Unnecessary conditional, the types have no overlap                                                         @typescript-eslint/no-unnecessary-condition
+  116:57  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  130:14  warning  Generic Object Injection Sink                                                                              security/detect-object-injection
+  152:13  error    Switch is not exhaustive. Cases not matched: "text"                                                        @typescript-eslint/switch-exhaustiveness-check
+  162:60  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  223:58  warning  Unnecessary optional chain on a non-nullish value                                                          @typescript-eslint/no-unnecessary-condition
+  225:79  warning  Unnecessary conditional, value is `never`                                                                  @typescript-eslint/no-unnecessary-condition
+  231:58  warning  Unnecessary optional chain on a non-nullish value                                                          @typescript-eslint/no-unnecessary-condition
+  233:79  warning  Unnecessary conditional, value is `never`                                                                  @typescript-eslint/no-unnecessary-condition
+  262:45  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  394:55  warning  Unnecessary conditional, value is `never`                                                                  @typescript-eslint/no-unnecessary-condition
+
+/home/isaha/panel/components/search/DataTable.tsx
+   39:32  warning  Unexpected any. Specify a different type                                                                            @typescript-eslint/no-explicit-any
+   43:18  warning  Unexpected any. Specify a different type                                                                            @typescript-eslint/no-explicit-any
+   51:30  warning  Unexpected any. Specify a different type                                                                            @typescript-eslint/no-explicit-any
+   81:31  warning  Unexpected any. Specify a different type                                                                            @typescript-eslint/no-explicit-any
+  102:33  error    'hasResults' is assigned a value but never used                                                                     @typescript-eslint/no-unused-vars
+  102:33  warning  'hasResults' is assigned a value but never used. Allowed unused vars must match /^_/u                               unused-imports/no-unused-vars
+  102:45  error    'isEmpty' is assigned a value but never used                                                                        @typescript-eslint/no-unused-vars
+  102:45  warning  'isEmpty' is assigned a value but never used. Allowed unused vars must match /^_/u                                  unused-imports/no-unused-vars
+  112:52  warning  Unexpected any. Specify a different type                                                                            @typescript-eslint/no-explicit-any
+  124:20  error    'page' is defined but never used                                                                                    @typescript-eslint/no-unused-vars
+  124:20  warning  'page' is defined but never used. Allowed unused args must match /^_/u                                              unused-imports/no-unused-vars
+  154:61  warning  Generic Object Injection Sink                                                                                       security/detect-object-injection
+  172:9   error    'isIndeterminate' is assigned a value but never used                                                                @typescript-eslint/no-unused-vars
+  172:9   warning  'isIndeterminate' is assigned a value but never used. Allowed unused vars must match /^_/u                          unused-imports/no-unused-vars
+  250:9   warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined                  @typescript-eslint/no-unnecessary-condition
+  336:55  error    Returning a void expression from an arrow function shorthand is forbidden. Please add braces to the arrow function  @typescript-eslint/no-confusing-void-expression
+  445:53  error    Unexpected constant nullishness on the left-hand side of a `??` expression                                          no-constant-binary-expression
+  445:53  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined                  @typescript-eslint/no-unnecessary-condition
+  498:65  error    Returning a void expression from an arrow function shorthand is forbidden. Please add braces to the arrow function  @typescript-eslint/no-confusing-void-expression
+
+/home/isaha/panel/components/search/EnhancedSearchInput.tsx
+   43:3   error    'showFilters' is assigned a value but never used                                                    @typescript-eslint/no-unused-vars
+   43:3   warning  'showFilters' is assigned a value but never used. Allowed unused args must match /^_/u              unused-imports/no-unused-vars
+   65:9   error    Unexpected constant nullishness on the left-hand side of a `??` expression                          no-constant-binary-expression
+   65:9   warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined  @typescript-eslint/no-unnecessary-condition
+   85:24  error    Unexpected constant nullishness on the left-hand side of a `??` expression                          no-constant-binary-expression
+   85:24  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined  @typescript-eslint/no-unnecessary-condition
+  132:31  warning  Unnecessary conditional, value is always truthy                                                     @typescript-eslint/no-unnecessary-condition
+  132:31  warning  Generic Object Injection Sink                                                                       security/detect-object-injection
+  174:15  warning  Function Call Object Injection Sink                                                                 security/detect-object-injection
+  228:13  warning  Function Call Object Injection Sink                                                                 security/detect-object-injection
+  278:30  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined  @typescript-eslint/no-unnecessary-condition
+
+/home/isaha/panel/components/search/FilterPanel.tsx
+   35:1   error    '../../types/search' import is duplicated                                                           no-duplicate-imports
+   62:10  error    'collapsedSections' is assigned a value but never used                                              @typescript-eslint/no-unused-vars
+   62:10  warning  'collapsedSections' is assigned a value but never used. Allowed unused vars must match /^_/u        unused-imports/no-unused-vars
+   70:43  warning  Unexpected any. Specify a different type                                                            @typescript-eslint/no-explicit-any
+   78:12  warning  Unexpected any. Specify a different type                                                            @typescript-eslint/no-explicit-any
+   81:9   error    Unexpected constant nullishness on the left-hand side of a `??` expression                          no-constant-binary-expression
+   81:9   warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined  @typescript-eslint/no-unnecessary-condition
+   81:9   error    Unexpected constant nullishness on the left-hand side of a `??` expression                          no-constant-binary-expression
+   81:9   warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined  @typescript-eslint/no-unnecessary-condition
+   89:9   error    'toggleSection' is assigned a value but never used                                                  @typescript-eslint/no-unused-vars
+   89:9   warning  'toggleSection' is assigned a value but never used. Allowed unused vars must match /^_/u            unused-imports/no-unused-vars
+  105:13  error    Switch is not exhaustive. Cases not matched: "range"                                                @typescript-eslint/switch-exhaustiveness-check
+
+/home/isaha/panel/components/search/SearchProvider.tsx
+  35:10  warning  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  79:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  94:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  95:3   error    'moduleName' is defined but never used                                                                                          @typescript-eslint/no-unused-vars
+  95:3   warning  'moduleName' is defined but never used. Allowed unused args must match /^_/u                                                    unused-imports/no-unused-vars
+  95:21  error    `import()` type annotations are forbidden                                                                                       @typescript-eslint/consistent-type-imports
+
+/home/isaha/panel/components/sync/BackgroundSyncManager.tsx
+   70:14  error    'error' is defined but never used                                                                   @typescript-eslint/no-unused-vars
+   70:14  warning  'error' is defined but never used                                                                   unused-imports/no-unused-vars
+   95:14  error    'error' is defined but never used                                                                   @typescript-eslint/no-unused-vars
+   95:14  warning  'error' is defined but never used                                                                   unused-imports/no-unused-vars
+  152:14  error    'error' is defined but never used                                                                   @typescript-eslint/no-unused-vars
+  152:14  warning  'error' is defined but never used                                                                   unused-imports/no-unused-vars
+  248:25  error    Unexpected constant nullishness on the left-hand side of a `??` expression                          no-constant-binary-expression
+  248:25  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined  @typescript-eslint/no-unnecessary-condition
+  316:31  error    Unexpected constant nullishness on the left-hand side of a `??` expression                          no-constant-binary-expression
+  316:31  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined  @typescript-eslint/no-unnecessary-condition
+  372:31  error    Unexpected constant nullishness on the left-hand side of a `??` expression                          no-constant-binary-expression
+  372:31  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined  @typescript-eslint/no-unnecessary-condition
+
+/home/isaha/panel/components/ui/InteractiveChart.tsx
+   47:18  warning  Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+   73:52  warning  Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+   83:30  warning  Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+  126:9   warning  Unnecessary conditional, value is always falsy       @typescript-eslint/no-unnecessary-condition
+  170:13  error    Switch is not exhaustive. Cases not matched: "line"  @typescript-eslint/switch-exhaustiveness-check
+  312:42  warning  Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+
+/home/isaha/panel/components/ui/MetricCard.tsx
+  75:18  warning  Variable Assigned to Object Injection Sink  security/detect-object-injection
+
+/home/isaha/panel/components/ui/__tests__/Input.test.tsx
+  49:13  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+
+/home/isaha/panel/components/ui/badge.tsx
+  46:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/home/isaha/panel/components/ui/button.tsx
+  62:18  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/home/isaha/panel/components/ui/carousel.tsx
+  108:10  warning  Unnecessary optional chain on a non-nullish value  @typescript-eslint/no-unnecessary-condition
+  118:22  warning  Unnecessary conditional, value is always truthy    @typescript-eslint/no-unnecessary-condition
+
+/home/isaha/panel/components/ui/chart.tsx
+   92:78  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  140:48  warning  Generic Object Injection Sink                                                                              security/detect-object-injection
+  183:33  warning  Unnecessary optional chain on a non-nullish value                                                          @typescript-eslint/no-unnecessary-condition
+  318:37  warning  Generic Object Injection Sink                                                                              security/detect-object-injection
+  318:62  warning  Generic Object Injection Sink                                                                              security/detect-object-injection
+
+/home/isaha/panel/components/ui/desktop-table.tsx
+   74:67  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  256:85  warning  Generic Object Injection Sink             security/detect-object-injection
+
+/home/isaha/panel/components/ui/enhanced-form.tsx
+  159:34  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator                                     @typescript-eslint/prefer-nullish-coalescing
+  206:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components                react-refresh/only-export-components
+  277:22  warning  Unexpected any. Specify a different type                                                                                                      @typescript-eslint/no-explicit-any
+  280:20  warning  Unexpected any. Specify a different type                                                                                                      @typescript-eslint/no-explicit-any
+  323:22  warning  Variable Assigned to Object Injection Sink                                                                                                    security/detect-object-injection
+  326:19  warning  Variable Assigned to Object Injection Sink                                                                                                    security/detect-object-injection
+  345:32  warning  Unexpected any. Specify a different type                                                                                                      @typescript-eslint/no-explicit-any
+  403:9   warning  Function Call Object Injection Sink                                                                                                           security/detect-object-injection
+  422:13  error    Switch is not exhaustive. Cases not matched: "number" | "search" | "time" | "text" | "custom" | "email" | "url" | "multiselect" | "datetime"  @typescript-eslint/switch-exhaustiveness-check
+  436:47  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator                                     @typescript-eslint/prefer-nullish-coalescing
+  437:42  warning  Function Call Object Injection Sink                                                                                                           security/detect-object-injection
+  467:45  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator                                     @typescript-eslint/prefer-nullish-coalescing
+  492:45  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator                                     @typescript-eslint/prefer-nullish-coalescing
+  509:19  warning  Function Call Object Injection Sink                                                                                                           security/detect-object-injection
+  778:17  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined                                            @typescript-eslint/no-unnecessary-condition
+  781:8   warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined                                            @typescript-eslint/no-unnecessary-condition
+  795:17  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined                                            @typescript-eslint/no-unnecessary-condition
+
+/home/isaha/panel/components/ui/enhanced-table.tsx
+   159:37  warning  Unexpected any. Specify a different type                                                                            @typescript-eslint/no-explicit-any
+   187:34  warning  Unexpected any. Specify a different type                                                                            @typescript-eslint/no-explicit-any
+   220:45  warning  Unexpected any. Specify a different type                                                                            @typescript-eslint/no-explicit-any
+   249:56  warning  Unexpected any. Specify a different type                                                                            @typescript-eslint/no-explicit-any
+   249:63  warning  Unexpected any. Specify a different type                                                                            @typescript-eslint/no-explicit-any
+   281:3   error    'showFooter' is assigned a value but never used                                                                     @typescript-eslint/no-unused-vars
+   281:3   warning  'showFooter' is assigned a value but never used. Allowed unused args must match /^_/u                               unused-imports/no-unused-vars
+   287:69  warning  Unexpected any. Specify a different type                                                                            @typescript-eslint/no-explicit-any
+   293:10  error    'columnWidths' is assigned a value but never used                                                                   @typescript-eslint/no-unused-vars
+   293:10  warning  'columnWidths' is assigned a value but never used. Allowed unused vars must match /^_/u                             unused-imports/no-unused-vars
+   293:24  error    'setColumnWidths' is assigned a value but never used                                                                @typescript-eslint/no-unused-vars
+   293:24  warning  'setColumnWidths' is assigned a value but never used. Allowed unused vars must match /^_/u                          unused-imports/no-unused-vars
+   297:52  warning  Unexpected any. Specify a different type                                                                            @typescript-eslint/no-explicit-any
+   331:30  warning  Variable Assigned to Object Injection Sink                                                                          security/detect-object-injection
+   333:21  error    Switch is not exhaustive. Cases not matched: undefined | "text" | "custom" | "email" | "phone"                      @typescript-eslint/switch-exhaustiveness-check
+   445:70  warning  Generic Object Injection Sink                                                                                       security/detect-object-injection
+   460:56  warning  Unexpected any. Specify a different type                                                                            @typescript-eslint/no-explicit-any
+   464:21  warning  Variable Assigned to Object Injection Sink                                                                          security/detect-object-injection
+   474:88  warning  Unexpected any. Specify a different type                                                                            @typescript-eslint/no-explicit-any
+   486:37  warning  Unexpected any. Specify a different type                                                                            @typescript-eslint/no-explicit-any
+   495:15  error    Switch is not exhaustive. Cases not matched: undefined | "number" | "text" | "custom"                               @typescript-eslint/switch-exhaustiveness-check
+   596:37  warning  Unexpected any. Specify a different type                                                                            @typescript-eslint/no-explicit-any
+   597:74  warning  Unnecessary optional chain on a non-nullish value                                                                   @typescript-eslint/no-unnecessary-condition
+   733:31  error    'value' is defined but never used                                                                                   @typescript-eslint/no-unused-vars
+   733:31  warning  'value' is defined but never used. Allowed unused args must match /^_/u                                             unused-imports/no-unused-vars
+   733:79  warning  Unexpected empty arrow function                                                                                     @typescript-eslint/no-empty-function
+   867:58  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator           @typescript-eslint/prefer-nullish-coalescing
+   894:58  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator           @typescript-eslint/prefer-nullish-coalescing
+   977:33  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator           @typescript-eslint/prefer-nullish-coalescing
+  1007:56  warning  Function Call Object Injection Sink                                                                                 security/detect-object-injection
+  1026:31  warning  Function Call Object Injection Sink                                                                                 security/detect-object-injection
+  1040:63  error    Returning a void expression from an arrow function shorthand is forbidden. Please add braces to the arrow function  @typescript-eslint/no-confusing-void-expression
+  1048:47  warning  Unnecessary optional chain on a non-nullish value                                                                   @typescript-eslint/no-unnecessary-condition
+  1063:67  warning  Function Call Object Injection Sink                                                                                 security/detect-object-injection
+  1088:49  warning  Generic Object Injection Sink                                                                                       security/detect-object-injection
+  1106:33  warning  Function Call Object Injection Sink                                                                                 security/detect-object-injection
+  1117:66  warning  Function Call Object Injection Sink                                                                                 security/detect-object-injection
+  1176:54  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator           @typescript-eslint/prefer-nullish-coalescing
+
+/home/isaha/panel/components/ui/form.tsx
+  147:3  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/home/isaha/panel/components/ui/input-otp.tsx
+  54:43  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+
+/home/isaha/panel/components/ui/input.stories.tsx
+  79:11  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+/home/isaha/panel/components/utils/EnvironmentUtils.tsx
+  11:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  12:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  13:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  50:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  63:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  76:27  error    Unexpected constant nullishness on the left-hand side of a `??` expression                                                      no-constant-binary-expression
+  76:27  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined                              @typescript-eslint/no-unnecessary-condition
+  76:43  warning  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+
+/home/isaha/panel/components/utils/__tests__/error-report.test.ts
+  43:72  warning  Unexpected empty arrow function  @typescript-eslint/no-empty-function
+
+/home/isaha/panel/components/ux/ContextualTooltipSystem.tsx
+  388:12  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined  @typescript-eslint/no-unnecessary-condition
+  388:12  warning  Generic Object Injection Sink                                                                       security/detect-object-injection
+
+/home/isaha/panel/components/ux/PersonalizedQuickActions.tsx
+   42:17  warning  Unexpected any. Specify a different type                                                                      @typescript-eslint/no-explicit-any
+   47:20  warning  Unexpected any. Specify a different type                                                                      @typescript-eslint/no-explicit-any
+   48:45  warning  Unexpected any. Specify a different type                                                                      @typescript-eslint/no-explicit-any
+   61:3   error    'currentContext' is defined but never used                                                                    @typescript-eslint/no-unused-vars
+   61:3   warning  'currentContext' is defined but never used. Allowed unused args must match /^_/u                              unused-imports/no-unused-vars
+   66:73  warning  Unexpected any. Specify a different type                                                                      @typescript-eslint/no-explicit-any
+   83:54  warning  Unexpected any. Specify a different type                                                                      @typescript-eslint/no-explicit-any
+   95:41  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator     @typescript-eslint/prefer-nullish-coalescing
+  100:19  warning  Generic Object Injection Sink                                                                                 security/detect-object-injection
+  262:5   warning  React Hook useMemo has a missing dependency: 'trackAction'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  280:33  warning  Generic Object Injection Sink                                                                                 security/detect-object-injection
+  280:58  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator     @typescript-eslint/prefer-nullish-coalescing
+  339:9   error    'getCategoryLabel' is assigned a value but never used                                                         @typescript-eslint/no-unused-vars
+  339:9   warning  'getCategoryLabel' is assigned a value but never used. Allowed unused vars must match /^_/u                   unused-imports/no-unused-vars
+
+/home/isaha/panel/components/ux/SmartCommandPalette.tsx
+  297:15  warning  Generic Object Injection Sink  security/detect-object-injection
+  298:13  warning  Generic Object Injection Sink  security/detect-object-injection
+
+/home/isaha/panel/components/ux/UserOnboardingFlow.tsx
+  390:17  warning  Generic Object Injection Sink               security/detect-object-injection
+  403:18  warning  Variable Assigned to Object Injection Sink  security/detect-object-injection
+  458:27  warning  Variable Assigned to Object Injection Sink  security/detect-object-injection
+
+/home/isaha/panel/components/ux/hooks/useCommandPalette.ts
+  55:21  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined  @typescript-eslint/no-unnecessary-condition
+
+/home/isaha/panel/contexts/AuthContext.tsx
+   99:24  error    '_credentials' is defined but never used                                                                                        @typescript-eslint/no-unused-vars
+  216:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/home/isaha/panel/contexts/NotificationContext.tsx
+   35:39  warning  Unexpected any. Specify a different type                                                                                                                                                                                                         @typescript-eslint/no-explicit-any
+   87:6   warning  React Hook useCallback has unnecessary dependencies: 'notify' and 'store'. Either exclude them or remove the dependency array. Outer scope values like 'notify' aren't valid dependencies because mutating them doesn't re-render the component  react-hooks/exhaustive-deps
+  161:5   warning  React Hook useCallback has unnecessary dependencies: 'notify' and 'store'. Either exclude them or remove the dependency array. Outer scope values like 'notify' aren't valid dependencies because mutating them doesn't re-render the component  react-hooks/exhaustive-deps
+  265:5   warning  React Hook useCallback has unnecessary dependencies: 'notify' and 'store'. Either exclude them or remove the dependency array. Outer scope values like 'notify' aren't valid dependencies because mutating them doesn't re-render the component  react-hooks/exhaustive-deps
+  298:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components                                                                                                                   react-refresh/only-export-components
+
+/home/isaha/panel/contexts/SupabaseAuthContext.tsx
+  188:21  warning  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  244:21  warning  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  297:21  warning  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  333:21  warning  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  371:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/home/isaha/panel/hooks/useAdvancedMobile.ts
+   61:23  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+   61:39  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+   62:23  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+   62:42  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+   63:23  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+   93:47  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  195:28  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined         @typescript-eslint/no-unnecessary-condition
+  214:34  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined         @typescript-eslint/no-unnecessary-condition
+  230:27  warning  Function Call Object Injection Sink                                                                        security/detect-object-injection
+  251:49  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  293:20  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  293:49  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  293:63  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  300:38  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  306:37  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  327:14  error    'error' is defined but never used                                                                          @typescript-eslint/no-unused-vars
+  327:14  warning  'error' is defined but never used                                                                          unused-imports/no-unused-vars
+  379:16  error    'error' is defined but never used                                                                          @typescript-eslint/no-unused-vars
+  379:16  warning  'error' is defined but never used                                                                          unused-imports/no-unused-vars
+  397:21  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined         @typescript-eslint/no-unnecessary-condition
+
+/home/isaha/panel/hooks/useBackgroundSync.ts
+  30:11  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  89:13  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/isaha/panel/hooks/useBeneficiaries.ts
+   43:5   error    'realtime' is assigned a value but never used                                                              @typescript-eslint/no-unused-vars
+   43:5   warning  'realtime' is assigned a value but never used. Allowed unused vars must match /^_/u                        unused-imports/no-unused-vars
+   51:38  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+   63:31  warning  Unnecessary conditional, value is always truthy                                                            @typescript-eslint/no-unnecessary-condition
+   80:65  warning  Unnecessary optional chain on a non-nullish value                                                          @typescript-eslint/no-unnecessary-condition
+   85:33  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  110:33  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  135:33  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  160:33  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  183:37  warning  Forbidden non-null assertion                                                                               @typescript-eslint/no-non-null-assertion
+  187:31  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  211:67  warning  Forbidden non-null assertion                                                                               @typescript-eslint/no-non-null-assertion
+  215:31  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  239:67  warning  Forbidden non-null assertion                                                                               @typescript-eslint/no-non-null-assertion
+  243:31  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  271:31  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  294:33  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+
+/home/isaha/panel/hooks/useCSRFToken.ts
+  85:18  error  Returning a void expression from an arrow function shorthand is forbidden. Please add braces to the arrow function  @typescript-eslint/no-confusing-void-expression
+
+/home/isaha/panel/hooks/useDataExport.ts
+   67:57  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+   72:41  warning  Generic Object Injection Sink                                                                              security/detect-object-injection
+   72:84  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  144:55  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  145:40  warning  Generic Object Injection Sink                                                                              security/detect-object-injection
+  145:70  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  189:11  warning  Forbidden non-null assertion                                                                               @typescript-eslint/no-non-null-assertion
+  190:13  warning  Generic Object Injection Sink                                                                              security/detect-object-injection
+  201:56  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  214:14  warning  Generic Object Injection Sink                                                                              security/detect-object-injection
+  214:50  warning  Unnecessary optional chain on a non-nullish value                                                          @typescript-eslint/no-unnecessary-condition
+  222:9   warning  Unnecessary conditional, value is always falsy                                                             @typescript-eslint/no-unnecessary-condition
+  222:9   error    Unexpected constant nullishness on the left-hand side of a `??` expression                                 no-constant-binary-expression
+  222:9   warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined         @typescript-eslint/no-unnecessary-condition
+  278:54  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  279:59  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  282:32  warning  Forbidden non-null assertion                                                                               @typescript-eslint/no-non-null-assertion
+  282:71  warning  Forbidden non-null assertion                                                                               @typescript-eslint/no-non-null-assertion
+  288:42  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+
+/home/isaha/panel/hooks/useDataImport.ts
+   39:73  warning  Unexpected any. Specify a different type                                                            @typescript-eslint/no-explicit-any
+   51:19  warning  Unexpected any. Specify a different type                                                            @typescript-eslint/no-explicit-any
+   54:13  warning  Generic Object Injection Sink                                                                       security/detect-object-injection
+   55:11  warning  Generic Object Injection Sink                                                                       security/detect-object-injection
+   55:26  warning  Generic Object Injection Sink                                                                       security/detect-object-injection
+   70:20  warning  Variable Assigned to Object Injection Sink                                                          security/detect-object-injection
+   97:33  warning  Unexpected any. Specify a different type                                                            @typescript-eslint/no-explicit-any
+  123:61  warning  Unexpected any. Specify a different type                                                            @typescript-eslint/no-explicit-any
+  133:21  warning  Unexpected any. Specify a different type                                                            @typescript-eslint/no-explicit-any
+  137:13  error    Use object destructuring                                                                            prefer-destructuring
+  148:18  error    'error' is defined but never used                                                                   @typescript-eslint/no-unused-vars
+  148:18  warning  'error' is defined but never used                                                                   unused-imports/no-unused-vars
+  162:12  warning  Unexpected any. Specify a different type                                                            @typescript-eslint/no-explicit-any
+  167:11  warning  Unnecessary conditional, value is always falsy                                                      @typescript-eslint/no-unnecessary-condition
+  175:23  warning  Unnecessary optional chain on a non-nullish value                                                   @typescript-eslint/no-unnecessary-condition
+  176:15  error    Unexpected constant nullishness on the left-hand side of a `??` expression                          no-constant-binary-expression
+  176:15  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined  @typescript-eslint/no-unnecessary-condition
+  176:16  warning  Generic Object Injection Sink                                                                       security/detect-object-injection
+  176:31  warning  Generic Object Injection Sink                                                                       security/detect-object-injection
+  180:22  warning  Generic Object Injection Sink                                                                       security/detect-object-injection
+  190:15  warning  Generic Object Injection Sink                                                                       security/detect-object-injection
+  190:65  warning  Function Call Object Injection Sink                                                                 security/detect-object-injection
+  194:22  warning  Generic Object Injection Sink                                                                       security/detect-object-injection
+  204:15  warning  Generic Object Injection Sink                                                                       security/detect-object-injection
+  204:59  warning  Generic Object Injection Sink                                                                       security/detect-object-injection
+  216:15  warning  Generic Object Injection Sink                                                                       security/detect-object-injection
+  216:43  warning  Function Call Object Injection Sink                                                                 security/detect-object-injection
+  220:22  warning  Generic Object Injection Sink                                                                       security/detect-object-injection
+  230:15  warning  Generic Object Injection Sink                                                                       security/detect-object-injection
+  230:47  warning  Function Call Object Injection Sink                                                                 security/detect-object-injection
+  234:22  warning  Generic Object Injection Sink                                                                       security/detect-object-injection
+  247:25  warning  Variable Assigned to Object Injection Sink                                                          security/detect-object-injection
+  273:43  warning  Unexpected any. Specify a different type                                                            @typescript-eslint/no-explicit-any
+  304:15  warning  Generic Object Injection Sink                                                                       security/detect-object-injection
+  379:27  warning  Unexpected any. Specify a different type                                                            @typescript-eslint/no-explicit-any
+  380:28  warning  Forbidden non-null assertion                                                                        @typescript-eslint/no-non-null-assertion
+  381:19  warning  Generic Object Injection Sink                                                                       security/detect-object-injection
+  382:17  warning  Generic Object Injection Sink                                                                       security/detect-object-injection
+  382:34  warning  Generic Object Injection Sink                                                                       security/detect-object-injection
+  398:11  error    Use object destructuring                                                                            prefer-destructuring
+  399:11  error    Use object destructuring                                                                            prefer-destructuring
+  435:20  error    'error' is defined but never used                                                                   @typescript-eslint/no-unused-vars
+  435:20  warning  'error' is defined but never used                                                                   unused-imports/no-unused-vars
+  440:41  warning  Unnecessary optional chain on a non-nullish value                                                   @typescript-eslint/no-unnecessary-condition
+
+/home/isaha/panel/hooks/useDebounce.ts
+  82:26  warning  Variable Assigned to Object Injection Sink  security/detect-object-injection
+
+/home/isaha/panel/hooks/useDonations.ts
+   45:5   error    'dateRange' is assigned a value but never used                                                                  @typescript-eslint/no-unused-vars
+   45:5   warning  'dateRange' is assigned a value but never used. Allowed unused vars must match /^_/u                            unused-imports/no-unused-vars
+   50:29  warning  Unexpected any. Specify a different type                                                                        @typescript-eslint/no-explicit-any
+  229:44  warning  Generic Object Injection Sink                                                                                   security/detect-object-injection
+  243:9   warning  Prefer using nullish coalescing operator (`??=`) instead of an assignment expression, as it is simpler to read  @typescript-eslint/prefer-nullish-coalescing
+  243:14  warning  Generic Object Injection Sink                                                                                   security/detect-object-injection
+  244:11  warning  Generic Object Injection Sink                                                                                   security/detect-object-injection
+  247:9   warning  Generic Object Injection Sink                                                                                   security/detect-object-injection
+  248:9   warning  Generic Object Injection Sink                                                                                   security/detect-object-injection
+  293:30  warning  Unexpected any. Specify a different type                                                                        @typescript-eslint/no-explicit-any
+  342:29  warning  Unexpected any. Specify a different type                                                                        @typescript-eslint/no-explicit-any
+  376:19  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined              @typescript-eslint/no-unnecessary-condition
+  382:28  warning  Unexpected any. Specify a different type                                                                        @typescript-eslint/no-explicit-any
+
+/home/isaha/panel/hooks/useExport.ts
+  175:5   warning  React Hook useCallback has an unnecessary dependency: 'lastResult'. Either exclude it or remove the dependency array  react-hooks/exhaustive-deps
+  195:27  warning  Unexpected any. Specify a different type                                                                              @typescript-eslint/no-explicit-any
+  198:28  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator             @typescript-eslint/prefer-nullish-coalescing
+  235:26  warning  Unexpected any. Specify a different type                                                                              @typescript-eslint/no-explicit-any
+  238:28  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator             @typescript-eslint/prefer-nullish-coalescing
+  288:28  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator             @typescript-eslint/prefer-nullish-coalescing
+
+/home/isaha/panel/hooks/useFormValidation.ts
+   86:25  warning  Variable Assigned to Object Injection Sink                                                                                security/detect-object-injection
+   87:19  warning  Variable Assigned to Object Injection Sink                                                                                security/detect-object-injection
+   95:13  warning  Generic Object Injection Sink                                                                                             security/detect-object-injection
+  103:11  warning  Generic Object Injection Sink                                                                                             security/detect-object-injection
+  112:5   warning  React Hook useCallback has a missing dependency: 'validateSingleField'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  147:27  warning  Forbidden non-null assertion                                                                                              @typescript-eslint/no-non-null-assertion
+  166:27  warning  Forbidden non-null assertion                                                                                              @typescript-eslint/no-non-null-assertion
+  179:27  warning  Forbidden non-null assertion                                                                                              @typescript-eslint/no-non-null-assertion
+  196:27  warning  Forbidden non-null assertion                                                                                              @typescript-eslint/no-non-null-assertion
+  210:41  warning  Function Call Object Injection Sink                                                                                       security/detect-object-injection
+  221:21  warning  Generic Object Injection Sink                                                                                             security/detect-object-injection
+  222:7   warning  Generic Object Injection Sink                                                                                             security/detect-object-injection
+  266:25  warning  Variable Assigned to Object Injection Sink                                                                                security/detect-object-injection
+  270:13  warning  Generic Object Injection Sink                                                                                             security/detect-object-injection
+  272:13  warning  Generic Object Injection Sink                                                                                             security/detect-object-injection
+  293:36  warning  Function Call Object Injection Sink                                                                                       security/detect-object-injection
+
+/home/isaha/panel/hooks/useKeyboard.ts
+  37:37  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined  @typescript-eslint/no-unnecessary-condition
+  44:17  error    'metaMatches' is assigned a value but never used                                                    @typescript-eslint/no-unused-vars
+  44:17  warning  'metaMatches' is assigned a value but never used. Allowed unused vars must match /^_/u              unused-imports/no-unused-vars
+  45:17  error    'ctrlMatches' is assigned a value but never used                                                    @typescript-eslint/no-unused-vars
+  45:17  warning  'ctrlMatches' is assigned a value but never used. Allowed unused vars must match /^_/u              unused-imports/no-unused-vars
+  46:17  error    'shiftMatches' is assigned a value but never used                                                   @typescript-eslint/no-unused-vars
+  46:17  warning  'shiftMatches' is assigned a value but never used. Allowed unused vars must match /^_/u             unused-imports/no-unused-vars
+  47:17  error    'altMatches' is assigned a value but never used                                                     @typescript-eslint/no-unused-vars
+  47:17  warning  'altMatches' is assigned a value but never used. Allowed unused vars must match /^_/u               unused-imports/no-unused-vars
+
+/home/isaha/panel/hooks/useKumbara.ts
+  117:28  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined  @typescript-eslint/no-unnecessary-condition
+  634:37  error    'kumbaraId' is defined but never used                                                               @typescript-eslint/no-unused-vars
+  634:37  warning  'kumbaraId' is defined but never used. Allowed unused args must match /^_/u                         unused-imports/no-unused-vars
+
+/home/isaha/panel/hooks/useLazyLoading.tsx
+   24:62  warning  Unexpected any. Specify a different type                                                                                                                                                                                                               @typescript-eslint/no-explicit-any
+   56:53  warning  Unexpected any. Specify a different type                                                                                                                                                                                                               @typescript-eslint/no-explicit-any
+  126:32  warning  The ref value 'ref.current' will likely have changed by the time this effect cleanup function runs. If this ref points to a node rendered by React, copy 'ref.current' to a variable inside the effect, and use that variable in the cleanup function  react-hooks/exhaustive-deps
+
+/home/isaha/panel/hooks/useMobileFormOptimized.ts
+  133:20  warning  Generic Object Injection Sink                                                                              security/detect-object-injection
+  147:23  warning  Variable Assigned to Object Injection Sink                                                                 security/detect-object-injection
+  198:40  error    'rules' is defined but never used                                                                          @typescript-eslint/no-unused-vars
+  198:40  warning  'rules' is defined but never used. Allowed unused args must match /^_/u                                    unused-imports/no-unused-vars
+  203:11  warning  Generic Object Injection Sink                                                                              security/detect-object-injection
+  207:20  warning  Generic Object Injection Sink                                                                              security/detect-object-injection
+  236:24  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  238:15  warning  Unnecessary conditional, value is always truthy                                                            @typescript-eslint/no-unnecessary-condition
+  238:19  warning  Generic Object Injection Sink                                                                              security/detect-object-injection
+  241:16  warning  Generic Object Injection Sink                                                                              security/detect-object-injection
+  241:34  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  245:21  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  248:23  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  251:33  warning  Function Call Object Injection Sink                                                                        security/detect-object-injection
+  252:29  warning  Generic Object Injection Sink                                                                              security/detect-object-injection
+  258:11  warning  Generic Object Injection Sink                                                                              security/detect-object-injection
+  359:14  warning  Generic Object Injection Sink                                                                              security/detect-object-injection
+  359:35  warning  Generic Object Injection Sink                                                                              security/detect-object-injection
+
+/home/isaha/panel/hooks/useMobilePerformance.ts
+   60:36  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   76:40  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  109:45  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  130:16  error    'error' is defined but never used         @typescript-eslint/no-unused-vars
+  130:16  warning  'error' is defined but never used         unused-imports/no-unused-vars
+
+/home/isaha/panel/hooks/usePagination.ts
+  104:11  error    Unexpected constant nullishness on the left-hand side of a `??` expression                          no-constant-binary-expression
+  104:11  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined  @typescript-eslint/no-unnecessary-condition
+
+/home/isaha/panel/hooks/usePerformanceEnhanced.ts
+   82:9   warning  The 'finalThresholds' object makes the dependencies of useCallback Hook (at line 159) change on every render. To fix this, wrap the initialization of 'finalThresholds' in its own useMemo() Hook  react-hooks/exhaustive-deps
+   82:9   warning  The 'finalThresholds' object makes the dependencies of useCallback Hook (at line 215) change on every render. To fix this, wrap the initialization of 'finalThresholds' in its own useMemo() Hook  react-hooks/exhaustive-deps
+   82:9   warning  The 'finalThresholds' object makes the dependencies of useCallback Hook (at line 240) change on every render. To fix this, wrap the initialization of 'finalThresholds' in its own useMemo() Hook  react-hooks/exhaustive-deps
+   87:40  warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+  179:6   warning  React Hook useEffect has missing dependencies: 'componentName', 'metrics.averageRenderTime', and 'metrics.peakMemoryUsage'. Either include them or remove the dependency array                     react-hooks/exhaustive-deps
+  269:5   warning  Generic Object Injection Sink                                                                                                                                                                      security/detect-object-injection
+  273:23  warning  Variable Assigned to Object Injection Sink                                                                                                                                                         security/detect-object-injection
+  280:14  warning  Generic Object Injection Sink                                                                                                                                                                      security/detect-object-injection
+  344:53  warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+  345:34  warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+  352:65  warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+  377:30  error    Unexpected constant nullishness on the left-hand side of a `??` expression                                                                                                                         no-constant-binary-expression
+  377:63  warning  Unexpected any. Specify a different type                                                                                                                                                           @typescript-eslint/no-explicit-any
+
+/home/isaha/panel/hooks/usePerformanceMonitoring.ts
+  107:40  warning  Unexpected any. Specify a different type                               @typescript-eslint/no-explicit-any
+  212:45  warning  Unexpected any. Specify a different type                               @typescript-eslint/no-explicit-any
+  342:7   error    Expected an assignment or function call and instead saw an expression  no-unused-expressions
+
+/home/isaha/panel/hooks/usePerformanceOptimization.ts
+   30:41  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+   69:5   warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined         @typescript-eslint/no-unnecessary-condition
+  168:67  warning  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  182:20  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  182:31  error    Do not pass children as props. Instead, pass them as additional arguments to React.createElement           react/no-children-prop
+
+/home/isaha/panel/hooks/useSearch.ts
+   34:49  warning  Unexpected any. Specify a different type                                                                            @typescript-eslint/no-explicit-any
+   34:67  warning  Unexpected any. Specify a different type                                                                            @typescript-eslint/no-explicit-any
+   69:48  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator           @typescript-eslint/prefer-nullish-coalescing
+   92:47  warning  Generic Object Injection Sink                                                                                       security/detect-object-injection
+  110:22  warning  Generic Object Injection Sink                                                                                       security/detect-object-injection
+  120:44  warning  Unexpected any. Specify a different type                                                                            @typescript-eslint/no-explicit-any
+  121:53  warning  Generic Object Injection Sink                                                                                       security/detect-object-injection
+  125:43  warning  Unexpected any. Specify a different type                                                                            @typescript-eslint/no-explicit-any
+  306:32  warning  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator           @typescript-eslint/prefer-nullish-coalescing
+  317:5   error    Expected an assignment or function call and instead saw an expression                                               no-unused-expressions
+  319:46  error    Returning a void expression from an arrow function shorthand is forbidden. Please add braces to the arrow function  @typescript-eslint/no-confusing-void-expression
+  326:7   error    Expected an assignment or function call and instead saw an expression                                               no-unused-expressions
+  335:87  warning  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined                  @typescript-eslint/no-unnecessary-condition
+
+/home/isaha/panel/hooks/useSupabaseConnection.ts
+  37:17  error    'data' is assigned a value but never used                                        @typescript-eslint/no-unused-vars
+  37:17  warning  'data' is assigned a value but never used. Allowed unused vars must match /^_/u  unused-imports/no-unused-vars
+  59:23  warning  Unexpected any. Specify a different type                                         @typescript-eslint/no-explicit-any
+
+/home/isaha/panel/hooks/useSupabaseData.ts
+   43:37  warning  Unexpected any. Specify a different type       @typescript-eslint/no-explicit-any
+   45:3   error    '_options' is assigned a value but never used  @typescript-eslint/no-unused-vars
+   64:21  warning  Unexpected empty async method 'refetch'        @typescript-eslint/no-empty-function
+   71:18  error    '_id' is defined but never used                @typescript-eslint/no-unused-vars
+   77:22  error    '_updates' is defined but never used           @typescript-eslint/no-unused-vars
+   77:32  warning  Unexpected empty async method 'bulkUpdate'     @typescript-eslint/no-empty-function
+   78:22  error    '_ids' is defined but never used               @typescript-eslint/no-unused-vars
+   78:28  warning  Unexpected empty async method 'bulkDelete'     @typescript-eslint/no-empty-function
+   88:43  warning  Unexpected any. Specify a different type       @typescript-eslint/no-explicit-any
+   90:3   error    '_options' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  110:21  warning  Unexpected empty async method 'refetch'        @typescript-eslint/no-empty-function
+  120:39  warning  Unexpected any. Specify a different type       @typescript-eslint/no-explicit-any
+  123:3   error    '_options' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  134:18  error    '_query' is defined but never used             @typescript-eslint/no-unused-vars
+  134:34  warning  Unexpected empty async method 'search'         @typescript-eslint/no-empty-function
+
+/home/isaha/panel/hooks/useUserManagement.ts
+  135:6   warning  React Hook useCallback has a missing dependency: 'loadStats'. Either include it or remove the dependency array                                     react-hooks/exhaustive-deps
+  166:5   warning  React Hook useCallback has a missing dependency: 'loadStats'. Either include it or remove the dependency array                                     react-hooks/exhaustive-deps
+  198:5   warning  React Hook useCallback has a missing dependency: 'loadStats'. Either include it or remove the dependency array                                     react-hooks/exhaustive-deps
+  287:39  error    'id' is defined but never used                                                                                                                     @typescript-eslint/no-unused-vars
+  287:39  warning  'id' is defined but never used. Allowed unused args must match /^_/u                                                                               unused-imports/no-unused-vars
+  299:6   warning  React Hook useEffect has missing dependencies: 'loadActivities', 'loadStats', and 'loadUsers'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+/home/isaha/panel/main.tsx
+  60:23  warning  Unnecessary optional chain on a non-nullish value  @typescript-eslint/no-unnecessary-condition
+  75:23  warning  Forbidden non-null assertion                       @typescript-eslint/no-non-null-assertion
+
+✖ 872 problems (121 errors, 751 warnings)
+  11 errors and 0 warnings potentially fixable with the `--fix` option.
+

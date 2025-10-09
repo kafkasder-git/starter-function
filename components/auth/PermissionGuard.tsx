@@ -45,7 +45,7 @@ export function PermissionGuard({
   // Check single permission
   if (permission && !checkPermission(permission)) {
     return (
-      fallback ||
+      fallback ??
       (showAlert ? (
         <PermissionAlert permission={permission} />
       ) : (
@@ -57,7 +57,7 @@ export function PermissionGuard({
   // Check single role
   if (role && !hasRole(role)) {
     return (
-      fallback || (showAlert ? <RoleAlert role={role} /> : <UnauthorizedPage requiredRole={role} />)
+      fallback ?? (showAlert ? <RoleAlert role={role} /> : <UnauthorizedPage requiredRole={role} />)
     );
   }
 
@@ -67,7 +67,7 @@ export function PermissionGuard({
 
     if (!hasAccess) {
       return (
-        fallback ||
+        fallback ??
         (showAlert ? (
           <PermissionsAlert permissions={permissions} requireAll={requireAll} />
         ) : (
@@ -83,7 +83,7 @@ export function PermissionGuard({
 
     if (!hasAccess) {
       return (
-        fallback ||
+        fallback ??
         (showAlert ? (
           <RolesAlert roles={roles} requireAll={requireAll} />
         ) : (

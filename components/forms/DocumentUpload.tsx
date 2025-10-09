@@ -325,7 +325,7 @@ export function DocumentUpload({
                   type="button"
                   variant="ghost"
                   size="sm"
-                  onClick={() => removeFile(file.id)}
+                  onClick={() => { removeFile(file.id); }}
                   className="flex-shrink-0"
                 >
                   <X className="w-4 h-4" />

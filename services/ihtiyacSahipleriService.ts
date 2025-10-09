@@ -52,13 +52,10 @@ export const ihtiyacSahipleriService = {
       logger.info('📊 Initial query built for table: ihtiyac_sahipleri');
       
       // Apply filters if provided
-      if (filters.status) {
-        query = query.eq('status', filters.status);
-        logger.info('🔍 Applied status filter:', filters.status);
-      }
+      // Note: status filter removed as status field doesn't exist in database
       
       if (filters.sehir) {
-        query = query.eq('sehir', filters.sehir);
+        query = query.eq('sehri', filters.sehir);
         logger.info('🔍 Applied sehir filter:', filters.sehir);
       }
       

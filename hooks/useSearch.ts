@@ -314,16 +314,24 @@ export function useSearch<T = unknown>({
 
   // Auto-search effect with cleanup
   useEffect(() => {
-    searchTimeoutRef.current && clearTimeout(searchTimeoutRef.current);
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
     searchTimeoutRef.current = setTimeout(() => executeSearch(), 100);
-    return () => searchTimeoutRef.current && clearTimeout(searchTimeoutRef.current);
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
   }, [debouncedQuery, searchState.filters, searchState.sort, executeSearch]);
 
   // Cleanup effect
   useEffect(() => {
     return () => {
       abortControllerRef.current?.abort();
-      searchTimeoutRef.current && clearTimeout(searchTimeoutRef.current);
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
     };
   }, []);
 

@@ -13,9 +13,20 @@ import { Label } from '../ui/label';
 import { Progress } from '../ui/progress';
 
 interface BeneficiaryFinancialProps {
-  beneficiary: any;
+  beneficiary: {
+    id: string;
+    name: string;
+    financialInfo?: {
+      monthlyIncome?: number;
+      monthlyExpenses?: number;
+      assets?: number;
+      debts?: number;
+      bankAccount?: string;
+      iban?: string;
+    };
+  };
   editMode: boolean;
-  onUpdate: (field: string, value: any) => void;
+  onUpdate: (field: string, value: string | number) => void;
 }
 
 /**

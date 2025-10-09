@@ -324,7 +324,7 @@ export function useAdvancedMobile() {
       await new Promise((resolve) => setTimeout(resolve, 1000));
       triggerHapticFeedback('success');
       return true;
-    } catch (error) {
+    } catch (_error) {
       triggerHapticFeedback('error');
       return false;
     }
@@ -376,7 +376,7 @@ export function useAdvancedMobile() {
 
         triggerHapticFeedback('success');
         return true;
-      } catch (error) {
+      } catch (_error) {
         triggerHapticFeedback('error');
         return false;
       }

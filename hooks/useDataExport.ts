@@ -219,7 +219,7 @@ export function useDataExport({ onProgress, onComplete, onError }: UseDataExport
   const validateConfig = useCallback((data: ExportableData[], config: ExportConfig): string[] => {
     const errors: string[] = [];
 
-    if (!data ?? data.length === 0) {
+    if (!data || data.length === 0) {
       errors.push('Dışa aktarılacak veri bulunamadı');
     }
 

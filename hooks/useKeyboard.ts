@@ -41,10 +41,10 @@ export function useKeyboardShortcuts(shortcuts: KeyboardShortcut[]) {
 
       for (const shortcut of shortcuts) {
         const keyMatches = shortcut.key.toLowerCase() === event.key.toLowerCase();
-          const metaMatches = !shortcut.metaKey || event.metaKey;
-          const ctrlMatches = !shortcut.ctrlKey || event.ctrlKey;
-          const shiftMatches = !shortcut.shiftKey || event.shiftKey;
-          const altMatches = !shortcut.altKey || event.altKey;
+          const _metaMatches = !shortcut.metaKey || event.metaKey;
+          const _ctrlMatches = !shortcut.ctrlKey || event.ctrlKey;
+          const _shiftMatches = !shortcut.shiftKey || event.shiftKey;
+          const _altMatches = !shortcut.altKey || event.altKey;
 
         // Ensure exact modifier match
         const exactMetaMatch = shortcut.metaKey ? event.metaKey : !event.metaKey;

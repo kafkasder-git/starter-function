@@ -9,7 +9,6 @@ import { useState, useEffect } from 'react';
 import {
   Home,
   Heart,
-  Users,
   HelpingHand,
   GraduationCap,
   Wallet,
@@ -58,16 +57,6 @@ const modules: Module[] = [
       { name: 'Bağış Listesi', href: '/bagis/liste' },
       { name: 'Bağış Raporları', href: '/bagis/raporlar' },
       { name: 'Kumbara Takibi', href: '/bagis/kumbara' },
-    ],
-  },
-  {
-    id: 'uye',
-    name: 'Üyeler',
-    icon: <Users className="w-5 h-5" />,
-    subPages: [
-      { name: 'Üye Listesi', href: '/uye/liste' },
-      { name: 'Aidat Takibi', href: '/uye/aidat' },
-      { name: 'Yeni Üye', href: '/uye/yeni' },
     ],
   },
   {

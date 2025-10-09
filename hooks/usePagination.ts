@@ -101,7 +101,7 @@ export function usePagination({
   // Navigation functions
   const goToPage = useCallback(
     (page: number) => {
-      if (page < 1 ?? page > totalPages) return;
+      if (page < 1 || page > totalPages) return;
 
       setCurrentPage(page);
       onPageChange?.(page);

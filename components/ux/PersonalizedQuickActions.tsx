@@ -58,7 +58,7 @@ interface PersonalizedQuickActionsProps {
  */
 export function PersonalizedQuickActions({
   currentModule = 'genel',
-  currentContext,
+  currentContext: _currentContext,
   onQuickAction,
   onNavigate,
   className,
@@ -336,7 +336,7 @@ export function PersonalizedQuickActions({
     }
   };
 
-  const getCategoryLabel = (category: QuickAction['category']) => {
+  const _getCategoryLabel = (category: QuickAction['category']) => {
     switch (category) {
       case 'frequent':
         return 'Sık Kullanılan';

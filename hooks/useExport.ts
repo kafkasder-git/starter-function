@@ -172,7 +172,7 @@ export const useExport = (options: UseExportOptions = {}): UseExportReturn => {
         }
       }
     },
-    [isExporting, handleProgress, options, lastResult],
+    [isExporting, handleProgress, options],
   );
 
   return {

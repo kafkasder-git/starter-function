@@ -76,7 +76,7 @@ export const WithLabel: Story = {
       <label className="text-sm font-medium">Email Address</label>
       <Input type="email" placeholder="email@example.com" />
       <p className="text-sm text-muted-foreground">
-        We'll never share your email.
+        We&apos;ll never share your email.
       </p>
     </div>
   ),

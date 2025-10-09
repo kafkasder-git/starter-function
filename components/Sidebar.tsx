@@ -16,7 +16,6 @@ import {
   MessageSquare,
   Scale,
   Shield,
-  Users,
   Wallet,
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
@@ -104,16 +103,6 @@ export function Sidebar({
         { name: 'Kumbara Takibi', href: '/bagis/kumbara' },
       ],
       // badge: 3 will come from API
-    },
-    {
-      id: 'uye',
-      name: 'Üyeler',
-      icon: <Users className="w-5 h-5" />,
-      subPages: [
-        { name: 'Üye Listesi', href: '/uye/liste' },
-        { name: 'Aidat Takibi', href: '/uye/aidat' },
-        { name: 'Yeni Üye', href: '/uye/yeni' },
-      ],
     },
     {
       id: 'yardim',

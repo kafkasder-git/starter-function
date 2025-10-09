@@ -278,7 +278,7 @@ export function EnhancedTable<T extends Record<string, any> = any>({
   striped = true,
   bordered = false,
   hoverable = true,
-  showFooter = false,
+  showFooter: _showFooter = false,
 }: EnhancedTableProps<T>) {
   // State Management
   const [searchTerm, setSearchTerm] = useState('');
@@ -290,7 +290,7 @@ export function EnhancedTable<T extends Record<string, any> = any>({
   const [columnVisibility, setColumnVisibility] = useState<Record<string, boolean>>(
     columns.reduce((acc, col) => ({ ...acc, [col.key as string]: true }), {}),
   );
-  const [columnWidths, setColumnWidths] = useState<Record<string, number>>({});
+  const [_columnWidths, _setColumnWidths] = useState<Record<string, number>>({});
   const [editingCell, setEditingCell] = useState<{ rowIndex: number; columnKey: string } | null>(
     null,
   );
@@ -352,6 +352,10 @@ export function EnhancedTable<T extends Record<string, any> = any>({
                 return Array.isArray(value)
                   ? value.includes(String(rowValue))
                   : String(rowValue).toLowerCase() === String(value).toLowerCase();
+              case 'text':
+              case 'custom':
+              case 'email':
+              case 'phone':
               default:
                 return String(rowValue).toLowerCase().includes(String(value).toLowerCase());
             }
@@ -524,6 +528,9 @@ export function EnhancedTable<T extends Record<string, any> = any>({
               {value}
             </Badge>
           );
+        case 'number':
+        case 'text':
+        case 'custom':
         default:
           return value ?? '-';
       }
@@ -730,7 +737,7 @@ export function EnhancedTable<T extends Record<string, any> = any>({
             {/* Density Control */}
             <Select
               value={density}
-              onValueChange={(value: 'compact' | 'normal' | 'comfortable') => {}}
+              onValueChange={(_value: 'compact' | 'normal' | 'comfortable') => {}}
             >
               <SelectTrigger className="w-32">
                 <SelectValue />

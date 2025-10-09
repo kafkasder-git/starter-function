@@ -42,7 +42,7 @@ export function useDonations(
     category,
     campaignId,
     memberId,
-    dateRange,
+    dateRange: _dateRange,
     realtime = true,
   } = options;
 

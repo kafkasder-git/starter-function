@@ -47,7 +47,7 @@ export class SafeWrapper extends React.Component<SafeWrapperProps, SafeWrapperSt
   override render() {
     if (this.state.hasError) {
       return (
-        this.props.fallback || (
+        this.props.fallback ?? (
           <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
             <h3 className="text-red-800 font-medium">Bileşen Yükleme Hatası</h3>
             <p className="text-red-600 text-sm mt-1">

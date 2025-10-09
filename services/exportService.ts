@@ -204,6 +204,10 @@ export class ExportService {
     for (let i = 0; i < exports.length; i++) {
       const { data, config } = exports[i] || { data: null, config: null };
 
+      if (!config) {
+        throw new Error(`Export configuration is missing for export ${i + 1}`);
+      }
+
       progressCallback?.(
         (i / exports.length) * 100,
         `Export ${i + 1}/${exports.length}: ${config.filename ?? 'report'}`,
@@ -315,7 +319,7 @@ export class ExportService {
     });
 
     // Simulate PDF generation (only in non-production)
-    if (typeof process !== 'undefined' && process.env && process.env.NODE_ENV !== 'production') {
+    if (typeof window !== 'undefined' && import.meta.env?.DEV) {
       await this.simulateProcessing(1500);
     }
 
@@ -369,7 +373,7 @@ export class ExportService {
     });
 
     // Simulate Excel generation (only in non-production)
-    if (typeof process !== 'undefined' && process.env && process.env.NODE_ENV !== 'production') {
+    if (typeof window !== 'undefined' && import.meta.env?.DEV) {
       await this.simulateProcessing(1200);
     }
 
@@ -385,7 +389,7 @@ export class ExportService {
     };
   }
 
-  private async exportToCSV<T>(
+  private async exportToCSV<T extends Record<string, unknown>[]>(
     data: T,
     config: ExportConfig,
     exportId: string,
@@ -410,13 +414,13 @@ export class ExportService {
     if (needsOptimization) {
       // Use streaming for large datasets
       const stream = await OptimizationUtils.streamExport(
-        data,
+        data as Record<string, unknown>[],
         ExportFormat.CSV,
         optimizationOptions,
       );
       csvContent = await this.streamToString(stream);
     } else {
-      csvContent = DataFormattingUtils.formatForCSV(this.flattenData(data), csvOptions);
+      csvContent = DataFormattingUtils.formatForCSV(this.flattenData(data) as Record<string, unknown>[], csvOptions);
     }
 
     this.updateProgress(exportId, {
@@ -438,7 +442,7 @@ export class ExportService {
   }
 
   private async exportToPNG<T>(
-    data: T,
+    _data: T,
     config: ExportConfig,
     exportId: string,
   ): Promise<ExportResult> {
@@ -476,7 +480,7 @@ export class ExportService {
   }
 
   private async exportToSVG<T>(
-    data: T,
+    _data: T,
     config: ExportConfig,
     exportId: string,
   ): Promise<ExportResult> {
@@ -508,6 +512,20 @@ export class ExportService {
 
   // Helper methods
   private generateExportId(): string {
+    // Use crypto.randomUUID if available, otherwise fallback to secure random
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+      return `export_${Date.now()}_${crypto.randomUUID().replace(/-/g, '')}`;
+    }
+    
+    // Fallback to secure random generation
+    if (typeof window !== 'undefined' && window.crypto && window.crypto.getRandomValues) {
+      const array = new Uint8Array(9);
+      window.crypto.getRandomValues(array);
+      const randomString = Array.from(array, byte => byte.toString(36)).join('').substring(0, 9);
+      return `export_${Date.now()}_${randomString}`;
+    }
+    
+    // Last resort fallback
     return `export_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
 

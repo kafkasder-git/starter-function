@@ -171,7 +171,7 @@ export default function BeneficiaryForm({
   };
 
   const addFamilyMember = () => {
-    const currentMembers = getValues('family_members') || [];
+    const currentMembers = getValues('family_members') ?? [];
     setValue('family_members', [
       ...currentMembers,
       {
@@ -187,12 +187,12 @@ export default function BeneficiaryForm({
   };
 
   const removeFamilyMember = (index: number) => {
-    const currentMembers = getValues('family_members') || [];
+    const currentMembers = getValues('family_members') ?? [];
     setValue('family_members', currentMembers.filter((_, i) => i !== index));
   };
 
   const addNeed = () => {
-    const currentNeeds = getValues('needs') || [];
+    const currentNeeds = getValues('needs') ?? [];
     setValue('needs', [
       ...currentNeeds,
       {
@@ -205,7 +205,7 @@ export default function BeneficiaryForm({
   };
 
   const removeNeed = (index: number) => {
-    const currentNeeds = getValues('needs') || [];
+    const currentNeeds = getValues('needs') ?? [];
     setValue('needs', currentNeeds.filter((_, i) => i !== index));
   };
 
@@ -573,7 +573,7 @@ export default function BeneficiaryForm({
           </Button>
         </div>
 
-        {(watchedValues.family_members || []).map((member, index) => (
+        {(watchedValues.family_members ?? []).map((member, index) => (
           <div key={index} className="border rounded-lg p-4 space-y-4">
             <div className="flex justify-between items-center">
               <h4 className="font-medium">Aile Üyesi {index + 1}</h4>
@@ -644,7 +644,7 @@ export default function BeneficiaryForm({
           </Button>
         </div>
 
-        {(watchedValues.needs || []).map((need, index) => (
+        {(watchedValues.needs ?? []).map((need, index) => (
           <div key={index} className="border rounded-lg p-4 space-y-4">
             <div className="flex justify-between items-center">
               <h4 className="font-medium">İhtiyaç {index + 1}</h4>

@@ -132,7 +132,7 @@ export function useUserManagement(): UseUserManagementReturn {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [loadStats]);
 
   /**
    * Update user
@@ -163,7 +163,7 @@ export function useUserManagement(): UseUserManagementReturn {
         setLoading(false);
       }
     },
-    [],
+    [loadStats],
   );
 
   /**
@@ -195,7 +195,7 @@ export function useUserManagement(): UseUserManagementReturn {
         setLoading(false);
       }
     },
-    [users],
+    [users, loadStats],
   );
 
   /**
@@ -296,7 +296,7 @@ export function useUserManagement(): UseUserManagementReturn {
     };
 
     initializeData();
-  }, []);
+  }, [loadActivities, loadStats, loadUsers]);
 
   return {
     // State

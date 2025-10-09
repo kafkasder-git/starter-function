@@ -138,7 +138,7 @@ export function CampaignManagementPage() {
                 <Input
                   id="campaignName"
                   value={newCampaign.name}
-                  onChange={(e) => setNewCampaign({ ...newCampaign, name: e.target.value })}
+                  onChange={(e) => { setNewCampaign({ ...newCampaign, name: e.target.value }); }}
                   placeholder="Örn: Ramazan Yardımı 2024"
                 />
               </div>
@@ -147,7 +147,7 @@ export function CampaignManagementPage() {
                 <Input
                   id="description"
                   value={newCampaign.description}
-                  onChange={(e) => setNewCampaign({ ...newCampaign, description: e.target.value })}
+                  onChange={(e) => { setNewCampaign({ ...newCampaign, description: e.target.value }); }}
                   placeholder="Kampanya detayları"
                 />
               </div>
@@ -158,7 +158,7 @@ export function CampaignManagementPage() {
                     id="goalAmount"
                     type="number"
                     value={newCampaign.goalAmount}
-                    onChange={(e) => setNewCampaign({ ...newCampaign, goalAmount: e.target.value })}
+                    onChange={(e) => { setNewCampaign({ ...newCampaign, goalAmount: e.target.value }); }}
                     placeholder="100000"
                   />
                 </div>
@@ -167,7 +167,7 @@ export function CampaignManagementPage() {
                   <Input
                     id="category"
                     value={newCampaign.category}
-                    onChange={(e) => setNewCampaign({ ...newCampaign, category: e.target.value })}
+                    onChange={(e) => { setNewCampaign({ ...newCampaign, category: e.target.value }); }}
                     placeholder="Gıda, Eğitim, Sağlık..."
                   />
                 </div>
@@ -179,7 +179,7 @@ export function CampaignManagementPage() {
                     id="startDate"
                     type="date"
                     value={newCampaign.startDate}
-                    onChange={(e) => setNewCampaign({ ...newCampaign, startDate: e.target.value })}
+                    onChange={(e) => { setNewCampaign({ ...newCampaign, startDate: e.target.value }); }}
                   />
                 </div>
                 <div>
@@ -188,13 +188,13 @@ export function CampaignManagementPage() {
                     id="endDate"
                     type="date"
                     value={newCampaign.endDate}
-                    onChange={(e) => setNewCampaign({ ...newCampaign, endDate: e.target.value })}
+                    onChange={(e) => { setNewCampaign({ ...newCampaign, endDate: e.target.value }); }}
                   />
                 </div>
               </div>
             </div>
             <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+              <Button variant="outline" onClick={() => { setIsDialogOpen(false); }}>
                 İptal
               </Button>
               <Button onClick={handleCreateCampaign}>
@@ -264,7 +264,7 @@ export function CampaignManagementPage() {
               <div className="text-center py-12">
                 <Target className="w-16 h-16 mx-auto text-gray-300 mb-4" />
                 <p className="text-gray-500 mb-4">Henüz kampanya oluşturulmamış</p>
-                <Button onClick={() => setIsDialogOpen(true)}>
+                <Button onClick={() => { setIsDialogOpen(true); }}>
                   <Plus className="w-4 h-4 mr-2" />
                   İlk Kampanyanızı Oluşturun
                 </Button>

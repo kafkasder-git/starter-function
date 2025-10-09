@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { useSupabaseAuth } from '../../contexts/SupabaseAuthContext';
+// Note: useSupabaseAuth removed as authentication is handled at app level
 import {
   ihtiyacSahipleriService,
   type IhtiyacSahibi,
@@ -107,12 +107,11 @@ interface BeneficiariesPageProps {
  * @returns {void} Nothing
  */
 export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesPageProps) {
-  // Get authenticated user
-  const { user, isAuthenticated } = useSupabaseAuth();
+  // Note: Authentication is handled at the app level, no need to check here
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
+  // Note: statusFilter removed as status field doesn't exist in database
   const [cityFilter, setCityFilter] = useState('all');
   const [sortBy, setSortBy] = useState('name-asc');
   const [beneficiaries, setBeneficiaries] = useState<IhtiyacSahibiDisplay[]>([]);
@@ -161,7 +160,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
       setLoading(true);
 
       const filters = {
-        status: statusFilter !== 'all' ? statusFilter : undefined,
+        // Note: status filter removed as status field doesn't exist in database
         city: cityFilter !== 'all' ? cityFilter : undefined,
         // Note: category filter removed as it's not in the database schema
         searchTerm: searchTerm.trim() ?? undefined,
@@ -249,7 +248,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
     } finally {
       setLoading(false);
     }
-  }, [currentPage, pageSize, statusFilter, cityFilter, searchTerm, sortBy]);
+  }, [currentPage, pageSize, cityFilter, searchTerm, sortBy]);
 
   // Load stats computed from already loaded beneficiaries to avoid extra network calls
   const loadStats = useCallback(async () => {
@@ -332,7 +331,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
       clearTimeout(timeoutId);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchTerm, statusFilter, cityFilter, sortBy]);
+  }, [searchTerm, cityFilter, sortBy]);
 
   const getStatusBadge = (status: string) => {
     const statusInfo =
@@ -799,19 +798,8 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
                     className="pl-10 min-h-[44px] focus-corporate"
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-2 sm:gap-3 sm:flex">
-                  <Select value={statusFilter} onValueChange={setStatusFilter}>
-                    <SelectTrigger className="min-w-[120px] min-h-[44px] focus-corporate">
-                      <SelectValue placeholder="Tüm Durumlar" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Tüm Durumlar</SelectItem>
-                      <SelectItem value="active">Aktif</SelectItem>
-                      <SelectItem value="passive">Pasif</SelectItem>
-                      <SelectItem value="suspended">Askıda</SelectItem>
-                      <SelectItem value="under_evaluation">Değerlendirmede</SelectItem>
-                    </SelectContent>
-                  </Select>
+                <div className="grid grid-cols-1 gap-2 sm:gap-3 sm:flex">
+                  {/* Status filter removed as status field doesn't exist in database */}
                   <Select value={cityFilter} onValueChange={setCityFilter}>
                     <SelectTrigger className="min-w-[120px] min-h-[44px] focus-corporate">
                       <SelectValue placeholder="Tüm Şehirler" />

@@ -40,7 +40,7 @@ export function useBeneficiaries(options: UseBeneficiariesOptions = {}) {
     status,
     city,
     needType,
-    realtime = true,
+    realtime: _realtime = true,
     autoFetch = true,
   } = options;
 

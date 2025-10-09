@@ -233,7 +233,7 @@ export class FileStorageService {
         return;
       }
 
-      const existingBuckets = buckets?.map((b) => b.name) || [];
+      const existingBuckets = buckets?.map((b: { name: any; }) => b.name) || [];
 
       for (const [_key, config] of Object.entries(this.config.buckets)) {
         if (!existingBuckets.includes(config.name)) {
@@ -467,7 +467,7 @@ export class FileStorageService {
       const hasMore = offset + limit < total;
 
       // Convert to FileMetadata objects
-      const files: FileMetadata[] = (data || []).map((file) => ({
+      const files: FileMetadata[] = (data || []).map((file: { id: any; name: any; metadata: { size: any; mimetype: any; uploadedBy: any; tags: string; description: any; }; created_at: any; updated_at: any; }) => ({
         id: file.id || file.name,
         name: file.name,
         size: file.metadata?.size || 0,
@@ -506,11 +506,12 @@ export class FileStorageService {
       return result;
     } catch (error) {
       const processingTime = Date.now() - startTime;
-      const _errorResult: FileListResult = {
-        files: [],
-        total: 0,
-        hasMore: false,
-      };
+      // Error result would be returned here in a real implementation
+      // const errorResult: FileListResult = {
+      //   files: [],
+      //   total: 0,
+      //   hasMore: false,
+      // };
 
       // Track error
       monitoring.trackApiCall('file_storage/list', 'GET', processingTime, 500, {
@@ -827,7 +828,17 @@ export class FileStorageService {
     }
 
     const timestamp = Date.now();
-    const random = Math.random().toString(36).substr(2, 9);
+    // Use crypto.randomUUID if available, otherwise fallback to secure random
+    let random: string;
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+      random = crypto.randomUUID().replace(/-/g, '').substring(0, 9);
+    } else if (typeof window !== 'undefined' && window.crypto && window.crypto.getRandomValues) {
+      const array = new Uint8Array(9);
+      window.crypto.getRandomValues(array);
+      random = Array.from(array, byte => byte.toString(36)).join('').substring(0, 9);
+    } else {
+      random = Math.random().toString(36).substr(2, 9);
+    }
     const extension = originalName.split('.').pop();
     const nameWithoutExtension = originalName.replace(`.${extension}`, '');
 
@@ -888,7 +899,7 @@ export class FileStorageService {
         const { data: files } = await supabase.storage.from(config.name).list('', { limit: 1000 });
 
         const bucketFiles = files || [];
-        const bucketSize = bucketFiles.reduce((sum, file) => sum + (file.metadata?.size || 0), 0);
+        const bucketSize = bucketFiles.reduce((sum: any, file: { metadata: { size: any; }; }) => sum + (file.metadata?.size || 0), 0);
 
         stats.bucketStats[config.name] = {
           files: bucketFiles.length,

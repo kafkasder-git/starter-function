@@ -73,7 +73,7 @@ export const DevTools = removeInProduction(() => (
     <div>Mode: {import.meta.env.MODE}</div>
     <div>Bundle: {isProduction ? 'Optimized' : 'Development'}</div>
     <div>
-      Memory: {Math.round((performance as any).memory?.usedJSHeapSize / 1024 / 1024 ?? 0)}MB
+      Memory: {Math.round(((performance as any).memory?.usedJSHeapSize ?? 0) / 1024 / 1024)}MB
     </div>
   </div>
 ));

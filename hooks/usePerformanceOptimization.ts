@@ -179,7 +179,7 @@ export const createLazyComponent = <T extends React.ComponentType<any>>(
       logger.warn('Component lazy loading failed:', error);
       return {
         default:
-          fallback || ((() => React.createElement('div', { children: 'Yükleme hatası' })) as T),
+          fallback || ((() => React.createElement('div', {}, 'Yükleme hatası')) as T),
       };
     }
   });

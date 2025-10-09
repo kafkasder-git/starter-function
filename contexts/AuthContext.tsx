@@ -44,37 +44,43 @@ export function AuthProvider({ children }: AuthProviderProps) {
         const storedSession = localStorage.getItem('auth_session');
 
         if (storedUser && storedSession) {
-          const user = JSON.parse(storedUser);
-          const sessionData = JSON.parse(storedSession);
+          try {
+            const user = JSON.parse(storedUser);
+            const sessionData = JSON.parse(storedSession);
 
-          // Check if session is still valid (24 hours)
-          const sessionAge = Date.now() - sessionData.timestamp;
-          const maxAge = 24 * 60 * 60 * 1000; // 24 hours
+            // Check if session is still valid (24 hours)
+            const sessionAge = Date.now() - sessionData.timestamp;
+            const maxAge = 24 * 60 * 60 * 1000; // 24 hours
 
-          if (sessionAge < maxAge && mounted) {
-            setAuthState({
-              user,
-              isAuthenticated: true,
-              isLoading: false,
-              error: null,
-            });
-            return;
-          } 
-            // Session expired, clear storage
+            if (sessionAge < maxAge && mounted) {
+              setAuthState({
+                user,
+                isAuthenticated: true,
+                isLoading: false,
+                error: null,
+              });
+              return;
+            } 
+              // Session expired, clear storage
+              localStorage.removeItem('auth_user');
+              localStorage.removeItem('auth_session');
+          } catch (parseError) {
+            logger.error('Failed to parse stored auth data:', parseError);
+            // Clear corrupted data
             localStorage.removeItem('auth_user');
             localStorage.removeItem('auth_session');
-          
+          }
         }
 
         if (mounted) {
-          setAuthState((prev) => ({ ...prev, isLoading: false }));
+          setAuthState((prev: AuthState) => ({ ...prev, isLoading: false }));
         }
       } catch (error) {
         logger.error('Auth initialization error:', error);
         if (mounted) {
           localStorage.removeItem('auth_user');
           localStorage.removeItem('auth_session');
-          setAuthState((prev) => ({
+          setAuthState((prev: AuthState) => ({
             ...prev,
             isLoading: false,
             error: 'Kimlik doğrulama başlatılamadı',
@@ -91,7 +97,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   const login = async (_credentials: LoginCredentials): Promise<void> => {
-    setAuthState((prev) => ({ ...prev, isLoading: true, error: null }));
+    setAuthState((prev: AuthState) => ({ ...prev, isLoading: true, error: null }));
 
     try {
       // Simulate network delay
@@ -103,7 +109,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Giriş yapılamadı';
 
-      setAuthState((prev) => ({
+      setAuthState((prev: AuthState) => ({
         ...prev,
         isLoading: false,
         error: errorMessage,
@@ -167,8 +173,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // TODO: Implement Supabase Auth refresh
       const storedUser = localStorage.getItem('auth_user');
       if (storedUser) {
-        const user = JSON.parse(storedUser);
-        setAuthState((prev) => ({ ...prev, user }));
+        try {
+          const user = JSON.parse(storedUser);
+          setAuthState((prev: AuthState) => ({ ...prev, user }));
+        } catch (parseError) {
+          logger.error('Failed to parse stored user data:', parseError);
+          // Clear corrupted data
+          localStorage.removeItem('auth_user');
+          localStorage.removeItem('auth_session');
+        }
       }
     } catch (error) {
       logger.error('User refresh error:', error);
@@ -178,7 +191,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   };
 
   const clearError = (): void => {
-    setAuthState((prev) => ({ ...prev, error: null }));
+    setAuthState((prev: AuthState) => ({ ...prev, error: null }));
   };
 
   const contextValue: AuthContextType = {

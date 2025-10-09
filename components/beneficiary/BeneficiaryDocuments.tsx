@@ -26,7 +26,13 @@ import { Input } from '../ui/input';
 
 interface BeneficiaryDocumentsProps {
   beneficiaryId: string;
-  documents?: any[];
+  documents?: Array<{
+    id: string;
+    name: string;
+    type: string;
+    url: string;
+    uploadedAt: Date;
+  }>;
   onDocumentUpload?: (files: File[]) => void;
   onDocumentDelete?: (documentId: string) => void;
 }

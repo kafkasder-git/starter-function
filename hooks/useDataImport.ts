@@ -134,7 +134,8 @@ export function useDataImport({
           if (Array.isArray(json)) {
             data = json;
           } else if (json.data && Array.isArray(json.data)) {
-            data = json.data;
+            const { data: jsonData } = json;
+            data = jsonData;
           } else {
             data = [json];
           }
@@ -395,8 +396,9 @@ export function useDataImport({
 
         if (config.validateData !== false) {
           const validation = validateData(data, dataType);
-          errors = validation.errors;
-          warnings = validation.warnings;
+          const { errors: validationErrors, warnings: validationWarnings } = validation;
+          errors = validationErrors;
+          warnings = validationWarnings;
           setValidationErrors(errors);
           onValidationError?.(errors);
         }

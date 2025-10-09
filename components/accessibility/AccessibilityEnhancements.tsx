@@ -132,7 +132,7 @@ export function AccessibilityEnhancements({
   useEffect(() => {
     applyAccessibilitySettings(settings);
     onSettingsChange?.(settings);
-  }, [settings, onSettingsChange]);
+  }, [settings, onSettingsChange, applyAccessibilitySettings]);
 
   // Ekran okuyucu duyuruları
   useEffect(() => {
@@ -231,10 +231,10 @@ export function AccessibilityEnhancements({
 
     // Sonuçları duyur
     announceToScreenReader(`Erişilebilirlik taraması tamamlandı. ${stats.score} puan alındı.`);
-  }, [onScanComplete, triggerHapticFeedback]);
+  }, [onScanComplete, triggerHapticFeedback, announceToScreenReader, performAccessibilityChecks]);
 
   // Erişilebilirlik kontrolleri
-  const performAccessibilityChecks = async (): Promise<AccessibilityStats['issues']> => {
+  const performAccessibilityChecks = useCallback(async (): Promise<AccessibilityStats['issues']> => {
     const issues: AccessibilityStats['issues'] = [];
 
     // Renk kontrastı kontrolü
@@ -258,7 +258,7 @@ export function AccessibilityEnhancements({
     issues.push(...ariaIssues);
 
     return issues;
-  };
+  }, []);
 
   // Renk kontrastı kontrolü
   const checkColorContrast = (): AccessibilityStats['issues'] => {

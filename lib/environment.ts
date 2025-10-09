@@ -20,6 +20,7 @@ interface EnvironmentConfig {
     environment: string;
   };
   features: {
+    [x: string]: any;
     ocr: boolean;
     pwa: boolean;
     analytics: boolean;
@@ -37,8 +38,15 @@ interface EnvironmentConfig {
  * Get environment variable with fallback
  */
 function getEnv(key: string, defaultValue = ''): string {
-  if (typeof import.meta !== 'undefined' && import.meta.env) {
-    return (import.meta.env[key] as string) || defaultValue;
+  // Vite exposes environment variables on import.meta.env
+  // But TypeScript's ImportMeta type may not have 'env' by default
+  // So we use a type assertion to access it safely
+  if (
+    typeof import.meta !== 'undefined' &&
+    typeof (import.meta as any).env !== 'undefined'
+  ) {
+    const value = (import.meta as any).env[key];
+    return typeof value === 'string' ? value : defaultValue;
   }
   return defaultValue;
 }

@@ -82,7 +82,7 @@ export function useCSRFToken() {
       refreshToken();
     }, 60 * 60 * 1000); // 1 hour
 
-    return () => clearInterval(refreshInterval);
+    return () => { clearInterval(refreshInterval); };
   }, [isAuthenticated, state.token, refreshToken]);
 
   return {

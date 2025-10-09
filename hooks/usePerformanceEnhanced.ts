@@ -79,7 +79,7 @@ export function usePerformanceEnhanced(
   const renderCount = useRef<number>(0);
   const isFirstRender = useRef<boolean>(true);
 
-  const finalThresholds = { ...DEFAULT_THRESHOLDS, ...thresholds };
+  const finalThresholds = useMemo(() => ({ ...DEFAULT_THRESHOLDS, ...thresholds }), [thresholds]);
 
   // Get memory usage (if available)
   const getMemoryUsage = useCallback((): number => {
@@ -176,7 +176,7 @@ export function usePerformanceEnhanced(
         });
       }
     };
-  }, []);
+  }, [componentName, metrics.averageRenderTime, metrics.peakMemoryUsage]);
 
   // Performance measurement effect
   useEffect(() => {
@@ -374,7 +374,7 @@ export function useBundleMetrics() {
         if (entry.entryType === 'resource' && entry.name.includes('.js')) {
           setBundleMetrics((prev) => ({
             ...prev,
-            totalBundleSize: prev.totalBundleSize + (entry as any).transferSize ?? 0,
+            totalBundleSize: prev.totalBundleSize + ((entry as any).transferSize ?? 0),
           }));
         }
       }

@@ -352,7 +352,7 @@ function _setupRealTimeNotifications(): void {
         break;
         
       default:
-        void enhancedNotifications.bilgi({
+        enhancedNotifications.bilgi({
           title: notification.title,
           message: notification.message,
           category: 'genel'

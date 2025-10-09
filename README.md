@@ -280,21 +280,63 @@ npm run test:coverage
 
 ## 📚 Dokümantasyon
 
-### Ana Dokümantasyonlar
+### 📁 Organize Edilmiş Dokümantasyon Yapısı
 
-- [Project Status Report](./PROJECT_STATUS_REPORT.md) - Proje durumu
-- [Copilot Integration Guide](./COPILOT_INTEGRATION_GUIDE.md) - Copilot
-  kullanımı
-- [API Documentation](./docs/api.md) - API referansı
-- [Component Library](./docs/components.md) - Component rehberi
+```
+docs/
+├── deployment/          # Deployment dokümantasyonları
+│   ├── CLOUDFLARE_DEPLOYMENT.md
+│   ├── CLOUDFLARE_MANUAL_DEPLOY.md
+│   ├── DEPLOYMENT_QUICKSTART.md
+│   ├── DEPLOYMENT.md
+│   └── QUICK_DEPLOY_GUIDE.md
+├── setup/              # Kurulum ve konfigürasyon
+│   ├── GITHUB_ACTIONS_SETUP.md
+│   ├── MCP_SETUP.md
+│   ├── SUPABASE_SETUP.md
+│   └── TOKEN_SETUP.md
+├── reports/            # Raporlar ve teknik dokümantasyon
+│   ├── TECHNICAL_DOCUMENTATION.md
+│   ├── TESTSPRITE_FIXES_PROGRESS.md
+│   └── TESTSPRITE_PROGRESS_REPORT.md
+├── security/            # Güvenlik dokümantasyonları
+│   └── security-audit-report-20251007_202150.txt
+├── api/               # API dokümantasyonları
+├── TESTING_GUIDE.md
+├── TYPESCRIPT_CONFIG.md
+└── USER_GUIDE.md
+```
 
-### GitHub Copilot Dokümantasyonları
+### 🚀 Deployment Dokümantasyonları
 
-- [Copilot Instructions](.github/copilot-instructions.md)
-- [Copilot Workflow](.github/copilot-workflow.md)
-- [Copilot Prompts](.github/copilot-prompts.md)
-- [Copilot Context](.github/copilot-context.md)
-- [Copilot Checklist](.github/copilot-checklist.md)
+- [Cloudflare Deployment](./docs/deployment/CLOUDFLARE_DEPLOYMENT.md) - Cloudflare deployment rehberi
+- [Manual Deploy](./docs/deployment/CLOUDFLARE_MANUAL_DEPLOY.md) - Manuel deployment
+- [Quick Deploy Guide](./docs/deployment/QUICK_DEPLOY_GUIDE.md) - Hızlı deployment
+- [Deployment Quickstart](./docs/deployment/DEPLOYMENT_QUICKSTART.md) - Deployment başlangıç rehberi
+
+### ⚙️ Setup ve Konfigürasyon
+
+- [Supabase Setup](./docs/setup/SUPABASE_SETUP.md) - Supabase kurulumu
+- [Token Setup](./docs/setup/TOKEN_SETUP.md) - Token konfigürasyonu
+- [MCP Setup](./docs/setup/MCP_SETUP.md) - MCP kurulumu
+- [GitHub Actions Setup](./docs/setup/GITHUB_ACTIONS_SETUP.md) - CI/CD kurulumu
+
+### 📊 Raporlar ve Teknik Dokümantasyon
+
+- [Technical Documentation](./docs/reports/TECHNICAL_DOCUMENTATION.md) - Teknik dokümantasyon
+- [TestSprite Progress Report](./docs/reports/TESTSPRITE_PROGRESS_REPORT.md) - TestSprite ilerleme raporu
+- [TestSprite Fixes Progress](./docs/reports/TESTSPRITE_FIXES_PROGRESS.md) - TestSprite düzeltme ilerlemesi
+
+### 🔒 Güvenlik
+
+- [Security Audit Report](./docs/security/security-audit-report-20251007_202150.txt) - Güvenlik denetim raporu
+
+### 📖 Diğer Dokümantasyonlar
+
+- [API Documentation](./docs/api/) - API referansı
+- [Testing Guide](./docs/TESTING_GUIDE.md) - Test rehberi
+- [TypeScript Config](./docs/TYPESCRIPT_CONFIG.md) - TypeScript konfigürasyonu
+- [User Guide](./docs/USER_GUIDE.md) - Kullanıcı rehberi
 
 ## 🐛 Sorun Giderme
 

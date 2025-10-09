@@ -612,6 +612,15 @@ export function EnhancedField({
           </div>
         );
 
+      case 'number':
+      case 'search':
+      case 'time':
+      case 'text':
+      case 'custom':
+      case 'email':
+      case 'url':
+      case 'multiselect':
+      case 'datetime':
       default:
         return <Input {...baseInputProps} type={type} />;
     }

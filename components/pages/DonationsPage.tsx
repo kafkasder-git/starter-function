@@ -122,7 +122,7 @@ export function DonationsPage() {
         return;
       }
 
-      setDonations(result.data || []);
+      setDonations(result.data ?? []);
     } catch (error) {
       logger.error('Error loading donations:', error);
       setDonations([]);
@@ -310,8 +310,8 @@ export function DonationsPage() {
                   ];
                   const csvData = result.data.map((d) => [
                     d.donor_name,
-                    d.donor_email || '',
-                    d.donor_phone || '',
+                    d.donor_email ?? '',
+                    d.donor_phone ?? '',
                     d.amount,
                     d.donation_type,
                     d.payment_method,

@@ -123,7 +123,7 @@ class BackgroundSyncService {
     } else if (this.registration) {
       // Register background sync
       try {
-        await this.registration.sync.register('background-sync');
+        await (this.registration as any).sync.register('background-sync');
       } catch (error) {
         logger.error('Failed to register background sync:', error);
       }
@@ -209,7 +209,7 @@ class BackgroundSyncService {
    * Sync pending tasks
    */
   async syncPendingTasks(): Promise<SyncResult> {
-    if (!this.isOnline ?? this.syncInProgress) {
+    if (!this.isOnline || this.syncInProgress) {
       return {
         success: false,
         syncedTasks: [],
@@ -302,7 +302,7 @@ class BackgroundSyncService {
    * Sync tasks for a specific entity
    */
   private async syncEntityTasks(
-    entity: string,
+    _entity: string,
     tasks: SyncTask[],
   ): Promise<{
     synced: SyncTask[];
@@ -452,18 +452,25 @@ class BackgroundSyncService {
     try {
       const stored = localStorage.getItem('backgroundSyncTasks');
       if (stored) {
-        const tasks: SyncTask[] = JSON.parse(stored);
-        this.syncTasks.clear();
+        try {
+          const tasks: SyncTask[] = JSON.parse(stored);
+          this.syncTasks.clear();
 
-        tasks.forEach((task) => {
-          // Reset syncing tasks to pending on app restart
-          if (task.status === 'syncing') {
-            task.status = 'pending';
-          }
-          this.syncTasks.set(task.id, task);
-        });
+          tasks.forEach((task) => {
+            // Reset syncing tasks to pending on app restart
+            if (task.status === 'syncing') {
+              task.status = 'pending';
+            }
+            this.syncTasks.set(task.id, task);
+          });
+        } catch (parseError) {
+          logger.error('Failed to parse stored sync tasks:', parseError);
+          // Clear corrupted data
+          localStorage.removeItem('backgroundSyncTasks');
+          this.syncTasks.clear();
+        }
 
-        logger.info(`Loaded ${tasks.length} sync tasks from storage`);
+        logger.info(`Loaded ${this.syncTasks.size} sync tasks from storage`);
       }
     } catch (error) {
       logger.error('Failed to load sync tasks:', error);

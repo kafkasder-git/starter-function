@@ -128,21 +128,6 @@ export const KumbaraPage = createLazyComponent(
 
 // DonationReportsPage removed
 
-// Members (Üye) Module
-export const MembersPage = createLazyComponent(
-  () => import('../pages/MembersPage').then((m) => ({ default: m.MembersPage })),
-  'MembersPage',
-);
-
-export const MembershipFeesPage = createLazyComponent(
-  () => import('../pages/MembershipFeesPage').then((m) => ({ default: m.MembershipFeesPage })),
-  'MembershipFeesPage',
-);
-
-export const NewMemberPage = createLazyComponent(
-  () => import('../pages/NewMemberPage').then((m) => ({ default: m.NewMemberPage })),
-  'NewMemberPage',
-);
 
 // Scholarship (Burs) Module
 export const BursStudentsPage = createLazyComponent(
@@ -352,11 +337,6 @@ export const ROUTE_REGISTRY: Record<string, Record<string, RouteConfig>> = {
     default: { component: DonationsPage, skeletonVariant: 'table' },
   },
 
-  uye: {
-    '/uye/aidat': { component: MembershipFeesPage, skeletonVariant: 'table' },
-    '/uye/yeni': { component: NewMemberPage, skeletonVariant: 'form' },
-    default: { component: MembersPage, skeletonVariant: 'table' },
-  },
 
   burs: {
     '/burs/ogrenciler': { component: BursStudentsPage, skeletonVariant: 'table' },
