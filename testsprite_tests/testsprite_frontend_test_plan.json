@@ -2,7 +2,7 @@
   {
     "id": "TC001",
     "title": "Successful login with valid credentials",
-    "description": "Verify that a user can successfully login with correct username/email and password using Supabase authentication.",
+    "description": "Verify that a user with valid credentials and assigned role can log into the system successfully and appropriate permissions are granted.",
     "category": "functional",
     "priority": "High",
     "steps": [
@@ -12,22 +12,26 @@
       },
       {
         "type": "action",
-        "description": "Input valid username/email and password"
+        "description": "Enter valid username and password"
       },
       {
         "type": "action",
-        "description": "Click login button"
+        "description": "Click the login button"
       },
       {
         "type": "assertion",
-        "description": "Check user is redirected to dashboard appropriate to role"
+        "description": "Verify that login is successful and user is redirected to the dashboard"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify user role permissions are correctly assigned based on role"
       }
     ]
   },
   {
     "id": "TC002",
-    "title": "Login fails with invalid credentials",
-    "description": "Verify that login fails with incorrect username/email or password and appropriate error message is shown.",
+    "title": "Login failure with invalid credentials",
+    "description": "Verify that login fails when invalid username or password are entered, and appropriate error messages are shown.",
     "category": "error handling",
     "priority": "High",
     "steps": [
@@ -37,616 +41,645 @@
       },
       {
         "type": "action",
-        "description": "Input invalid username/email or password"
+        "description": "Enter invalid username or password"
       },
       {
         "type": "action",
-        "description": "Click login button"
+        "description": "Click the login button"
       },
       {
         "type": "assertion",
-        "description": "Verify error message indicating invalid credentials is displayed"
+        "description": "Verify that login is denied with error message"
       }
     ]
   },
   {
     "id": "TC003",
-    "title": "Role-Based Access Control enforcement",
-    "description": "Validate that users can access only the modules and features permitted for their assigned roles and receive HTTP 403 for unauthorized attempts.",
+    "title": "Access control - unauthorized access attempt",
+    "description": "Ensure system returns 403 forbidden when a user tries to access a resource or perform action not allowed by their role.",
     "category": "security",
     "priority": "High",
     "steps": [
       {
         "type": "action",
-        "description": "Login as SYSADMIN"
-      },
-      {
-        "type": "assertion",
-        "description": "Access all system modules successfully"
+        "description": "Login as VOL role user"
       },
       {
         "type": "action",
-        "description": "Login as VOL role"
-      },
-      {
-        "type": "action",
-        "description": "Attempt to access financial management pages"
+        "description": "Attempt to access an ADMIN-only page or action"
       },
       {
         "type": "assertion",
-        "description": "Verify HTTP 403 Forbidden response and error notification"
+        "description": "Verify user receives 403 forbidden response"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify no data or sensitive information is accessible"
       }
     ]
   },
   {
     "id": "TC004",
-    "title": "CSRF protection on authenticated requests",
-    "description": "Ensure that all authenticated requests include valid CSRF tokens and requests without tokens are rejected.",
-    "category": "security",
+    "title": "Donation recording and receipt generation",
+    "description": "Validate that the FIN role can record donations from multiple channels and generate receipts with unique receipt numbers.",
+    "category": "functional",
     "priority": "High",
     "steps": [
       {
         "type": "action",
-        "description": "Login and observe CSRF token retrieval"
+        "description": "Login as FIN user"
       },
       {
         "type": "action",
-        "description": "Make authenticated request with valid CSRF token"
-      },
-      {
-        "type": "assertion",
-        "description": "Request succeeds with expected data returned"
+        "description": "Record a new donation via web form specifying donation channel"
       },
       {
         "type": "action",
-        "description": "Repeat request without CSRF token"
+        "description": "Submit the donation record"
       },
       {
         "type": "assertion",
-        "description": "Request is rejected with 403 error"
+        "description": "Verify receipt is generated automatically with unique receipt number"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify donation appears in donation list and reports"
       }
     ]
   },
   {
     "id": "TC005",
-    "title": "Beneficiary registration with required documents upload",
-    "description": "Test beneficiary registration by OPS role including document uploads with validation and confidentiality handling.",
+    "title": "Donation reconciliation with bank statements",
+    "description": "Verify system's ability to reconcile daily bank statements with donations and flag discrepancies automatically.",
     "category": "functional",
     "priority": "High",
     "steps": [
       {
         "type": "action",
-        "description": "Login as OPS role"
+        "description": "Import bank statement file for daily transactions"
       },
       {
         "type": "action",
-        "description": "Navigate to beneficiary registration page"
-      },
-      {
-        "type": "action",
-        "description": "Fill all mandatory beneficiary fields correctly"
-      },
-      {
-        "type": "action",
-        "description": "Upload required documents adhering to validation rules"
-      },
-      {
-        "type": "action",
-        "description": "Submit the registration form"
+        "description": "Run reconciliation process"
       },
       {
         "type": "assertion",
-        "description": "Verify beneficiary is created with uploaded documents and confidentiality flags applied"
+        "description": "Verify matched donations are marked reconciled"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify discrepancies and missing donations are flagged for review"
       }
     ]
   },
   {
     "id": "TC006",
-    "title": "Beneficiary registration rejects invalid document formats",
-    "description": "Ensure document upload validation rejects unsupported formats and prompts error before form submission.",
-    "category": "error handling",
-    "priority": "Medium",
+    "title": "Beneficiary registration workflow",
+    "description": "Test beneficiary registration including household data entry, scoring matrix calculations, and document uploads with virus scan and MIME checks.",
+    "category": "functional",
+    "priority": "High",
     "steps": [
       {
         "type": "action",
-        "description": "Navigate to beneficiary registration page"
+        "description": "Login as OPS user"
       },
       {
         "type": "action",
-        "description": "Attempt to upload unsupported document format (e.g., .exe file)"
+        "description": "Navigate to beneficiary registration form"
+      },
+      {
+        "type": "action",
+        "description": "Fill in beneficiary and household data"
+      },
+      {
+        "type": "action",
+        "description": "Upload required documents with valid MIME types"
       },
       {
         "type": "assertion",
-        "description": "Verify error message related to invalid document type"
+        "description": "Verify virus scan runs on uploaded documents"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify scoring matrix is calculated correctly"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify beneficiary profile is saved and visible in the list"
       }
     ]
   },
   {
     "id": "TC007",
-    "title": "Aid request submission and multi-stage review flow",
-    "description": "Verify aid request submission, status progression through stages: pending, review, approved/rejected, scheduled, delivered, and closed.",
-    "category": "functional",
+    "title": "Beneficiary profile data masking for unauthorized roles",
+    "description": "Ensure confidential beneficiary data fields are masked or hidden when viewed by roles that do not have permission.",
+    "category": "security",
     "priority": "High",
     "steps": [
       {
         "type": "action",
-        "description": "Login as OPS role"
+        "description": "Login as VOL or VIEWER user"
       },
       {
         "type": "action",
-        "description": "Submit new aid request with valid beneficiary data"
+        "description": "Access beneficiary profile with confidential data"
       },
       {
         "type": "assertion",
-        "description": "Aid request status is set to 'pending'"
-      },
-      {
-        "type": "action",
-        "description": "Login as ADMIN role and move aid request to 'review'"
+        "description": "Verify confidential data fields are masked or not displayed"
       },
       {
         "type": "assertion",
-        "description": "Status updated to 'review'"
-      },
-      {
-        "type": "action",
-        "description": "Approve the aid request"
-      },
-      {
-        "type": "assertion",
-        "description": "Status changes to 'approved'"
-      },
-      {
-        "type": "action",
-        "description": "Schedule and deliver the aid"
-      },
-      {
-        "type": "assertion",
-        "description": "Status flows through 'scheduled' and 'delivered', then finally 'closed'"
+        "description": "Verify no data leaks occur"
       }
     ]
   },
   {
     "id": "TC008",
-    "title": "Donation management lifecycle with multiple payment sources",
-    "description": "Test recording online and offline donations, automatic receipt generation, reconciliation with bank records, and refund handling.",
+    "title": "Campaign creation and progress tracking",
+    "description": "Validate ADMIN users can create campaigns with goals and timelines, and system tracks donation progress with real-time updates.",
     "category": "functional",
     "priority": "High",
     "steps": [
       {
         "type": "action",
-        "description": "Record online donation with valid payment details"
-      },
-      {
-        "type": "assertion",
-        "description": "Donation saved and receipt automatically generated"
+        "description": "Login as ADMIN user"
       },
       {
         "type": "action",
-        "description": "Record offline donation entry"
-      },
-      {
-        "type": "assertion",
-        "description": "Donation reflected in list with correct source type"
+        "description": "Navigate to campaign creation page"
       },
       {
         "type": "action",
-        "description": "Perform bank reconciliation with recorded donations"
+        "description": "Create campaign with target amount and date range"
       },
       {
         "type": "assertion",
-        "description": "Donation records matched or flagged for discrepancies"
+        "description": "Verify campaign is created and visible in campaigns list"
       },
       {
         "type": "action",
-        "description": "Process a refund for a donation"
+        "description": "Record donations linked to campaign"
       },
       {
         "type": "assertion",
-        "description": "Refund recorded and donation receipt invalidated or marked accordingly"
+        "description": "Verify campaign progress bar updates in real-time"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify automatic campaign closure and notification on goal completion"
       }
     ]
   },
   {
     "id": "TC009",
-    "title": "Campaign lifecycle management and notifications",
-    "description": "Verify creating campaigns, editing drafts, activating, pausing, and automatic closing upon target achievement with notification triggers.",
+    "title": "Financial transaction creation with dual approval",
+    "description": "Ensure transactions created by FIN or ADMIN roles above limit require dual approval and audit trail records all actions.",
     "category": "functional",
-    "priority": "Medium",
+    "priority": "High",
     "steps": [
       {
         "type": "action",
-        "description": "Create new fundraising campaign as ADMIN"
-      },
-      {
-        "type": "assertion",
-        "description": "Campaign saved as draft"
+        "description": "Login as FIN user"
       },
       {
         "type": "action",
-        "description": "Activate campaign"
+        "description": "Create new financial transaction exceeding approval limit"
       },
       {
         "type": "assertion",
-        "description": "Campaign status updated to active and visible in tracking"
+        "description": "Verify transaction is marked as pending approval"
       },
       {
         "type": "action",
-        "description": "Pause campaign"
-      },
-      {
-        "type": "assertion",
-        "description": "Campaign status updated to paused"
+        "description": "Login as ADMIN user"
       },
       {
         "type": "action",
-        "description": "Drive donations to reach target threshold"
+        "description": "Approve the pending transaction"
       },
       {
         "type": "assertion",
-        "description": "Campaign automatically closes and notification sent to stakeholders"
+        "description": "Verify transaction status changes to approved"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify audit trail logs transaction creation and approval with timestamps and user info"
       }
     ]
   },
   {
     "id": "TC010",
-    "title": "Financial transactions dual-approval workflow",
-    "description": "Verify entering bank payment orders requiring dual-signature approvals prior to execution.",
+    "title": "Monthly closure locks previous financial periods",
+    "description": "Verify the monthly closure process locks previous periods to prevent backdating or changes, and new entries can only be made in the current period.",
     "category": "functional",
     "priority": "High",
     "steps": [
       {
         "type": "action",
-        "description": "Enter new bank payment order as FIN role"
-      },
-      {
-        "type": "assertion",
-        "description": "Payment order saved in pending approval state"
+        "description": "Perform monthly financial closure"
       },
       {
         "type": "action",
-        "description": "Approve payment order as second authorized user"
+        "description": "Attempt to create or modify transactions dated in closed periods"
       },
       {
         "type": "assertion",
-        "description": "Order is marked fully approved and ready for processing"
+        "description": "Verify system rejects modifications with appropriate error"
       },
       {
         "type": "action",
-        "description": "Attempt to process payment without dual approval"
+        "description": "Create transaction in current open period"
       },
       {
         "type": "assertion",
-        "description": "Operation blocked and appropriate error issued"
+        "description": "Verify transaction is accepted"
       }
     ]
   },
   {
     "id": "TC011",
-    "title": "Document upload validation and virus scanning enforcement",
-    "description": "Test document uploads to verify validation rules and optional virus scanning correctly reject unsafe files.",
-    "category": "security",
-    "priority": "High",
+    "title": "Notification delivery with retries and channel fallbacks",
+    "description": "Validate the notification system sends alerts via configured channels (in-app, email, SMS), retries failed attempts with exponential backoff, and generates scheduled summaries.",
+    "category": "functional",
+    "priority": "Medium",
     "steps": [
       {
         "type": "action",
-        "description": "Upload document with valid format and size"
+        "description": "Trigger notification event (e.g. new help request assigned)"
       },
       {
         "type": "assertion",
-        "description": "Document accepted and stored securely"
+        "description": "Verify notification is sent via all configured channels"
       },
       {
         "type": "action",
-        "description": "Upload document flagged by virus scan"
+        "description": "Simulate failure on one channel (e.g. SMS)"
       },
       {
         "type": "assertion",
-        "description": "Upload rejected with error notification"
+        "description": "Verify system retries sending with exponential backoff"
+      },
+      {
+        "type": "action",
+        "description": "Verify scheduled summary notifications are generated correctly"
       }
     ]
   },
   {
     "id": "TC012",
-    "title": "Audit trail logging for critical actions",
-    "description": "Verify that all critical actions are logged with detail and audit trail retention meets minimum policy (1 year).",
-    "category": "security",
+    "title": "Accessibility keyboard navigation and screen reader support",
+    "description": "Test that all user interface components support keyboard navigation and that ARIA live regions correctly announce updates to screen readers, meeting WCAG guidelines.",
+    "category": "accessibility",
     "priority": "High",
     "steps": [
       {
         "type": "action",
-        "description": "Perform critical action such as user role change"
+        "description": "Navigate application pages and forms using only keyboard"
       },
       {
         "type": "assertion",
-        "description": "Audit log entry created with timestamp, actor, and details"
-      },
-      {
-        "type": "action",
-        "description": "Query audit log for past actions older than 1 year"
+        "description": "Verify focus order is logical and all interactive elements are accessible"
       },
       {
         "type": "assertion",
-        "description": "Older entries are archived or purged according to retention policy"
+        "description": "Verify screen reader reads ARIA live region announcements for dynamic content updates"
+      },
+      {
+        "type": "assertion",
+        "description": "Ensure no critical or major accessibility violations using automated aXe audit"
       }
     ]
   },
   {
     "id": "TC013",
-    "title": "UI accessibility compliance with aXe tool",
-    "description": "Run automated accessibility tests to ensure no critical violations in key user interface pages.",
-    "category": "functional",
-    "priority": "Medium",
+    "title": "Document upload validation and virus scanning",
+    "description": "Verify documents uploaded by beneficiaries enforce allowed MIME types, run virus scanning, and block workflow progression if requirements are unmet.",
+    "category": "security",
+    "priority": "High",
     "steps": [
       {
         "type": "action",
-        "description": "Navigate to dashboard, beneficiary registration, aid management, and campaign pages"
-      },
-      {
-        "type": "action",
-        "description": "Run aXe accessibility scan on each page"
+        "description": "Attempt to upload documents with various MIME types (allowed and disallowed)"
       },
       {
         "type": "assertion",
-        "description": "Verify zero critical accessibility violations detected"
+        "description": "Verify only allowed MIME types are accepted"
+      },
+      {
+        "type": "action",
+        "description": "Upload document containing virus signature in test environment"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify virus scan detects and blocks upload"
+      },
+      {
+        "type": "assertion",
+        "description": "Attempt to progress beneficiary workflow with incomplete document set"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify system blocks progression and shows appropriate user message"
       }
     ]
   },
   {
     "id": "TC014",
-    "title": "Data export with role-based permission enforcement",
-    "description": "Validate that data exports are only permitted for users with export privileges and that exported data matches filters.",
-    "category": "security",
-    "priority": "Medium",
+    "title": "Data uniqueness constraints enforcement",
+    "description": "Verify the system enforces unique constraints for critical fields such as TCKN, IBAN, and receipt numbers, preventing creation of duplicates.",
+    "category": "functional",
+    "priority": "High",
     "steps": [
       {
         "type": "action",
-        "description": "Login as authorized user with export permissions"
-      },
-      {
-        "type": "action",
-        "description": "Apply filters and initiate CSV and Excel data exports"
+        "description": "Attempt to create beneficiary or donor with existing TCKN"
       },
       {
         "type": "assertion",
-        "description": "Exported files match filtered data and are correctly formatted"
+        "description": "Verify creation is rejected with clear error message"
       },
       {
         "type": "action",
-        "description": "Attempt export as user without permission"
+        "description": "Attempt to create financial transaction with duplicate IBAN or receipt number"
       },
       {
         "type": "assertion",
-        "description": "Export request is denied with appropriate error"
+        "description": "Verify system rejects duplicates"
       }
     ]
   },
   {
     "id": "TC015",
-    "title": "Form validation and error handling with Zod schemas",
-    "description": "Ensure all forms across modules enforce validation rules using Zod schemas and provide meaningful feedback on errors.",
+    "title": "Soft deletion and data archival",
+    "description": "Verify that data deletions are soft by default: records are archived out of default views, and only SYSADMIN or legal-approved workflows can perform hard deletes.",
     "category": "functional",
-    "priority": "High",
+    "priority": "Medium",
     "steps": [
       {
         "type": "action",
-        "description": "Navigate to beneficiary registration and donation entry forms"
-      },
-      {
-        "type": "action",
-        "description": "Submit each form with missing required fields or invalid data types"
+        "description": "Delete a beneficiary record as ADMIN user"
       },
       {
         "type": "assertion",
-        "description": "Form displays relevant validation messages and prevents submission"
+        "description": "Verify record is removed from default views but remains in database with archived flag"
       },
       {
         "type": "action",
-        "description": "Submit form with valid data"
+        "description": "Attempt to access deleted record"
       },
       {
         "type": "assertion",
-        "description": "Form submits successfully without errors"
+        "description": "Verify record is inaccessible to non-SYSADMIN users"
+      },
+      {
+        "type": "action",
+        "description": "Perform hard delete as SYSADMIN user"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify record is permanently removed"
       }
     ]
   },
   {
     "id": "TC016",
-    "title": "Soft-delete functionality and role constraints on hard delete",
-    "description": "Verify that data records are soft-deleted by default and only SYSADMIN can perform hard deletes.",
+    "title": "CSRF and XSS protection validation",
+    "description": "Validate that CSRF tokens are required on state changing requests and user inputs are sanitized against XSS attacks using DOMPurify.",
     "category": "security",
-    "priority": "Medium",
+    "priority": "High",
     "steps": [
       {
         "type": "action",
-        "description": "Delete beneficiary record as ADMIN"
+        "description": "Attempt state-changing API request without CSRF token"
       },
       {
         "type": "assertion",
-        "description": "Record is soft-deleted and can be restored"
+        "description": "Verify request is rejected"
       },
       {
         "type": "action",
-        "description": "Attempt hard delete as ADMIN"
+        "description": "Insert malicious script payload into form input fields"
       },
       {
         "type": "assertion",
-        "description": "Operation is blocked with permission error"
-      },
-      {
-        "type": "action",
-        "description": "Perform hard delete as SYSADMIN"
-      },
-      {
-        "type": "assertion",
-        "description": "Record is permanently deleted and removed from audit logs if appropriate"
+        "description": "Verify inputs are sanitized and scripts are neutralized in stored data and display"
       }
     ]
   },
   {
     "id": "TC017",
-    "title": "Prevent duplicate entries of unique fields",
-    "description": "Ensure system enforces uniqueness constraints on fields like TCKN, IBAN, and receipt numbers and provides clear errors on duplicates.",
-    "category": "functional",
-    "priority": "High",
-    "steps": [
-      {
-        "type": "action",
-        "description": "Attempt to register beneficiary with TCKN already in system"
-      },
-      {
-        "type": "assertion",
-        "description": "Duplicate TCKN error displayed"
-      },
-      {
-        "type": "action",
-        "description": "Attempt to record donation with existing receipt number"
-      },
-      {
-        "type": "assertion",
-        "description": "Duplicate receipt number error displayed"
-      }
-    ]
-  },
-  {
-    "id": "TC018",
-    "title": "Data encryption and secure storage verification",
-    "description": "Verify sensitive data fields are encrypted at rest and that secure storage mechanisms correctly protect data.",
-    "category": "security",
-    "priority": "High",
-    "steps": [
-      {
-        "type": "action",
-        "description": "Enter sensitive beneficiary and financial information"
-      },
-      {
-        "type": "assertion",
-        "description": "Check database confirms encryption of sensitive fields"
-      },
-      {
-        "type": "action",
-        "description": "Attempt unauthorized direct access to encrypted data"
-      },
-      {
-        "type": "assertion",
-        "description": "Data is unreadable without proper decryption keys"
-      }
-    ]
-  },
-  {
-    "id": "TC019",
-    "title": "XSS prevention on user inputs",
-    "description": "Validate that all user inputs are sanitized to prevent XSS attacks including in messaging and form fields.",
-    "category": "security",
-    "priority": "High",
-    "steps": [
-      {
-        "type": "action",
-        "description": "Input script tags or malicious HTML in text fields (e.g., internal messaging)"
-      },
-      {
-        "type": "assertion",
-        "description": "Input is sanitized and scripts are not executed in UI"
-      }
-    ]
-  },
-  {
-    "id": "TC020",
-    "title": "Internal messaging system functionality",
-    "description": "Verify sending, receiving, and role-based access of messages within organization roles.",
-    "category": "functional",
-    "priority": "Medium",
-    "steps": [
-      {
-        "type": "action",
-        "description": "Login as VOL and send message to FIN role user"
-      },
-      {
-        "type": "assertion",
-        "description": "Message is delivered and visible to recipient"
-      },
-      {
-        "type": "action",
-        "description": "Attempt to send message to unauthorized role or external user"
-      },
-      {
-        "type": "assertion",
-        "description": "Message sending blocked or error shown"
-      }
-    ]
-  },
-  {
-    "id": "TC021",
-    "title": "Performance test for dashboard load time",
-    "description": "Verify dashboard and list pages render within performance targets: render <2s, page load <3s at 75th percentile latency.",
+    "title": "Pagination, search and lazy loading performance",
+    "description": "Test system responsiveness and data handling for large datasets including pagination, search functionality, and lazy loading of UI components with efficient rendering.",
     "category": "performance",
     "priority": "Medium",
     "steps": [
       {
         "type": "action",
-        "description": "Measure dashboard load time under typical load conditions"
-      },
-      {
-        "type": "assertion",
-        "description": "Dashboard load time is below 3 seconds (75th percentile)"
+        "description": "Navigate to large data listing page (e.g. beneficiaries or donations)"
       },
       {
         "type": "action",
-        "description": "Measure large list render times on beneficiary and donation lists"
+        "description": "Perform search queries with various filters"
       },
       {
         "type": "assertion",
-        "description": "Lists render in under 2 seconds"
+        "description": "Verify correct filtered data is displayed with pagination controls"
+      },
+      {
+        "type": "action",
+        "description": "Scroll through listing to trigger lazy loading"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify additional data loads smoothly without UI freezes"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify page load times meet performance criteria"
       }
     ]
   },
   {
-    "id": "TC022",
-    "title": "Error handling and user-friendly notifications",
-    "description": "Test network failure and server error scenarios to verify error boundaries and retry mechanisms with clear notifications.",
-    "category": "error handling",
+    "id": "TC018",
+    "title": "Real-time updates and background sync on inactive tabs",
+    "description": "Verify real-time updates are throttled with low-frequency polling on inactive browser tabs and background sync maintains data freshness with caching and TTL policies.",
+    "category": "performance",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Open application in multiple tabs"
+      },
+      {
+        "type": "action",
+        "description": "Deactivate one tab and keep others active"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify inactive tab receives reduced frequency real-time updates"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify background sync updates cached data on inactive tabs without excessive resource use"
+      }
+    ]
+  },
+  {
+    "id": "TC019",
+    "title": "Comprehensive end-to-end user workflow test",
+    "description": "Validate the full flow of a help request from submission to closure including document verification, social review, scoring, approval, scheduling, delivery with signature/photo, and status updates with notifications.",
+    "category": "functional",
     "priority": "High",
     "steps": [
       {
         "type": "action",
-        "description": "Simulate network failure during donation submission"
-      },
-      {
-        "type": "assertion",
-        "description": "User sees friendly error message with retry option"
+        "description": "Submit new help request as VOL or beneficiary"
       },
       {
         "type": "action",
-        "description": "Cause server-side error on financial transaction attempt"
+        "description": "Upload supporting documents and pass verification"
+      },
+      {
+        "type": "action",
+        "description": "OPS performs social review and scoring"
+      },
+      {
+        "type": "action",
+        "description": "ADMIN reviews and decides approval or rejection"
       },
       {
         "type": "assertion",
-        "description": "Error boundary captures error and displays informative message without crashing app"
+        "description": "Verify workflow advances correctly at each stage with accurate status notifications"
+      },
+      {
+        "type": "action",
+        "description": "Schedule delivery and complete delivery with signature/photo confirmation"
+      },
+      {
+        "type": "action",
+        "description": "Close help request"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify final status is closed and data archived as necessary"
       }
     ]
   },
   {
-    "id": "TC023",
-    "title": "GDPR/KVKK compliance in data processing and export",
-    "description": "Verify data deletion, anonymization processes, and export functionalities comply with privacy regulations.",
+    "id": "TC020",
+    "title": "Audit trail completeness and log retention",
+    "description": "Check that all critical data changes, transaction approvals, and system events are logged immutably and logs are retained for minimum one year with tamper protection.",
     "category": "security",
     "priority": "High",
     "steps": [
       {
         "type": "action",
-        "description": "Request data deletion for beneficiary and verify anonymization"
-      },
-      {
-        "type": "assertion",
-        "description": "Personal data is correctly deleted or anonymized"
+        "description": "Perform data create, update, delete actions across various modules"
       },
       {
         "type": "action",
-        "description": "Export data including PII fields as authorized user"
+        "description": "Perform financial transaction approvals"
       },
       {
         "type": "assertion",
-        "description": "Export includes only permitted fields and follows user consent rules"
+        "description": "Verify corresponding audit trail entries exist with user, timestamp, and action details"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify logs are stored securely with retention policies applied"
+      }
+    ]
+  },
+  {
+    "id": "TC021",
+    "title": "Responsive and mobile-optimized UI rendering",
+    "description": "Validate UI adapts correctly to different screen sizes and device types with responsive layouts, touch interaction support, and mobile-first design principles.",
+    "category": "ui",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Open application on desktop browser and verify UI layout"
+      },
+      {
+        "type": "action",
+        "description": "Resize window to mobile screen dimensions and verify layout adaptation"
+      },
+      {
+        "type": "action",
+        "description": "Test touch interactions on mobile device or emulation"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify UI components remain accessible and functional"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify ARIA attributes and live regions operate correctly on mobile"
+      }
+    ]
+  },
+  {
+    "id": "TC022",
+    "title": "Automated accessibility audits using aXe",
+    "description": "Run automated accessibility testing using aXe on critical pages and components to ensure no critical or major accessibility violations exist.",
+    "category": "accessibility",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Run aXe accessibility scan on login page, main dashboard, form pages (beneficiaries, donations, campaigns)"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify zero critical and major aXe violations"
+      }
+    ]
+  },
+  {
+    "id": "TC023",
+    "title": "Unit test coverage for authentication and authorization logic",
+    "description": "Ensure unit tests cover all critical authentication functions including token management, role permission checks, and token refresh logic.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Run Vitest test suite for authentication modules"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify all key functions have 100% test coverage"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify tests validate permission matrices and token expiry/refresh scenarios"
+      }
+    ]
+  },
+  {
+    "id": "TC024",
+    "title": "End-to-end test of campaign donation linking and reporting",
+    "description": "Using Playwright, test the full flow from creating a campaign, recording donations linked to the campaign, and verifying reporting and progress tracking updates.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Login as ADMIN and create a new campaign"
+      },
+      {
+        "type": "action",
+        "description": "Login as FIN and record multiple donations linked to the campaign"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to campaign report page"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify reported totals and progress bar accurately reflect donation sums"
       }
     ]
   }

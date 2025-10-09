@@ -45,7 +45,7 @@ async def run_test():
                 pass
         
         # Interact with the page elements to simulate user flow
-        # Enter valid username and password
+        # Input username and password, then click login button
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div/div/div[2]/div/div[2]/form/div/div[2]/div/div/input').nth(0)
         await page.wait_for_timeout(3000); await elem.fill('isahamid095@gmail.com')
@@ -56,39 +56,26 @@ async def run_test():
         await page.wait_for_timeout(3000); await elem.fill('Vadalov95.')
         
 
-        # Click the login button to submit the login form
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div/div/div[2]/div/div[2]/form/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Verify user role permissions are correctly assigned based on role by checking accessible features and UI elements
+        # Navigate to the large data listing page, e.g. beneficiaries or donations
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div[2]/main/div/div/div/div/div[3]/div/div[2]/div/div/div/div[2]/div/button').nth(0)
+        elem = frame.locator('xpath=html/body/div/div/div[2]/main/div/div/div/div/div[2]/div[3]/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Verify access and permissions for other modules such as donation processing, campaign management, and financial operations to confirm role-based access control.
+        # Try clicking the 'Genel Bakış' tab (index 34) or other sidebar navigation elements to find the large data listing page.
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div[2]/div/aside/div/div/div/div/button').nth(0)
+        elem = frame.locator('xpath=html/body/div/div/div[2]/main/div/div/div/div/div[3]/div/div/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Navigate to 'Dashboard' from dropdown to verify dashboard access and permissions.
+        # Try clicking the 'Başvuru Onayları' button (index 39) or 'Yeni İhtiyaç Sahibi' button (index 38) to access large data listing or management pages.
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[2]/div/div/div[2]/button').nth(0)
-        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
-        
-
-        # Verify access to donation processing module by clicking 'Bağış Kaydı' quick action button on the dashboard.
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div[2]/main/div/div/div/div/div[3]/div/div[2]/div/div/div/div[2]/div/button[3]').nth(0)
-        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
-        
-
-        # Verify if user can perform actions like approving or rejecting donations to confirm permission levels.
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div[2]/main/div/div/div/div/div[2]/div/div[2]/div[2]/div[2]/div/table/tbody/tr/td[7]/div/button').nth(0)
+        elem = frame.locator('xpath=html/body/div/div/div[2]/main/div/div/div/div/div[3]/div/div[2]/div/div/div/div[2]/div/button[2]').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 

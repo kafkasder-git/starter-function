@@ -16,13 +16,17 @@ import {
   Trash2,
   Upload,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '../ui/dialog';
 import { Input } from '../ui/input';
+import { fileStorageService, FileUploadResult } from '../../services/fileStorageService';
+import { beneficiariesService } from '../../services/beneficiariesService';
+import { useAuthStore } from '../../stores/authStore';
+import { supabase } from '../../lib/supabase';
 
 interface BeneficiaryDocumentsProps {
   beneficiaryId: string;
@@ -32,6 +36,9 @@ interface BeneficiaryDocumentsProps {
     type: string;
     url: string;
     uploadedAt: Date;
+    bucket: string;
+    path: string;
+    uploadedBy?: string;
   }>;
   onDocumentUpload?: (files: File[]) => void;
   onDocumentDelete?: (documentId: string) => void;
@@ -50,12 +57,52 @@ export function BeneficiaryDocuments({
   onDocumentDelete,
 }: BeneficiaryDocumentsProps) {
   const [isDocumentModalOpen, setIsDocumentModalOpen] = useState(false);
-  const [uploadedFiles, setUploadedFiles] = useState<any[]>(documents);
+  const [uploadedFiles, setUploadedFiles] = useState<any[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFileType, setSelectedFileType] = useState('all');
   const [previewFile, setPreviewFile] = useState<any>(null);
+  const [isLoadingDocuments, setIsLoadingDocuments] = useState(false);
+
+  useEffect(() => {
+    const fetchDocuments = async () => {
+      setIsLoadingDocuments(true);
+      try {
+        const response = await beneficiariesService.getById(beneficiaryId);
+        if (response.data && response.data.supporting_documents) {
+          const docs = response.data.supporting_documents.map((url: string, index: number) => {
+            // Parse URL to extract bucket, path, name, etc.
+            // Assuming URL format: https://project.supabase.co/storage/v1/object/public/bucket/path
+            const urlParts = url.split('/');
+            const bucket = urlParts[urlParts.length - 2];
+            const path = urlParts.slice(-2).join('/');
+            const name = path.split('/').pop() || 'Unknown';
+            const type = name.split('.').pop() || 'application/octet-stream'; // Rough guess
+            return {
+              id: `${beneficiaryId}-${index}`,
+              name,
+              type,
+              url,
+              uploadedAt: new Date(), // Placeholder, as we don't have upload date
+              bucket,
+              path,
+              uploadedBy: 'system', // Placeholder
+            };
+          });
+          setUploadedFiles(docs);
+        }
+      } catch (error) {
+        toast.error('Belgeler yüklenirken hata oluştu');
+      } finally {
+        setIsLoadingDocuments(false);
+      }
+    };
+
+    if (beneficiaryId) {
+      fetchDocuments();
+    }
+  }, [beneficiaryId]);
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
@@ -65,27 +112,55 @@ export function BeneficiaryDocuments({
     setUploadProgress(0);
 
     try {
-      // Simulate upload progress
+      // Get Current User
+      const user = useAuthStore.getState().user;
+
+      // Prepare Upload Options
+      const options = {
+        bucket: 'documents',
+        folder: `beneficiaries/${beneficiaryId}`,
+        isPublic: false,
+        metadata: { beneficiaryId },
+      };
+
+      // Upload Files to Storage
+      const results: FileUploadResult[] = await fileStorageService.uploadFiles(files, options);
+
+      // Track Progress: Keep existing progress simulation
       for (let i = 0; i <= 100; i += 10) {
         setUploadProgress(i);
-        await new Promise((resolve) => setTimeout(resolve, 100));
+        await new Promise((resolve) => setTimeout(resolve, 50));
       }
 
-      // Create file objects
-      const newFiles = files.map((file, index) => ({
-        id: Date.now() + index,
-        name: file.name,
-        size: file.size,
-        type: file.type,
+      // Process Results
+      const successfulUploads = results.filter(result => result.success);
+      const newDocumentUrls = successfulUploads.map(result => result.url || '').filter(url => url);
+      const newFiles = successfulUploads.map((result, index) => ({
+        id: result.file?.id || `${Date.now()}-${index}`,
+        name: result.file?.name || files[index].name,
+        size: result.file?.size || files[index].size,
+        type: result.file?.type || files[index].type,
+        url: result.file?.url || '',
         uploadDate: new Date(),
-        url: URL.createObjectURL(file),
+        bucket: result.file?.bucket || 'documents',
+        path: result.file?.path || '',
+        uploadedBy: user?.id || 'system',
       }));
 
+      // Update Database
+      if (newDocumentUrls.length > 0) {
+        await beneficiariesService.addSupportingDocuments(beneficiaryId, newDocumentUrls);
+      }
+
+      // Update Local State
       setUploadedFiles((prev) => [...prev, ...newFiles]);
+
+      // Call Parent Callback
       onDocumentUpload?.(files);
 
-      toast.success(`${files.length} dosya başarıyla yüklendi!`);
-    } catch {
+      // Show Success Toast
+      toast.success(`${successfulUploads.length} dosya başarıyla yüklendi!`);
+    } catch (error) {
       toast.error('Dosya yükleme hatası!');
     } finally {
       setIsUploading(false);
@@ -95,10 +170,25 @@ export function BeneficiaryDocuments({
 
   const handleDeleteFile = async (fileId: string) => {
     try {
+      // Find Document
+      const document = uploadedFiles.find(file => file.id === fileId);
+      if (!document) return;
+
+      // Delete from Storage
+      await fileStorageService.deleteFile(document.bucket, document.path);
+
+      // Update Database
+      await beneficiariesService.removeSupportingDocument(beneficiaryId, document.url);
+
+      // Update Local State
       setUploadedFiles((prev) => prev.filter((file) => file.id !== fileId));
+
+      // Call Parent Callback
       onDocumentDelete?.(fileId);
+
+      // Show Success Toast
       toast.success('Dosya silindi!');
-    } catch {
+    } catch (error) {
       toast.error('Dosya silme hatası!');
     }
   };
@@ -118,6 +208,22 @@ export function BeneficiaryDocuments({
     return matchesSearch && matchesType;
   });
 
+  const handleDownload = async (bucket: string, path: string) => {
+    try {
+      const blob = await fileStorageService.downloadFile(bucket, path);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = path.split('/').pop() || 'download';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      toast.error('İndirme hatası!');
+    }
+  };
+
   return (
     <>
       <Card>
@@ -132,6 +238,7 @@ export function BeneficiaryDocuments({
               onClick={() => {
                 setIsDocumentModalOpen(true);
               }}
+              disabled={isLoadingDocuments || isUploading}
             >
               <Upload className="w-4 h-4 mr-2" />
               Belge Yükle
@@ -140,7 +247,26 @@ export function BeneficiaryDocuments({
         </CardHeader>
 
         <CardContent>
-          {uploadedFiles.length > 0 ? (
+          {isLoadingDocuments ? (
+            <div className="space-y-3">
+              {/* Skeleton loaders */}
+              {Array.from({ length: 3 }).map((_, index) => (
+                <div key={index} className="flex items-center justify-between p-4 bg-gray-50 border border-gray-200 rounded-xl animate-pulse">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gray-200 rounded-lg"></div>
+                    <div>
+                      <div className="w-32 h-4 bg-gray-200 rounded mb-2"></div>
+                      <div className="w-24 h-3 bg-gray-200 rounded"></div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="w-8 h-8 bg-gray-200 rounded"></div>
+                    <div className="w-8 h-8 bg-gray-200 rounded"></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : uploadedFiles.length > 0 ? (
             <div className="space-y-3">
               {uploadedFiles.slice(0, 3).map((file) => (
                 <div key={file.id} className="flex items-center justify-between p-4 bg-gray-50 border border-gray-200 rounded-xl hover:bg-gray-100 transition-colors duration-200">
@@ -168,6 +294,7 @@ export function BeneficiaryDocuments({
                         setPreviewFile(file);
                       }}
                       className="hover:bg-blue-50 text-blue-600 hover:text-blue-700 p-2 rounded-lg transition-all duration-200"
+                      disabled={isUploading}
                     >
                       <Eye className="w-4 h-4" />
                     </Button>
@@ -176,6 +303,7 @@ export function BeneficiaryDocuments({
                       size="sm" 
                       onClick={() => handleDeleteFile(file.id)}
                       className="hover:bg-red-50 text-red-600 hover:text-red-700 p-2 rounded-lg transition-all duration-200"
+                      disabled={isUploading}
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
@@ -191,6 +319,7 @@ export function BeneficiaryDocuments({
                   onClick={() => {
                     setIsDocumentModalOpen(true);
                   }}
+                  disabled={isLoadingDocuments || isUploading}
                 >
                   +{uploadedFiles.length - 3} belge daha görüntüle
                 </Button>
@@ -210,6 +339,7 @@ export function BeneficiaryDocuments({
                 onClick={() => {
                   setIsDocumentModalOpen(true);
                 }}
+                disabled={isLoadingDocuments || isUploading}
               >
                 <Upload className="w-4 h-4 mr-2" />
                 İlk belgeyi yükle
@@ -238,7 +368,7 @@ export function BeneficiaryDocuments({
 
               <div className="flex justify-center gap-3">
                 <label htmlFor="file-upload">
-                  <Button asChild className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium shadow-sm hover:shadow-md transition-all duration-200">
+                  <Button asChild className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium shadow-sm hover:shadow-md transition-all duration-200" disabled={isUploading}>
                     <span>
                       <FileText className="w-4 h-4 mr-2" />
                       Dosya Seç
@@ -252,9 +382,10 @@ export function BeneficiaryDocuments({
                   className="hidden"
                   onChange={handleFileUpload}
                   accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.xlsx,.xls"
+                  disabled={isUploading}
                 />
 
-                <Button variant="outline" className="px-6 py-3 text-gray-700 border-gray-300 hover:bg-gray-50 rounded-lg font-medium transition-all duration-200">
+                <Button variant="outline" className="px-6 py-3 text-gray-700 border-gray-300 hover:bg-gray-50 rounded-lg font-medium transition-all duration-200" disabled={isUploading}>
                   <Camera className="w-4 h-4 mr-2" />
                   Fotoğraf Çek
                 </Button>
@@ -326,13 +457,14 @@ export function BeneficiaryDocuments({
                         onClick={() => {
                           setPreviewFile(file);
                         }}
+                        disabled={isUploading}
                       >
                         <Eye className="w-4 h-4" />
                       </Button>
-                      <Button variant="ghost" size="sm">
+                      <Button variant="ghost" size="sm" onClick={() => handleDownload(file.bucket, file.path)} disabled={isUploading}>
                         <Download className="w-4 h-4" />
                       </Button>
-                      <Button variant="ghost" size="sm" onClick={() => handleDeleteFile(file.id)}>
+                      <Button variant="ghost" size="sm" onClick={() => handleDeleteFile(file.id)} disabled={isUploading}>
                         <Trash2 className="w-4 h-4" />
                       </Button>
                     </div>
@@ -375,7 +507,7 @@ export function BeneficiaryDocuments({
                 <div className="text-center py-8">
                   <FileText className="w-16 h-16 mx-auto mb-4 text-gray-400" />
                   <p>Bu dosya türü önizlenemez</p>
-                  <Button className="mt-2">
+                  <Button className="mt-2" onClick={() => handleDownload(previewFile.bucket, previewFile.path)}>
                     <Download className="w-4 h-4 mr-2" />
                     İndir
                   </Button>

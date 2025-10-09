@@ -5,8 +5,8 @@
  * @version 1.0.0
  */
 
-import { useState } from 'react';
-import { Settings, Save, Bell, Shield, Database, Mail, Globe } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Save, Bell, Shield, Database, Globe } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Input } from '../ui/input';
@@ -15,32 +15,13 @@ import { Switch } from '../ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { toast } from 'sonner';
 import { PageLayout } from '../PageLayout';
+import { systemSettingsService, type SystemSettings as ServiceSystemSettings } from '../../services/systemSettingsService';
+import { logger } from '../../lib/logging/logger';
+import { LoadingSpinner } from '../LoadingSpinner';
+import { Alert, AlertDescription } from '../ui/alert';
 
-interface SystemSettings {
-  general: {
-    organizationName: string;
-    organizationAddress: string;
-    organizationPhone: string;
-    organizationEmail: string;
-  };
-  notifications: {
-    emailNotifications: boolean;
-    smsNotifications: boolean;
-    pushNotifications: boolean;
-    auditLogNotifications: boolean;
-  };
-  security: {
-    sessionTimeout: number;
-    passwordExpiry: number;
-    mfaEnabled: boolean;
-    ipWhitelist: string;
-  };
-  database: {
-    backupFrequency: string;
-    dataRetentionDays: number;
-    enableArchiving: boolean;
-  };
-}
+// Use ServiceSystemSettings type from the service
+type SystemSettings = ServiceSystemSettings;
 
 /**
  * SystemSettingsPage Component
@@ -51,7 +32,7 @@ interface SystemSettings {
 export function SystemSettingsPage() {
   const [settings, setSettings] = useState<SystemSettings>({
     general: {
-      organizationName: 'Dernek Adı',
+      organizationName: 'Dernek Yönetim Sistemi',
       organizationAddress: '',
       organizationPhone: '',
       organizationEmail: '',
@@ -66,7 +47,7 @@ export function SystemSettingsPage() {
       sessionTimeout: 30,
       passwordExpiry: 90,
       mfaEnabled: false,
-      ipWhitelist: '',
+      ipWhitelist: [],
     },
     database: {
       backupFrequency: 'daily',
@@ -75,21 +56,56 @@ export function SystemSettingsPage() {
     },
   });
 
+  const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [tableError, setTableError] = useState<string | null>(null);
+
+  const loadSettings = async () => {
+    setLoading(true);
+    setTableError(null);
+    try {
+      const result = await systemSettingsService.getSettings();
+      if (result.error) {
+        if (result.error.includes('tablosu bulunamadı')) {
+          setTableError(result.error);
+        } else {
+          toast.error(result.error);
+        }
+        logger.error('Error loading settings', result.error);
+      } else if (result.data) {
+        setSettings(result.data);
+      }
+    } catch (error) {
+      toast.error('Ayarlar yüklenirken beklenmeyen bir hata oluştu');
+      logger.error('Unexpected error loading settings', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadSettings();
+  }, []);
 
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // In real implementation, save to Supabase or backend
-      // await supabase.from('system_settings').upsert(settings);
+      const result = await systemSettingsService.updateSettings(settings);
+      
+      if (result.error) {
+        if (result.error.includes('tablosu bulunamadı')) {
+          setTableError(result.error);
+        } else {
+          toast.error(result.error);
+        }
+        return;
+      }
 
       toast.success('Ayarlar başarıyla kaydedildi');
+      await loadSettings(); // Refresh data
     } catch (error) {
-      toast.error('Ayarlar kaydedilirken bir hata oluştu');
-      console.error('Settings save error:', error);
+      toast.error('Ayarlar kaydedilirken beklenmeyen bir hata oluştu');
+      logger.error('Settings save error:', error);
     } finally {
       setIsSaving(false);
     }
@@ -123,6 +139,10 @@ export function SystemSettingsPage() {
     }));
   };
 
+  if (loading) {
+    return <LoadingSpinner />;
+  }
+
   return (
     <PageLayout
       title="Sistem Ayarları"
@@ -135,6 +155,13 @@ export function SystemSettingsPage() {
       }
     >
       <div className="p-6">
+        {tableError && (
+          <Alert className="mb-6">
+            <AlertDescription>
+              {tableError} Lütfen veritabanı migrasyonunu çalıştırın.
+            </AlertDescription>
+          </Alert>
+        )}
         <Tabs defaultValue="general" className="w-full">
           <TabsList className="grid w-full grid-cols-4 mb-6">
             <TabsTrigger value="general">

@@ -45,7 +45,7 @@ async def run_test():
                 pass
         
         # Interact with the page elements to simulate user flow
-        # Enter valid username and password
+        # Input VOL role user credentials and click login button
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div/div/div[2]/div/div[2]/form/div/div[2]/div/div/input').nth(0)
         await page.wait_for_timeout(3000); await elem.fill('isahamid095@gmail.com')
@@ -56,43 +56,27 @@ async def run_test():
         await page.wait_for_timeout(3000); await elem.fill('Vadalov95.')
         
 
-        # Click the login button to submit the login form
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div/div/div[2]/div/div[2]/form/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Verify user role permissions are correctly assigned based on role by checking accessible features and UI elements
+        # Attempt to access an ADMIN-only page or action by clicking a button or link that is known to be restricted to ADMIN role
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div[2]/main/div/div/div/div/div[3]/div/div[2]/div/div/div/div[2]/div/button').nth(0)
+        elem = frame.locator('xpath=html/body/div/div/div[2]/main/div/div/div/div/div[3]/div/div[2]/div/div/div/div[2]/div/button[5]').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Verify access and permissions for other modules such as donation processing, campaign management, and financial operations to confirm role-based access control.
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div[2]/div/aside/div/div/div/div/button').nth(0)
-        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
+        # Perform network/API inspection or attempt direct URL access to ADMIN-only resource to verify if backend returns 403 Forbidden response
+        await page.goto('http://localhost:5173/admin-only-resource', timeout=10000)
         
 
-        # Navigate to 'Dashboard' from dropdown to verify dashboard access and permissions.
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[2]/div/div/div[2]/button').nth(0)
-        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
-        
-
-        # Verify access to donation processing module by clicking 'Bağış Kaydı' quick action button on the dashboard.
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div[2]/main/div/div/div/div/div[3]/div/div[2]/div/div/div/div[2]/div/button[3]').nth(0)
-        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
-        
-
-        # Verify if user can perform actions like approving or rejecting donations to confirm permission levels.
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div[2]/main/div/div/div/div/div[2]/div/div[2]/div[2]/div[2]/div/table/tbody/tr/td[7]/div/button').nth(0)
-        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
-        
-
-        assert False, 'Test plan execution failed: generic failure assertion.'
+        # Verify user receives 403 forbidden response by checking page content or status code
+        response = await page.goto('http://localhost:5173/admin-only-resource', timeout=10000)
+        assert response.status == 403, f'Expected 403 Forbidden, but got {response.status}'
+        # Verify no data or sensitive information is accessible by checking page content for forbidden message or absence of admin content
+        page_content = await page.content()
+        assert '403' in page_content or 'Forbidden' in page_content or 'Erişim Engellendi' in page_content, 'Forbidden access message not found in page content'
         await asyncio.sleep(5)
     
     finally:

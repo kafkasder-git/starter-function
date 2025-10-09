@@ -1,0 +1,14 @@
+{
+  "base_url": {
+    "value": "https://app.requestly.io",
+    "type": "string",
+    "id": 0,
+    "isSecret": false
+  },
+  "endpoint": {
+    "value": "echo",
+    "type": "string",
+    "id": 1,
+    "isSecret": false
+  }
+}

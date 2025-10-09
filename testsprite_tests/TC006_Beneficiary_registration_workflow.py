@@ -45,7 +45,7 @@ async def run_test():
                 pass
         
         # Interact with the page elements to simulate user flow
-        # Enter valid username and password
+        # Input username and password, then click login button
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div/div/div[2]/div/div[2]/form/div/div[2]/div/div/input').nth(0)
         await page.wait_for_timeout(3000); await elem.fill('isahamid095@gmail.com')
@@ -56,39 +56,72 @@ async def run_test():
         await page.wait_for_timeout(3000); await elem.fill('Vadalov95.')
         
 
-        # Click the login button to submit the login form
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div/div/div[2]/div/div[2]/form/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Verify user role permissions are correctly assigned based on role by checking accessible features and UI elements
+        # Click on 'Yeni İhtiyaç Sahibi' button to navigate to beneficiary registration form
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div/div/div[2]/main/div/div/div/div/div[3]/div/div[2]/div/div/div/div[2]/div/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Verify access and permissions for other modules such as donation processing, campaign management, and financial operations to confirm role-based access control.
+        # Click on 'Yeni İhtiyaç Sahibi Ekle' button to open beneficiary registration form
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div[2]/div/aside/div/div/div/div/button').nth(0)
+        elem = frame.locator('xpath=html/body/div/div/div[2]/main/div/div/div/div/div/div/div/div[2]/div/button[2]').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Navigate to 'Dashboard' from dropdown to verify dashboard access and permissions.
+        # Fill in beneficiary and household data fields with valid test data
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[2]/div/div/div[2]/button').nth(0)
-        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div/div[2]/div/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('Test User')
         
 
-        # Verify access to donation processing module by clicking 'Bağış Kaydı' quick action button on the dashboard.
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div[2]/main/div/div/div/div/div[3]/div/div[2]/div/div/div/div[2]/div/button[3]').nth(0)
-        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[2]/div[2]/div/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('12345678901')
         
 
-        # Verify if user can perform actions like approving or rejecting donations to confirm permission levels.
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div[2]/main/div/div/div/div/div[2]/div/div[2]/div[2]/div[2]/div/table/tbody/tr/td[7]/div/button').nth(0)
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[3]/div[2]/div/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('5551234567')
+        
+
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[4]/div/div[2]/div/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('İstanbul')
+        
+
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[4]/div[2]/div[2]/div/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('Türkiye')
+        
+
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[5]/div[2]/div/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('Test Mahallesi, Test Sokak No:1')
+        
+
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[6]/div/div[2]/div/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('İhtiyaç Sahibi Aile')
+        
+
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[6]/div[2]/div[2]/div/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('Bireysel')
+        
+
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/div[2]/div[7]/div[2]/div/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('TR330006100519786457841326')
+        
+
+        # Click 'Kaydet ve Devam Et' button to proceed to document upload and scoring matrix validation
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/div[3]/button[2]').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 

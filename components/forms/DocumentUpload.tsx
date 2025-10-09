@@ -11,6 +11,8 @@ import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Progress } from '../ui/progress';
 import { toast } from 'sonner';
+import { fileStorageService, FileUploadResult, FileUploadOptions } from '../../services/fileStorageService';
+import { useAuthStore } from '../../stores/authStore';
 
 interface UploadedFile {
   id: string;
@@ -20,8 +22,11 @@ interface UploadedFile {
   uploadedAt: Date;
   status: 'uploading' | 'success' | 'error';
   progress: number;
-  url?: string;
+  url: string;
   errorMessage?: string;
+  bucket: string;
+  path: string;
+  metadata?: Record<string, any>;
 }
 
 interface DocumentUploadProps {
@@ -100,9 +105,7 @@ export function DocumentUpload({
     // In real implementation, integrate with ClamAV or similar service
     await new Promise((resolve) => setTimeout(resolve, 500));
     
-    // Simulate random virus detection (for demo purposes)
-    const isClean = Math.random() > 0.05; // 95% pass rate
-    return isClean;
+    return true; // Always pass for now
   };
 
   const uploadFile = async (file: File): Promise<UploadedFile> => {
@@ -114,6 +117,9 @@ export function DocumentUpload({
       uploadedAt: new Date(),
       status: 'uploading',
       progress: 0,
+      url: '',
+      bucket: '',
+      path: '',
     };
 
     setFiles((prev) => [...prev, uploadedFile]);
@@ -125,28 +131,59 @@ export function DocumentUpload({
         throw new Error('Dosyada virüs tespit edildi');
       }
 
-      // Simulate upload progress
-      for (let progress = 0; progress <= 100; progress += 10) {
-        await new Promise((resolve) => setTimeout(resolve, 100));
-        setFiles((prev) =>
-          prev.map((f) =>
-            f.id === uploadedFile.id ? { ...f, progress } : f,
-          ),
-        );
+      // Get current user
+      const user = useAuthStore.getState().user;
+      const uploadedBy = user?.id || 'system';
+
+      // Determine bucket and folder
+      const bucket = 'documents';
+      const folder = category;
+
+      // Prepare upload options
+      const options: FileUploadOptions = {
+        bucket,
+        folder,
+        isPublic: false,
+        metadata: { originalName: file.name, uploadedBy },
+        tags: [],
+        description: '',
+      };
+
+      // Start progress simulation in parallel (faster intervals for responsiveness)
+      const progressPromise = (async () => {
+        for (let progress = 0; progress <= 100; progress += 10) {
+          await new Promise((resolve) => setTimeout(resolve, 50));
+          setFiles((prev) =>
+            prev.map((f) =>
+              f.id === uploadedFile.id ? { ...f, progress } : f,
+            ),
+          );
+        }
+      })();
+
+      // Perform real upload
+      const result = await fileStorageService.uploadFile(file, options);
+
+      // Ensure progress completes
+      await progressPromise;
+
+      if (!result.success) {
+        throw new Error(result.error || 'Upload failed');
       }
 
-      // In real implementation, upload to Supabase Storage
-      // const { data, error } = await supabase.storage
-      //   .from('documents')
-      //   .upload(`${category}/${uploadedFile.id}-${file.name}`, file);
-      
-      // if (error) throw error;
-
+      // Create final file from result metadata
       const finalFile: UploadedFile = {
-        ...uploadedFile,
+        id: result.file!.id,
+        name: result.file!.name,
+        size: result.file!.size,
+        type: result.file!.type,
+        uploadedAt: new Date(),
         status: 'success',
         progress: 100,
-        url: `/storage/${category}/${uploadedFile.id}-${file.name}`, // Placeholder URL
+        url: result.file!.url,
+        bucket: result.file!.bucket,
+        path: result.file!.path,
+        metadata: result.file!.metadata,
       };
 
       setFiles((prev) =>
@@ -182,6 +219,7 @@ export function DocumentUpload({
     }
 
     // Validate and upload files
+    const successfulUploads: UploadedFile[] = [];
     for (const file of filesToUpload) {
       const validationError = validateFile(file);
       if (validationError) {
@@ -190,7 +228,8 @@ export function DocumentUpload({
       }
 
       try {
-        await uploadFile(file);
+        const uploaded = await uploadFile(file);
+        successfulUploads.push(uploaded);
         toast.success(`${file.name} başarıyla yüklendi`);
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Upload failed';
@@ -198,10 +237,9 @@ export function DocumentUpload({
       }
     }
 
-    // Notify parent component
-    const successfulFiles = files.filter((f) => f.status === 'success');
-    if (successfulFiles.length > 0 && onUploadComplete) {
-      onUploadComplete(successfulFiles);
+    // Notify parent component with successful uploads
+    if (successfulUploads.length > 0 && onUploadComplete) {
+      onUploadComplete(successfulUploads);
     }
   };
 

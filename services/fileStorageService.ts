@@ -7,11 +7,16 @@ import { supabase } from '../lib/supabase';
 import { environment } from '../lib/environment';
 import { monitoring } from './monitoringService';
 import { logger } from '../lib/logging/logger';
+import { useAuthStore } from '../stores/authStore';
 
 // =============================================================================
 // TYPES AND INTERFACES
 // =============================================================================
 
+/**
+ * File metadata containing comprehensive information about stored files
+ * @property uploadedBy - ID of the authenticated user who uploaded the file, or 'system' for anonymous/system uploads
+ */
 export interface FileMetadata {
   id: string;
   name: string;
@@ -45,6 +50,7 @@ export interface FileUploadOptions {
   allowedTypes?: string[];
   generateThumbnail?: boolean;
   compress?: boolean;
+  onProgress?: (progress: number) => void;
 }
 
 export interface FileUploadResult {
@@ -107,6 +113,7 @@ export interface StorageConfig {
     enableWatermarking: boolean;
     enableEncryption: boolean;
   };
+  allowAnonymousUploads?: boolean;
 }
 
 // =============================================================================
@@ -199,6 +206,7 @@ const STORAGE_CONFIG: StorageConfig = {
     enableWatermarking: environment.features.security?.watermarking || false,
     enableEncryption: environment.features.security?.encryption || false,
   },
+  allowAnonymousUploads: true, // Allow anonymous uploads as fallback
 };
 
 // =============================================================================
@@ -219,6 +227,15 @@ export class FileStorageService {
       FileStorageService.instance = new FileStorageService();
     }
     return FileStorageService.instance;
+  }
+
+  /**
+   * Get current authenticated user ID for tracking uploads
+   * @returns User ID or 'system' as fallback
+   */
+  private getCurrentUserId(): string {
+    const user = useAuthStore.getState().user;
+    return user?.id || 'system';
   }
 
   /**
@@ -270,12 +287,20 @@ export class FileStorageService {
   // =============================================================================
 
   /**
-   * Upload single file
+   * Upload single file with progress tracking
    */
   async uploadFile(file: File, options: FileUploadOptions = {}): Promise<FileUploadResult> {
     const startTime = Date.now();
 
     try {
+      // Check user authentication if required
+      if (!this.config.allowAnonymousUploads) {
+        const user = useAuthStore.getState().user;
+        if (!user) {
+          return { success: false, error: 'Authentication required for file uploads' };
+        }
+      }
+
       // Validate file
       const validation = this.validateFile(file, options);
       if (!validation.valid) {
@@ -308,6 +333,21 @@ export class FileStorageService {
         processedFile = await this.processFile(file);
       }
 
+      // Start progress tracking
+      let progress = 0;
+      const progressInterval = setInterval(() => {
+        progress += 10;
+        if (progress >= 90) {
+          progress = 90;
+          clearInterval(progressInterval);
+        }
+        options.onProgress?.(progress);
+      }, 200); // Update every 200ms for smoother UI
+
+      // Get current user info
+      const currentUserId = this.getCurrentUserId();
+      const user = useAuthStore.getState().user;
+
       // Upload to Supabase Storage
       const { data, error } = await supabase.storage.from(bucket).upload(filePath, processedFile, {
         cacheControl: '3600',
@@ -315,7 +355,10 @@ export class FileStorageService {
         contentType: file.type,
         metadata: {
           originalName: file.name,
-          uploadedBy: 'system', // In real app, get from auth context
+          uploadedBy: currentUserId,
+          uploadedById: currentUserId,
+          uploadedByEmail: user?.email || '',
+          uploadedByName: user?.name || '',
           description: options.description || '',
           tags: JSON.stringify(options.tags || []),
           ...options.metadata,
@@ -323,6 +366,7 @@ export class FileStorageService {
       });
 
       if (error) {
+        clearInterval(progressInterval);
         throw error;
       }
 
@@ -332,6 +376,7 @@ export class FileStorageService {
         .list(folder, { search: fileName });
 
       if (!fileInfo || fileInfo.length === 0) {
+        clearInterval(progressInterval);
         throw new Error('Failed to get uploaded file info');
       }
 
@@ -349,7 +394,7 @@ export class FileStorageService {
         url: urlData.publicUrl,
         createdAt: new Date(),
         updatedAt: new Date(),
-        uploadedBy: 'system',
+        uploadedBy: currentUserId,
         isPublic: options.isPublic || false,
         downloadCount: 0,
         tags: options.tags || [],
@@ -359,6 +404,10 @@ export class FileStorageService {
 
       // Save metadata to database (in real app)
       await this.saveFileMetadata(fileMetadata);
+
+      // Complete progress
+      clearInterval(progressInterval);
+      options.onProgress?.(100);
 
       const processingTime = Date.now() - startTime;
       const result: FileUploadResult = {
@@ -374,6 +423,7 @@ export class FileStorageService {
         fileSize: file.size,
         fileType: file.type,
         compressed: options.compress || false,
+        userId: currentUserId,
       });
 
       return result;
@@ -396,7 +446,7 @@ export class FileStorageService {
   }
 
   /**
-   * Upload multiple files
+   * Upload multiple files with aggregate progress tracking
    */
   async uploadFiles(files: File[], options: FileUploadOptions = {}): Promise<FileUploadResult[]> {
     const results: FileUploadResult[] = [];
@@ -410,15 +460,29 @@ export class FileStorageService {
       return new Array(files.length).fill(errorResult);
     }
 
+    let completed = 0;
+    const total = files.length;
+
     for (const file of files) {
-      const result = await this.uploadFile(file, options);
+      const result = await this.uploadFile(file, {
+        ...options,
+        onProgress: (progress) => {
+          // Individual file progress (0-100) contributes to overall progress
+          const overallProgress = ((completed + progress / 100) / total) * 100;
+          options.onProgress?.(Math.round(overallProgress));
+        },
+      });
       results.push(result);
+      completed++;
 
       // Small delay between uploads to prevent rate limiting
       if (files.length > 1) {
         await new Promise((resolve) => setTimeout(resolve, 100));
       }
     }
+
+    // Ensure final progress is 100%
+    options.onProgress?.(100);
 
     return results;
   }
@@ -479,7 +543,7 @@ export class FileStorageService {
           .getPublicUrl(folder ? `${folder}/${file.name}` : file.name).data.publicUrl,
         createdAt: new Date(file.created_at || ''),
         updatedAt: new Date(file.updated_at || ''),
-        uploadedBy: file.metadata?.uploadedBy || 'system',
+        uploadedBy: file.metadata?.uploadedBy || this.getCurrentUserId(),
         isPublic: this.config.buckets[bucket]?.isPublic || false,
         downloadCount: 0,
         tags: file.metadata?.tags ? JSON.parse(file.metadata.tags) : [],
@@ -553,7 +617,7 @@ export class FileStorageService {
         url: urlData.publicUrl,
         createdAt: new Date(file.created_at || ''),
         updatedAt: new Date(file.updated_at || ''),
-        uploadedBy: file.metadata?.uploadedBy || 'system',
+        uploadedBy: file.metadata?.uploadedBy || this.getCurrentUserId(),
         isPublic: this.config.buckets[bucket]?.isPublic || false,
         downloadCount: 0,
         tags: file.metadata?.tags ? JSON.parse(file.metadata.tags) : [],

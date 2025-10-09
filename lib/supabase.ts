@@ -16,6 +16,8 @@ export const TABLES = {
   BENEFICIARIES: 'beneficiaries',
   AID_REQUESTS: 'aid_requests',
   CAMPAIGNS: 'campaigns',
+  PARTNERS: 'partners',
+  SYSTEM_SETTINGS: 'system_settings',
 } as const;
 
 // Supabase configuration using centralized environment management

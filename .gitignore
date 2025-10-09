@@ -88,3 +88,8 @@ tmp/
 *.backup
 *.bak
 *.old
+
+# Python virtual environment
+venv/
+env/
+.venv/

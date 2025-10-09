@@ -18,6 +18,10 @@ import {
   Target,
 } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
+import { partnersService, type SponsorOrganization as ServiceSponsorOrganization } from '../../services/partnersService';
+import { logger } from '../../lib/logging/logger';
+import { LoadingSpinner } from '../LoadingSpinner';
+import { toast } from 'sonner';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
@@ -33,32 +37,8 @@ import { Progress } from '../ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 
-interface SponsorOrganization {
-  id: number;
-  name: string;
-  type: 'kurumsal' | 'bireysel' | 'vakif' | 'kamu' | 'uluslararasi';
-  sponsorshipType: 'etkinlik' | 'proje' | 'sürekli' | 'kampanya' | 'altyapi';
-  contactPerson: string;
-  phone: string;
-  email: string;
-  address: string;
-  status: 'aktif' | 'pasif' | 'müzakere';
-  totalSponsorship: number;
-  currentProjects: number;
-  completedProjects: number;
-  lastSponsorshipDate: string;
-  contractStart?: string;
-  contractEnd?: string;
-  sponsorshipAreas: string[];
-  rating: number;
-  website?: string;
-  taxNumber?: string;
-  description?: string;
-  logo?: string;
-  tags: string[];
-}
-
-const sponsors: SponsorOrganization[] = [];
+// Use ServiceSponsorOrganization type from the service
+type SponsorOrganization = ServiceSponsorOrganization;
 
 /**
  * PartnerSponsorsPage function
@@ -67,7 +47,13 @@ const sponsors: SponsorOrganization[] = [];
  * @returns {void} Nothing
  */
 export default function PartnerSponsorsPage() {
-  const [filteredSponsors, setFilteredSponsors] = useState<SponsorOrganization[]>(sponsors);
+  const [sponsors, setSponsors] = useState<SponsorOrganization[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [, setTotalCount] = useState(0);
+  const [currentPage] = useState(1);
+  const pageSize = 10;
+  
+  const [filteredSponsors, setFilteredSponsors] = useState<SponsorOrganization[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<string>('all');
   const [filterSponsorshipType, setFilterSponsorshipType] = useState<string>('all');
@@ -75,6 +61,33 @@ export default function PartnerSponsorsPage() {
   const [selectedSponsor, setSelectedSponsor] = useState<SponsorOrganization | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('all');
+
+  const loadSponsors = useCallback(async () => {
+    setLoading(true);
+    try {
+      const result = await partnersService.getSponsors(currentPage, pageSize);
+      if (result.error) {
+        toast.error(result.error);
+        logger.error('Error loading sponsors', result.error);
+      } else if (result.data) {
+        setSponsors(result.data);
+        setTotalCount(result.count || 0);
+      }
+    } catch (error) {
+      toast.error('Sponsorlar yüklenirken beklenmeyen bir hata oluştu');
+      logger.error('Unexpected error loading sponsors', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [currentPage, pageSize]);
+
+  useEffect(() => {
+    loadSponsors();
+  }, [loadSponsors]);
+
+  useEffect(() => {
+    loadSponsors();
+  }, [currentPage, loadSponsors]);
 
   // Filtering logic
   useEffect(() => {
@@ -99,10 +112,8 @@ export default function PartnerSponsorsPage() {
       filtered = filtered.filter((sponsor) => sponsor.type === filterType);
     }
 
-    // Sponsorship type filter
-    if (filterSponsorshipType !== 'all') {
-      filtered = filtered.filter((sponsor) => sponsor.sponsorshipType === filterSponsorshipType);
-    }
+    // Sponsorship type filter - removed since field doesn't exist in service
+    // TODO: Add sponsorship type field to partners table if needed
 
     // Status filter
     if (filterStatus !== 'all') {
@@ -115,13 +126,15 @@ export default function PartnerSponsorsPage() {
     } else if (activeTab === 'active') {
       filtered = filtered.filter((sponsor) => sponsor.status === 'aktif');
     } else if (activeTab === 'long-term') {
+      // TODO: Add sponsorship type field to partners table for proper filtering
+      // For now, filter by contract duration
       filtered = filtered.filter(
-        (sponsor) => sponsor.sponsorshipType === 'sürekli' || sponsor.sponsorshipType === 'altyapi',
+        (sponsor) => sponsor.contractStart && sponsor.contractEnd,
       );
     }
 
     setFilteredSponsors(filtered);
-  }, [searchTerm, filterType, filterSponsorshipType, filterStatus, activeTab]);
+  }, [sponsors, searchTerm, filterType, filterSponsorshipType, filterStatus, activeTab]);
 
   const getStatusBadge = (status: SponsorOrganization['status']) => {
     let label: string;
@@ -185,42 +198,8 @@ export default function PartnerSponsorsPage() {
     return <Badge className={`${className} border-0 px-2 py-1 text-xs`}>{label}</Badge>;
   };
 
-  const getSponsorshipTypeBadge = (type: SponsorOrganization['sponsorshipType']) => {
-    let label: string;
-    let className: string;
-
-    switch (type) {
-      case 'etkinlik':
-        label = 'Etkinlik';
-        className = 'bg-cyan-50 text-cyan-700';
-        break;
-      case 'proje':
-        label = 'Proje';
-        className = 'bg-blue-50 text-blue-700';
-        break;
-      case 'sürekli':
-        label = 'Sürekli';
-        className = 'bg-green-50 text-green-700';
-        break;
-      case 'kampanya':
-        label = 'Kampanya';
-        className = 'bg-orange-50 text-orange-700';
-        break;
-      case 'altyapi':
-        label = 'Altyapı';
-        className = 'bg-purple-50 text-purple-700';
-        break;
-      default:
-        label = 'Bilinmeyen';
-        className = 'bg-gray-50 text-gray-700';
-    }
-
-    return (
-      <Badge variant="outline" className={`${className} px-2 py-1 text-xs`}>
-        {label}
-      </Badge>
-    );
-  };
+  // Removed getSponsorshipTypeBadge since sponsorshipType field doesn't exist in service
+  // TODO: Add sponsorship type field to partners table if needed
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('tr-TR', {
@@ -245,9 +224,13 @@ export default function PartnerSponsorsPage() {
   }, []);
 
   const totalSponsorship = sponsors.reduce((sum, sponsor) => sum + sponsor.totalSponsorship, 0);
-  const activeSponsors = sponsors.filter((s) => s.status === 'aktif').length;
+  const activeSponsors = sponsors.filter((s) => s.status === 'Aktif').length;
   const majorSponsors = sponsors.filter((s) => s.totalSponsorship >= 300000).length;
   const totalProjects = sponsors.reduce((sum, sponsor) => sum + sponsor.currentProjects, 0);
+
+  if (loading && sponsors.length === 0) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <div className="flex-1 space-y-4 p-4 sm:space-y-6 sm:p-6">
@@ -407,7 +390,6 @@ export default function PartnerSponsorsPage() {
                         <div className="mt-2 flex flex-wrap items-center gap-2">
                           {getStatusBadge(sponsor.status)}
                           {getTypeBadge(sponsor.type)}
-                          {getSponsorshipTypeBadge(sponsor.sponsorshipType)}
                           <div className="flex items-center gap-1">
                             <Star className="h-3 w-3 fill-current text-yellow-500" />
                             <span className="text-muted-foreground text-xs">{sponsor.rating}</span>

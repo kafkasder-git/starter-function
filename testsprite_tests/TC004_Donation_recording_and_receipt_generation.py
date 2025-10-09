@@ -45,7 +45,7 @@ async def run_test():
                 pass
         
         # Interact with the page elements to simulate user flow
-        # Enter valid username and password
+        # Input FIN user email and password, then click login button
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div/div/div[2]/div/div[2]/form/div/div[2]/div/div/input').nth(0)
         await page.wait_for_timeout(3000); await elem.fill('isahamid095@gmail.com')
@@ -56,39 +56,52 @@ async def run_test():
         await page.wait_for_timeout(3000); await elem.fill('Vadalov95.')
         
 
-        # Click the login button to submit the login form
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div/div/div[2]/div/div[2]/form/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Verify user role permissions are correctly assigned based on role by checking accessible features and UI elements
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div[2]/main/div/div/div/div/div[3]/div/div[2]/div/div/div/div[2]/div/button').nth(0)
-        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
-        
-
-        # Verify access and permissions for other modules such as donation processing, campaign management, and financial operations to confirm role-based access control.
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div[2]/div/aside/div/div/div/div/button').nth(0)
-        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
-        
-
-        # Navigate to 'Dashboard' from dropdown to verify dashboard access and permissions.
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[2]/div/div/div[2]/button').nth(0)
-        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
-        
-
-        # Verify access to donation processing module by clicking 'Bağış Kaydı' quick action button on the dashboard.
+        # Click on 'Bağış Kaydı' (Donation Record) button to start recording a new donation
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div/div/div[2]/main/div/div/div/div/div[3]/div/div[2]/div/div/div/div[2]/div/button[3]').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Verify if user can perform actions like approving or rejecting donations to confirm permission levels.
+        # Click on 'Yeni Bağış' button to open the new donation form
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div[2]/main/div/div/div/div/div[2]/div/div[2]/div[2]/div[2]/div/table/tbody/tr/td[7]/div/button').nth(0)
+        elem = frame.locator('xpath=html/body/div/div/div[2]/main/div/div/div/div/div/div/div/div[2]/div/button[2]').nth(0)
+        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
+        
+
+        # Fill in the donation form with sample data for the first donation channel (Bank Transfer) and submit the form.
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/form/div/div[2]/div/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('Test Donor Channel 1')
+        
+
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/form/div[2]/div/div[2]/div/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('testdonor1@example.com')
+        
+
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/form/div[2]/div[2]/div[2]/div/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('05551234567')
+        
+
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/form/div[3]/div[2]/div/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('500')
+        
+
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[3]/form/div[4]/div/button').nth(0)
+        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
+        
+
+        # Click the 'Kaydet' button by its visible text 'Kaydet' to submit the donation form.
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div/div/div[2]/main/div/div/div/div/div[2]/div/div[2]/div[2]/div[2]/div/table/tbody/tr[8]/td[7]/div/button[4]').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 

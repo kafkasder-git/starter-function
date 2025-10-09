@@ -5,7 +5,7 @@
  * @version 1.0.0
  */
 
-import { useState } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Plus, TrendingUp, Calendar, Target, DollarSign, Users, Eye } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
@@ -16,22 +16,14 @@ import { Badge } from '../ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { Progress } from '../ui/progress';
 import { toast } from 'sonner';
-import PageLayout from '../PageLayout';
+import { PageLayout } from '../PageLayout';
+import { campaignsService, type Campaign as ServiceCampaign, type CampaignStats } from '../../services/campaignsService';
+import { useAuthStore } from '../../stores/authStore';
+import { logger } from '../../lib/logging/logger';
+import { LoadingSpinner } from '../LoadingSpinner';
 
-interface Campaign {
-  id: string;
-  name: string;
-  description: string;
-  goalAmount: number;
-  currentAmount: number;
-  startDate: string;
-  endDate: string;
-  status: 'active' | 'completed' | 'draft' | 'paused';
-  category: string;
-  donorCount: number;
-}
-
-const initialCampaigns: Campaign[] = [];
+// Use ServiceCampaign type from the service
+type Campaign = ServiceCampaign;
 
 /**
  * CampaignManagementPage Component
@@ -39,9 +31,25 @@ const initialCampaigns: Campaign[] = [];
  * Manages fundraising campaigns with progress tracking and donor management.
  */
 export function CampaignManagementPage() {
-  const [campaigns, setCampaigns] = useState<Campaign[]>(initialCampaigns);
+  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [totalCount, setTotalCount] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [stats, setStats] = useState<CampaignStats | null>(null);
+  const pageSize = 10;
+  
+  interface NewCampaignForm {
+    name: string;
+    description: string;
+    goalAmount: string;
+    startDate: string;
+    endDate: string;
+    category: string;
+  }
+
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [newCampaign, setNewCampaign] = useState({
+  const [newCampaign, setNewCampaign] = useState<NewCampaignForm>({
     name: '',
     description: '',
     goalAmount: '',
@@ -50,31 +58,101 @@ export function CampaignManagementPage() {
     category: '',
   });
 
+  const loadCampaigns = useCallback(async () => {
+    setLoading(true);
+    try {
+      const result = await campaignsService.getCampaigns(currentPage, pageSize);
+      if (result.error) {
+        toast.error(result.error);
+        logger.error('Error loading campaigns', result.error);
+      } else if (result.data) {
+        setCampaigns(result.data);
+        setTotalCount(result.count || 0);
+      }
+    } catch (error) {
+      toast.error('Kampanyalar yüklenirken beklenmeyen bir hata oluştu');
+      logger.error('Unexpected error loading campaigns', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [currentPage, pageSize]);
+
+  const loadStats = useCallback(async () => {
+    try {
+      const result = await campaignsService.getCampaignStats();
+      if (result.error) {
+        logger.error('Error loading campaign stats', result.error);
+      } else if (result.data) {
+        setStats(result.data);
+      }
+    } catch (error) {
+      logger.error('Unexpected error loading campaign stats', error);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadCampaigns();
+    loadStats();
+  }, [loadCampaigns, loadStats]);
+
+  useEffect(() => {
+    loadCampaigns();
+  }, [currentPage, loadCampaigns]);
+
   const handleCreateCampaign = async () => {
+    // Basic validation
     if (!newCampaign.name || !newCampaign.goalAmount) {
       toast.error('Lütfen kampanya adı ve hedef tutarı giriniz');
       return;
     }
 
-    try {
-      const campaign: Campaign = {
-        id: crypto.randomUUID(),
-        name: newCampaign.name,
-        description: newCampaign.description,
-        goalAmount: parseFloat(newCampaign.goalAmount),
-        currentAmount: 0,
-        startDate: newCampaign.startDate || new Date().toISOString().split('T')[0],
-        endDate: newCampaign.endDate,
-        status: 'draft',
-        category: newCampaign.category,
-        donorCount: 0,
-      };
+    // Validate goal amount is a positive number
+    const goalAmount = parseFloat(newCampaign.goalAmount);
+    if (isNaN(goalAmount) || goalAmount <= 0) {
+      toast.error('Lütfen geçerli bir hedef tutarı giriniz');
+      return;
+    }
 
-      // In real implementation, save to Supabase
-      // await supabase.from('campaigns').insert(campaign);
-
-      setCampaigns((prev) => [campaign, ...prev]);
+    // Date validation
+    
+    const trimmedEndDate = newCampaign.endDate?.trim();
+    if (trimmedEndDate) {
+      const startDateStr = newCampaign.startDate?.trim() || new Date().toISOString().split('T')[0];
+      const start = new Date(startDateStr);
+      const end = new Date(trimmedEndDate);
       
+      if (end <= start) {
+        toast.error('Bitiş tarihi başlangıç tarihinden sonra olmalıdır');
+        return;
+      }
+    }
+
+    const user = useAuthStore.getState().user;
+    if (!user) {
+      toast.error('Kullanıcı oturumu bulunamadı');
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const startDate = (newCampaign.startDate?.trim() || new Date().toISOString().split('T')[0]);
+      const endDate = newCampaign.endDate?.trim() ? newCampaign.endDate.trim() : null;
+      
+      const result = await campaignsService.createCampaign({
+        name: newCampaign.name,
+        description: newCampaign.description || '',
+        goal_amount: parseFloat(newCampaign.goalAmount),
+        start_date: startDate,
+        end_date: endDate,
+        category: newCampaign.category || 'Genel',
+        created_by: user.id
+      });
+
+      if (result.error) {
+        toast.error(result.error);
+        return;
+      }
+
       toast.success('Kampanya başarıyla oluşturuldu');
       setIsDialogOpen(false);
       setNewCampaign({
@@ -85,9 +163,15 @@ export function CampaignManagementPage() {
         endDate: '',
         category: '',
       });
+
+      // Refresh data
+      await loadCampaigns();
+      await loadStats();
     } catch (error) {
-      toast.error('Kampanya oluşturulurken bir hata oluştu');
-      console.error('Campaign creation error:', error);
+      toast.error('Kampanya oluşturulurken beklenmeyen bir hata oluştu');
+      logger.error('Campaign creation error:', error);
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -106,12 +190,10 @@ export function CampaignManagementPage() {
     return Math.min((current / goal) * 100, 100);
   };
 
-  const stats = {
-    totalCampaigns: campaigns.length,
-    activeCampaigns: campaigns.filter((c) => c.status === 'active').length,
-    totalRaised: campaigns.reduce((sum, c) => sum + c.currentAmount, 0),
-    totalGoal: campaigns.reduce((sum, c) => sum + c.goalAmount, 0),
-  };
+  // Add loading state check
+  if (loading && campaigns.length === 0) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <PageLayout
@@ -214,7 +296,7 @@ export function CampaignManagementPage() {
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between">
-                <div className="text-2xl font-bold">{stats.totalCampaigns}</div>
+                <div className="text-2xl font-bold">{stats?.total || 0}</div>
                 <Target className="w-8 h-8 text-blue-500" />
               </div>
             </CardContent>
@@ -225,7 +307,7 @@ export function CampaignManagementPage() {
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between">
-                <div className="text-2xl font-bold text-green-600">{stats.activeCampaigns}</div>
+                <div className="text-2xl font-bold text-green-600">{stats?.active || 0}</div>
                 <TrendingUp className="w-8 h-8 text-green-500" />
               </div>
             </CardContent>
@@ -236,7 +318,7 @@ export function CampaignManagementPage() {
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between">
-                <div className="text-2xl font-bold">₺{stats.totalRaised.toLocaleString()}</div>
+                <div className="text-2xl font-bold">₺{(stats?.totalCurrentAmount || 0).toLocaleString()}</div>
                 <DollarSign className="w-8 h-8 text-blue-500" />
               </div>
             </CardContent>
@@ -247,7 +329,7 @@ export function CampaignManagementPage() {
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between">
-                <div className="text-2xl font-bold">₺{stats.totalGoal.toLocaleString()}</div>
+                <div className="text-2xl font-bold">₺{(stats?.totalGoalAmount || 0).toLocaleString()}</div>
                 <Target className="w-8 h-8 text-purple-500" />
               </div>
             </CardContent>
@@ -295,25 +377,25 @@ export function CampaignManagementPage() {
                       <TableCell>
                         <div className="space-y-2 min-w-[200px]">
                           <div className="flex justify-between text-sm">
-                            <span>₺{campaign.currentAmount.toLocaleString()}</span>
-                            <span className="text-gray-500">₺{campaign.goalAmount.toLocaleString()}</span>
+                            <span>₺{campaign.current_amount.toLocaleString()}</span>
+                            <span className="text-gray-500">₺{campaign.goal_amount.toLocaleString()}</span>
                           </div>
-                          <Progress value={calculateProgress(campaign.currentAmount, campaign.goalAmount)} />
+                          <Progress value={calculateProgress(campaign.current_amount, campaign.goal_amount)} />
                           <div className="text-xs text-gray-500">
-                            %{calculateProgress(campaign.currentAmount, campaign.goalAmount).toFixed(0)} tamamlandı
+                            %{calculateProgress(campaign.current_amount, campaign.goal_amount).toFixed(0)} tamamlandı
                           </div>
                         </div>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-1">
                           <Users className="w-4 h-4 text-gray-400" />
-                          {campaign.donorCount}
+                          0 {/* TODO: Calculate from donations table */}
                         </div>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-1 text-sm">
                           <Calendar className="w-4 h-4 text-gray-400" />
-                          {new Date(campaign.startDate).toLocaleDateString('tr-TR')}
+                          {new Date(campaign.start_date).toLocaleDateString('tr-TR')}
                         </div>
                       </TableCell>
                       <TableCell>{getStatusBadge(campaign.status)}</TableCell>

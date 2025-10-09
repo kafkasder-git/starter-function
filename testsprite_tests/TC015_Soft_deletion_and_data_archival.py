@@ -45,7 +45,7 @@ async def run_test():
                 pass
         
         # Interact with the page elements to simulate user flow
-        # Enter valid username and password
+        # Input ADMIN username and password, then click login
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div/div/div[2]/div/div[2]/form/div/div[2]/div/div/input').nth(0)
         await page.wait_for_timeout(3000); await elem.fill('isahamid095@gmail.com')
@@ -56,39 +56,67 @@ async def run_test():
         await page.wait_for_timeout(3000); await elem.fill('Vadalov95.')
         
 
-        # Click the login button to submit the login form
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div/div/div[2]/div/div[2]/form/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Verify user role permissions are correctly assigned based on role by checking accessible features and UI elements
+        # Navigate to beneficiary management section to delete a beneficiary record
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div/div/div[2]/main/div/div/div/div/div[3]/div/div[2]/div/div/div/div[2]/div/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Verify access and permissions for other modules such as donation processing, campaign management, and financial operations to confirm role-based access control.
+        # Delete a beneficiary record as ADMIN user by clicking the delete button for the first beneficiary
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div/div/div[2]/main/div/div/div/div/div[2]/div/div[2]/div[2]/div[2]/div/div/table/tbody/tr/td[13]/div/button').nth(0)
+        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
+        
+
+        # Close the notification popup to clear the view and then verify if the deleted beneficiary record is still accessible or visible in the default list
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div/div/div[2]/main/div/div/div/div[2]/div/div[2]/div[3]/button').nth(0)
+        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
+        
+
+        # Search for the deleted beneficiary record by name or ID to verify it is not visible in the default list
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div/div/div[2]/main/div/div/div/div/div[2]/div/div[2]/div[2]/div/div/div/div/input').nth(0)
+        await page.wait_for_timeout(3000); await elem.fill('Abdelazız Osama Saleh Al-Shıshanı')
+        
+
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div/div/div[2]/main/div/div/div/div/div[2]/div/div[2]/div[2]/div/div[2]/button').nth(0)
+        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
+        
+
+        # Verify if the record has an archived flag or status indicating soft deletion by checking record details or database if accessible
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div/div/div[2]/main/div/div/div/div/div[2]/div/div[2]/div[2]/div[2]/div/div/table/tbody/tr/td[13]/div/button').nth(0)
+        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
+        
+
+        # Log out ADMIN user and log in as a non-SYSADMIN user to attempt accessing the deleted record and verify it is inaccessible
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div/div/div[2]/div/aside/div/div/div[4]/div/button').nth(0)
+        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
+        
+
+        # Log in as a non-SYSADMIN user to attempt accessing the deleted beneficiary record and verify it is inaccessible
+        frame = context.pages[-1]
+        elem = frame.locator('xpath=html/body/div[2]/div').nth(0)
+        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
+        
+
+        # Log out non-SYSADMIN user and log in as SYSADMIN user to perform hard delete on the archived record and verify permanent removal.
         frame = context.pages[-1]
         elem = frame.locator('xpath=html/body/div/div/div[2]/div/aside/div/div/div/div/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 
-        # Navigate to 'Dashboard' from dropdown to verify dashboard access and permissions.
+        # Locate archived or deleted beneficiary records or hard delete option in the UI to perform hard delete and verify permanent removal.
         frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div[2]/div/div/div[2]/button').nth(0)
-        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
-        
-
-        # Verify access to donation processing module by clicking 'Bağış Kaydı' quick action button on the dashboard.
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div[2]/main/div/div/div/div/div[3]/div/div[2]/div/div/div/div[2]/div/button[3]').nth(0)
-        await page.wait_for_timeout(3000); await elem.click(timeout=5000)
-        
-
-        # Verify if user can perform actions like approving or rejecting donations to confirm permission levels.
-        frame = context.pages[-1]
-        elem = frame.locator('xpath=html/body/div/div/div[2]/main/div/div/div/div/div[2]/div/div[2]/div[2]/div[2]/div/table/tbody/tr/td[7]/div/button').nth(0)
+        elem = frame.locator('xpath=html/body/div/div/div[2]/div/aside/div/div/div[10]/div/button').nth(0)
         await page.wait_for_timeout(3000); await elem.click(timeout=5000)
         
 

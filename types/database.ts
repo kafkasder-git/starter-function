@@ -867,6 +867,38 @@ export interface Database {
           deleted_at?: string | null;
         };
       };
+      system_settings: {
+        Row: {
+          id: number;
+          created_at: string;
+          updated_at: string;
+          general: Json;
+          notifications: Json;
+          security: Json;
+          database: Json;
+          updated_by: string | null;
+        };
+        Insert: {
+          id?: number;
+          created_at?: string;
+          updated_at?: string;
+          general?: Json;
+          notifications?: Json;
+          security?: Json;
+          database?: Json;
+          updated_by?: string | null;
+        };
+        Update: {
+          id?: number;
+          created_at?: string;
+          updated_at?: string;
+          general?: Json;
+          notifications?: Json;
+          security?: Json;
+          database?: Json;
+          updated_by?: string | null;
+        };
+      };
     };
     Views: Record<never, never>;
     Functions: Record<never, never>;
@@ -952,6 +984,10 @@ export type LegalCaseUpdate = Database['public']['Tables']['legal_cases']['Updat
 export type Scholarship = Database['public']['Tables']['scholarships']['Row'];
 export type ScholarshipInsert = Database['public']['Tables']['scholarships']['Insert'];
 export type ScholarshipUpdate = Database['public']['Tables']['scholarships']['Update'];
+
+export type SystemSettingsRow = Database['public']['Tables']['system_settings']['Row'];
+export type SystemSettingsInsert = Database['public']['Tables']['system_settings']['Insert'];
+export type SystemSettingsUpdate = Database['public']['Tables']['system_settings']['Update'];
 
 // Extended types with relations
 export interface MemberWithDonations extends Member {

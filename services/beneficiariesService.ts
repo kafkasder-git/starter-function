@@ -228,6 +228,144 @@ export class BeneficiariesService extends BaseService<
       return { data: null, error: 'Beklenmeyen bir hata oluştu' };
     }
   }
+
+  /**
+   * Destekleyici belgeleri ekler
+   *
+   * @param beneficiaryId - İhtiyaç sahibi ID'si
+   * @param documentUrls - Eklenecek belge URL'leri
+   * @returns Promise<ApiResponse<Beneficiary>>
+   */
+  async addSupportingDocuments(beneficiaryId: string, documentUrls: string[]): Promise<ApiResponse<Beneficiary>> {
+    try {
+      logger.info('Adding supporting documents', { beneficiaryId, count: documentUrls.length });
+
+      // Mevcut ihtiyaç sahibini getir
+      const currentResult = await this.getById(beneficiaryId);
+      if (currentResult.error || !currentResult.data) {
+        logger.error('Failed to fetch beneficiary for adding documents', { beneficiaryId, error: currentResult.error });
+        return { data: null, error: currentResult.error || 'İhtiyaç sahibi bulunamadı' };
+      }
+
+      const currentBeneficiary = currentResult.data;
+      const currentDocuments = currentBeneficiary.supporting_documents || [];
+      const updatedDocuments = [...currentDocuments, ...documentUrls];
+
+      // Güncelle
+      const updateResult = await this.update(beneficiaryId, { supporting_documents: updatedDocuments });
+      if (updateResult.error) {
+        logger.error('Failed to update beneficiary with new documents', { beneficiaryId, error: updateResult.error });
+        return { data: null, error: updateResult.error };
+      }
+
+      logger.info('Successfully added supporting documents', { beneficiaryId, addedCount: documentUrls.length });
+      return updateResult;
+    } catch (error) {
+      logger.error('Unexpected error in addSupportingDocuments', error);
+      return { data: null, error: 'Beklenmeyen bir hata oluştu' };
+    }
+  }
+
+  /**
+   * Destekleyici belgeyi kaldırır
+   *
+   * @param beneficiaryId - İhtiyaç sahibi ID'si
+   * @param documentUrl - Kaldırılacak belge URL'si
+   * @returns Promise<ApiResponse<Beneficiary>>
+   */
+  async removeSupportingDocument(beneficiaryId: string, documentUrl: string): Promise<ApiResponse<Beneficiary>> {
+    try {
+      logger.info('Removing supporting document', { beneficiaryId, documentUrl });
+
+      // Mevcut ihtiyaç sahibini getir
+      const currentResult = await this.getById(beneficiaryId);
+      if (currentResult.error || !currentResult.data) {
+        logger.error('Failed to fetch beneficiary for removing document', { beneficiaryId, error: currentResult.error });
+        return { data: null, error: currentResult.error || 'İhtiyaç sahibi bulunamadı' };
+      }
+
+      const currentBeneficiary = currentResult.data;
+      const currentDocuments = currentBeneficiary.supporting_documents || [];
+      const updatedDocuments = currentDocuments.filter(url => url !== documentUrl);
+
+      // Eğer belge bulunamadıysa hata döndür
+      if (updatedDocuments.length === currentDocuments.length) {
+        logger.warn('Document URL not found in beneficiary documents', { beneficiaryId, documentUrl });
+        return { data: null, error: 'Belge bulunamadı' };
+      }
+
+      // Güncelle
+      const updateResult = await this.update(beneficiaryId, { supporting_documents: updatedDocuments });
+      if (updateResult.error) {
+        logger.error('Failed to update beneficiary after removing document', { beneficiaryId, error: updateResult.error });
+        return { data: null, error: updateResult.error };
+      }
+
+      logger.info('Successfully removed supporting document', { beneficiaryId, documentUrl });
+      return updateResult;
+    } catch (error) {
+      logger.error('Unexpected error in removeSupportingDocument', error);
+      return { data: null, error: 'Beklenmeyen bir hata oluştu' };
+    }
+  }
+
+  /**
+   * Destekleyici belgeleri getirir
+   *
+   * @param beneficiaryId - İhtiyaç sahibi ID'si
+   * @returns Promise<ApiResponse<string[]>>
+   */
+  async getSupportingDocuments(beneficiaryId: string): Promise<ApiResponse<string[]>> {
+    try {
+      logger.info('Fetching supporting documents', { beneficiaryId });
+
+      const result = await this.getById(beneficiaryId);
+      if (result.error || !result.data) {
+        logger.error('Failed to fetch beneficiary for documents', { beneficiaryId, error: result.error });
+        return { data: null, error: result.error || 'İhtiyaç sahibi bulunamadı' };
+      }
+
+      const documents = result.data.supporting_documents || [];
+      logger.info('Successfully fetched supporting documents', { beneficiaryId, count: documents.length });
+      return { data: documents, error: null };
+    } catch (error) {
+      logger.error('Unexpected error in getSupportingDocuments', error);
+      return { data: null, error: 'Beklenmeyen bir hata oluştu' };
+    }
+  }
+
+  /**
+   * Destekleyici belgeleri toplu günceller
+   *
+   * @param beneficiaryId - İhtiyaç sahibi ID'si
+   * @param documentUrls - Yeni belge URL'leri
+   * @returns Promise<ApiResponse<Beneficiary>>
+   */
+  async updateSupportingDocuments(beneficiaryId: string, documentUrls: string[]): Promise<ApiResponse<Beneficiary>> {
+    try {
+      logger.info('Updating supporting documents', { beneficiaryId, count: documentUrls.length });
+
+      // İhtiyaç sahibinin varlığını doğrula
+      const currentResult = await this.getById(beneficiaryId);
+      if (currentResult.error || !currentResult.data) {
+        logger.error('Failed to fetch beneficiary for updating documents', { beneficiaryId, error: currentResult.error });
+        return { data: null, error: currentResult.error || 'İhtiyaç sahibi bulunamadı' };
+      }
+
+      // Güncelle
+      const updateResult = await this.update(beneficiaryId, { supporting_documents: documentUrls });
+      if (updateResult.error) {
+        logger.error('Failed to update beneficiary documents', { beneficiaryId, error: updateResult.error });
+        return { data: null, error: updateResult.error };
+      }
+
+      logger.info('Successfully updated supporting documents', { beneficiaryId, count: documentUrls.length });
+      return updateResult;
+    } catch (error) {
+      logger.error('Unexpected error in updateSupportingDocuments', error);
+      return { data: null, error: 'Beklenmeyen bir hata oluştu' };
+    }
+  }
 }
 
 // Singleton instance
