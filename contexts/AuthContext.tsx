@@ -44,32 +44,26 @@ export function AuthProvider({ children }: AuthProviderProps) {
         const storedSession = localStorage.getItem('auth_session');
 
         if (storedUser && storedSession) {
-          try {
-            const user = JSON.parse(storedUser);
-            const sessionData = JSON.parse(storedSession);
+          const user = JSON.parse(storedUser);
+          const sessionData = JSON.parse(storedSession);
 
-            // Check if session is still valid (24 hours)
-            const sessionAge = Date.now() - sessionData.timestamp;
-            const maxAge = 24 * 60 * 60 * 1000; // 24 hours
+          // Check if session is still valid (24 hours)
+          const sessionAge = Date.now() - sessionData.timestamp;
+          const maxAge = 24 * 60 * 60 * 1000; // 24 hours
 
-            if (sessionAge < maxAge && mounted) {
-              setAuthState({
-                user,
-                isAuthenticated: true,
-                isLoading: false,
-                error: null,
-              });
-              return;
-            } 
-              // Session expired, clear storage
-              localStorage.removeItem('auth_user');
-              localStorage.removeItem('auth_session');
-          } catch (parseError) {
-            logger.error('Failed to parse stored auth data:', parseError);
-            // Clear corrupted data
+          if (sessionAge < maxAge && mounted) {
+            setAuthState({
+              user,
+              isAuthenticated: true,
+              isLoading: false,
+              error: null,
+            });
+            return;
+          }
+            // Session expired, clear storage
             localStorage.removeItem('auth_user');
             localStorage.removeItem('auth_session');
-          }
+
         }
 
         if (mounted) {
@@ -173,15 +167,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // TODO: Implement Supabase Auth refresh
       const storedUser = localStorage.getItem('auth_user');
       if (storedUser) {
-        try {
-          const user = JSON.parse(storedUser);
-          setAuthState((prev) => ({ ...prev, user }));
-        } catch (parseError) {
-          logger.error('Failed to parse stored user data:', parseError);
-          // Clear corrupted data
-          localStorage.removeItem('auth_user');
-          localStorage.removeItem('auth_session');
-        }
+        const user = JSON.parse(storedUser);
+        setAuthState((prev) => ({ ...prev, user }));
       }
     } catch (error) {
       logger.error('User refresh error:', error);

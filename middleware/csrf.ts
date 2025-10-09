@@ -77,35 +77,15 @@ function generateToken(): string {
       window.crypto.getRandomValues(array);
       return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
     } catch (error) {
-      console.warn('Crypto.getRandomValues failed, using Node.js crypto fallback:', error);
+      console.warn('Crypto.getRandomValues failed, using fallback:', error);
     }
   }
   
-  // Use Node.js crypto module for server-side or when web crypto is not available
-  if (typeof crypto !== 'undefined' && crypto.randomBytes) {
-    try {
-      return crypto.randomBytes(32).toString('hex');
-    } catch (error) {
-      console.warn('Node.js crypto.randomBytes failed, using secure fallback:', error);
-    }
-  }
-  
-  // Last resort: Use a more secure fallback that combines multiple sources
+  // Fallback for server-side or when crypto is not available
   const array = new Uint8Array(32);
-  const timestamp = Date.now().toString(16);
-  const performanceNow = (performance?.now() || Math.random() * 1000000).toString(16);
-  
-  // Fill array with a combination of sources for better entropy
   for (let i = 0; i < array.length; i++) {
-    const random1 = Math.random() * 256;
-    const random2 = Math.random() * 256;
-    const timestampEntropy = parseInt(timestamp.slice(-2) || '00', 16);
-    const performanceEntropy = parseInt(performanceNow.slice(-2) || '00', 16);
-    
-    // Combine multiple sources for better entropy
-    array[i] = Math.floor((random1 + random2 + timestampEntropy + performanceEntropy) % 256);
+    array[i] = Math.floor(Math.random() * 256);
   }
-  
   return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
 }
 
@@ -582,7 +562,7 @@ export async function rateLimit(request: Request): Promise<RateLimitResult> {
   let entry = store.get(key);
 
   // Initialize or reset if window has passed
-  if (!entry || now > entry.resetTime) {
+  if (!entry ?? now > entry.resetTime) {
     entry = {
       count: 0,
       resetTime: now + config.windowMs,
@@ -635,7 +615,7 @@ export function createRateLimit(config: RateLimitConfig) {
     const now = Date.now();
     let entry = store.get(key);
 
-    if (!entry || now > entry.resetTime) {
+    if (!entry ?? now > entry.resetTime) {
       entry = {
         count: 0,
         resetTime: now + config.windowMs,
@@ -698,7 +678,7 @@ export class RateLimiter {
     const now = Date.now();
 
     let entry = this.attempts.get(key);
-    if (!entry || now > entry.resetTime) {
+    if (!entry ?? now > entry.resetTime) {
       entry = { count: 0, resetTime: now + windowMs };
     }
 

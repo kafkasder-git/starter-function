@@ -827,17 +827,7 @@ export class FileStorageService {
     }
 
     const timestamp = Date.now();
-    // Use crypto.randomUUID if available, otherwise fallback to secure random
-    let random: string;
-    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
-      random = crypto.randomUUID().replace(/-/g, '').substring(0, 9);
-    } else if (typeof window !== 'undefined' && window.crypto && window.crypto.getRandomValues) {
-      const array = new Uint8Array(9);
-      window.crypto.getRandomValues(array);
-      random = Array.from(array, byte => byte.toString(36)).join('').substring(0, 9);
-    } else {
-      random = Math.random().toString(36).substr(2, 9);
-    }
+    const random = Math.random().toString(36).substr(2, 9);
     const extension = originalName.split('.').pop();
     const nameWithoutExtension = originalName.replace(`.${extension}`, '');
 

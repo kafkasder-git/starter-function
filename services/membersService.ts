@@ -223,40 +223,25 @@ export class MembersService {
         return { error: error.message };
       }
 
-      type MemberReduced = {
-        membership_status: string;
-        membership_type: string;
-        city: string | null;
-        profession: string | null;
-        join_date: string;
-        birth_date: string | null;
-        volunteer_hours: number | null;
-        contribution_amount: number | null;
-        fee_paid: boolean | null;
-      };
-
-      const members: MemberReduced[] = (membersData as MemberReduced[]) || [];
+      const members = membersData || [];
 
       // Calculate statistics
       const total = members.length;
 
       // Status breakdown
-      const statusCounts = members.reduce<Record<string, number>>((acc, m: MemberReduced) => {
+      const statusCounts = members.reduce<Record<string, number>>((acc, m) => {
         acc[m.membership_status] = (acc[m.membership_status] || 0) + 1;
         return acc;
       }, {});
 
       // Membership type breakdown
-      const membershipTypeCounts = members.reduce<Record<string, number>>(
-        (acc, m: MemberReduced) => {
-          acc[m.membership_type] = (acc[m.membership_type] || 0) + 1;
-          return acc;
-        },
-        {},
-      );
+      const membershipTypeCounts = members.reduce<Record<string, number>>((acc, m) => {
+        acc[m.membership_type] = (acc[m.membership_type] || 0) + 1;
+        return acc;
+      }, {});
 
       // City breakdown
-      const cityCounts = members.reduce<Record<string, number>>((acc, m: MemberReduced) => {
+      const cityCounts = members.reduce<Record<string, number>>((acc, m) => {
         if (m.city) {
           acc[m.city] = (acc[m.city] || 0) + 1;
         }
@@ -264,7 +249,7 @@ export class MembersService {
       }, {});
 
       // Profession breakdown
-      const professionCounts = members.reduce<Record<string, number>>((acc, m: MemberReduced) => {
+      const professionCounts = members.reduce<Record<string, number>>((acc, m) => {
         if (m.profession) {
           acc[m.profession] = (acc[m.profession] || 0) + 1;
         }
@@ -274,37 +259,27 @@ export class MembersService {
       // Recent joins (last 30 days)
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-      const recentJoins = members.filter(
-        (m: MemberReduced) => new Date(m.join_date) >= thirtyDaysAgo,
-      ).length;
+      const recentJoins = members.filter((m) => new Date(m.join_date) >= thirtyDaysAgo).length;
 
       // Average age
-      const membersWithAge = members.filter((m: MemberReduced) => m.birth_date);
+      const membersWithAge = members.filter((m) => m.birth_date);
       const averageAge =
         membersWithAge.length > 0
-          ? membersWithAge.reduce((sum: number, m: MemberReduced) => {
-              if (!m.birth_date) return sum;
-              const birth = new Date(m.birth_date as string);
-              const age = new Date().getFullYear() - birth.getFullYear();
+          ? membersWithAge.reduce((sum, m) => {
+              const age = new Date().getFullYear() - new Date(m.birth_date).getFullYear();
               return sum + age;
             }, 0) / membersWithAge.length
           : 0;
 
       // Total volunteer hours
-      const totalVolunteerHours = members.reduce(
-        (sum: number, m: MemberReduced) => sum + (m.volunteer_hours || 0),
-        0,
-      );
+      const totalVolunteerHours = members.reduce((sum, m) => sum + (m.volunteer_hours || 0), 0);
 
       // Total contributions
-      const totalContributions = members.reduce(
-        (sum: number, m: MemberReduced) => sum + (m.contribution_amount || 0),
-        0,
-      );
+      const totalContributions = members.reduce((sum, m) => sum + (m.contribution_amount || 0), 0);
 
       // Fee paid percentage
       const feePaidPercentage =
-        total > 0 ? (members.filter((m: MemberReduced) => m.fee_paid).length / total) * 100 : 0;
+        total > 0 ? (members.filter((m) => m.fee_paid).length / total) * 100 : 0;
 
       const stats: MemberStats = {
         total,
@@ -345,10 +320,10 @@ export class MembersService {
         return { error: error.message };
       }
 
-      const cities = [...new Set((data as { city: string | null }[]).map((item) => item.city))]
-        .filter((c): c is string => !!c)
-        .sort((a: string, b: string) => a.localeCompare(b));
-      return { data: cities as string[] };
+      const cities = [...new Set(data.map((item) => item.city))]
+        .filter(Boolean)
+        .sort((a, b) => a.localeCompare(b));
+      return { data: cities };
     } catch (error: any) {
       return { error: error.message || 'Şehirler getirilemedi' };
     }
@@ -366,14 +341,10 @@ export class MembersService {
         return { error: error.message };
       }
 
-      const membershipTypes = [
-        ...new Set(
-          (data as { membership_type: string | null }[]).map((item) => item.membership_type),
-        ),
-      ]
-        .filter((t): t is string => !!t)
-        .sort((a: string, b: string) => a.localeCompare(b));
-      return { data: membershipTypes as string[] };
+      const membershipTypes = [...new Set(data.map((item) => item.membership_type))].sort((a, b) =>
+        a.localeCompare(b),
+      );
+      return { data: membershipTypes };
     } catch (error: any) {
       return { error: error.message || 'Üyelik türleri getirilemedi' };
     }
@@ -391,12 +362,10 @@ export class MembersService {
         return { error: error.message };
       }
 
-      const professions = [
-        ...new Set((data as { profession: string | null }[]).map((item) => item.profession)),
-      ]
-        .filter((p): p is string => !!p)
-        .sort((a: string, b: string) => a.localeCompare(b));
-      return { data: professions as string[] };
+      const professions = [...new Set(data.map((item) => item.profession))]
+        .filter(Boolean)
+        .sort((a, b) => a.localeCompare(b));
+      return { data: professions };
     } catch (error: any) {
       return { error: error.message || 'Meslekler getirilemedi' };
     }
