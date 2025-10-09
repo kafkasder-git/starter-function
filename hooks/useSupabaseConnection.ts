@@ -7,6 +7,7 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import { environment } from '../lib/environment';
 
 import { logger } from '../lib/logging/logger';
 interface ConnectionStatus {
@@ -43,7 +44,7 @@ export function useSupabaseConnection(): ConnectionStatus {
               isConnected: true,
               isLoading: false,
               error: 'Bağlantı başarılı - Users tablosu henüz oluşturulmamış',
-              projectUrl: import.meta.env.VITE_SUPABASE_URL,
+              projectUrl: environment.supabase.url,
             });
           } else {
             throw error;
@@ -53,7 +54,7 @@ export function useSupabaseConnection(): ConnectionStatus {
             isConnected: true,
             isLoading: false,
             error: null,
-            projectUrl: import.meta.env.VITE_SUPABASE_URL,
+            projectUrl: environment.supabase.url,
           });
         }
       } catch (error: any) {
@@ -92,8 +93,8 @@ export function useSupabaseConnection(): ConnectionStatus {
  * @returns {void} Nothing
  */
 export function isSupabaseConfigured(): boolean {
-  const url = import.meta.env.VITE_SUPABASE_URL;
-  const key = import.meta.env.VITE_SUPABASE_ANON_KEY;
+  const url = environment.supabase.url;
+  const key = environment.supabase.anonKey;
 
   return Boolean(url &&
     key &&

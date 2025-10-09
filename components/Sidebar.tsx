@@ -19,7 +19,7 @@ import {
   Wallet,
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import { useSupabaseAuth } from '../contexts/SupabaseAuthContext';
+import { useAuthStore } from '../stores/authStore';
 import { useNavigation } from './app/NavigationManager';
 import { Badge } from './ui/badge';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
@@ -72,7 +72,7 @@ export function Sidebar({
   const [isPopoverHovered, setIsPopoverHovered] = useState(false);
 
   // Auth context for permission checks
-  const { user } = useSupabaseAuth();
+  const { user } = useAuthStore();
   
   // Navigation context
   const navigation = useNavigation();

@@ -67,27 +67,9 @@ const safeSupabaseUrl = normalizedUrl.startsWith('http')
   : 'https://placeholder.supabase.co';
 const safeSupabaseKey = normalizedKey ? normalizedKey : 'placeholder-key';
 
-// CSRF token storage
-let csrfToken: string | null = null;
-
-/**
- * Set CSRF token for Supabase requests
- */
-export function setCSRFToken(token: string | null) {
-  csrfToken = token;
-  if (token) {
-    sessionStorage.setItem('csrf_token', token);
-  } else {
-    sessionStorage.removeItem('csrf_token');
-  }
-}
-
-/**
- * Get current CSRF token
- */
-export function getCSRFToken(): string | null {
-  return csrfToken || sessionStorage.getItem('csrf_token');
-}
+// CSRF token functionality removed for security
+// Supabase JWT + RLS provides sufficient protection against CSRF attacks
+// CSRF tokens are not needed with proper JWT authentication
 
 // Supabase client instance oluştur - Singleton pattern
 let supabaseInstance: ReturnType<typeof createClient> | null = null;
@@ -126,38 +108,15 @@ export const supabase = (() => {
     (window as any).__supabaseInstance = supabaseInstance;
   }
 
-  // Intercept requests to add CSRF token
-  const originalFrom = supabaseInstance.from.bind(supabaseInstance);
-  supabaseInstance.from = function(table: string) {
-    const query = originalFrom(table);
-    const token = getCSRFToken();
-    
-    if (token) {
-      // Add CSRF token to headers for all requests
-      const originalHeaders = query.headers || {};
-      query.headers = {
-        ...originalHeaders,
-        'x-csrf-token': token,
-      };
-    }
-    
-    return query;
-  };
+  // CSRF token interceptor removed for security
+  // Supabase JWT authentication + RLS provides sufficient protection
 
   return supabaseInstance;
 })();
 
-// Admin client (service role key ile) - RLS bypass için
-export const supabaseAdmin = createClient(
-  safeSupabaseUrl,
-  (environment.supabase.serviceRoleKey || '').trim() || safeSupabaseKey,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
-  },
-);
+// Admin client removed for security - service role key should never be in frontend
+// If admin operations are needed, implement them in a backend API
+// export const supabaseAdmin = createClient(...) // REMOVED FOR SECURITY
 
 // Type definitions for TypeScript
 /**

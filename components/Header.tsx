@@ -18,7 +18,7 @@ import {
   X,
 } from 'lucide-react';
 import { useState } from 'react';
-import { useSupabaseAuth } from '../contexts/SupabaseAuthContext';
+import { useAuthStore } from '../stores/authStore';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 // SearchInput removed - using basic search instead
@@ -64,7 +64,7 @@ export function Header({
   onMobileMenuToggle,
 }: HeaderProps) {
   // Get real authenticated user
-  const { user, signOut } = useSupabaseAuth();
+  const { user, logout } = useAuthStore();
   const [showEnhancedSearch, setShowEnhancedSearch] = useState(false);
 
   // Enhanced UX features
@@ -363,7 +363,7 @@ export function Header({
                     e.preventDefault();
                     e.stopPropagation();
                     try {
-                      await signOut();
+                      await logout();
                     } catch (error) {
                       logger.error('Logout error:', error);
                     }

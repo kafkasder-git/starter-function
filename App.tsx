@@ -20,7 +20,7 @@ import { useCallback, useEffect, useState, memo, useMemo } from 'react';
 // Core System Imports
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { ToastProvider } from './components/ToastProvider';
-import { SupabaseAuthProvider, useSupabaseAuth } from './contexts/SupabaseAuthContext';
+import { useAuthStore } from './stores/authStore';
 
 // App Management Components
 import NavigationProvider, { useNavigation } from './components/app/NavigationManager';
@@ -56,7 +56,7 @@ const AppContent = memo(() => {
   // AI system removed
   // const { trackFeatureUse } = useUXAnalytics();
   const navigation = useNavigation();
-  const { isLoading } = useSupabaseAuth();
+  const { isLoading } = useAuthStore();
 
   const isOnline = typeof navigator !== 'undefined' ? navigator.onLine : true;
 
@@ -262,9 +262,7 @@ const AppWithNavigation = memo(() => {
 function AppWithErrorHandling() {
   return (
     <ErrorBoundary>
-      <SupabaseAuthProvider>
-        <AppWithNavigation />
-      </SupabaseAuthProvider>
+      <AppWithNavigation />
     </ErrorBoundary>
   );
 }

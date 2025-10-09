@@ -16,7 +16,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui
 import { Checkbox } from '../ui/checkbox';
 import { Alert, AlertDescription } from '../ui/alert';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../ui/dialog';
-import { useSupabaseAuth } from '../../contexts/SupabaseAuthContext';
+import { useAuthStore } from '../../stores/authStore';
 
 interface LoginPageProps {
   onLoginSuccess?: () => void;
@@ -29,7 +29,7 @@ interface LoginPageProps {
  * @returns {void} Nothing
  */
 export function LoginPage({ onLoginSuccess }: LoginPageProps) {
-  const { signIn, isLoading, error, clearError } = useSupabaseAuth();
+  const { login, isLoading, error, clearError } = useAuthStore();
   const [credentials, setCredentials] = useState({
     email: '',
     password: '',
@@ -79,7 +79,7 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
     }
 
     try {
-      await signIn(credentials.email, credentials.password, credentials.rememberMe);
+      await login(credentials.email, credentials.password, credentials.rememberMe);
       onLoginSuccess?.();
     } catch {
       // Error is handled in SupabaseAuthContext

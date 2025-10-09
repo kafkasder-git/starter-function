@@ -37,7 +37,8 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 // Removed direct supabase import - using service layer instead
 import { ihtiyacSahipleriService } from '../../services/ihtiyacSahipleriService';
-import { supabaseAdmin } from '../../lib/supabase';
+// supabaseAdmin removed for security - use regular supabase client with RLS
+import { supabase } from '../../lib/supabase';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
@@ -599,7 +600,7 @@ export function BeneficiaryDetailPageComprehensive({
 
       for (const policy of policies) {
         try {
-          await supabaseAdmin.rpc('exec_sql', { sql: policy.sql });
+          await supabase.rpc('exec_sql', { sql: policy.sql });
           logger.info('✅ Policy created:', policy.name);
         } catch {
           // Policy zaten varsa hata verebilir, bu normal
@@ -626,7 +627,7 @@ export function BeneficiaryDetailPageComprehensive({
 
       logger.info('🔄 Searching relationships for UUID:', primaryUuid);
 
-      const { data: relationships, error } = await supabaseAdmin
+      const { data: relationships, error } = await supabase
         .from('family_relationships')
         .select('*')
         .eq('primary_beneficiary_id', primaryUuid);
@@ -854,7 +855,7 @@ export function BeneficiaryDetailPageComprehensive({
         memberUuid,
       });
 
-      const { data, error } = await supabaseAdmin
+      const { data, error } = await supabase
         .from('family_relationships')
         .insert({
           primary_beneficiary_id: primaryUuid,
@@ -893,7 +894,7 @@ export function BeneficiaryDetailPageComprehensive({
     try {
       logger.info('🔄 Removing relationship:', relationshipId);
 
-      const { error } = await supabaseAdmin
+      const { error } = await supabase
         .from('family_relationships')
         .delete()
         .eq('id', relationshipId);

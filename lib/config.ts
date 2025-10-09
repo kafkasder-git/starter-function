@@ -20,11 +20,13 @@ export const APP_CONFIG = {
   },
 };
 
-// Supabase Configuration
+import { environment } from './environment';
+
+// Supabase Configuration - Service role key removed for security
 export const SUPABASE_CONFIG = {
-  url: import.meta.env.VITE_SUPABASE_URL,
-  anonKey: import.meta.env.VITE_SUPABASE_ANON_KEY,
-  serviceRoleKey: import.meta.env.SUPABASE_SERVICE_ROLE_KEY,
+  url: environment.supabase.url,
+  anonKey: environment.supabase.anonKey,
+  // serviceRoleKey removed - never expose in frontend for security
 };
 
 // Environment check

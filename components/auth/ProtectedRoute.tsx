@@ -6,7 +6,7 @@
  */
 
 import type { ReactNode } from 'react';
-import { useSupabaseAuth } from '../../contexts/SupabaseAuthContext';
+import { useAuthStore } from '../../stores/authStore';
 import { UserRole, type Permission, ROLE_PERMISSIONS } from '../../types/auth';
 import { UnauthorizedPage } from './UnauthorizedPage';
 import { LoadingSpinner } from '../LoadingSpinner';
@@ -33,7 +33,7 @@ export function ProtectedRoute({
   requiredRole,
   fallback,
 }: ProtectedRouteProps) {
-  const { isAuthenticated, isLoading, user } = useSupabaseAuth();
+  const { isAuthenticated, isLoading, user } = useAuthStore();
 
   // Get user role from Supabase user metadata
   const getUserRole = (): UserRole | null => {
@@ -148,7 +148,7 @@ export function PermissionGuard({
   permission: Permission;
   fallback?: ReactNode;
 }) {
-  const { isAuthenticated, user } = useSupabaseAuth();
+  const { isAuthenticated, user } = useAuthStore();
 
   if (!isAuthenticated) {
     return fallback ?? null;

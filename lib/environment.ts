@@ -13,7 +13,7 @@ interface EnvironmentConfig {
   supabase: {
     url: string;
     anonKey: string;
-    serviceRoleKey?: string;
+    // serviceRoleKey removed for security - should only be used in backend
   };
   sentry?: {
     dsn: string;
@@ -85,7 +85,7 @@ export const environment: EnvironmentConfig = {
   supabase: {
     url: getEnv('VITE_SUPABASE_URL', ''),
     anonKey: getEnv('VITE_SUPABASE_ANON_KEY', ''),
-    serviceRoleKey: getEnv('VITE_SUPABASE_SERVICE_ROLE_KEY'),
+    // serviceRoleKey removed - never expose in frontend for security
   },
   
   sentry: getEnv('VITE_SENTRY_DSN') ? {

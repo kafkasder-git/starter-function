@@ -22,7 +22,7 @@ import {
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { useSupabaseAuth } from '../../contexts/SupabaseAuthContext';
+import { useAuthStore } from '../../stores/authStore';
 import { PageLayout } from '../PageLayout';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Badge } from '../ui/badge';
@@ -68,7 +68,7 @@ interface ValidationErrors {
  * @returns {void} Nothing
  */
 export function ProfilePage() {
-  const { user, isAuthenticated } = useSupabaseAuth();
+  const { user, isAuthenticated } = useAuthStore();
   const [editMode, setEditMode] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<ValidationErrors>({});

@@ -10,7 +10,7 @@ import { ShieldX, ArrowLeft, Home, AlertTriangle } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuthStore } from '../../stores/authStore';
 import { Permission, UserRole } from '../../types/auth';
 
 interface UnauthorizedPageProps {
@@ -76,7 +76,7 @@ export function UnauthorizedPage({
   onBack,
   onGoHome,
 }: UnauthorizedPageProps) {
-  const { user, logout } = useAuth();
+  const { user, logout } = useAuthStore();
 
   const handleBack = () => {
     if (onBack) {

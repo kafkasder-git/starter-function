@@ -14,7 +14,7 @@ import { Label } from '../ui/label';
 import { Switch } from '../ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { toast } from 'sonner';
-import PageLayout from '../PageLayout';
+import { PageLayout } from '../PageLayout';
 
 interface SystemSettings {
   general: {
