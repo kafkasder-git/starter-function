@@ -92,24 +92,15 @@ export function EventsPage() {
     },
   ];
 
-  const getEventTypeColor = (type: Event['type']) => {
-    const colors = {
-      meeting: 'bg-blue-100 text-blue-700',
-      charity: 'bg-green-100 text-green-700',
-      education: 'bg-purple-100 text-purple-700',
-      social: 'bg-amber-100 text-amber-700',
+  const getEventTypeBadge = (type: Event['type']) => {
+    const mapping = {
+      meeting: { label: 'Toplantı', variant: 'info' as const },
+      charity: { label: 'Hayır İşi', variant: 'success' as const },
+      education: { label: 'Eğitim', variant: 'default' as const },
+      social: { label: 'Sosyal', variant: 'warning' as const },
     };
-    return colors[type];
-  };
-
-  const getEventTypeLabel = (type: Event['type']) => {
-    const labels = {
-      meeting: 'Toplantı',
-      charity: 'Hayır İşi',
-      education: 'Eğitim',
-      social: 'Sosyal',
-    };
-    return labels[type];
+    const config = mapping[type];
+    return <Badge variant={config.variant}>{config.label}</Badge>;
   };
 
   const handleNewEvent = () => {
@@ -255,9 +246,9 @@ export function EventsPage() {
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between gap-3">
                   <CardTitle className="flex-1 pr-2 text-lg sm:text-xl">{event.title}</CardTitle>
-                  <Badge className={`${getEventTypeColor(event.type)} flex-shrink-0`}>
-                    {getEventTypeLabel(event.type)}
-                  </Badge>
+                  <div className="flex-shrink-0">
+                    {getEventTypeBadge(event.type)}
+                  </div>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">

@@ -254,73 +254,105 @@ export default function BeneficiaryForm({
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Kamera Tarama Butonu */}
-        <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+        <div className="mb-6 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl shadow-sm">
           <div className="flex items-center justify-between">
-            <div>
-              <h4 className="font-medium text-blue-900">Hızlı Kayıt</h4>
-              <p className="text-sm text-blue-700">
-                Kimlik veya pasaport belgenizi kameraya göstererek bilgileri otomatik doldurun
-              </p>
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full">
+                <Camera className="h-6 w-6 text-blue-600" />
+              </div>
+              <div>
+                <h4 className="text-lg font-semibold text-blue-900 mb-1">Hızlı Kayıt</h4>
+                <p className="text-sm text-blue-700 leading-relaxed">
+                  Kimlik veya pasaport belgenizi kameraya göstererek bilgileri otomatik doldurun
+                </p>
+                <p className="text-xs text-blue-600 mt-1">
+                  ⚡ Zaman kazanın, manuel giriş yapmadan bilgileri otomatik doldurun
+                </p>
+              </div>
             </div>
             <Button
               type="button"
               onClick={() => { setIsCameraOpen(true); }}
-              variant="outline"
-              className="flex items-center gap-2 border-blue-300 text-blue-700 hover:bg-blue-100"
+              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium shadow-sm transition-all duration-200 hover:shadow-md"
             >
-              <Camera className="h-4 w-4" />
+              <Camera className="h-5 w-5" />
               Kamera ile Tara
             </Button>
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="full_name">Ad Soyad *</Label>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <Label htmlFor="full_name" className="form-label required">
+              Ad Soyad
+            </Label>
             <Input
               id="full_name"
               {...register('full_name')}
-              placeholder="Ad Soyad"
+              placeholder="Kimlikte yazıldığı gibi tam ad ve soyad"
+              className="form-input"
             />
             {errors.full_name && (
-              <p className="text-sm text-red-500">{errors.full_name.message}</p>
+              <p className="form-error-text">{errors.full_name.message}</p>
             )}
+            <p className="form-helper-text">
+              Örnek: Ahmet Mehmet Yılmaz
+            </p>
           </div>
 
-          <div>
-            <Label htmlFor="identity_no">Kimlik Numarası *</Label>
+          <div className="space-y-2">
+            <Label htmlFor="identity_no" className="form-label required">
+              Kimlik Numarası
+            </Label>
             <Input
               id="identity_no"
               {...register('identity_no')}
               placeholder="11 haneli kimlik numarası"
+              className="form-input"
+              maxLength={11}
             />
             {errors.identity_no && (
-              <p className="text-sm text-red-500">{errors.identity_no.message}</p>
+              <p className="form-error-text">{errors.identity_no.message}</p>
             )}
+            <p className="form-helper-text">
+              Sadece rakam, boşluk veya tire kullanmayın
+            </p>
           </div>
 
-          <div>
-            <Label htmlFor="nationality">Uyruk *</Label>
+          <div className="space-y-2">
+            <Label htmlFor="nationality" className="form-label required">
+              Uyruk
+            </Label>
             <Input
               id="nationality"
               {...register('nationality')}
-              placeholder="Uyruk"
+              placeholder="Örnek: Türk, Suriyeli, Iraklı"
+              className="form-input"
             />
             {errors.nationality && (
-              <p className="text-sm text-red-500">{errors.nationality.message}</p>
+              <p className="form-error-text">{errors.nationality.message}</p>
             )}
+            <p className="form-helper-text">
+              Vatandaşlık bilgisi
+            </p>
           </div>
 
-          <div>
-            <Label htmlFor="country">Ülke Kodu *</Label>
+          <div className="space-y-2">
+            <Label htmlFor="country" className="form-label required">
+              Ülke Kodu
+            </Label>
             <Input
               id="country"
               {...register('country')}
               placeholder="TR"
               maxLength={2}
+              className="form-input"
             />
             {errors.country && (
-              <p className="text-sm text-red-500">{errors.country.message}</p>
+              <p className="form-error-text">{errors.country.message}</p>
             )}
+            <p className="form-helper-text">
+              2 harfli ülke kodu (ISO standardı)
+            </p>
           </div>
         </div>
       </CardContent>
@@ -726,57 +758,102 @@ export default function BeneficiaryForm({
 
   return (
     <div className="max-w-4xl mx-auto p-6">
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold mb-2">Yardım Alanı Kayıt Formu</h2>
-        <p className="text-gray-600">
-          Adım {currentStep} / {totalSteps}
-        </p>
-        <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-          <div
-            className={`bg-blue-600 h-2 rounded-full transition-all duration-300 ${
-              (currentStep / totalSteps) * 100 <= 25 ? 'progress-bar-25' :
-              (currentStep / totalSteps) * 100 <= 50 ? 'progress-bar-50' :
-              (currentStep / totalSteps) * 100 <= 75 ? 'progress-bar-75' :
-              'progress-bar-100'
-            }`}
-          />
+      <div className="mb-8">
+        <div className="text-center mb-6">
+          <h2 className="text-3xl font-bold text-gray-900 mb-2">Yardım Alanı Kayıt Formu</h2>
+          <p className="text-lg text-gray-600 mb-4">
+            İhtiyaç sahibi bilgilerini adım adım doldurun
+          </p>
+        </div>
+        
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center space-x-3">
+              <div className="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full">
+                <span className="text-blue-600 font-semibold text-sm">{currentStep}</span>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Adım {currentStep} / {totalSteps}
+                </h3>
+                <p className="text-sm text-gray-500">
+                  {currentStep === 1 && "Temel bilgileri girin"}
+                  {currentStep === 2 && "İletişim bilgilerini girin"}
+                  {currentStep === 3 && "Adres bilgilerini girin"}
+                  {currentStep === 4 && "Yardım bilgilerini girin"}
+                  {currentStep === 5 && "Aile üyelerini ekleyin"}
+                  {currentStep === 6 && "İhtiyaçları belirtin"}
+                </p>
+              </div>
+            </div>
+            <div className="text-right">
+              <span className="text-sm font-medium text-gray-500">
+                {Math.round((currentStep / totalSteps) * 100)}% Tamamlandı
+              </span>
+            </div>
+          </div>
+          
+          <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+            <div
+              className="bg-gradient-to-r from-blue-500 to-blue-600 h-3 rounded-full transition-all duration-500 ease-out shadow-sm"
+              style={{ width: `${(currentStep / totalSteps) * 100}%` }}
+            />
+          </div>
         </div>
       </div>
 
       <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
         {renderCurrentStep()}
 
-        <div className="flex justify-between">
+        <div className="flex justify-between items-center pt-6 border-t border-gray-200">
           <div>
             {currentStep > 1 && (
-              <Button type="button" onClick={prevStep} variant="outline">
-                Önceki
+              <Button 
+                type="button" 
+                onClick={prevStep} 
+                variant="outline"
+                className="px-6 py-3 text-gray-700 border-gray-300 hover:bg-gray-50 transition-all duration-200"
+              >
+                ← Önceki Adım
               </Button>
             )}
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex gap-3">
             {onCancel && (
-              <Button type="button" onClick={onCancel} variant="outline">
+              <Button 
+                type="button" 
+                onClick={onCancel} 
+                variant="outline"
+                className="px-6 py-3 text-gray-700 border-gray-300 hover:bg-gray-50 transition-all duration-200"
+              >
                 İptal
               </Button>
             )}
 
             {currentStep < totalSteps ? (
-              <Button type="button" onClick={nextStep}>
-                Sonraki
+              <Button 
+                type="button" 
+                onClick={nextStep}
+                className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
+              >
+                Sonraki Adım →
               </Button>
             ) : (
-              <Button type="submit" disabled={isSubmitting || isLoading}>
+              <Button 
+                type="submit" 
+                disabled={isSubmitting || isLoading}
+                className="px-8 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg shadow-sm hover:shadow-md transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
                 {isSubmitting || isLoading ? (
                   <>
-                    <Save className="h-4 w-4 mr-2 animate-spin" />
+                    <Save className="h-5 w-5 mr-2 animate-spin" />
                     Kaydediliyor...
                   </>
                 ) : (
                   <>
-                    <Save className="h-4 w-4 mr-2" />
-                    Kaydet
+                    <Save className="h-5 w-5 mr-2" />
+                    Kaydet ve Tamamla
                   </>
                 )}
               </Button>

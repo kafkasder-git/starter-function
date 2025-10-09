@@ -289,9 +289,12 @@ function BankPaymentOrdersPageContent() {
               İhtiyaç Sahibi İçin Yeni Ödeme Emri
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-lg">
+          <DialogContent className="sm:max-w-lg" aria-describedby="payment-order-description">
             <DialogHeader>
               <DialogTitle>Yeni Ödeme Emri Oluştur</DialogTitle>
+              <DialogDescription id="payment-order-description">
+                İhtiyaç sahibi için yeni ödeme emri oluşturun. Zorunlu alanları (*) doldurmanız gereklidir.
+              </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 max-h-96 overflow-y-auto">
               <div className="grid grid-cols-2 gap-4">

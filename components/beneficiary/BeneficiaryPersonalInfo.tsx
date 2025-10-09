@@ -52,10 +52,12 @@ export function BeneficiaryPersonalInfo({
           </CardTitle>
         </CardHeader>
 
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="name">Ad Soyad *</Label>
+        <CardContent className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="name" className="form-label required">
+                Ad Soyad
+              </Label>
               {editMode ? (
                 <Input
                   id="name"
@@ -63,15 +65,20 @@ export function BeneficiaryPersonalInfo({
                   onChange={(e) => {
                     onUpdate('name', e.target.value);
                   }}
-                  placeholder="Ad soyad giriniz"
+                  placeholder="Kimlikte yazıldığı gibi tam ad ve soyad"
+                  className="form-input"
                 />
               ) : (
-                <p className="p-2 text-sm">{beneficiary?.name ?? '-'}</p>
+                <div className="p-3 bg-gray-50 rounded-lg">
+                  <p className="text-sm font-medium text-gray-900">{beneficiary?.name ?? '-'}</p>
+                </div>
               )}
             </div>
 
-            <div>
-              <Label htmlFor="tcNo">TC Kimlik No *</Label>
+            <div className="space-y-2">
+              <Label htmlFor="tcNo" className="form-label required">
+                TC Kimlik No
+              </Label>
               {editMode ? (
                 <Input
                   id="tcNo"
@@ -79,18 +86,23 @@ export function BeneficiaryPersonalInfo({
                   onChange={(e) => {
                     onUpdate('tcNo', e.target.value);
                   }}
-                  placeholder="TC Kimlik No"
+                  placeholder="11 haneli TC kimlik numarası"
                   maxLength={11}
+                  className="form-input"
                 />
               ) : (
-                <p className="p-2 text-sm">{beneficiary?.tcNo ?? '-'}</p>
+                <div className="p-3 bg-gray-50 rounded-lg">
+                  <p className="text-sm font-medium text-gray-900">{beneficiary?.tcNo ?? '-'}</p>
+                </div>
               )}
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="birthDate">Doğum Tarihi</Label>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="birthDate" className="form-label">
+                Doğum Tarihi
+              </Label>
               {editMode ? (
                 <Input
                   id="birthDate"
@@ -99,18 +111,27 @@ export function BeneficiaryPersonalInfo({
                   onChange={(e) => {
                     onUpdate('birthDate', e.target.value);
                   }}
+                  className="form-input"
                 />
               ) : (
-                <p className="p-2 text-sm">
-                  {beneficiary?.birthDate
-                    ? new Date(beneficiary.birthDate).toLocaleDateString('tr-TR')
-                    : '-'}
-                </p>
+                <div className="p-3 bg-gray-50 rounded-lg">
+                  <p className="text-sm font-medium text-gray-900">
+                    {beneficiary?.birthDate
+                      ? new Date(beneficiary.birthDate).toLocaleDateString('tr-TR', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })
+                      : '-'}
+                  </p>
+                </div>
               )}
             </div>
 
-            <div>
-              <Label htmlFor="gender">Cinsiyet</Label>
+            <div className="space-y-2">
+              <Label htmlFor="gender" className="form-label">
+                Cinsiyet
+              </Label>
               {editMode ? (
                 <Select
                   value={beneficiary?.gender ?? ''}
@@ -118,7 +139,7 @@ export function BeneficiaryPersonalInfo({
                     onUpdate('gender', value);
                   }}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="form-input">
                     <SelectValue placeholder="Cinsiyet seçin" />
                   </SelectTrigger>
                   <SelectContent>
@@ -127,14 +148,18 @@ export function BeneficiaryPersonalInfo({
                   </SelectContent>
                 </Select>
               ) : (
-                <p className="p-2 text-sm">{beneficiary?.gender ?? '-'}</p>
+                <div className="p-3 bg-gray-50 rounded-lg">
+                  <p className="text-sm font-medium text-gray-900">{beneficiary?.gender ?? '-'}</p>
+                </div>
               )}
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="maritalStatus">Medeni Durum</Label>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="maritalStatus" className="form-label">
+                Medeni Durum
+              </Label>
               {editMode ? (
                 <Select
                   value={beneficiary?.maritalStatus ?? ''}
@@ -142,7 +167,7 @@ export function BeneficiaryPersonalInfo({
                     onUpdate('maritalStatus', value);
                   }}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="form-input">
                     <SelectValue placeholder="Medeni durum seçin" />
                   </SelectTrigger>
                   <SelectContent>
@@ -154,12 +179,16 @@ export function BeneficiaryPersonalInfo({
                   </SelectContent>
                 </Select>
               ) : (
-                <p className="p-2 text-sm">{beneficiary?.maritalStatus ?? '-'}</p>
+                <div className="p-3 bg-gray-50 rounded-lg">
+                  <p className="text-sm font-medium text-gray-900">{beneficiary?.maritalStatus ?? '-'}</p>
+                </div>
               )}
             </div>
 
-            <div>
-              <Label htmlFor="education">Eğitim Durumu</Label>
+            <div className="space-y-2">
+              <Label htmlFor="education" className="form-label">
+                Eğitim Durumu
+              </Label>
               {editMode ? (
                 <Select
                   value={beneficiary?.education ?? ''}
@@ -167,7 +196,7 @@ export function BeneficiaryPersonalInfo({
                     onUpdate('education', value);
                   }}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="form-input">
                     <SelectValue placeholder="Eğitim durumu seçin" />
                   </SelectTrigger>
                   <SelectContent>
@@ -179,13 +208,17 @@ export function BeneficiaryPersonalInfo({
                   </SelectContent>
                 </Select>
               ) : (
-                <p className="p-2 text-sm">{beneficiary?.education ?? '-'}</p>
+                <div className="p-3 bg-gray-50 rounded-lg">
+                  <p className="text-sm font-medium text-gray-900">{beneficiary?.education ?? '-'}</p>
+                </div>
               )}
             </div>
           </div>
 
-          <div>
-            <Label htmlFor="occupation">Meslek</Label>
+          <div className="space-y-2">
+            <Label htmlFor="occupation" className="form-label">
+              Meslek
+            </Label>
             {editMode ? (
               <Select
                 value={beneficiary?.occupation ?? ''}
@@ -193,7 +226,7 @@ export function BeneficiaryPersonalInfo({
                   onUpdate('occupation', value);
                 }}
               >
-                <SelectTrigger>
+                <SelectTrigger className="form-input">
                   <SelectValue placeholder="Meslek seçin" />
                 </SelectTrigger>
                 <SelectContent>
@@ -205,7 +238,9 @@ export function BeneficiaryPersonalInfo({
                 </SelectContent>
               </Select>
             ) : (
-              <p className="p-2 text-sm">{beneficiary?.occupation ?? '-'}</p>
+              <div className="p-3 bg-gray-50 rounded-lg">
+                <p className="text-sm font-medium text-gray-900">{beneficiary?.occupation ?? '-'}</p>
+              </div>
             )}
           </div>
         </CardContent>
@@ -220,9 +255,11 @@ export function BeneficiaryPersonalInfo({
           </CardTitle>
         </CardHeader>
 
-        <CardContent className="space-y-4">
-          <div>
-            <Label htmlFor="phone">Telefon *</Label>
+        <CardContent className="space-y-6">
+          <div className="space-y-2">
+            <Label htmlFor="phone" className="form-label required">
+              Telefon
+            </Label>
             {editMode ? (
               <Input
                 id="phone"
@@ -230,15 +267,20 @@ export function BeneficiaryPersonalInfo({
                 onChange={(e) => {
                   onUpdate('phone', e.target.value);
                 }}
-                placeholder="Telefon numarası"
+                placeholder="05XX XXX XX XX"
+                className="form-input"
               />
             ) : (
-              <p className="p-2 text-sm">{beneficiary?.phone ?? '-'}</p>
+              <div className="p-3 bg-gray-50 rounded-lg">
+                <p className="text-sm font-medium text-gray-900">{beneficiary?.phone ?? '-'}</p>
+              </div>
             )}
           </div>
 
-          <div>
-            <Label htmlFor="email">E-mail</Label>
+          <div className="space-y-2">
+            <Label htmlFor="email" className="form-label">
+              E-mail
+            </Label>
             {editMode ? (
               <Input
                 id="email"
@@ -247,15 +289,20 @@ export function BeneficiaryPersonalInfo({
                 onChange={(e) => {
                   onUpdate('email', e.target.value);
                 }}
-                placeholder="E-mail adresi"
+                placeholder="ornek@email.com"
+                className="form-input"
               />
             ) : (
-              <p className="p-2 text-sm">{beneficiary?.email ?? '-'}</p>
+              <div className="p-3 bg-gray-50 rounded-lg">
+                <p className="text-sm font-medium text-gray-900">{beneficiary?.email ?? '-'}</p>
+              </div>
             )}
           </div>
 
-          <div>
-            <Label htmlFor="address">Adres</Label>
+          <div className="space-y-2">
+            <Label htmlFor="address" className="form-label">
+              Adres
+            </Label>
             {editMode ? (
               <Textarea
                 id="address"
@@ -263,17 +310,22 @@ export function BeneficiaryPersonalInfo({
                 onChange={(e) => {
                   onUpdate('address', e.target.value);
                 }}
-                placeholder="Tam adres bilgisi"
+                placeholder="Mahalle, sokak, bina no, daire no"
                 rows={3}
+                className="form-input"
               />
             ) : (
-              <p className="p-2 text-sm">{beneficiary?.address ?? '-'}</p>
+              <div className="p-3 bg-gray-50 rounded-lg">
+                <p className="text-sm font-medium text-gray-900">{beneficiary?.address ?? '-'}</p>
+              </div>
             )}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="city">İl</Label>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="city" className="form-label">
+                İl
+              </Label>
               {editMode ? (
                 <Input
                   id="city"
@@ -281,15 +333,20 @@ export function BeneficiaryPersonalInfo({
                   onChange={(e) => {
                     onUpdate('city', e.target.value);
                   }}
-                  placeholder="İl"
+                  placeholder="İl adı"
+                  className="form-input"
                 />
               ) : (
-                <p className="p-2 text-sm">{beneficiary?.city ?? '-'}</p>
+                <div className="p-3 bg-gray-50 rounded-lg">
+                  <p className="text-sm font-medium text-gray-900">{beneficiary?.city ?? '-'}</p>
+                </div>
               )}
             </div>
 
-            <div>
-              <Label htmlFor="district">İlçe</Label>
+            <div className="space-y-2">
+              <Label htmlFor="district" className="form-label">
+                İlçe
+              </Label>
               {editMode ? (
                 <Input
                   id="district"
@@ -297,10 +354,13 @@ export function BeneficiaryPersonalInfo({
                   onChange={(e) => {
                     onUpdate('district', e.target.value);
                   }}
-                  placeholder="İlçe"
+                  placeholder="İlçe adı"
+                  className="form-input"
                 />
               ) : (
-                <p className="p-2 text-sm">{beneficiary?.district ?? '-'}</p>
+                <div className="p-3 bg-gray-50 rounded-lg">
+                  <p className="text-sm font-medium text-gray-900">{beneficiary?.district ?? '-'}</p>
+                </div>
               )}
             </div>
           </div>

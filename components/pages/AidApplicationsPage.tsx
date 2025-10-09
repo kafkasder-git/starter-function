@@ -184,19 +184,13 @@ export function AidApplicationsPage() {
       actions={
         <div className="flex w-full flex-wrap items-center justify-end gap-2 p-2 sm:w-auto sm:p-0">
           <Button
-            className="relative z-20 min-h-[44px] flex-shrink-0 border-0 px-6 py-3 text-sm font-medium shadow-lg transition-all duration-200 hover:scale-105 focus:ring-2 focus:ring-blue-300 focus:ring-offset-2 focus:outline-none"
-            style={{
-              backgroundColor: '#1e3a8a',
-              color: '#ffffff',
-              border: 'none',
-              boxShadow: '0 4px 12px rgba(30, 58, 138, 0.4)',
-              minWidth: '180px',
-            }}
+            variant="default"
+            className="min-h-[44px] min-w-[44px]"
             onClick={() => {
               setShowCreateDialog(true);
             }}
           >
-            <Plus className="mr-2 h-4 w-4" />
+            <Plus className="h-4 w-4" />
             <span className="hidden lg:inline">İhtiyaç Sahibi Adına Başvuru Oluştur</span>
             <span className="lg:hidden">Yeni Başvuru</span>
           </Button>
@@ -213,7 +207,7 @@ export function AidApplicationsPage() {
                   <FileText className="h-4 w-4 text-blue-600" />
                 </div>
                 <div className="text-right">
-                  <div className="text-xl font-bold text-blue-600 sm:text-2xl">{stats.total}</div>
+                  <div className="text-lg font-bold text-blue-600 sm:text-xl lg:text-2xl">{stats.total}</div>
                 </div>
               </div>
               <p className="text-sm font-medium text-gray-600">Toplam Başvuru</p>
@@ -228,7 +222,7 @@ export function AidApplicationsPage() {
                   <Clock className="h-4 w-4 text-yellow-600" />
                 </div>
                 <div className="text-right">
-                  <div className="text-xl font-bold text-yellow-600 sm:text-2xl">
+                  <div className="text-lg font-bold text-yellow-600 sm:text-xl lg:text-2xl">
                     {stats.pending}
                   </div>
                 </div>
@@ -245,7 +239,7 @@ export function AidApplicationsPage() {
                   <CheckCircle className="h-4 w-4 text-green-600" />
                 </div>
                 <div className="text-right">
-                  <div className="text-xl font-bold text-green-600 sm:text-2xl">
+                  <div className="text-lg font-bold text-green-600 sm:text-xl lg:text-2xl">
                     {stats.approved}
                   </div>
                 </div>
@@ -264,7 +258,7 @@ export function AidApplicationsPage() {
                   <XCircle className="h-4 w-4 text-red-600" />
                 </div>
                 <div className="text-right">
-                  <div className="text-xl font-bold text-red-600 sm:text-2xl">{stats.rejected}</div>
+                  <div className="text-lg font-bold text-red-600 sm:text-xl lg:text-2xl">{stats.rejected}</div>
                 </div>
               </div>
               <p className="text-sm font-medium text-gray-600">Reddedilen</p>
@@ -288,7 +282,7 @@ export function AidApplicationsPage() {
                   onChange={(e) => {
                     setSearchTerm(e.target.value);
                   }}
-                  className="min-h-[44px] pl-10 text-base"
+                  className="min-h-[44px] pl-10 text-sm sm:text-base"
                   inputMode="search"
                 />
               </div>
@@ -296,7 +290,7 @@ export function AidApplicationsPage() {
               {/* Mobile Filter Grid */}
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="min-h-[44px] text-base">
+                  <SelectTrigger className="min-h-[44px] text-sm sm:text-base">
                     <SelectValue placeholder="Tüm Durumlar" />
                   </SelectTrigger>
                   <SelectContent>
@@ -309,7 +303,7 @@ export function AidApplicationsPage() {
                 </Select>
 
                 <Select value={priorityFilter} onValueChange={setPriorityFilter}>
-                  <SelectTrigger className="min-h-[44px] text-base">
+                  <SelectTrigger className="min-h-[44px] text-sm sm:text-base">
                     <SelectValue placeholder="Tüm Öncelikler" />
                   </SelectTrigger>
                   <SelectContent>
@@ -322,7 +316,7 @@ export function AidApplicationsPage() {
                 </Select>
 
                 <Select value={aidTypeFilter} onValueChange={setAidTypeFilter}>
-                  <SelectTrigger className="min-h-[44px] text-base">
+                  <SelectTrigger className="min-h-[44px] text-sm sm:text-base">
                     <SelectValue placeholder="Tüm Türler" />
                   </SelectTrigger>
                   <SelectContent>
@@ -394,7 +388,7 @@ export function AidApplicationsPage() {
                           </div>
                         </div>
 
-                        <div className="flex items-center justify-between border-t border-gray-100 pt-3">
+                        <div className="flex flex-wrap items-center justify-between border-t border-gray-100 pt-3 gap-2">
                           <div className="flex gap-2">
                             <Button
                               variant="ghost"

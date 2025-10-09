@@ -81,11 +81,19 @@ export function BeneficiaryHealthInfo({
           </CardTitle>
         </CardHeader>
 
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 gap-4">
-            <div className="p-4 bg-gray-50 rounded-lg">
-              <div className="flex items-center justify-between mb-2">
-                <span className="font-medium">Genel Sağlık Durumu</span>
+        <CardContent className="space-y-6">
+          <div className="grid grid-cols-1 gap-6">
+            <div className="p-6 bg-gradient-to-r from-gray-50 to-blue-50 border border-gray-200 rounded-xl shadow-sm">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full">
+                    <Heart className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-semibold text-gray-900">Genel Sağlık Durumu</h4>
+                    <p className="text-sm text-gray-600">Sağlık durumu özeti</p>
+                  </div>
+                </div>
                 <Badge
                   variant={
                     activeConditions.length === 0
@@ -94,37 +102,59 @@ export function BeneficiaryHealthInfo({
                         ? 'secondary'
                         : 'destructive'
                   }
+                  className={`px-4 py-2 text-sm font-medium ${
+                    activeConditions.length === 0
+                      ? 'bg-green-100 text-green-700 border-green-200'
+                      : activeConditions.length < 3
+                        ? 'bg-yellow-100 text-yellow-700 border-yellow-200'
+                        : 'bg-red-100 text-red-700 border-red-200'
+                  }`}
                 >
                   {activeConditions.length === 0
-                    ? 'Sağlıklı'
+                    ? '✓ Sağlıklı'
                     : activeConditions.length < 3
-                      ? 'Orta Risk'
-                      : 'Yüksek Risk'}
+                      ? '⚠ Orta Risk'
+                      : '⚠ Yüksek Risk'}
                 </Badge>
               </div>
 
-              <div className="text-sm text-gray-600">
-                <p>Aktif Sağlık Sorunu: {activeConditions.length}</p>
-                <p>
-                  Risk Seviyesi:{' '}
-                  {activeConditions.length === 0
-                    ? 'Düşük'
-                    : activeConditions.length < 3
-                      ? 'Orta'
-                      : 'Yüksek'}
-                </p>
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="p-3 bg-white rounded-lg">
+                  <p className="text-gray-600">Aktif Sağlık Sorunu</p>
+                  <p className="text-2xl font-bold text-blue-600">{activeConditions.length}</p>
+                </div>
+                <div className="p-3 bg-white rounded-lg">
+                  <p className="text-gray-600">Risk Seviyesi</p>
+                  <p className={`text-lg font-semibold ${
+                    activeConditions.length === 0
+                      ? 'text-green-600'
+                      : activeConditions.length < 3
+                        ? 'text-yellow-600'
+                        : 'text-red-600'
+                  }`}>
+                    {activeConditions.length === 0
+                      ? 'Düşük'
+                      : activeConditions.length < 3
+                        ? 'Orta'
+                        : 'Yüksek'}
+                  </p>
+                </div>
               </div>
             </div>
 
             {activeConditions.length > 0 && (
-              <div>
-                <h4 className="font-medium mb-2 flex items-center gap-2">
-                  <AlertTriangle className="w-4 h-4 text-orange-500" />
+              <div className="p-4 bg-orange-50 border border-orange-200 rounded-xl">
+                <h4 className="font-semibold mb-3 flex items-center gap-2 text-orange-800">
+                  <AlertTriangle className="w-5 h-5 text-orange-600" />
                   Mevcut Sağlık Sorunları
                 </h4>
                 <div className="flex flex-wrap gap-2">
                   {activeConditions.map((condition) => (
-                    <Badge key={condition} variant="outline" className="text-xs">
+                    <Badge 
+                      key={condition} 
+                      variant="outline" 
+                      className="text-xs font-medium px-3 py-1 bg-orange-100 text-orange-700 border-orange-300"
+                    >
                       {condition}
                     </Badge>
                   ))}
@@ -133,8 +163,10 @@ export function BeneficiaryHealthInfo({
             )}
           </div>
 
-          <div>
-            <Label htmlFor="bloodType">Kan Grubu</Label>
+          <div className="space-y-2">
+            <Label htmlFor="bloodType" className="form-label">
+              Kan Grubu
+            </Label>
             {editMode ? (
               <Input
                 id="bloodType"
@@ -142,15 +174,20 @@ export function BeneficiaryHealthInfo({
                 onChange={(e) => {
                   onUpdate('bloodType', e.target.value);
                 }}
-                placeholder="Kan grubu (A+, B-, vb.)"
+                placeholder="A+, B-, O+, AB- vb."
+                className="form-input"
               />
             ) : (
-              <p className="p-2 text-sm">{beneficiary?.bloodType ?? '-'}</p>
+              <div className="p-3 bg-gray-50 rounded-lg">
+                <p className="text-sm font-medium text-gray-900">{beneficiary?.bloodType ?? '-'}</p>
+              </div>
             )}
           </div>
 
-          <div>
-            <Label htmlFor="emergencyContact">Acil Durum İletişim</Label>
+          <div className="space-y-2">
+            <Label htmlFor="emergencyContact" className="form-label">
+              Acil Durum İletişim
+            </Label>
             {editMode ? (
               <Input
                 id="emergencyContact"
@@ -158,10 +195,13 @@ export function BeneficiaryHealthInfo({
                 onChange={(e) => {
                   onUpdate('emergencyContact', e.target.value);
                 }}
-                placeholder="Acil durum iletişim bilgisi"
+                placeholder="Acil durumda aranacak kişi ve telefon"
+                className="form-input"
               />
             ) : (
-              <p className="p-2 text-sm">{beneficiary?.emergencyContact ?? '-'}</p>
+              <div className="p-3 bg-gray-50 rounded-lg">
+                <p className="text-sm font-medium text-gray-900">{beneficiary?.emergencyContact ?? '-'}</p>
+              </div>
             )}
           </div>
         </CardContent>
@@ -176,24 +216,28 @@ export function BeneficiaryHealthInfo({
           </CardTitle>
         </CardHeader>
 
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6">
           {editMode ? (
             <>
-              <div className="space-y-3 max-h-60 overflow-y-auto">
-                {healthConditions.map((condition) => (
-                  <div key={condition} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={condition}
-                      checked={healthConditionsState[condition] ?? false}
-                      onCheckedChange={(checked: boolean) => {
-                        handleConditionChange(condition, checked);
-                      }}
-                    />
-                    <Label htmlFor={condition} className="text-sm">
-                      {condition}
-                    </Label>
-                  </div>
-                ))}
+              <div className="p-4 bg-gray-50 rounded-xl border border-gray-200">
+                <h4 className="font-semibold text-gray-900 mb-4">Sağlık Durumları</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-60 overflow-y-auto">
+                  {healthConditions.map((condition) => (
+                    <div key={condition} className="flex items-center space-x-3 p-2 hover:bg-white rounded-lg transition-colors duration-200">
+                      <Checkbox
+                        id={condition}
+                        checked={healthConditionsState[condition] ?? false}
+                        onCheckedChange={(checked: boolean) => {
+                          handleConditionChange(condition, checked);
+                        }}
+                        className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+                      />
+                      <Label htmlFor={condition} className="text-sm font-medium text-gray-700 cursor-pointer">
+                        {condition}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
               </div>
 
               {/* Özel Durum Ekleme */}

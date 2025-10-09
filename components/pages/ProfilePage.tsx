@@ -377,16 +377,16 @@ export function ProfilePage() {
         {/* Mobile-Optimized Profile Settings Tabs */}
         <Tabs defaultValue="personal" className="space-y-4 sm:space-y-6">
           <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3 h-auto sm:h-10">
-            <TabsTrigger value="personal" className="min-h-[44px] text-sm sm:text-base">
-              <User className="w-4 h-4 mr-2 sm:hidden" />
+            <TabsTrigger value="personal" className="min-h-[44px] text-sm sm:text-base px-3 sm:px-4">
+              <User className="w-4 h-4 mr-1 sm:mr-2 sm:hidden" />
               Kişisel Bilgiler
             </TabsTrigger>
-            <TabsTrigger value="notifications" className="min-h-[44px] text-sm sm:text-base">
-              <Bell className="w-4 h-4 mr-2 sm:hidden" />
+            <TabsTrigger value="notifications" className="min-h-[44px] text-sm sm:text-base px-3 sm:px-4">
+              <Bell className="w-4 h-4 mr-1 sm:mr-2 sm:hidden" />
               Bildirimler
             </TabsTrigger>
-            <TabsTrigger value="privacy" className="min-h-[44px] text-sm sm:text-base">
-              <Shield className="w-4 h-4 mr-2 sm:hidden" />
+            <TabsTrigger value="privacy" className="min-h-[44px] text-sm sm:text-base px-3 sm:px-4">
+              <Shield className="w-4 h-4 mr-1 sm:mr-2 sm:hidden" />
               Gizlilik
             </TabsTrigger>
           </TabsList>

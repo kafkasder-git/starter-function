@@ -22,6 +22,10 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { ToastProvider } from './components/ToastProvider';
 import { useAuthStore } from './stores/authStore';
 
+// Accessibility Components
+import { SkipLinks } from './components/ui/SkipLinks';
+import { KeyboardShortcuts, useKeyboardShortcuts } from './components/ui/KeyboardShortcuts';
+
 // App Management Components
 import NavigationProvider, { useNavigation } from './components/app/NavigationManager';
 import PageRenderer from './components/app/PageRenderer';
@@ -62,6 +66,9 @@ const AppContent = memo(() => {
 
   // Mobile sidebar state
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+
+  // Keyboard shortcuts
+  const { isOpen: isShortcutsOpen, openShortcuts, closeShortcuts } = useKeyboardShortcuts();
 
   // User preferences for theme management
   const { preferences } = useUserPreferences();
@@ -220,6 +227,10 @@ const AppContent = memo(() => {
             </div>
           </main>
         </div>
+
+        {/* Accessibility Components */}
+        <SkipLinks />
+        <KeyboardShortcuts isOpen={isShortcutsOpen} onClose={closeShortcuts} />
 
         {/* Offline indicator */}
         {!isOnline && (

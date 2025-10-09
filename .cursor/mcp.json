@@ -15,7 +15,7 @@
       "args": [
         "-y",
         "@modelcontextprotocol/server-filesystem",
-        "c:\\panel\\panel"
+        "/home/isaha/panel"
       ]
     }
   }

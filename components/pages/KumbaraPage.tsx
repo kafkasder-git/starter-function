@@ -76,11 +76,11 @@ export function KumbaraPage() {
 
   const getStatusBadge = (status: Kumbara['status']) => {
     const variants = {
-      Aktif: 'bg-emerald-100 text-emerald-700 border-emerald-200 font-semibold',
-      Pasif: 'bg-slate-100 text-slate-700 border-slate-200 font-semibold',
-      Bakımda: 'bg-amber-100 text-amber-700 border-amber-200 font-semibold',
+      Aktif: 'success' as const,
+      Pasif: 'outline' as const,
+      Bakımda: 'warning' as const,
     };
-    return <Badge className={`${variants[status]} px-3 py-1 rounded-full border`}>{status}</Badge>;
+    return <Badge variant={variants[status]} size="lg" className="font-semibold">{status}</Badge>;
   };
 
   const generateQRCode = (kumbara: Kumbara) => {

@@ -119,38 +119,46 @@ export function BeneficiaryAidHistory({
   return (
     <div className="space-y-6">
       {/* Yardım Özeti */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4 text-center">
-            <HandHeart className="w-8 h-8 mx-auto mb-2 text-primary" />
-            <p className="text-2xl font-bold">{records.length}</p>
-            <p className="text-sm text-gray-600">Toplam Yardım</p>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <Card className="shadow-sm border-0 bg-gradient-to-br from-blue-50 to-indigo-50">
+          <CardContent className="p-6 text-center">
+            <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full mx-auto mb-4">
+              <HandHeart className="w-6 h-6 text-blue-600" />
+            </div>
+            <p className="text-3xl font-bold text-blue-700 mb-1">{records.length}</p>
+            <p className="text-sm font-medium text-blue-600">Toplam Yardım</p>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="p-4 text-center">
-            <DollarSign className="w-8 h-8 mx-auto mb-2 text-green-600" />
-            <p className="text-2xl font-bold">{totalCashAid.toLocaleString('tr-TR')} ₺</p>
-            <p className="text-sm text-gray-600">Nakdi Yardım</p>
+        <Card className="shadow-sm border-0 bg-gradient-to-br from-green-50 to-emerald-50">
+          <CardContent className="p-6 text-center">
+            <div className="flex items-center justify-center w-12 h-12 bg-green-100 rounded-full mx-auto mb-4">
+              <DollarSign className="w-6 h-6 text-green-600" />
+            </div>
+            <p className="text-3xl font-bold text-green-700 mb-1">{totalCashAid.toLocaleString('tr-TR')} ₺</p>
+            <p className="text-sm font-medium text-green-600">Nakdi Yardım</p>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="p-4 text-center">
-            <Package className="w-8 h-8 mx-auto mb-2 text-blue-600" />
-            <p className="text-2xl font-bold">{records.filter((r) => r.type === 'Ayni').length}</p>
-            <p className="text-sm text-gray-600">Ayni Yardım</p>
+        <Card className="shadow-sm border-0 bg-gradient-to-br from-purple-50 to-violet-50">
+          <CardContent className="p-6 text-center">
+            <div className="flex items-center justify-center w-12 h-12 bg-purple-100 rounded-full mx-auto mb-4">
+              <Package className="w-6 h-6 text-purple-600" />
+            </div>
+            <p className="text-3xl font-bold text-purple-700 mb-1">{records.filter((r) => r.type === 'Ayni').length}</p>
+            <p className="text-sm font-medium text-purple-600">Ayni Yardım</p>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="p-4 text-center">
-            <Heart className="w-8 h-8 mx-auto mb-2 text-red-600" />
-            <p className="text-2xl font-bold">
+        <Card className="shadow-sm border-0 bg-gradient-to-br from-red-50 to-rose-50">
+          <CardContent className="p-6 text-center">
+            <div className="flex items-center justify-center w-12 h-12 bg-red-100 rounded-full mx-auto mb-4">
+              <Heart className="w-6 h-6 text-red-600" />
+            </div>
+            <p className="text-3xl font-bold text-red-700 mb-1">
               {records.filter((r) => r.type === 'Hizmet').length}
             </p>
-            <p className="text-sm text-gray-600">Hizmet Yardımı</p>
+            <p className="text-sm font-medium text-red-600">Hizmet Yardımı</p>
           </CardContent>
         </Card>
       </div>
@@ -202,26 +210,40 @@ export function BeneficiaryAidHistory({
 
         <CardContent>
           {filteredRecords.length > 0 ? (
-            <div className="space-y-3">
+            <div className="space-y-4">
               {filteredRecords.map((record) => (
                 <div
                   key={record.id}
-                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50"
+                  className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-all duration-200"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-gray-100 rounded-full">{getTypeIcon(record.type)}</div>
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <h4 className="font-medium">{record.category}</h4>
-                        <Badge variant="outline" className="text-xs">
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full">
+                      {getTypeIcon(record.type)}
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <h4 className="font-semibold text-gray-900 text-lg">{record.category}</h4>
+                        <Badge 
+                          variant="outline" 
+                          className="text-xs font-medium px-2 py-1 bg-blue-50 text-blue-700 border-blue-200"
+                        >
                           {record.type}
                         </Badge>
-                        <Badge variant={getStatusColor(record.status) as any} className="text-xs">
+                        <Badge 
+                          variant={getStatusColor(record.status) as any} 
+                          className={`text-xs font-medium px-2 py-1 ${
+                            record.status === 'Tamamlandı' 
+                              ? 'bg-green-100 text-green-700 border-green-200'
+                              : record.status === 'Beklemede'
+                                ? 'bg-yellow-100 text-yellow-700 border-yellow-200'
+                                : 'bg-red-100 text-red-700 border-red-200'
+                          }`}
+                        >
                           {record.status}
                         </Badge>
                       </div>
-                      <p className="text-sm text-gray-600">{record.description}</p>
-                      <div className="flex items-center gap-4 text-xs text-gray-500 mt-1">
+                      <p className="text-sm text-gray-600 mb-2">{record.description}</p>
+                      <div className="flex items-center gap-4 text-xs text-gray-500">
                         <span className="flex items-center gap-1">
                           <Calendar className="w-3 h-3" />
                           {new Date(record.date).toLocaleDateString('tr-TR')}
@@ -233,11 +255,17 @@ export function BeneficiaryAidHistory({
 
                   <div className="text-right">
                     {record.amount && (
-                      <p className="font-bold text-green-600">
-                        {record.amount.toLocaleString('tr-TR')} ₺
-                      </p>
+                      <div className="mb-2">
+                        <p className="text-xl font-bold text-green-600">
+                          {record.amount.toLocaleString('tr-TR')} ₺
+                        </p>
+                      </div>
                     )}
-                    <Button variant="ghost" size="sm" className="mt-1">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="hover:bg-blue-50 text-blue-600 hover:text-blue-700 p-2 rounded-lg transition-all duration-200"
+                    >
                       <FileText className="w-4 h-4" />
                     </Button>
                   </div>
@@ -245,9 +273,12 @@ export function BeneficiaryAidHistory({
               ))}
             </div>
           ) : (
-            <div className="text-center py-8 text-gray-500">
-              <HandHeart className="w-12 h-12 mx-auto mb-2 opacity-50" />
-              <p>Yardım geçmişi bulunmuyor</p>
+            <div className="text-center py-12">
+              <div className="flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mx-auto mb-4">
+                <HandHeart className="w-8 h-8 text-gray-400" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Yardım geçmişi bulunmuyor</h3>
+              <p className="text-gray-500">Bu ihtiyaç sahibi için henüz yardım kaydı oluşturulmamış</p>
             </div>
           )}
         </CardContent>

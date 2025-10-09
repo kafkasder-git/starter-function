@@ -141,15 +141,24 @@ export function BeneficiaryDocuments({
 
         <CardContent>
           {uploadedFiles.length > 0 ? (
-            <div className="space-y-2">
+            <div className="space-y-3">
               {uploadedFiles.slice(0, 3).map((file) => (
-                <div key={file.id} className="flex items-center justify-between p-2 border rounded">
-                  <div className="flex items-center gap-2">
-                    {getFileIcon(file.type)}
-                    <span className="text-sm">{file.name}</span>
-                    <Badge variant="outline" className="text-xs">
-                      {(file.size / 1024).toFixed(1)} KB
-                    </Badge>
+                <div key={file.id} className="flex items-center justify-between p-4 bg-gray-50 border border-gray-200 rounded-xl hover:bg-gray-100 transition-colors duration-200">
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-lg">
+                      {getFileIcon(file.type)}
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">{file.name}</p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <Badge variant="outline" className="text-xs font-medium px-2 py-1 bg-blue-50 text-blue-700 border-blue-200">
+                          {(file.size / 1024).toFixed(1)} KB
+                        </Badge>
+                        <span className="text-xs text-gray-500">
+                          {new Date(file.uploadDate).toLocaleDateString('tr-TR')}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                   <div className="flex items-center gap-1">
                     <Button
@@ -158,11 +167,17 @@ export function BeneficiaryDocuments({
                       onClick={() => {
                         setPreviewFile(file);
                       }}
+                      className="hover:bg-blue-50 text-blue-600 hover:text-blue-700 p-2 rounded-lg transition-all duration-200"
                     >
-                      <Eye className="w-3 h-3" />
+                      <Eye className="w-4 h-4" />
                     </Button>
-                    <Button variant="ghost" size="sm" onClick={() => handleDeleteFile(file.id)}>
-                      <Trash2 className="w-3 h-3" />
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={() => handleDeleteFile(file.id)}
+                      className="hover:bg-red-50 text-red-600 hover:text-red-700 p-2 rounded-lg transition-all duration-200"
+                    >
+                      <Trash2 className="w-4 h-4" />
                     </Button>
                   </div>
                 </div>
@@ -172,27 +187,31 @@ export function BeneficiaryDocuments({
                 <Button
                   variant="outline"
                   size="sm"
-                  className="w-full"
+                  className="w-full py-3 text-gray-700 border-gray-300 hover:bg-gray-50 rounded-lg font-medium transition-all duration-200"
                   onClick={() => {
                     setIsDocumentModalOpen(true);
                   }}
                 >
-                  +{uploadedFiles.length - 3} belge daha...
+                  +{uploadedFiles.length - 3} belge daha görüntüle
                 </Button>
               )}
             </div>
           ) : (
-            <div className="text-center py-8 text-gray-500">
-              <FileText className="w-12 h-12 mx-auto mb-2 opacity-50" />
-              <p>Henüz belge yüklenmemiş</p>
+            <div className="text-center py-12">
+              <div className="flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mx-auto mb-4">
+                <FileText className="w-8 h-8 text-gray-400" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Henüz belge yüklenmemiş</h3>
+              <p className="text-gray-500 mb-4">İhtiyaç sahibi ile ilgili belgeleri yükleyin</p>
               <Button
                 variant="outline"
                 size="sm"
-                className="mt-2"
+                className="px-6 py-3 text-blue-700 border-blue-300 hover:bg-blue-50 rounded-lg font-medium transition-all duration-200"
                 onClick={() => {
                   setIsDocumentModalOpen(true);
                 }}
               >
+                <Upload className="w-4 h-4 mr-2" />
                 İlk belgeyi yükle
               </Button>
             </div>
@@ -209,14 +228,17 @@ export function BeneficiaryDocuments({
 
           <div className="space-y-4">
             {/* Upload Area */}
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-              <Upload className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-              <p className="text-lg font-medium mb-2">Dosyaları buraya sürükleyin</p>
-              <p className="text-sm text-gray-500 mb-4">veya bilgisayarınızdan seçin</p>
+            <div className="border-2 border-dashed border-blue-300 rounded-xl p-8 text-center bg-gradient-to-br from-blue-50 to-indigo-50">
+              <div className="flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mx-auto mb-6">
+                <Upload className="w-8 h-8 text-blue-600" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Belge Yükle</h3>
+              <p className="text-lg text-gray-600 mb-2">Dosyaları buraya sürükleyin</p>
+              <p className="text-sm text-gray-500 mb-6">veya bilgisayarınızdan seçin</p>
 
-              <div className="flex justify-center gap-2">
+              <div className="flex justify-center gap-3">
                 <label htmlFor="file-upload">
-                  <Button asChild>
+                  <Button asChild className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium shadow-sm hover:shadow-md transition-all duration-200">
                     <span>
                       <FileText className="w-4 h-4 mr-2" />
                       Dosya Seç
@@ -232,7 +254,7 @@ export function BeneficiaryDocuments({
                   accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.xlsx,.xls"
                 />
 
-                <Button variant="outline">
+                <Button variant="outline" className="px-6 py-3 text-gray-700 border-gray-300 hover:bg-gray-50 rounded-lg font-medium transition-all duration-200">
                   <Camera className="w-4 h-4 mr-2" />
                   Fotoğraf Çek
                 </Button>

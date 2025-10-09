@@ -181,68 +181,99 @@ export function BeneficiaryFamily({
           {familyMembers.length > 0 ? (
             <div className="space-y-4">
               {/* Aile Özeti */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 rounded-lg">
-                <div className="text-center">
-                  <p className="text-2xl font-bold text-primary">{familyMembers.length}</p>
-                  <p className="text-sm text-gray-600">Aile Üyesi</p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
+                <div className="text-center p-4 bg-white rounded-lg shadow-sm">
+                  <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full mx-auto mb-3">
+                    <Users className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <p className="text-2xl font-bold text-blue-600">{familyMembers.length}</p>
+                  <p className="text-sm font-medium text-gray-600">Aile Üyesi</p>
                 </div>
-                <div className="text-center">
+                <div className="text-center p-4 bg-white rounded-lg shadow-sm">
+                  <div className="flex items-center justify-center w-12 h-12 bg-green-100 rounded-full mx-auto mb-3">
+                    <Heart className="w-6 h-6 text-green-600" />
+                  </div>
                   <p className="text-2xl font-bold text-green-600">
                     {totalFamilyIncome.toLocaleString('tr-TR')} ₺
                   </p>
-                  <p className="text-sm text-gray-600">Toplam Gelir</p>
+                  <p className="text-sm font-medium text-gray-600">Toplam Gelir</p>
                 </div>
-                <div className="text-center">
-                  <p className="text-2xl font-bold text-blue-600">
+                <div className="text-center p-4 bg-white rounded-lg shadow-sm">
+                  <div className="flex items-center justify-center w-12 h-12 bg-orange-100 rounded-full mx-auto mb-3">
+                    <User className="w-6 h-6 text-orange-600" />
+                  </div>
+                  <p className="text-2xl font-bold text-orange-600">
                     {Math.round(totalFamilyIncome / (familyMembers.length + 1)).toLocaleString(
                       'tr-TR',
                     )}{' '}
                     ₺
                   </p>
-                  <p className="text-sm text-gray-600">Kişi Başı Gelir</p>
+                  <p className="text-sm font-medium text-gray-600">Kişi Başı Gelir</p>
                 </div>
               </div>
 
               {/* Aile Üyeleri Listesi */}
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {familyMembers.map((member) => (
                   <div
                     key={member.id}
-                    className="flex items-center justify-between p-3 border rounded-lg"
+                    className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-all duration-200"
                   >
-                    <div className="flex items-center gap-3">
-                      <User className="w-8 h-8 p-1.5 bg-gray-100 rounded-full" />
-                      <div>
-                        <h4 className="font-medium">{member.name}</h4>
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <Badge variant="outline" className="text-xs">
+                    <div className="flex items-center gap-4">
+                      <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full">
+                        <User className="w-6 h-6 text-blue-600" />
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-gray-900 text-lg">{member.name}</h4>
+                        <div className="flex items-center gap-3 mt-1">
+                          <Badge 
+                            variant="outline" 
+                            className="text-xs font-medium px-2 py-1 bg-blue-50 text-blue-700 border-blue-200"
+                          >
                             {member.relationship}
                           </Badge>
-                          {member.age && <span>{member.age} yaş</span>}
-                          {member.occupation && <span>• {member.occupation}</span>}
+                          {member.age && (
+                            <span className="text-sm text-gray-600 font-medium">
+                              {member.age} yaş
+                            </span>
+                          )}
+                          {member.occupation && (
+                            <span className="text-sm text-gray-600">
+                              • {member.occupation}
+                            </span>
+                          )}
                         </div>
                         {member.income && member.income > 0 && (
-                          <p className="text-sm text-green-600">
-                            Gelir: {member.income.toLocaleString('tr-TR')} ₺
-                          </p>
+                          <div className="mt-2 flex items-center gap-2">
+                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                            <p className="text-sm font-medium text-green-600">
+                              Gelir: {member.income.toLocaleString('tr-TR')} ₺
+                            </p>
+                          </div>
                         )}
                         {member.healthStatus && member.healthStatus !== 'Sağlıklı' && (
-                          <Badge variant="secondary" className="text-xs mt-1">
-                            <Heart className="w-3 h-3 mr-1" />
-                            {member.healthStatus}
-                          </Badge>
+                          <div className="mt-2">
+                            <Badge 
+                              variant="secondary" 
+                              className="text-xs font-medium px-2 py-1 bg-orange-50 text-orange-700 border-orange-200"
+                            >
+                              <Heart className="w-3 h-3 mr-1" />
+                              {member.healthStatus}
+                            </Badge>
+                          </div>
                         )}
                       </div>
                     </div>
 
                     {editMode && (
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-2">
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => {
                             handleEditMember(member);
                           }}
+                          className="hover:bg-blue-50 text-blue-600 hover:text-blue-700 p-2 rounded-lg transition-all duration-200"
                         >
                           <Edit3 className="w-4 h-4" />
                         </Button>
@@ -252,6 +283,7 @@ export function BeneficiaryFamily({
                           onClick={() => {
                             handleDeleteMember(member.id);
                           }}
+                          className="hover:bg-red-50 text-red-600 hover:text-red-700 p-2 rounded-lg transition-all duration-200"
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>

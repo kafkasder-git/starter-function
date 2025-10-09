@@ -9,6 +9,7 @@ import {
   AlertTriangle,
   Calendar,
   Camera,
+  Check,
   CheckCircle2,
   Download,
   Edit3,
@@ -22,6 +23,7 @@ import {
   Heart,
   Image as ImageIcon,
   Info,
+  Plus,
   Save,
   Search,
   Shield,
@@ -43,19 +45,34 @@ import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Checkbox } from '../ui/checkbox';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '../ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../ui/dialog';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Textarea } from '../ui/textarea';
+import { Skeleton } from '../ui/skeleton';
+import { Drawer } from '../ui/Drawer';
+import { Alert, AlertDescription } from '../ui/alert';
+import { ContextEmptyState } from '../ui/ContextEmptyState';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
 
 import { logger } from '../../lib/logging/logger';
 // Health conditions data
 const healthConditions: string[] = [];
 
 // Connected records data
-const connectedRecords: string[] = [];
+const connectedRecords: string[] = [
+  'Banka Hesapları',
+  'Dokümanlar',
+  'Bağlı Kişiler',
+  'Fotoğraflar',
+  'Bağışçılar',
+  'Sponsorlar',
+  'Yardım Talepleri',
+  'Yapılan Yardımlar',
+  'Rıza Beyanları'
+];
 
 interface BeneficiaryDetailPageComprehensiveProps {
   beneficiaryId?: string;
@@ -78,6 +95,58 @@ export function BeneficiaryDetailPageComprehensive({
   const [editableData, setEditableData] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Form Validation States
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+  const [isValidating, setIsValidating] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+
+  // Validation Functions
+  const validateField = (fieldName: string, value: string): string => {
+    switch (fieldName) {
+      case 'tc_kimlik_no':
+        if (!value) return 'TC Kimlik No gereklidir';
+        if (!/^\d{11}$/.test(value)) return 'TC Kimlik No 11 haneli olmalıdır';
+        return '';
+      case 'iban':
+        if (!value) return 'IBAN gereklidir';
+        if (!/^TR\d{2}\s?\d{4}\s?\d{4}\s?\d{4}\s?\d{4}\s?\d{4}\s?\d{2}$/.test(value.replace(/\s/g, ''))) {
+          return 'Geçerli bir IBAN giriniz';
+        }
+        return '';
+      case 'phone':
+        if (!value) return 'Telefon numarası gereklidir';
+        if (!/^(\+90|0)?[5][0-9]{9}$/.test(value.replace(/\s/g, ''))) {
+          return 'Geçerli bir telefon numarası giriniz';
+        }
+        return '';
+      case 'email':
+        if (value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+          return 'Geçerli bir e-posta adresi giriniz';
+        }
+        return '';
+      default:
+        return '';
+    }
+  };
+
+  const validateForm = (): boolean => {
+    const errors: Record<string, string> = {};
+    let isValid = true;
+
+    if (editableData) {
+      Object.keys(editableData).forEach((key) => {
+        const error = validateField(key, String(editableData[key] || ''));
+        if (error) {
+          errors[key] = error;
+          isValid = false;
+        }
+      });
+    }
+
+    setFormErrors(errors);
+    return isValid;
+  };
+
   // Bank Account Modal States
   const [isBankAccountModalOpen, setIsBankAccountModalOpen] = useState(false);
   const [iban, setIban] = useState('');
@@ -99,6 +168,7 @@ export function BeneficiaryDetailPageComprehensive({
   >([]);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFileType, setSelectedFileType] = useState('all');
   const [previewFile, setPreviewFile] = useState<{
@@ -322,6 +392,8 @@ export function BeneficiaryDetailPageComprehensive({
       // Başarılı güncelleme sonrası veriyi yenile
       setBeneficiaryData(editableData);
       toast.success('İhtiyaç sahibi bilgileri başarıyla güncellendi');
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 2000);
       setEditMode(false);
     } catch (error: any) {
       logger.error('❌ Error updating beneficiary:', error);
@@ -598,6 +670,10 @@ export function BeneficiaryDetailPageComprehensive({
         },
       ];
 
+      // TODO: Database policies should be created through migrations, not client-side code
+      // The exec_sql RPC function doesn't exist and poses security risks
+      logger.info('ℹ️ Skipping policy creation - should be handled by database migrations');
+      /*
       for (const policy of policies) {
         try {
           await supabase.rpc('exec_sql', { sql: policy.sql });
@@ -607,6 +683,7 @@ export function BeneficiaryDetailPageComprehensive({
           logger.info('ℹ️ Policy might already exist:', policy.name);
         }
       }
+      */
     } catch (error: any) {
       logger.warn('⚠️ Could not create policies (might already exist):', error.message);
     }
@@ -988,10 +1065,73 @@ export function BeneficiaryDetailPageComprehensive({
   // Show loading state
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-neutral-100">
-        <div className="text-center">
-          <div className="border-primary mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2" />
-          <p className="text-sm text-gray-600">İhtiyaç sahibi bilgileri yükleniyor...</p>
+      <div className="mx-auto max-w-[1400px] px-4 py-4">
+        <div className="grid grid-cols-12 gap-4">
+          {/* Main Content Skeleton */}
+          <section className="col-span-12 flex flex-col gap-4 lg:col-span-9">
+            {/* Personal Information Skeleton */}
+            <Card className="border border-gray-100 bg-white shadow-sm">
+              <CardContent className="p-8">
+                <div className="grid grid-cols-12 gap-6">
+                  {/* Photo Section Skeleton */}
+                  <div className="col-span-12 sm:col-span-3">
+                    <div className="space-y-4">
+                      <Skeleton className="h-4 w-16" />
+                      <Skeleton className="h-32 w-full rounded-lg" />
+                      <div className="flex items-center gap-2">
+                        <Skeleton className="h-8 flex-1" />
+                        <Skeleton className="h-8 flex-1" />
+                        <Skeleton className="h-8 flex-1" />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Form Fields Skeleton */}
+                  <div className="col-span-12 grid grid-cols-1 gap-4 sm:col-span-9 sm:grid-cols-2 lg:grid-cols-3">
+                    {Array.from({ length: 6 }).map((_, i) => (
+                      <div key={i} className="space-y-2">
+                        <Skeleton className="h-4 w-20" />
+                        <Skeleton className="h-9 w-full" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Additional Sections Skeleton */}
+            {Array.from({ length: 3 }).map((_, i) => (
+              <Card key={i} className="border border-gray-100 bg-white shadow-sm">
+                <CardHeader className="pb-3">
+                  <Skeleton className="h-5 w-32" />
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {Array.from({ length: 4 }).map((_, j) => (
+                    <div key={j} className="space-y-2">
+                      <Skeleton className="h-4 w-24" />
+                      <Skeleton className="h-9 w-full" />
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            ))}
+          </section>
+
+          {/* Connected Records Skeleton */}
+          <aside className="col-span-12 lg:col-span-3">
+            <Card className="h-fit border-0 bg-white shadow-sm">
+              <CardHeader className="pb-4">
+                <Skeleton className="h-5 w-32" />
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-3 gap-2">
+                  {Array.from({ length: 9 }).map((_, i) => (
+                    <Skeleton key={i} className="h-12 w-full" />
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </aside>
         </div>
       </div>
     );
@@ -1052,13 +1192,28 @@ export function BeneficiaryDetailPageComprehensive({
               <>
                 <Button
                   onClick={handleSave}
-                  className="rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-700"
+                  ripple={true}
+                  className={`rounded-md px-4 py-2 text-sm font-medium text-white transition-all duration-300 ${
+                    saveSuccess 
+                      ? 'bg-green-600 hover:bg-green-700 scale-105' 
+                      : 'bg-emerald-600 hover:bg-emerald-700'
+                  }`}
                 >
-                  <Save className="mr-2 h-4 w-4" />
-                  Kaydet
+                  {saveSuccess ? (
+                    <>
+                      <Check className="mr-2 h-4 w-4" />
+                      Kaydedildi!
+                    </>
+                  ) : (
+                    <>
+                      <Save className="mr-2 h-4 w-4" />
+                      Kaydet
+                    </>
+                  )}
                 </Button>
                 <Button
                   onClick={handleCancel}
+                  ripple={true}
                   className="rounded-md bg-rose-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-rose-700"
                 >
                   <X className="mr-2 h-4 w-4" />
@@ -1151,7 +1306,7 @@ export function BeneficiaryDetailPageComprehensive({
                 <div className="col-span-12 grid grid-cols-12 gap-6 sm:col-span-9">
                   <div className="col-span-12 grid grid-cols-12 gap-4 md:col-span-6">
                     {/* Country & Status */}
-                    <div className="col-span-4 space-y-2">
+                    <div className="col-span-12 space-y-2 sm:col-span-6 md:col-span-4">
                       <Label className="block text-sm font-semibold text-gray-800">Ülke</Label>
                       <Select disabled={!editMode}>
                         <SelectTrigger className="h-10 border border-gray-300 text-sm transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
@@ -1165,7 +1320,7 @@ export function BeneficiaryDetailPageComprehensive({
                       </Select>
                     </div>
 
-                    <div className="col-span-8 space-y-2">
+                    <div className="col-span-12 space-y-2 sm:col-span-6 md:col-span-8">
                       <Label className="block text-sm font-semibold text-gray-800">Durum</Label>
                       <Select
                         disabled={!editMode}
@@ -1985,14 +2140,16 @@ export function BeneficiaryDetailPageComprehensive({
           </div>
 
           {/* Health Status */}
-          <Card className="border-0 bg-white shadow-sm">
-            <CardHeader className="pb-4">
-              <CardTitle className="flex items-center gap-2 text-sm font-semibold">
-                <Heart className="text-primary h-4 w-4" />
-                Sağlık Durumu
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+          <Accordion type="single" collapsible className="w-full">
+            <AccordionItem value="health" className="border-0 bg-white shadow-sm">
+              <AccordionTrigger className="pb-4">
+                <CardTitle className="flex items-center gap-2 text-sm font-semibold">
+                  <Heart className="text-primary h-4 w-4" />
+                  Sağlık Durumu
+                </CardTitle>
+              </AccordionTrigger>
+              <AccordionContent>
+                <CardContent>
               <div className="grid grid-cols-12 gap-4">
                 <div className="col-span-12 grid grid-cols-2 gap-3 lg:col-span-4">
                   <div className="space-y-1">
@@ -2104,8 +2261,10 @@ export function BeneficiaryDetailPageComprehensive({
                   </div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+                </CardContent>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
 
           {/* Bottom Row: Emergency, Tags, Special, Record */}
           <div className="grid grid-cols-12 gap-4">
@@ -2315,8 +2474,7 @@ export function BeneficiaryDetailPageComprehensive({
         <aside className="col-span-12 lg:col-span-3">
           <Card className="h-fit border-0 bg-white shadow-sm">
             <CardHeader className="pb-4">
-              <CardTitle className="flex items-center gap-2 text-sm font-semibold">
-                <FileText className="text-primary h-4 w-4" />
+              <CardTitle className="text-sm font-semibold">
                 Bağlantılı Kayıtlar
               </CardTitle>
             </CardHeader>
@@ -2350,12 +2508,10 @@ export function BeneficiaryDetailPageComprehensive({
                                         : undefined
                     }
                   >
-                    <div className="flex w-full items-center justify-between">
-                      <span>{record}</span>
-                      {record === 'Banka Hesapları' && (beneficiaryData?.iban as string) && (
-                        <div className="ml-2 h-2 w-2 rounded-full bg-green-500" />
-                      )}
-                    </div>
+                    {record}
+                    {record === 'Banka Hesapları' && (beneficiaryData?.iban as string) && (
+                      <div className="ml-2 h-2 w-2 rounded-full bg-green-500" />
+                    )}
                   </Button>
                 ))}
               </div>
@@ -2366,9 +2522,12 @@ export function BeneficiaryDetailPageComprehensive({
 
       {/* Bank Account Modal */}
       <Dialog open={isBankAccountModalOpen} onOpenChange={setIsBankAccountModalOpen}>
-        <DialogContent className="sm:max-w-[500px]">
+        <DialogContent className="sm:max-w-[500px]" aria-describedby="bank-account-description">
           <DialogHeader>
             <DialogTitle className="text-lg font-semibold">Banka Hesabı Bilgileri</DialogTitle>
+            <DialogDescription id="bank-account-description">
+              İhtiyaç sahibinin banka hesap bilgilerini güncelleyin.
+            </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-4">
@@ -2447,15 +2606,58 @@ export function BeneficiaryDetailPageComprehensive({
 
       {/* Document Management Modal */}
       <Dialog open={isDocumentModalOpen} onOpenChange={setIsDocumentModalOpen}>
-        <DialogContent className="max-h-[80vh] overflow-hidden sm:max-w-[900px]">
+        <DialogContent 
+          className="max-h-[80vh] overflow-hidden sm:max-w-[900px] md:max-w-[900px] lg:max-w-[900px]"
+          aria-labelledby="document-modal-title"
+          aria-describedby="document-modal-description"
+        >
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-lg font-semibold">
+            <DialogTitle id="document-modal-title" className="flex items-center gap-2 text-lg font-semibold">
               <FileIcon className="h-5 w-5" />
               Doküman Yönetimi
             </DialogTitle>
           </DialogHeader>
 
-          <div className="space-y-6 py-4">
+          <div className="space-y-6 py-4" id="document-modal-description">
+            {/* Loading State for Document Modal */}
+            {isUploading && (
+              <div className="space-y-4" role="status" aria-live="polite">
+                <div className="flex items-center gap-2">
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
+                  <span className="text-sm text-gray-600">Dokümanlar yükleniyor...</span>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span>Yükleniyor...</span>
+                    <span>{uploadProgress}%</span>
+                  </div>
+                  <div className="h-2 w-full rounded-full bg-gray-200">
+                    <div
+                      className="h-2 rounded-full bg-blue-600 transition-all duration-300"
+                      style={{ width: `${uploadProgress}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            {/* Upload Error Display */}
+            {uploadError && (
+              <Alert className="border-red-200 bg-red-50">
+                <AlertDescription className="text-red-600 text-sm">
+                  {uploadError}
+                </AlertDescription>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="mt-2"
+                  onClick={() => setUploadError(null)}
+                >
+                  Tekrar Dene
+                </Button>
+              </Alert>
+            )}
+            
             {/* File Upload Section */}
             <div className="space-y-4">
               <div className="rounded-lg border-2 border-dashed border-gray-300 p-8 text-center transition-colors hover:border-gray-400">
@@ -2534,10 +2736,19 @@ export function BeneficiaryDetailPageComprehensive({
             {/* Files List */}
             <div className="max-h-60 space-y-2 overflow-y-auto">
               {filteredFiles?.length === 0 ? (
-                <div className="py-8 text-center text-gray-500">
-                  <FileIcon className="mx-auto mb-2 h-12 w-12 text-gray-300" />
-                  <p>Henüz dosya yüklenmemiş</p>
-                </div>
+                <ContextEmptyState 
+                  type="documents"
+                  title="Henüz doküman eklenmemiş"
+                  description="İhtiyaç sahibi için doküman yükleyin"
+                  actions={[{
+                    label: 'Doküman Yükle',
+                    onClick: () => {
+                      const fileInput = document.getElementById('file-upload') as HTMLInputElement;
+                      fileInput?.click();
+                    },
+                    icon: <Upload className="h-4 w-4" />
+                  }]}
+                />
               ) : (
                 filteredFiles?.map((file) => (
                   <div
@@ -2616,9 +2827,12 @@ export function BeneficiaryDetailPageComprehensive({
 
       {/* File Preview Modal */}
       <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
-        <DialogContent className="max-h-[80vh] sm:max-w-[700px]">
+        <DialogContent className="max-h-[80vh] sm:max-w-[700px]" aria-describedby="file-preview-description">
           <DialogHeader>
             <DialogTitle className="text-lg font-semibold">{previewFile?.name}</DialogTitle>
+            <DialogDescription id="file-preview-description">
+              Dosya içeriğini önizleyin.
+            </DialogDescription>
           </DialogHeader>
 
           <div className="py-4">
@@ -2679,12 +2893,15 @@ export function BeneficiaryDetailPageComprehensive({
 
       {/* Dependent Person Modal */}
       <Dialog open={isDependentPersonModalOpen} onOpenChange={setIsDependentPersonModalOpen}>
-        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[800px]">
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[800px]" aria-describedby="dependent-person-description">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-lg font-semibold">
               <Users className="h-5 w-5" />
               Bağlı Kişiler Yönetimi
             </DialogTitle>
+            <DialogDescription id="dependent-person-description">
+              İhtiyaç sahibiyle ilişkili kişileri yönetin ve yeni bağlantılar ekleyin.
+            </DialogDescription>
           </DialogHeader>
 
           {/* Mode Selection Tabs */}
@@ -2754,35 +2971,26 @@ export function BeneficiaryDetailPageComprehensive({
                 {/* Connected Dependents List */}
                 <div className="max-h-96 space-y-3 overflow-y-auto">
                   {connectedDependents.length === 0 ? (
-                    <div className="py-12 text-center">
-                      <Users className="mx-auto mb-4 h-16 w-16 text-gray-300" />
-                      <h3 className="mb-2 text-lg font-medium text-gray-900">
-                        Henüz bağlı kişi yok
-                      </h3>
-                      <p className="mb-6 text-gray-500">
-                        Bu kişiyle ilişkili herhangi bir kayıt bulunmuyor. Yeni kişi ekleyebilir
-                        veya mevcut kayıtlardan birini bağlayabilirsiniz.
-                      </p>
-                      <div className="flex justify-center gap-3">
-                        <Button
-                          onClick={() => {
-                            setModalMode('create');
-                          }}
-                          className="bg-blue-600 hover:bg-blue-700"
-                        >
-                          Yeni Kişi Ekle
-                        </Button>
-                        <Button
-                          variant="outline"
-                          onClick={() => {
+                    <ContextEmptyState 
+                      type="people"
+                      title="Henüz bağlı kişi yok"
+                      description="Bu kişiyle ilişkili herhangi bir kayıt bulunmuyor. Yeni kişi ekleyebilir veya mevcut kayıtlardan birini bağlayabilirsiniz."
+                      actions={[
+                        {
+                          label: 'Yeni Kişi Ekle',
+                          onClick: () => setModalMode('create'),
+                          icon: <Plus className="h-4 w-4" />
+                        },
+                        {
+                          label: 'Mevcut Kişi Bağla',
+                          onClick: () => {
                             setModalMode('select');
                             loadExistingDependents();
-                          }}
-                        >
-                          Mevcut Kişi Bağla
-                        </Button>
-                      </div>
-                    </div>
+                          },
+                          icon: <Search className="h-4 w-4" />
+                        }
+                      ]}
+                    />
                   ) : (
                     connectedDependents.map((person) => (
                       <div
@@ -2910,9 +3118,19 @@ export function BeneficiaryDetailPageComprehensive({
                     onChange={(e) => {
                       setDependentPersonData((prev) => ({ ...prev, id_number: e.target.value }));
                     }}
-                    className="h-10"
+                    className={`h-10 ${formErrors.id_number ? 'border-red-500 focus:border-red-500' : ''}`}
                     maxLength={11}
+                    aria-label="TC Kimlik No"
+                    aria-describedby={formErrors.id_number ? "id-error" : undefined}
+                    aria-invalid={!!formErrors.id_number}
                   />
+                  {formErrors.id_number && (
+                    <Alert className="border-red-200 bg-red-50" id="id-error">
+                      <AlertDescription className="text-red-600 text-sm">
+                        {formErrors.id_number}
+                      </AlertDescription>
+                    </Alert>
+                  )}
                 </div>
 
                 {/* Phone and Relationship */}
@@ -3214,15 +3432,40 @@ export function BeneficiaryDetailPageComprehensive({
 
       {/* Photos Modal */}
       <Dialog open={isPhotosModalOpen} onOpenChange={setIsPhotosModalOpen}>
-        <DialogContent className="max-h-[80vh] overflow-hidden sm:max-w-[900px]">
+        <DialogContent className="max-h-[80vh] overflow-hidden sm:max-w-[900px] md:max-w-[900px] lg:max-w-[900px]" aria-describedby="photos-description">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-lg font-semibold">
               <Camera className="h-5 w-5" />
               Fotoğraf Galerisi
             </DialogTitle>
+            <DialogDescription id="photos-description">
+              İhtiyaç sahibiyle ilgili fotoğrafları görüntüleyin ve yönetin.
+            </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-6 py-4">
+            {/* Loading State for Photos Modal */}
+            {isUploadingPhoto && (
+              <div className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
+                  <span className="text-sm text-gray-600">Fotoğraflar yükleniyor...</span>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span>Yükleniyor...</span>
+                    <span>{uploadProgress}%</span>
+                  </div>
+                  <div className="h-2 w-full rounded-full bg-gray-200">
+                    <div
+                      className="h-2 rounded-full bg-blue-600 transition-all duration-300"
+                      style={{ width: `${uploadProgress}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+            
             {/* Photo Upload Section */}
             <div className="space-y-4">
               <div className="rounded-lg border-2 border-dashed border-gray-300 p-8 text-center transition-colors hover:border-gray-400">
@@ -3276,10 +3519,19 @@ export function BeneficiaryDetailPageComprehensive({
               </div>
 
               {photos?.length === 0 ? (
-                <div className="py-8 text-center">
-                  <Camera className="mx-auto mb-4 h-16 w-16 text-gray-300" />
-                  <p className="text-gray-500">Henüz fotoğraf yüklenmemiş</p>
-                </div>
+                <ContextEmptyState 
+                  type="photos"
+                  title="Henüz fotoğraf eklenmemiş"
+                  description="İhtiyaç sahibi için fotoğraf yükleyin"
+                  actions={[{
+                    label: 'Fotoğraf Yükle',
+                    onClick: () => {
+                      const fileInput = document.getElementById('photo-upload') as HTMLInputElement;
+                      fileInput?.click();
+                    },
+                    icon: <Camera className="h-4 w-4" />
+                  }]}
+                />
               ) : (
                 <div className="grid max-h-96 grid-cols-2 gap-4 overflow-y-auto md:grid-cols-3 lg:grid-cols-4">
                   {photos?.map((photo) => (
@@ -3341,9 +3593,12 @@ export function BeneficiaryDetailPageComprehensive({
 
       {/* Photo Preview Modal */}
       <Dialog open={isPhotoPreviewOpen} onOpenChange={setIsPhotoPreviewOpen}>
-        <DialogContent className="max-h-[90vh] sm:max-w-[800px]">
+        <DialogContent className="max-h-[90vh] sm:max-w-[800px]" aria-describedby="photo-preview-description">
           <DialogHeader>
             <DialogTitle className="text-lg font-semibold">{selectedPhoto?.name}</DialogTitle>
+            <DialogDescription id="photo-preview-description">
+              Fotoğrafı tam ekran olarak önizleyin.
+            </DialogDescription>
           </DialogHeader>
 
           <div className="py-4">
@@ -3390,12 +3645,15 @@ export function BeneficiaryDetailPageComprehensive({
 
       {/* Donors Modal */}
       <Dialog open={isDonorsModalOpen} onOpenChange={setIsDonorsModalOpen}>
-        <DialogContent className="max-h-[80vh] overflow-hidden sm:max-w-[1000px]">
+        <DialogContent className="max-h-[80vh] overflow-hidden sm:max-w-[1000px]" aria-describedby="donors-description">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-lg font-semibold">
               <Heart className="h-5 w-5" />
               Bağışçılar
             </DialogTitle>
+            <DialogDescription id="donors-description">
+              İhtiyaç sahibine bağış yapan kişi ve kurumları görüntüleyin.
+            </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-6 py-4">
@@ -3518,12 +3776,15 @@ export function BeneficiaryDetailPageComprehensive({
 
       {/* Sponsors Modal */}
       <Dialog open={isSponsorsModalOpen} onOpenChange={setIsSponsorsModalOpen}>
-        <DialogContent className="max-h-[80vh] overflow-hidden sm:max-w-[1000px]">
+        <DialogContent className="max-h-[80vh] overflow-hidden sm:max-w-[1000px]" aria-describedby="sponsors-description">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-lg font-semibold">
               <Shield className="h-5 w-5" />
               Sponsorlar
             </DialogTitle>
+            <DialogDescription id="sponsors-description">
+              İhtiyaç sahibini destekleyen sponsorları görüntüleyin.
+            </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-6 py-4">
@@ -3656,12 +3917,15 @@ export function BeneficiaryDetailPageComprehensive({
 
       {/* Help Requests Modal */}
       <Dialog open={isHelpRequestsModalOpen} onOpenChange={setIsHelpRequestsModalOpen}>
-        <DialogContent className="max-h-[80vh] overflow-hidden sm:max-w-[1000px]">
+        <DialogContent className="max-h-[80vh] overflow-hidden sm:max-w-[1000px]" aria-describedby="help-requests-description">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-lg font-semibold">
               <AlertTriangle className="h-5 w-5" />
               Yardım Talepleri
             </DialogTitle>
+            <DialogDescription id="help-requests-description">
+              İhtiyaç sahibinin yaptığı yardım taleplerini görüntüleyin.
+            </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-6 py-4">
@@ -3800,12 +4064,15 @@ export function BeneficiaryDetailPageComprehensive({
 
       {/* Completed Aids Modal */}
       <Dialog open={isCompletedAidsModalOpen} onOpenChange={setIsCompletedAidsModalOpen}>
-        <DialogContent className="max-h-[80vh] overflow-hidden sm:max-w-[1000px]">
+        <DialogContent className="max-h-[80vh] overflow-hidden sm:max-w-[1000px]" aria-describedby="completed-aids-description">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-lg font-semibold">
               <Heart className="h-5 w-5" />
               Yapılan Yardımlar
             </DialogTitle>
+            <DialogDescription id="completed-aids-description">
+              İhtiyaç sahibine yapılan yardımları görüntüleyin.
+            </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-6 py-4">
@@ -3935,16 +4202,19 @@ export function BeneficiaryDetailPageComprehensive({
       </Dialog>
 
       {/* Consent Declarations Modal */}
-      <Dialog
-        open={isConsentDeclarationsModalOpen}
+      <Dialog 
+        open={isConsentDeclarationsModalOpen} 
         onOpenChange={setIsConsentDeclarationsModalOpen}
       >
-        <DialogContent className="max-h-[80vh] overflow-hidden sm:max-w-[900px]">
+        <DialogContent className="max-h-[80vh] overflow-hidden sm:max-w-[900px]" aria-describedby="consent-declarations-description">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-lg font-semibold">
               <Shield className="h-5 w-5" />
               Rıza Beyanları
             </DialogTitle>
+            <DialogDescription id="consent-declarations-description">
+              İhtiyaç sahibinin verdiği rıza beyanlarını görüntüleyin.
+            </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-6 py-4">

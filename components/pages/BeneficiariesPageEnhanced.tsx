@@ -13,6 +13,7 @@ import {
   Loader2,
   Search,
   TrendingUp,
+  Trash2,
   UserPlus,
   Users,
 } from 'lucide-react';
@@ -53,45 +54,55 @@ interface IhtiyacSahibiDisplay extends IhtiyacSahibi {
   priority_level?: 'low' | 'medium' | 'high';
 }
 
-// Status mapping for beneficiaries
+// Status mapping for beneficiaries - Using Badge variants
 const statusMapping = {
   active: {
     label: 'Aktif',
     key: 'active',
-    className: 'bg-green-100 text-green-800 border-green-200',
+    variant: 'success' as const,
+    className: 'bg-emerald-50 text-emerald-700 border-emerald-200',
   },
   inactive: {
     label: 'Pasif',
     key: 'inactive',
-    className: 'bg-red-100 text-red-800 border-red-200',
+    variant: 'destructive' as const,
+    className: 'bg-red-50 text-red-700 border-red-200',
   },
-  passive: { label: 'Pasif', key: 'passive', className: 'bg-red-100 text-red-800 border-red-200' },
+  passive: { 
+    label: 'Pasif', 
+    key: 'passive', 
+    variant: 'destructive' as const,
+    className: 'bg-red-50 text-red-700 border-red-200' 
+  },
   suspended: {
     label: 'Askıda',
     key: 'suspended',
-    className: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+    variant: 'warning' as const,
+    className: 'bg-amber-50 text-amber-700 border-amber-200',
   },
   under_evaluation: {
     label: 'Değerlendirmede',
     key: 'under_evaluation',
-    className: 'bg-orange-100 text-orange-800 border-orange-200',
+    variant: 'info' as const,
+    className: 'bg-cyan-50 text-cyan-700 border-cyan-200',
   },
   archived: {
     label: 'Arşivlendi',
     key: 'archived',
-    className: 'bg-gray-100 text-gray-800 border-gray-200',
+    variant: 'outline' as const,
+    className: 'bg-gray-50 text-gray-700 border-gray-200',
   },
 } as const;
 
-// Category mapping for beneficiaries - Yeni yapı
+// Category mapping for beneficiaries - Corporate colors
 const categoryMapping = {
-  gıda: { label: 'Gıda Yardımı', icon: '🍽️', color: 'bg-orange-100 text-orange-800' },
-  nakdi: { label: 'Nakdi Yardım', icon: '💰', color: 'bg-green-100 text-green-800' },
-  eğitim: { label: 'Eğitim Desteği', icon: '📚', color: 'bg-blue-100 text-blue-800' },
-  sağlık: { label: 'Sağlık Yardımı', icon: '🏥', color: 'bg-red-100 text-red-800' },
-  barınma: { label: 'Barınma Desteği', icon: '🏠', color: 'bg-purple-100 text-purple-800' },
-  giyim: { label: 'Giyim Yardımı', icon: '👕', color: 'bg-pink-100 text-pink-800' },
-  diğer: { label: 'Diğer Yardım', icon: '📦', color: 'bg-gray-100 text-gray-800' },
+  gıda: { label: 'Gıda Yardımı', color: 'bg-amber-50 text-amber-700 border-amber-200' },
+  nakdi: { label: 'Nakdi Yardım', color: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+  eğitim: { label: 'Eğitim Desteği', color: 'bg-blue-50 text-blue-700 border-blue-200' },
+  sağlık: { label: 'Sağlık Yardımı', color: 'bg-cyan-50 text-cyan-700 border-cyan-200' },
+  barınma: { label: 'Barınma Desteği', color: 'bg-slate-50 text-slate-700 border-slate-200' },
+  giyim: { label: 'Giyim Yardımı', color: 'bg-slate-50 text-slate-700 border-slate-200' },
+  diğer: { label: 'Diğer Yardım', color: 'bg-gray-50 text-gray-700 border-gray-200' },
 } as const;
 
 // Aid type mapping removed - not used in current implementation
@@ -482,6 +493,27 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
     }
   };
 
+  // Delete beneficiary function
+  const handleDeleteBeneficiary = useCallback(async (beneficiaryId: string) => {
+    try {
+      setSaving(true);
+      const result = await ihtiyacSahipleriService.deleteIhtiyacSahibi(beneficiaryId);
+      
+      if (result.error) {
+        toast.error(result.error);
+        return;
+      }
+      
+      setBeneficiaries(prev => prev.filter(b => String(b.id) !== beneficiaryId));
+      toast.success('İhtiyaç sahibi başarıyla silindi');
+    } catch (error) {
+      console.error('Delete error:', error);
+      toast.error('Silme işlemi sırasında bir hata oluştu');
+    } finally {
+      setSaving(false);
+    }
+  }, []);
+
   // OCR Scanner removed
 
   if (loading && beneficiaries.length === 0) {
@@ -500,10 +532,10 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
             <Button
               variant="outline"
               size="sm"
-              className="min-h-[44px] px-4 border-gray-300 hover:border-gray-400 order-2 sm:order-1 professional-card hover:shadow-md transition-shadow"
+              className="min-h-[44px] min-w-[44px] px-3 border-gray-300 hover:border-gray-400 order-2 sm:order-1 sm:px-4 professional-card hover:shadow-md transition-shadow"
               onClick={handleExport}
             >
-              <Download className="w-4 h-4 mr-2" />
+              <Download className="w-4 h-4 mr-1 sm:mr-2" />
               <span className="hidden sm:inline">Dışa Aktar</span>
               <span className="sm:hidden">Dışa Aktar</span>
             </Button>
@@ -513,12 +545,12 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
               <DialogTrigger asChild>
                 <Button
                   size="sm"
-                  className="min-h-[44px] px-6 py-3 corporate-gradient text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 order-1 sm:order-2 flex-shrink-0 micro-interaction"
+                  className="min-h-[44px] min-w-[44px] px-3 py-3 corporate-gradient text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 order-1 sm:order-2 flex-shrink-0 micro-interaction sm:px-6"
                   type="button"
                   data-testid="new-beneficiary-btn"
                   aria-label="Yeni İhtiyaç Sahibi Ekle"
                 >
-                  <UserPlus className="w-5 h-5 mr-2 flex-shrink-0" />
+                  <UserPlus className="w-4 h-4 mr-1 sm:mr-2 flex-shrink-0" />
                   <span className="hidden sm:inline whitespace-nowrap">
                     Yeni İhtiyaç Sahibi Ekle
                   </span>
@@ -795,13 +827,13 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
                     onChange={(e) => {
                       setSearchTerm(e.target.value);
                     }}
-                    className="pl-10 min-h-[44px] focus-corporate"
+                    className="pl-10 min-h-[44px] focus-corporate text-sm sm:text-base"
                   />
                 </div>
                 <div className="grid grid-cols-1 gap-2 sm:gap-3 sm:flex">
                   {/* Status filter removed as status field doesn't exist in database */}
                   <Select value={cityFilter} onValueChange={setCityFilter}>
-                    <SelectTrigger className="min-w-[120px] min-h-[44px] focus-corporate">
+                    <SelectTrigger className="min-w-[120px] min-h-[44px] focus-corporate text-sm sm:text-base">
                       <SelectValue placeholder="Tüm Şehirler" />
                     </SelectTrigger>
                     <SelectContent>
@@ -814,7 +846,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
                     </SelectContent>
                   </Select>
                   <Select value={sortBy} onValueChange={setSortBy}>
-                    <SelectTrigger className="min-w-[140px] min-h-[44px] focus-corporate">
+                    <SelectTrigger className="min-w-[140px] min-h-[44px] focus-corporate text-sm sm:text-base">
                       <SelectValue placeholder="Sıralama" />
                     </SelectTrigger>
                     <SelectContent>
@@ -830,28 +862,30 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
               </div>
 
               {/* Enhanced Table - Original Structure Preserved */}
-              <div className="overflow-x-auto">
-                <Table>
+              <div className="overflow-x-auto -mx-3 sm:-mx-6">
+                <div className="inline-block min-w-full align-middle">
+                  <Table className="min-w-max text-xs sm:text-sm">
                   <TableHeader>
                     <TableRow className="bg-gray-50/50">
-                      <TableHead className="min-w-[60px] font-medium text-center">#</TableHead>
-                      <TableHead className="min-w-[120px] font-medium">Tür</TableHead>
-                      <TableHead className="min-w-[150px] font-medium">İsim</TableHead>
-                      <TableHead className="min-w-[140px] font-medium">Kategori</TableHead>
-                      <TableHead className="min-w-[60px] font-medium text-center">Yaş</TableHead>
-                      <TableHead className="min-w-[80px] font-medium">Uyruk</TableHead>
-                      <TableHead className="min-w-[120px] font-medium">Kimlik No</TableHead>
-                      <TableHead className="min-w-[120px] font-medium">Cep Telefonu</TableHead>
-                      <TableHead className="min-w-[80px] font-medium">Ülke</TableHead>
-                      <TableHead className="min-w-[140px] font-medium">Şehir</TableHead>
-                      <TableHead className="min-w-[100px] font-medium">Yerleşim</TableHead>
-                      <TableHead className="min-w-[200px] font-medium">Adres</TableHead>
+                      <TableHead className="min-w-[50px] font-medium text-center text-xs sm:text-sm">#</TableHead>
+                      <TableHead className="min-w-[100px] font-medium text-xs sm:text-sm">Tür</TableHead>
+                      <TableHead className="min-w-[140px] font-medium text-xs sm:text-sm">İsim</TableHead>
+                      <TableHead className="min-w-[120px] font-medium text-xs sm:text-sm">Kategori</TableHead>
+                      <TableHead className="min-w-[50px] font-medium text-center text-xs sm:text-sm">Yaş</TableHead>
+                      <TableHead className="min-w-[70px] font-medium text-xs sm:text-sm">Uyruk</TableHead>
+                      <TableHead className="min-w-[110px] font-medium text-xs sm:text-sm">Kimlik No</TableHead>
+                      <TableHead className="min-w-[110px] font-medium text-xs sm:text-sm">Cep Telefonu</TableHead>
+                      <TableHead className="min-w-[70px] font-medium text-xs sm:text-sm">Ülke</TableHead>
+                      <TableHead className="min-w-[110px] font-medium text-xs sm:text-sm">Şehir</TableHead>
+                      <TableHead className="min-w-[90px] font-medium text-xs sm:text-sm">Yerleşim</TableHead>
+                      <TableHead className="min-w-[150px] font-medium text-xs sm:text-sm">Adres</TableHead>
+                      <TableHead className="min-w-[100px] font-medium text-xs sm:text-sm text-center">İşlemler</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {beneficiaries.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={12} className="text-center py-8 text-gray-500">
+                        <TableCell colSpan={13} className="text-center py-8 text-gray-500">
                           <UserPlus className="w-12 h-12 mx-auto mb-4 text-gray-300" />
                           <p>Henüz hiç ihtiyaç sahibi kaydı yok.</p>
                           <p className="text-sm text-gray-400 mt-1">
@@ -866,77 +900,95 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
                           className="hover:bg-blue-50/30 transition-colors cursor-pointer border-b border-gray-100"
                           onClick={() => onNavigateToDetail?.(String(beneficiary.id))}
                         >
-                          <TableCell className="py-3 text-center">
+                          <TableCell className="py-1.5 px-2 text-center">
                             <div className="flex items-center justify-center">
-                              <span className="text-sm font-medium text-gray-600 bg-gray-100 px-2 py-1 rounded-full min-w-[32px]">
+                              <span className="text-xs font-medium text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded-full min-w-[28px]">
                                 {beneficiary.display_id}
                               </span>
                             </div>
                           </TableCell>
-                          <TableCell className="py-3">
-                            <div className="flex items-center gap-2">
-                              <Search className="w-3 h-3 text-gray-400" />
+                          <TableCell className="py-1.5 px-2">
+                            <div className="flex items-center gap-1.5">
+                              <Search className="w-2.5 h-2.5 text-gray-400" />
                               <span
-                                className="truncate max-w-[100px]"
+                                className="truncate max-w-[120px]"
                                 title={beneficiary.tur ?? beneficiary.Tur ?? 'İhtiyaç Sahibi'}
                               >
                                 {beneficiary.tur ?? beneficiary.Tur ?? 'İhtiyaç Sahibi'}
                               </span>
                             </div>
                           </TableCell>
-                          <TableCell className="py-3">
+                          <TableCell className="py-1.5 px-2">
                             <div className="flex flex-col">
                               <span className={`font-medium ${beneficiary.ad_soyad === 'Ad Soyad bilgisi yok' ? 'text-gray-400 italic' : 'text-gray-900'}`}>
                                 {beneficiary.ad_soyad}
                               </span>
                             </div>
                           </TableCell>
-                          <TableCell className="py-3">
+                          <TableCell className="py-1.5 px-2">
                             {getCategoryBadge(
                               beneficiary.kategori ?? beneficiary.Kategori ?? 'Genel',
                             )}
                           </TableCell>
-                          <TableCell className="py-3 text-center">-</TableCell>
-                          <TableCell className="py-3">
+                          <TableCell className="py-1.5 px-2 text-center">-</TableCell>
+                          <TableCell className="py-1.5 px-2">
                             {beneficiary.uyruk ?? beneficiary.Uyruk ?? 'TR'}
                           </TableCell>
-                          <TableCell className="py-3 font-mono">
+                          <TableCell className="py-1.5 px-2 font-mono">
                             <span className={beneficiary.kimlik_no === 'TC No bilgisi yok' ? 'text-gray-400 italic' : ''}>
                               {beneficiary.kimlik_no ?? beneficiary.Kimlik_No ?? '-'}
                             </span>
                           </TableCell>
-                          <TableCell className="py-3">
+                          <TableCell className="py-1.5 px-2">
                             {beneficiary.formatted_phone && beneficiary.formatted_phone !== 'Telefon bilgisi yok' ? (
                               <span className="text-blue-600">{beneficiary.formatted_phone}</span>
                             ) : (
                               <span className="text-gray-400 italic">Telefon bilgisi yok</span>
                             )}
                           </TableCell>
-                          <TableCell className="py-3">{beneficiary.ulkesi ?? 'Türkiye'}</TableCell>
-                          <TableCell className="py-3">
+                          <TableCell className="py-1.5 px-2">{beneficiary.ulkesi ?? 'Türkiye'}</TableCell>
+                          <TableCell className="py-1.5 px-2">
                             <span
-                              className={`truncate max-w-[120px] ${beneficiary.sehri === 'Şehir bilgisi yok' ? 'text-gray-400 italic' : ''}`}
+                              className={`truncate max-w-[100px] ${beneficiary.sehri === 'Şehir bilgisi yok' ? 'text-gray-400 italic' : ''}`}
                               title={beneficiary.sehri ?? undefined}
                             >
                               {beneficiary.sehri ?? '-'}
                             </span>
                           </TableCell>
-                          <TableCell className="py-3">
+                          <TableCell className="py-1.5 px-2">
                             {beneficiary.yerlesimi ?? beneficiary.Yerlesimi ?? '-'}
                           </TableCell>
-                          <TableCell className="py-3">
+                          <TableCell className="py-1.5 px-2">
                             <span
-                              className={`truncate max-w-[180px] ${beneficiary.adres === 'Adres bilgisi yok' ? 'text-gray-400 italic' : ''}`}
+                              className={`truncate max-w-[150px] ${beneficiary.adres === 'Adres bilgisi yok' ? 'text-gray-400 italic' : ''}`}
                               title={beneficiary.adres ?? beneficiary.Adres ?? undefined}
                             >
                               {beneficiary.adres ?? beneficiary.Adres ?? '-'}
                             </span>
                           </TableCell>
+                          <TableCell className="py-1.5 px-2 text-center">
+                            <div className="flex items-center justify-center gap-1">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-7 w-7 p-0 text-red-600 hover:bg-red-50 hover:text-red-700"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDeleteBeneficiary(String(beneficiary.id));
+                                }}
+                                aria-label="İhtiyaç sahibini sil"
+                                disabled={saving}
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </Button>
+                            </div>
+                          </TableCell>
                         </TableRow>
                       ))
                     )}
                   </TableBody>
-                </Table>
+                  </Table>
+                </div>
               </div>
             </CardContent>
           </Card>

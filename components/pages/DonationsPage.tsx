@@ -18,6 +18,7 @@ import {
   TrendingUp,
   XCircle,
 } from 'lucide-react';
+import { Skeleton } from '../ui/skeleton';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { useFormValidation } from '../../hooks/useFormValidation';
@@ -174,20 +175,29 @@ export function DonationsPage() {
     const statusMapping = {
       pending: {
         label: 'Beklemede',
-        className: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-100',
+        variant: 'warning' as const,
       },
-      approved: { label: 'Onaylandı', className: 'bg-green-100 text-green-800 hover:bg-green-100' },
-      rejected: { label: 'Reddedildi', className: 'bg-red-100 text-red-800 hover:bg-red-100' },
-      processing: { label: 'İşleniyor', className: 'bg-blue-100 text-blue-800 hover:bg-blue-100' },
+      approved: { 
+        label: 'Onaylandı', 
+        variant: 'success' as const,
+      },
+      rejected: { 
+        label: 'Reddedildi', 
+        variant: 'destructive' as const,
+      },
+      processing: { 
+        label: 'İşleniyor', 
+        variant: 'info' as const,
+      },
       completed: {
         label: 'Tamamlandı',
-        className: 'bg-green-100 text-green-800 hover:bg-green-100',
+        variant: 'success' as const,
       },
     };
 
     const statusInfo = statusMapping[status] ?? statusMapping.pending;
 
-    return <Badge className={statusInfo.className}>{statusInfo.label}</Badge>;
+    return <Badge variant={statusInfo.variant}>{statusInfo.label}</Badge>;
   };
 
   const handleCreateDonation = async (values?: DonationFormData) => {
@@ -286,7 +296,7 @@ export function DonationsPage() {
           <Button
             variant="outline"
             size="sm"
-            className="order-2 min-h-[44px] border-gray-300 px-4 text-sm hover:border-gray-400 sm:order-1"
+            className="order-2 min-h-[44px] min-w-[44px] border-gray-300 px-3 text-sm hover:border-gray-400 sm:order-1 sm:px-4"
             onClick={async () => {
               try {
                 const exportFilters: DonationsFilters = {
@@ -335,7 +345,7 @@ export function DonationsPage() {
               }
             }}
           >
-            <Download className="mr-2 h-4 w-4" />
+            <Download className="mr-1 h-4 w-4 sm:mr-2" />
             <span className="hidden sm:inline">Dışa Aktar</span>
             <span className="sm:hidden">Dışa Aktar</span>
           </Button>
@@ -343,9 +353,9 @@ export function DonationsPage() {
             <DialogTrigger asChild>
               <Button
                 size="sm"
-                className="corporate-gradient order-1 min-h-[44px] flex-shrink-0 border-0 px-6 py-3 text-white shadow-lg transition-all duration-300 hover:shadow-xl sm:order-2"
+                className="corporate-gradient order-1 min-h-[44px] min-w-[44px] flex-shrink-0 border-0 px-3 py-3 text-white shadow-lg transition-all duration-300 hover:shadow-xl sm:order-2 sm:px-6"
               >
-                <Plus className="mr-2 h-4 w-4" />
+                <Plus className="mr-1 h-4 w-4 sm:mr-2" />
                 <span className="hidden sm:inline">Yeni Bağış</span>
                 <span className="sm:hidden">Yeni Bağış</span>
               </Button>
@@ -594,10 +604,10 @@ export function DonationsPage() {
             <CardContent className="p-3 sm:p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-xl text-green-600 sm:text-2xl">
+                  <div className="text-lg font-semibold text-green-600 sm:text-xl lg:text-2xl">
                     ₺{(stats.totalAmount ?? 0).toLocaleString()}
                   </div>
-                  <p className="text-xs text-gray-600 sm:text-sm">Toplam Bağış</p>
+                  <p className="text-xs font-medium text-gray-600 sm:text-sm">Toplam Bağış</p>
                 </div>
                 <DollarSign className="h-8 w-8 text-green-500 opacity-80" />
               </div>
@@ -608,8 +618,8 @@ export function DonationsPage() {
             <CardContent className="p-3 sm:p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-xl text-blue-600 sm:text-2xl">{stats.total ?? 0}</div>
-                  <p className="text-xs text-gray-600 sm:text-sm">Toplam İşlem</p>
+                  <div className="text-lg font-semibold text-blue-600 sm:text-xl lg:text-2xl">{stats.total ?? 0}</div>
+                  <p className="text-xs font-medium text-gray-600 sm:text-sm">Toplam İşlem</p>
                 </div>
                 <TrendingUp className="h-8 w-8 text-blue-500 opacity-80" />
               </div>
@@ -620,8 +630,8 @@ export function DonationsPage() {
             <CardContent className="p-3 sm:p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-xl text-yellow-600 sm:text-2xl">{stats.pending ?? 0}</div>
-                  <p className="text-xs text-gray-600 sm:text-sm">Bekleyen</p>
+                  <div className="text-lg font-semibold text-yellow-600 sm:text-xl lg:text-2xl">{stats.pending ?? 0}</div>
+                  <p className="text-xs font-medium text-gray-600 sm:text-sm">Bekleyen</p>
                 </div>
                 <Clock className="h-8 w-8 text-yellow-500 opacity-80" />
               </div>
@@ -632,10 +642,10 @@ export function DonationsPage() {
             <CardContent className="p-3 sm:p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-xl text-emerald-600 sm:text-2xl">
+                  <div className="text-lg font-semibold text-emerald-600 sm:text-xl lg:text-2xl">
                     ₺{(stats.averageAmount ?? 0).toLocaleString()}
                   </div>
-                  <p className="text-xs text-gray-600 sm:text-sm">Ortalama</p>
+                  <p className="text-xs font-medium text-gray-600 sm:text-sm">Ortalama</p>
                 </div>
                 <CheckCircle className="h-8 w-8 text-emerald-500 opacity-80" />
               </div>
@@ -659,14 +669,14 @@ export function DonationsPage() {
                     onChange={(e) => {
                       setSearchTerm(e.target.value);
                     }}
-                    className="focus-corporate min-h-[44px] pl-10 text-base"
+                    className="focus-corporate min-h-[44px] pl-10 text-sm sm:text-base"
                     inputMode="search"
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-2 sm:flex sm:w-auto sm:gap-3">
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 sm:gap-3 lg:flex lg:w-auto">
                   <Select value={statusFilter} onValueChange={setStatusFilter}>
-                    <SelectTrigger className="focus-corporate min-h-[44px] text-base">
+                    <SelectTrigger className="focus-corporate min-h-[44px] text-sm sm:text-base">
                       <SelectValue placeholder="Tüm Durumlar" />
                     </SelectTrigger>
                     <SelectContent>
@@ -680,7 +690,7 @@ export function DonationsPage() {
                   </Select>
 
                   <Select value={donationTypeFilter} onValueChange={setDonationTypeFilter}>
-                    <SelectTrigger className="focus-corporate min-h-[44px] text-base">
+                    <SelectTrigger className="focus-corporate min-h-[44px] text-sm sm:text-base">
                       <SelectValue placeholder="Tüm Türler" />
                     </SelectTrigger>
                     <SelectContent>
@@ -693,7 +703,7 @@ export function DonationsPage() {
                   </Select>
 
                   <Select value={paymentMethodFilter} onValueChange={setPaymentMethodFilter}>
-                    <SelectTrigger className="focus-corporate min-h-[44px] text-base">
+                    <SelectTrigger className="focus-corporate min-h-[44px] text-sm sm:text-base">
                       <SelectValue placeholder="Tüm Ödeme Yöntemleri" />
                     </SelectTrigger>
                     <SelectContent>
@@ -742,13 +752,13 @@ export function DonationsPage() {
                           <span>{new Date(donation.created_at).toLocaleDateString('tr-TR')}</span>
                         </div>
 
-                        <div className="mt-3 flex justify-end gap-2">
+                        <div className="mt-3 flex flex-wrap justify-end gap-2">
                           {donation.status === 'pending' && (
                             <>
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="min-h-[44px] min-w-[44px] p-2 text-green-600 hover:text-green-700"
+                                className="min-h-[44px] min-w-[44px] p-2 text-green-600 hover:bg-green-50 hover:text-green-700"
                                 onClick={() => handleUpdateStatus(donation.id, 'approved')}
                                 aria-label="Onayla"
                               >
@@ -757,7 +767,7 @@ export function DonationsPage() {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="min-h-[44px] min-w-[44px] p-2 text-red-600 hover:text-red-700"
+                                className="min-h-[44px] min-w-[44px] p-2 text-red-600 hover:bg-red-50 hover:text-red-700"
                                 onClick={() => handleUpdateStatus(donation.id, 'rejected')}
                                 aria-label="Reddet"
                               >
@@ -768,7 +778,7 @@ export function DonationsPage() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="min-h-[44px] min-w-[44px] p-2 text-red-600 hover:text-red-700"
+                            className="min-h-[44px] min-w-[44px] p-2 text-red-600 hover:bg-red-50 hover:text-red-700"
                             onClick={() => handleDeleteDonation(donation.id)}
                             aria-label="Sil"
                           >
@@ -813,27 +823,27 @@ export function DonationsPage() {
                     Array.from({ length: 5 }).map((_, i) => (
                       <TableRow key={i}>
                         <TableCell className="p-3 sm:p-4">
-                          <div className="h-4 w-32 animate-pulse rounded bg-gray-200" />
+                          <Skeleton className="h-4 w-32" />
                         </TableCell>
                         <TableCell className="p-3 sm:p-4">
-                          <div className="h-4 w-20 animate-pulse rounded bg-gray-200" />
+                          <Skeleton className="h-4 w-20" />
                         </TableCell>
                         <TableCell className="p-3 sm:p-4">
-                          <div className="h-4 w-24 animate-pulse rounded bg-gray-200" />
+                          <Skeleton className="h-4 w-24" />
                         </TableCell>
                         <TableCell className="p-3 sm:p-4">
-                          <div className="h-6 w-20 animate-pulse rounded bg-gray-200" />
+                          <Skeleton className="h-6 w-20" />
                         </TableCell>
                         <TableCell className="hidden p-3 sm:p-4 lg:table-cell">
-                          <div className="h-4 w-24 animate-pulse rounded bg-gray-200" />
+                          <Skeleton className="h-4 w-24" />
                         </TableCell>
                         <TableCell className="hidden p-3 sm:p-4 lg:table-cell">
-                          <div className="h-4 w-16 animate-pulse rounded bg-gray-200" />
+                          <Skeleton className="h-4 w-16" />
                         </TableCell>
                         <TableCell className="p-3 sm:p-4">
                           <div className="flex justify-center gap-2">
-                            <div className="h-8 w-8 animate-pulse rounded bg-gray-200" />
-                            <div className="h-8 w-8 animate-pulse rounded bg-gray-200" />
+                            <Skeleton className="h-8 w-8" />
+                            <Skeleton className="h-8 w-8" />
                           </div>
                         </TableCell>
                       </TableRow>

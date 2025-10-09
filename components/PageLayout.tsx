@@ -50,9 +50,9 @@ export function PageLayout({
                   <ArrowLeft className="w-4 h-4" />
                 </Button>
               )}
-              <div className="min-w-0">
-                <h1 className="text-2xl font-medium text-gray-900 truncate">{title}</h1>
-                {subtitle && <p className="text-sm text-gray-600 mt-1 line-clamp-2">{subtitle}</p>}
+              <div className="min-w-0 flex-1">
+                <h1 className="text-2xl font-medium text-gray-900 line-clamp-2 break-words">{title}</h1>
+                {subtitle && <p className="text-sm text-gray-600 mt-1 line-clamp-2 break-words">{subtitle}</p>}
               </div>
             </div>
 

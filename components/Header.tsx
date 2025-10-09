@@ -28,6 +28,7 @@ import { StoreErrorBoundary } from './StoreErrorBoundary';
 import { NotificationBell } from './notifications/NotificationBell';
 import { NotificationErrorBoundary } from './notifications/NotificationErrorBoundary';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
+import { PerformanceIndicator } from './ui/PerformanceIndicator';
 // Enhanced UX imports
 // import { EnhancedSearchExperience } from './ux/EnhancedSearchExperience';
 import { SmartCommandPalette } from './ux/SmartCommandPalette';
@@ -224,6 +225,9 @@ export function Header({
         transition={{ delay: 0.2 }}
         className="flex items-center gap-1 sm:gap-2 flex-shrink-0"
       >
+        {/* Performance Indicators */}
+        <PerformanceIndicator className="hidden lg:flex" />
+
         {/* Frontend Status */}
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1" title="Frontend Mode">

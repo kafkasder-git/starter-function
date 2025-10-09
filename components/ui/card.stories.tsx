@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from './card';
 import { Button } from './button';
+import { Badge } from './badge';
 
 const meta = {
   title: 'UI/Card',
@@ -9,6 +10,24 @@ const meta = {
     layout: 'centered',
   },
   tags: ['autodocs'],
+  argTypes: {
+    variant: {
+      control: 'select',
+      options: ['default', 'elevated', 'bordered', 'flat', 'outlined'],
+    },
+    interactive: {
+      control: 'boolean',
+    },
+    loading: {
+      control: 'boolean',
+    },
+    hoverable: {
+      control: 'boolean',
+    },
+    clickable: {
+      control: 'boolean',
+    },
+  },
 } satisfies Meta<typeof Card>;
 
 export default meta;
@@ -28,6 +47,127 @@ export const Default: Story = {
         <Button>Action</Button>
       </CardFooter>
     </Card>
+  ),
+};
+
+export const Elevated: Story = {
+  render: () => (
+    <Card variant="elevated" className="w-[350px]">
+      <CardHeader>
+        <CardTitle>Elevated Card</CardTitle>
+        <CardDescription>This card has elevation shadow</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <p>Elevated cards stand out more from the background.</p>
+      </CardContent>
+    </Card>
+  ),
+};
+
+export const Interactive: Story = {
+  render: () => (
+    <Card 
+      variant="elevated" 
+      interactive 
+      className="w-[350px]"
+      onClick={() => alert('Card clicked!')}
+    >
+      <CardHeader>
+        <CardTitle>Interactive Card</CardTitle>
+        <CardDescription>Click me to see the interaction</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <p>This card responds to hover and click events.</p>
+      </CardContent>
+    </Card>
+  ),
+};
+
+export const WithLoading: Story = {
+  render: () => (
+    <Card loading className="w-[350px]">
+      <CardHeader>
+        <CardTitle>Loading Card</CardTitle>
+        <CardDescription>This card is in loading state</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <p>Content is loading...</p>
+      </CardContent>
+    </Card>
+  ),
+};
+
+export const WithBadges: Story = {
+  render: () => (
+    <Card className="w-[350px]">
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <CardTitle>Card with Badges</CardTitle>
+          <Badge variant="success">Active</Badge>
+        </div>
+        <CardDescription>This card includes status badges</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-2">
+          <p>Card content with additional elements.</p>
+          <div className="flex gap-2">
+            <Badge variant="default">Tag 1</Badge>
+            <Badge variant="secondary">Tag 2</Badge>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  ),
+};
+
+export const AllVariants: Story = {
+  render: () => (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <Card variant="default" className="w-[300px]">
+        <CardHeader>
+          <CardTitle>Default</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p>Standard card appearance</p>
+        </CardContent>
+      </Card>
+      
+      <Card variant="elevated" className="w-[300px]">
+        <CardHeader>
+          <CardTitle>Elevated</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p>Card with shadow elevation</p>
+        </CardContent>
+      </Card>
+      
+      <Card variant="bordered" className="w-[300px]">
+        <CardHeader>
+          <CardTitle>Bordered</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p>Card with thick border</p>
+        </CardContent>
+      </Card>
+      
+      <Card variant="flat" className="w-[300px]">
+        <CardHeader>
+          <CardTitle>Flat</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p>Card without border or shadow</p>
+        </CardContent>
+      </Card>
+      
+      <Card variant="outlined" className="w-[300px]">
+        <CardHeader>
+          <CardTitle>Outlined</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p>Card with dashed border</p>
+        </CardContent>
+      </Card>
+    </div>
   ),
 };
 

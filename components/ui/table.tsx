@@ -8,24 +8,74 @@
 'use client';
 
 import * as React from 'react';
+import { Loader2 } from 'lucide-react';
 
 import { cn } from './utils';
 import { sanitizeUserInput } from '../../lib/sanitization';
 
-function Table({ className, ...props }: React.ComponentProps<'table'>) {
+export interface TableProps extends React.ComponentProps<'table'> {
+  stickyHeader?: boolean;
+  loading?: boolean;
+  emptyState?: React.ReactNode;
+  striped?: boolean;
+  hoverable?: boolean;
+  sortable?: boolean;
+  filterable?: boolean;
+  onSort?: (column: string, direction: 'asc' | 'desc') => void;
+  onFilter?: (filters: Record<string, any>) => void;
+}
+
+function Table({ 
+  className, 
+  stickyHeader = false,
+  loading = false,
+  emptyState,
+  striped = false,
+  hoverable = true,
+  children,
+  ...props 
+}: TableProps) {
   return (
-    <div data-slot="table-container" className="relative w-full overflow-x-auto">
+    <div data-slot="table-container" className="relative w-full overflow-x-auto scrollbar-thin">
       <table
         data-slot="table"
-        className={cn('w-full caption-bottom text-sm', className)}
+        className={cn(
+          'w-full caption-bottom text-sm',
+          stickyHeader && 'sticky-header',
+          className
+        )}
+        role="table"
+        aria-label={props['aria-label'] || 'Data table'}
+        aria-busy={loading}
         {...props}
-      />
+      >
+        {children}
+      </table>
+      
+      {loading && (
+        <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-10">
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            <span>Yükleniyor...</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
 function TableHeader({ className, ...props }: React.ComponentProps<'thead'>) {
-  return <thead data-slot="table-header" className={cn('[&_tr]:border-b', className)} {...props} />;
+  return (
+    <thead 
+      data-slot="table-header" 
+      className={cn(
+        '[&_tr]:border-b',
+        'sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60',
+        className
+      )} 
+      {...props} 
+    />
+  );
 }
 
 function TableBody({ className, ...props }: React.ComponentProps<'tbody'>) {
@@ -48,14 +98,39 @@ function TableFooter({ className, ...props }: React.ComponentProps<'tfoot'>) {
   );
 }
 
-function TableRow({ className, ...props }: React.ComponentProps<'tr'>) {
+export interface TableRowProps extends React.ComponentProps<'tr'> {
+  selected?: boolean;
+  selectable?: boolean;
+  onRowSelect?: (selected: boolean) => void;
+}
+
+function TableRow({ 
+  className, 
+  selected = false,
+  selectable = false,
+  onRowSelect,
+  ...props 
+}: TableRowProps) {
   return (
     <tr
       data-slot="table-row"
       className={cn(
-        'hover:bg-muted/50 data-[state=selected]:bg-muted border-b transition-colors',
+        'border-b transition-colors',
+        'hover:bg-muted/50',
+        selected && 'bg-muted',
+        selectable && 'cursor-pointer',
         className,
       )}
+      onClick={selectable ? () => onRowSelect?.(!selected) : undefined}
+      role="row"
+      aria-selected={selectable ? selected : undefined}
+      tabIndex={selectable ? 0 : undefined}
+      onKeyDown={selectable ? (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onRowSelect?.(!selected);
+        }
+      } : undefined}
       {...props}
     />
   );
@@ -74,7 +149,12 @@ function TableHead({ className, ...props }: React.ComponentProps<'th'>) {
   );
 }
 
-function TableCell({ className, children, ...props }: React.ComponentProps<'td'>) {
+export interface TableCellProps extends React.ComponentProps<'td'> {
+  truncate?: boolean;
+  maxWidth?: string;
+}
+
+function TableCell({ className, children, truncate = false, maxWidth, ...props }: TableCellProps) {
   // Sanitize children if it's a string to prevent XSS
   const sanitizedChildren = React.useMemo(() => {
     if (typeof children === 'string') {
@@ -87,9 +167,12 @@ function TableCell({ className, children, ...props }: React.ComponentProps<'td'>
     <td
       data-slot="table-cell"
       className={cn(
-        'p-2 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]',
+        'p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]',
+        truncate ? 'truncate' : 'whitespace-nowrap',
         className,
       )}
+      style={maxWidth ? { maxWidth } : undefined}
+      title={truncate && typeof children === 'string' ? children : undefined}
       {...props}
     >
       {sanitizedChildren}
@@ -107,4 +190,34 @@ function TableCaption({ className, ...props }: React.ComponentProps<'caption'>) 
   );
 }
 
-export { Table, TableHeader, TableBody, TableFooter, TableHead, TableRow, TableCell, TableCaption };
+// Empty State Component
+function TableEmptyState({ 
+  children, 
+  className,
+  ...props 
+}: React.ComponentProps<'div'>) {
+  return (
+    <div
+      data-slot="table-empty"
+      className={cn(
+        'flex flex-col items-center justify-center py-12 text-center',
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+}
+
+export { 
+  Table, 
+  TableHeader, 
+  TableBody, 
+  TableFooter, 
+  TableHead, 
+  TableRow, 
+  TableCell, 
+  TableCaption,
+  TableEmptyState 
+};
