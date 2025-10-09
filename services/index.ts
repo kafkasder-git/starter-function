@@ -20,6 +20,7 @@ import queryOptimizationService from './queryOptimizationService';
 import connectionPoolingService from './connectionPoolingService';
 import cachingService from './cachingService';
 import performanceMonitoringService from './performanceMonitoringService';
+import { enhancedSupabase, EnhancedSupabaseService } from './enhancedSupabaseService';
 
 // =============================================================================
 // CORE SERVICES
@@ -49,6 +50,15 @@ export { default as kumbaraService } from './kumbaraService';
 export { default as reportsService } from './reportingService';
 export { default as statsService } from './safeStatsService';
 export { default as intelligentStatsService } from './intelligentStatsService';
+
+// =============================================================================
+// SUPABASE SERVICES
+// =============================================================================
+
+// Enhanced Supabase service - Recommended way to interact with Supabase
+// See documentation: c:/Users/isaha/Desktop/panel/docs/services/ENHANCED_SUPABASE_SERVICE.md
+
+export { enhancedSupabase, EnhancedSupabaseService } from './enhancedSupabaseService';
 
 // =============================================================================
 // COMMUNICATION SERVICES
@@ -247,6 +257,14 @@ export type {
   // Kumbara types
   Kumbara,
 } from '../types/kumbara';
+
+export type {
+  // Supabase service types
+  SupabaseResponse,
+  SupabaseQueryOptions,
+  ConnectionStatus,
+  BatchOperationResult,
+} from './enhancedSupabaseService';
 
 // =============================================================================
 // SERVICE FACTORIES

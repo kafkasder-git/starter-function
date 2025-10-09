@@ -3,11 +3,13 @@
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+and this project adheres to
+[Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
 ### Added
+
 - Complete database schema with migrations
 - Row Level Security (RLS) policies
 - Docker support with multi-stage builds
@@ -28,17 +30,54 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive deployment guide
 
 ### Changed
+
 - Centralized environment configuration
 - Enhanced error handling
 - Improved performance monitoring
 
 ### Fixed
+
 - Environment variable validation
 - Type safety improvements
+
+## [1.1.0] - 2025-10-09
+
+### Fixed
+
+- Fixed undefined timeout variable in query method causing abort controller to
+  fail
+- Fixed duplicate PGRST301 error code check in error type determination
+- Fixed inconsistent network connectivity checks across CRUD operations
+
+### Added
+
+- Added comprehensive unit tests for Enhanced Supabase Service
+- Added detailed documentation for Enhanced Supabase Service usage
+- Added TypeScript generics for better type safety in query operations
+- Added support for batch operations (batchInsert, batchUpdate, batchDelete)
+- Added flexible single/multiple record handling in CRUD operations
+- Added improved connection testing with detailed diagnostics
+- Added retry strategy configuration options
+- Added operation metadata (latency, retry count) in responses
+
+### Improved
+
+- Improved error messages with Turkish translations
+- Improved testConnection method with proper health checks
+- Improved type safety with proper TypeScript generics
+- Improved JSDoc documentation for all public methods
+
+### Documentation
+
+- Added comprehensive service documentation in
+  `docs/services/ENHANCED_SUPABASE_SERVICE.md`
+- Added usage examples and integration guide
+- Added migration guide from direct Supabase usage
 
 ## [1.0.0] - 2025-01-07
 
 ### Added
+
 - Initial release
 - Member management system
 - Donation tracking
@@ -60,6 +99,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Audit logging
 
 ### Security
+
 - Input sanitization
 - XSS protection
 - CSRF protection
@@ -68,6 +108,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Secure authentication with Supabase
 
 ### Performance
+
 - Code splitting
 - Lazy loading
 - React Query caching
@@ -75,6 +116,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Service worker caching
 
 ### Accessibility
+
 - WCAG 2.1 Level AA compliance
 - Keyboard navigation
 - Screen reader support
@@ -86,6 +128,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Version History
 
 ### [1.0.0] - 2025-01-07
+
 - Initial production release
 
 ---
