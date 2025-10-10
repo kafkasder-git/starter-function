@@ -5,10 +5,10 @@
  * @version 1.0.0
  */
 
-import { supabase, TABLES } from '../lib/supabase';
+import { supabase } from '../lib/supabase';
 import { logger } from '../lib/logging/logger';
 import type { Tables } from '../types/supabase';
-import { normalizeRoleToEnglish, getEquivalentRoles } from '../lib/roleMapping';
+import { normalizeRoleToEnglish } from '../lib/roleMapping';
 
 // Type aliases for better readability
 export type Role = Tables<'roles'>;
@@ -39,7 +39,6 @@ export interface ApiResponse<T> {
 export class RolesService {
   private rolesTable = 'roles';
   private permissionsTable = 'permissions';
-  private userPermissionsTable = 'user_permissions';
   private userProfilesTable = 'user_profiles';
 
   /**
@@ -198,7 +197,7 @@ export class RolesService {
       const permissions = Array.isArray(role.permissions) ? role.permissions : [];
 
       // Check for wildcard permissions (e.g., "users:*")
-      const [resource, action] = permissionName.split(':');
+      const [resource] = permissionName.split(':');
       const hasWildcard = permissions.includes(`${resource}:*`);
       const hasSpecific = permissions.includes(permissionName);
       const hasAllAccess = permissions.includes('*:*');
@@ -359,7 +358,7 @@ export class RolesService {
       // Count users by normalized role (both Turkish and English)
       const stats =
         users?.reduce(
-          (acc, user) => {
+          (acc: Record<string, number>, user: { role: string | null }) => {
             const userRole = user.role || 'unknown';
             const normalized = normalizeRoleToEnglish(userRole);
 
@@ -484,12 +483,17 @@ export class RolesService {
 
     permissions.forEach((perm: any) => {
       const permStr = String(perm);
-      const [resource, action] = permStr.split(':');
-      if (!matrix[resource]) {
-        matrix[resource] = [];
-      }
-      if (!matrix[resource].includes(action)) {
-        matrix[resource].push(action);
+      const parts = permStr.split(':');
+      const resource = parts[0];
+      const action = parts[1];
+
+      if (resource && action) {
+        if (!matrix[resource]) {
+          matrix[resource] = [];
+        }
+        if (!matrix[resource].includes(action)) {
+          matrix[resource].push(action);
+        }
       }
     });
 
