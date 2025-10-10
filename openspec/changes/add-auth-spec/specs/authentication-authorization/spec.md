@@ -5,9 +5,9 @@
 ### Requirement: User Login
 The system SHALL authenticate users using email and password via Supabase Auth.
 
-**Authentication Method**: Supabase Auth (signInWithPassword)  
-**Session Duration**: 1 hour (3600 seconds) default, extended with remember me  
-**Rate Limiting**: Maximum 5 login attempts per 15 minutes  
+**Authentication Method**: Supabase Auth (signInWithPassword)
+**Session Duration**: 1 hour (3600 seconds) default, extended with remember me
+**Rate Limiting**: Maximum 5 login attempts per 15 minutes
 **Audit**: All login attempts SHALL be logged
 
 #### Scenario: Successful login with valid credentials
@@ -53,8 +53,8 @@ The system SHALL authenticate users using email and password via Supabase Auth.
 ### Requirement: User Logout
 The system SHALL provide secure logout that invalidates sessions.
 
-**Scope**: Client and server-side  
-**Options**: Single session or all sessions  
+**Scope**: Client and server-side
+**Options**: Single session or all sessions
 **Audit**: Logout events SHALL be logged
 
 #### Scenario: Standard logout
@@ -85,9 +85,9 @@ The system SHALL provide secure logout that invalidates sessions.
 ### Requirement: User Registration
 The system SHALL allow new user registration with email verification.
 
-**Email Verification**: Required via Supabase Auth  
-**Default Role**: Viewer (lowest privilege)  
-**Approval**: Admin approval required for elevated roles  
+**Email Verification**: Required via Supabase Auth
+**Default Role**: Viewer (lowest privilege)
+**Approval**: Admin approval required for elevated roles
 **Security**: Email confirmation link valid for 24 hours
 
 #### Scenario: New user registration
@@ -123,9 +123,9 @@ The system SHALL allow new user registration with email verification.
 ### Requirement: Password Reset
 The system SHALL provide secure password reset via email.
 
-**Method**: Email-based reset link  
-**Token Validity**: 1 hour  
-**Rate Limiting**: Maximum 3 reset requests per hour per email  
+**Method**: Email-based reset link
+**Token Validity**: 1 hour
+**Rate Limiting**: Maximum 3 reset requests per hour per email
 **Security**: Reset link single-use only
 
 #### Scenario: Request password reset
@@ -164,9 +164,9 @@ The system SHALL provide secure password reset via email.
 ### Requirement: Session Management
 The system SHALL manage user sessions with automatic refresh and expiration.
 
-**Session Duration**: 3600 seconds (1 hour)  
-**Refresh Threshold**: 10 minutes before expiry  
-**Remember Me**: Extends to 30 days  
+**Session Duration**: 3600 seconds (1 hour)
+**Refresh Threshold**: 10 minutes before expiry
+**Remember Me**: Extends to 30 days
 **Storage**: Secure HTTP-only cookies (Supabase default)
 
 #### Scenario: Session creation on login
@@ -206,9 +206,9 @@ The system SHALL manage user sessions with automatic refresh and expiration.
 ### Requirement: Role-Based Access Control (RBAC)
 The system SHALL enforce role-based permissions using four hierarchical roles.
 
-**Roles**: Admin > Manager > Operator > Viewer  
-**Permission Model**: Whitelist (explicit grant)  
-**Enforcement**: Client-side UI + Server-side RLS policies  
+**Roles**: Admin > Manager > Operator > Viewer
+**Permission Model**: Whitelist (explicit grant)
+**Enforcement**: Client-side UI + Server-side RLS policies
 **Audit**: All permission checks SHALL be logged in debug mode
 
 #### Scenario: Admin role full access
@@ -226,7 +226,7 @@ The system SHALL enforce role-based permissions using four hierarchical roles.
 - **AND** System denies access (403 Forbidden)
 - **AND** System displays "Bu işlem için yetkiniz bulunmamaktadır"
 - **WHEN** Manager attempts to update beneficiary
-- **THEN** System checks permission EDIT_BENEFICIARY  
+- **THEN** System checks permission EDIT_BENEFICIARY
 - **AND** Manager HAS edit permission
 - **AND** System allows update operation
 
@@ -257,8 +257,8 @@ The system SHALL enforce role-based permissions using four hierarchical roles.
 ### Requirement: Permission System
 The system SHALL provide granular permission checking with 30+ distinct permissions.
 
-**Categories**: Dashboard, Donations, Members, Aid, Finance, Events, Users, Settings, Reports  
-**Operations**: VIEW, CREATE, EDIT, DELETE, APPROVE, MANAGE, EXPORT  
+**Categories**: Dashboard, Donations, Members, Aid, Finance, Events, Users, Settings, Reports
+**Operations**: VIEW, CREATE, EDIT, DELETE, APPROVE, MANAGE, EXPORT
 **Checking Methods**: hasPermission(), hasAnyPermission(), hasAllPermissions()
 
 #### Scenario: Single permission check
@@ -303,9 +303,9 @@ EDIT_SETTINGS         |   ✓   |    ✗    |    ✗     |   ✗
 ### Requirement: Protected Routes
 The system SHALL protect routes based on authentication status and required permissions.
 
-**Mechanism**: ProtectedRoute component wrapper  
-**Redirect**: Unauthenticated users → login page  
-**Unauthorized**: Insufficient permissions → 403 page  
+**Mechanism**: ProtectedRoute component wrapper
+**Redirect**: Unauthenticated users → login page
+**Unauthorized**: Insufficient permissions → 403 page
 **Remember**: Intended destination for post-login redirect
 
 #### Scenario: Access protected route while unauthenticated
@@ -344,9 +344,9 @@ The system SHALL protect routes based on authentication status and required perm
 ### Requirement: Role Definitions
 The system SHALL define four hierarchical roles with distinct permission sets.
 
-**Roles**: admin, manager, operator, viewer  
-**Hierarchy**: admin > manager > operator > viewer  
-**Storage**: role stored in Supabase user.app_metadata.role or user_metadata.role  
+**Roles**: admin, manager, operator, viewer
+**Hierarchy**: admin > manager > operator > viewer
+**Storage**: role stored in Supabase user.app_metadata.role or user_metadata.role
 **Default**: New users assigned "viewer" role
 
 #### Scenario: Admin role capabilities
@@ -402,8 +402,8 @@ The system SHALL define four hierarchical roles with distinct permission sets.
 ### Requirement: Permission Checking Helpers
 The system SHALL provide utility functions for checking user permissions.
 
-**Functions**: hasPermission(), hasAnyPermission(), hasAllPermissions(), hasRole()  
-**Performance**: Permission checks SHALL complete in < 1ms  
+**Functions**: hasPermission(), hasAnyPermission(), hasAllPermissions(), hasRole()
+**Performance**: Permission checks SHALL complete in < 1ms
 **Caching**: Permission list cached in authStore
 
 #### Scenario: Check single permission
@@ -452,10 +452,10 @@ const isAdmin = hasRole(UserRole.ADMIN);
 ### Requirement: Password Policy
 The system SHALL enforce password strength requirements.
 
-**Minimum Length**: 8 characters  
-**Complexity**: Must contain uppercase, lowercase, and number  
-**Common Passwords**: Block common/weak passwords  
-**Validation**: Real-time strength indicator  
+**Minimum Length**: 8 characters
+**Complexity**: Must contain uppercase, lowercase, and number
+**Common Passwords**: Block common/weak passwords
+**Validation**: Real-time strength indicator
 **Storage**: Hashed with bcrypt (Supabase default)
 
 #### Scenario: Strong password accepted
@@ -495,9 +495,9 @@ The system SHALL enforce password strength requirements.
 ### Requirement: Account Security
 The system SHALL protect accounts from unauthorized access.
 
-**Login Throttling**: Max 5 attempts per 15 minutes  
-**Lockout Duration**: 15 minutes  
-**IP Tracking**: Log IP addresses for security monitoring  
+**Login Throttling**: Max 5 attempts per 15 minutes
+**Lockout Duration**: 15 minutes
+**IP Tracking**: Log IP addresses for security monitoring
 **Device Tracking**: Track login devices
 
 #### Scenario: Login attempt tracking
@@ -531,9 +531,9 @@ The system SHALL protect accounts from unauthorized access.
 ### Requirement: User Profile Management
 The system SHALL allow users to view and update their own profile.
 
-**Editable Fields**: name, avatar  
-**Read-Only Fields**: email, role, permissions, created_at  
-**Restrictions**: Users cannot change own role or permissions  
+**Editable Fields**: name, avatar
+**Read-Only Fields**: email, role, permissions, created_at
+**Restrictions**: Users cannot change own role or permissions
 **Audit**: Profile updates SHALL be logged
 
 #### Scenario: View own profile
@@ -568,9 +568,9 @@ The system SHALL allow users to view and update their own profile.
 ### Requirement: Admin User Management
 The system SHALL allow Admins to manage all users.
 
-**Roles**: Admin only  
-**Permissions**: CREATE_USER, EDIT_USER, DELETE_USER, VIEW_USERS  
-**Operations**: Create, read, update, suspend, delete users  
+**Roles**: Admin only
+**Permissions**: CREATE_USER, EDIT_USER, DELETE_USER, VIEW_USERS
+**Operations**: Create, read, update, suspend, delete users
 **Restriction**: Cannot delete last Admin user
 
 #### Scenario: Admin creates new user
@@ -620,9 +620,9 @@ The system SHALL allow Admins to manage all users.
 ### Requirement: Audit Trail for Auth Events
 The system SHALL log all authentication and authorization events.
 
-**Events**: Login, logout, failed attempts, role changes, permission denials  
-**Data Logged**: user_id, event_type, timestamp, IP address, user_agent  
-**Retention**: Audit logs retained for 1 year  
+**Events**: Login, logout, failed attempts, role changes, permission denials
+**Data Logged**: user_id, event_type, timestamp, IP address, user_agent
+**Retention**: Audit logs retained for 1 year
 **Access**: Admin only
 
 #### Scenario: Log successful login
@@ -688,9 +688,9 @@ The system SHALL log all authentication and authorization events.
 ### Requirement: Error Handling and Messages
 The system SHALL provide clear, localized error messages for auth failures.
 
-**Language**: Turkish  
-**Security**: Generic errors for sensitive operations (no user enumeration)  
-**Format**: Consistent error structure  
+**Language**: Turkish
+**Security**: Generic errors for sensitive operations (no user enumeration)
+**Format**: Consistent error structure
 **User-Friendly**: Non-technical language
 
 #### Scenario: Invalid credentials error
@@ -726,10 +726,10 @@ The system SHALL provide clear, localized error messages for auth failures.
 ### Requirement: Security Best Practices
 The system SHALL implement OWASP Top 10 security controls.
 
-**HTTPS Only**: All auth operations over HTTPS  
-**Secure Cookies**: HTTP-only, Secure, SameSite flags  
-**CSRF Protection**: Token-based CSRF protection  
-**XSS Prevention**: Input sanitization and output encoding  
+**HTTPS Only**: All auth operations over HTTPS
+**Secure Cookies**: HTTP-only, Secure, SameSite flags
+**CSRF Protection**: Token-based CSRF protection
+**XSS Prevention**: Input sanitization and output encoding
 **Rate Limiting**: Protect against brute force
 
 #### Scenario: HTTPS enforcement
@@ -761,9 +761,9 @@ The system SHALL implement OWASP Top 10 security controls.
 ### Requirement: Session Persistence
 The system SHALL maintain sessions across page refreshes and browser restarts.
 
-**Storage**: Supabase handles session storage  
-**Remember Me**: Optional 30-day session extension  
-**Refresh**: Automatic token refresh  
+**Storage**: Supabase handles session storage
+**Remember Me**: Optional 30-day session extension
+**Refresh**: Automatic token refresh
 **Expiration**: Graceful expiry handling
 
 #### Scenario: Session persists across page refresh
@@ -793,9 +793,9 @@ The system SHALL maintain sessions across page refreshes and browser restarts.
 ### Requirement: Authorization Middleware
 The system SHALL use PostgreSQL RLS policies for server-side authorization.
 
-**Mechanism**: Supabase Row Level Security (RLS)  
-**Policy Based On**: auth.uid() and user role from user_profiles  
-**Enforcement**: Database-level (cannot bypass)  
+**Mechanism**: Supabase Row Level Security (RLS)
+**Policy Based On**: auth.uid() and user role from user_profiles
+**Enforcement**: Database-level (cannot bypass)
 **Fallback**: Client-side checks for UI only (not security)
 
 #### Scenario: RLS policy prevents unauthorized read
@@ -831,9 +831,9 @@ The system SHALL use PostgreSQL RLS policies for server-side authorization.
 ### Requirement: Multi-User Scenarios
 The system SHALL handle concurrent users with different roles safely.
 
-**Isolation**: User sessions isolated  
-**Concurrent**: Multiple users can work simultaneously  
-**Consistency**: Role changes propagate on next login  
+**Isolation**: User sessions isolated
+**Concurrent**: Multiple users can work simultaneously
+**Consistency**: Role changes propagate on next login
 **Audit**: Cross-user actions logged
 
 #### Scenario: Admin modifies user while user is logged in
@@ -862,10 +862,10 @@ The system SHALL handle concurrent users with different roles safely.
 ### Requirement: Performance Requirements
 The system SHALL meet authentication performance SLAs.
 
-**Login**: < 2s  
-**Logout**: < 500ms  
-**Session Check**: < 100ms  
-**Permission Check**: < 1ms (in-memory lookup)  
+**Login**: < 2s
+**Logout**: < 500ms
+**Session Check**: < 100ms
+**Permission Check**: < 1ms (in-memory lookup)
 **Token Refresh**: < 1s
 
 #### Scenario: Login performance
@@ -899,11 +899,11 @@ This specification documents **Authentication & Authorization**, covering:
 - ✅ RLS policies
 - ✅ Performance SLAs
 
-**Total Scenarios**: 50+  
-**Total Requirements**: 15  
-**Security Compliant**: ✅ OWASP Top 10  
-**RLS Policies**: ✅ Database-level enforcement  
-**Performance SLAs**: ✅ Defined  
+**Total Scenarios**: 50+
+**Total Requirements**: 15
+**Security Compliant**: ✅ OWASP Top 10
+**RLS Policies**: ✅ Database-level enforcement
+**Performance SLAs**: ✅ Defined
 
 **Related Capabilities**:
 - Beneficiary Management (uses RBAC)
