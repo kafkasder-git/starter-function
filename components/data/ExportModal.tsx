@@ -38,7 +38,7 @@ import { EXPORT_TEMPLATES, type ExportConfig, type ExportResult } from '../../ty
 interface ExportModalProps {
   isOpen: boolean;
   onClose: () => void;
-  data: any[];
+  data: Record<string, unknown>[];
   dataType: keyof typeof EXPORT_TEMPLATES;
   title?: string;
   defaultConfig?: Partial<ExportConfig>;
@@ -59,12 +59,13 @@ export function ExportModal({
   defaultConfig = {},
 }: ExportModalProps) {
   const isMobile = useIsMobile();
+  const template = EXPORT_TEMPLATES[dataType];
   const [config, setConfig] = useState<ExportConfig>(() => ({
     format: 'csv',
     filename: `${dataType}-export-${new Date().toISOString().slice(0, 10)}`,
-    fields: EXPORT_TEMPLATES[dataType]?.fields ?? [],
+    fields: template?.fields ?? [],
     includeHeaders: true,
-    customHeaders: EXPORT_TEMPLATES[dataType]?.headers ?? {},
+    customHeaders: template?.headers ?? {},
     orientation: 'portrait',
     pageSize: 'A4',
     compression: false,
@@ -79,8 +80,8 @@ export function ExportModal({
   const [step, setStep] = useState<'config' | 'preview' | 'export' | 'complete'>('config');
   const [result, setResult] = useState<ExportResult | null>(null);
 
-  const { isExporting, progress, exportData, cancelExport } = useDataExport({
-    onProgress: (_progressValue) => {
+  const { progress, exportData, cancelExport } = useDataExport({
+    onProgress: () => {
       // Progress is handled by the hook's internal state
     },
     onComplete: (result) => {
@@ -137,7 +138,7 @@ export function ExportModal({
 
   // Get available fields
   const availableFields =
-    data.length > 0 ? Object.keys(data[0]).filter((key) => !key.startsWith('_')) : [];
+    data.length > 0 && data[0] ? Object.keys(data[0]).filter((key) => !key.startsWith('_')) : [];
 
   // Handle field selection
   const handleFieldToggle = (field: string, checked: boolean) => {
@@ -174,7 +175,7 @@ export function ExportModal({
             <button
               type="button"
               onClick={() => {
-                setConfig((prev) => ({ ...prev, format: format.value as any }));
+                setConfig((prev) => ({ ...prev, format: format.value as ExportConfig['format'] }));
               }}
               className={cn(
                 'w-full p-4 rounded-lg border-2 transition-all duration-200 text-left',
@@ -245,7 +246,7 @@ export function ExportModal({
               }}
             />
             <label htmlFor={field} className="text-sm font-medium cursor-pointer flex-1">
-              {config.customHeaders?.[field] || field}
+              {config.customHeaders?.[field] ?? field}
             </label>
           </div>
         ))}
@@ -325,7 +326,7 @@ export function ExportModal({
               <Select
                 value={config.orientation}
                 onValueChange={(value) => {
-                  setConfig((prev) => ({ ...prev, orientation: value as any }));
+                  setConfig((prev) => ({ ...prev, orientation: value as ExportConfig['orientation'] }));
                 }}
               >
                 <SelectTrigger>
@@ -343,7 +344,7 @@ export function ExportModal({
               <Select
                 value={config.pageSize}
                 onValueChange={(value) => {
-                  setConfig((prev) => ({ ...prev, pageSize: value as any }));
+                  setConfig((prev) => ({ ...prev, pageSize: value as ExportConfig['pageSize'] }));
                 }}
               >
                 <SelectTrigger>
@@ -400,8 +401,9 @@ export function ExportModal({
   const renderPreview = () => {
     const filteredData = config.dateRange
       ? data.filter((item) => {
-          const itemDate = new Date(item.date ?? item.createdAt ?? item.timestamp);
-          return itemDate >= config.dateRange!.start && itemDate <= config.dateRange!.end;
+          const itemDate = new Date((item.date ?? item.createdAt ?? item.timestamp) as string);
+          const range = config.dateRange;
+          return range && itemDate >= range.start && itemDate <= range.end;
         })
       : data;
 
@@ -454,7 +456,7 @@ export function ExportModal({
                       key={field}
                       className="px-3 py-2 text-left font-medium text-gray-700 border-r last:border-r-0"
                     >
-                      {config.customHeaders?.[field] || field}
+                      {config.customHeaders?.[field] ?? field}
                     </th>
                   ))}
                 </tr>
@@ -467,7 +469,7 @@ export function ExportModal({
                         key={field}
                         className="px-3 py-2 border-r last:border-r-0 truncate max-w-32"
                       >
-                        {String(item[field] || '')}
+                        {String(item[field] ?? '')}
                       </td>
                     ))}
                   </tr>

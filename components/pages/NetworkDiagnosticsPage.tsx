@@ -281,7 +281,7 @@ export function NetworkDiagnosticsPage() {
             <div>
               <div className="font-medium text-sm text-gray-500">Supabase URL</div>
               <div className="text-sm font-mono bg-gray-50 p-2 rounded">
-                {import.meta.env.VITE_SUPABASE_URL || 'Tanımlanmamış'}
+                {import.meta.env.VITE_SUPABASE_URL ?? 'Tanımlanmamış'}
               </div>
             </div>
             <div>

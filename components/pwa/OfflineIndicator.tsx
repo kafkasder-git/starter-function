@@ -40,13 +40,20 @@ export function OfflineIndicator({
   position = 'top',
   showDetails = false,
 }: OfflineIndicatorProps) {
-  const [isOnline, setIsOnline] = useState(navigator?.onLine ?? true);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
 
   // Network bilgilerini güncelleyelim - PWA kaldırıldı
+  type NavigatorWithConnection = Navigator & {
+    connection?: {
+      effectiveType?: string;
+      type?: string;
+    };
+  };
+
   const networkInfo = {
     isOnline,
-    effectiveType: isInFigma ? 'wifi' : (navigator as any)?.connection?.effectiveType,
-    connectionType: isInFigma ? 'wifi' : (navigator as any)?.connection?.type,
+    effectiveType: isInFigma ? 'wifi' : (navigator as NavigatorWithConnection).connection?.effectiveType,
+    connectionType: isInFigma ? 'wifi' : (navigator as NavigatorWithConnection).connection?.type,
   };
   const [showReconnecting, setShowReconnecting] = useState(false);
   const [lastOnlineTime, setLastOnlineTime] = useState<Date | null>(null);
@@ -105,7 +112,7 @@ export function OfflineIndicator({
       setTimeout(() => {
         setShowReconnecting(false);
       }, 1000);
-    } catch (_error) {
+    } catch {
       // Still offline
       setTimeout(() => {
         setShowReconnecting(false);
@@ -129,6 +136,7 @@ export function OfflineIndicator({
         return { label: 'Hızlı', color: 'bg-emerald-500', strength: 3 };
       case '5g':
         return { label: 'Çok Hızlı', color: 'bg-blue-500', strength: 4 };
+      case undefined:
       default:
         return { label: 'İyi', color: 'bg-emerald-500', strength: 3 };
     }
@@ -223,7 +231,7 @@ export function OfflineIndicator({
                         Temiz Frontend
                       </span>
                       {networkInfo.connectionType && networkInfo.connectionType !== 'unknown' && (
-                        <span>Bağlantı: {networkInfo.connectionType.toUpperCase()}</span>
+                        <span>Bağlantı: {networkInfo.connectionType ? networkInfo.connectionType.toUpperCase() : 'UNKNOWN'}</span>
                       )}
                     </div>
                   ) : (
@@ -273,7 +281,7 @@ export function OfflineIndicator({
                   />
                 ))}
                 <span className="text-xs text-muted-foreground ml-2">
-                  {networkInfo.effectiveType?.toUpperCase() || 'UNKNOWN'}
+                  {networkInfo.effectiveType?.toUpperCase() ?? 'UNKNOWN'}
                 </span>
               </div>
             )}
@@ -311,7 +319,7 @@ export function OfflineIndicator({
  * @returns {void} Nothing
  */
 export function NetworkStatusBadge({ className = '' }: { className?: string }) {
-  const [isOnline, setIsOnline] = useState(navigator?.onLine ?? true);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
 
   useEffect(() => {
     const handleOnline = () => {
@@ -330,9 +338,15 @@ export function NetworkStatusBadge({ className = '' }: { className?: string }) {
     };
   }, []);
 
+  type NavigatorWithConnection = Navigator & {
+    connection?: {
+      effectiveType?: string;
+    };
+  };
+
   const networkInfo = {
     isOnline,
-    effectiveType: isInFigma ? 'wifi' : (navigator as any)?.connection?.effectiveType,
+    effectiveType: isInFigma ? 'wifi' : (navigator as NavigatorWithConnection).connection?.effectiveType,
   };
 
   return (
