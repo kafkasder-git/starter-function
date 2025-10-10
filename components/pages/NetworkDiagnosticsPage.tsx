@@ -3,20 +3,20 @@
  * @description Comprehensive network diagnostics and troubleshooting page
  */
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { Badge } from '../ui/badge';
 import { Separator } from '../ui/separator';
-import { 
-  Wifi, 
-  WifiOff, 
-  Server, 
-  Globe, 
-  RefreshCw, 
-  CheckCircle, 
-  XCircle, 
+import {
+  Wifi,
+  WifiOff,
+  Server,
+  Globe,
+  RefreshCw,
+  CheckCircle,
+  XCircle,
   AlertTriangle,
   Clock,
   Shield,
@@ -47,23 +47,23 @@ export function NetworkDiagnosticsPage() {
   const runFullDiagnostics = async () => {
     setIsRunning(true);
     setErrors([]);
-    
+
     try {
       // Run network diagnostics
       const networkDiag = await networkManager.testConnectivity();
       setDiagnostics(networkDiag);
-      
+
       // Test Supabase connection
       const supabaseTest = await enhancedSupabase.testConnection();
       setSupabaseConnection(supabaseTest);
-      
+
       setLastCheck(new Date());
-      
+
       logger.info('Network diagnostics completed:', {
         network: networkDiag,
         supabase: supabaseTest
       });
-      
+
     } catch (error) {
       const networkError: NetworkError = {
         type: 'UNKNOWN_ERROR',
@@ -96,9 +96,9 @@ export function NetworkDiagnosticsPage() {
       'poor': { variant: 'default' as const, className: 'bg-orange-100 text-orange-800' },
       'offline': { variant: 'destructive' as const, className: 'bg-red-100 text-red-800' }
     };
-    
+
     const config = variants[quality as keyof typeof variants] || variants.offline;
-    
+
     return (
       <Badge variant={config.variant} className={config.className}>
         {quality === 'excellent' && 'Mükemmel'}
@@ -246,7 +246,7 @@ export function NetworkDiagnosticsPage() {
                   </span>
                 </div>
               </div>
-              
+
               {supabaseConnection.error && (
                 <Alert variant="destructive">
                   <AlertTriangle className="h-4 w-4" />
@@ -287,8 +287,8 @@ export function NetworkDiagnosticsPage() {
             <div>
               <div className="font-medium text-sm text-gray-500">Anon Key</div>
               <div className="text-sm font-mono bg-gray-50 p-2 rounded truncate">
-                {import.meta.env.VITE_SUPABASE_ANON_KEY ? 
-                  `${import.meta.env.VITE_SUPABASE_ANON_KEY.substring(0, 20)}...` : 
+                {import.meta.env.VITE_SUPABASE_ANON_KEY ?
+                  `${import.meta.env.VITE_SUPABASE_ANON_KEY.substring(0, 20)}...` :
                   'Tanımlanmamış'
                 }
               </div>

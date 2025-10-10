@@ -5,7 +5,7 @@
  * @version 1.0.0
  */
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import {
   TrendingUp,

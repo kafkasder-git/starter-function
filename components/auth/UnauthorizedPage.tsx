@@ -47,6 +47,7 @@ const PERMISSION_LABELS: Record<Permission, string> = {
   [Permission.CREATE_FINANCE]: 'Finans Kaydı Oluşturma',
   [Permission.EDIT_FINANCE]: 'Finans Düzenleme',
   [Permission.DELETE_FINANCE]: 'Finans Silme',
+  [Permission.MANAGE_FINANCIAL]: 'Mali Yönetim',
   [Permission.VIEW_MESSAGES]: 'Mesajları Görüntüleme',
   [Permission.SEND_MESSAGES]: 'Mesaj Gönderme',
   [Permission.VIEW_EVENTS]: 'Etkinlikleri Görüntüleme',

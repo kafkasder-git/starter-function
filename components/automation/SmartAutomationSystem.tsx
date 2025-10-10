@@ -5,7 +5,7 @@
  * @version 1.0.0
  */
 
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Zap,
