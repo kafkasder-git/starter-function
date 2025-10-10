@@ -61,7 +61,19 @@
     "storybook:build": "storybook build",
     "backup:db": "bash scripts/backup-database.sh",
     "restore:db": "bash scripts/restore-database.sh",
-    "load:test": "k6 run tests/load/k6-load-test.js"
+    "load:test": "k6 run tests/load/k6-load-test.js",
+    "review": "bash scripts/code-review.sh",
+    "review:quick": "npm run lint:check && npm run type-check && npm run build",
+    "review:full": "npm run review && npm run test:coverage",
+    "dead-code": "npx ts-prune",
+    "unused-deps": "npx depcheck",
+    "complexity": "npx eslint . --ext ts,tsx --format json --config .eslintrc.review.json",
+    "duplicate": "npx jscpd --pattern '**/*.{ts,tsx}' --ignore '**/*.test.ts,**/*.spec.ts,**/node_modules/**'",
+    "analyze:size": "du -sh dist/",
+    "analyze:chunks": "npx vite-bundle-visualizer",
+    "lighthouse": "npx lighthouse http://localhost:5173 --view",
+    "lighthouse:ci": "npx lighthouse http://localhost:5173 --output json --output-path ./lighthouse-report.json",
+    "compare-metrics": "bash scripts/compare-metrics.sh"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",

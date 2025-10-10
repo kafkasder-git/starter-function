@@ -1,35 +1,96 @@
 /**
  * @fileoverview Enhanced Notification Utilities - Türkçe bildirim sistemi
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 2.0.0
  */
 
 import { toast } from 'sonner';
 
-export type NotificationCategory = 
-  | 'genel' 
-  | 'bagis' 
-  | 'uye' 
-  | 'yardim' 
-  | 'mali' 
-  | 'etkinlik' 
-  | 'sistem' 
+export type NotificationCategory =
+  | 'genel'
+  | 'bagis'
+  | 'uye'
+  | 'yardim'
+  | 'mali'
+  | 'etkinlik'
+  | 'sistem'
   | 'onay';
 
 export type NotificationPriority = 'dusuk' | 'orta' | 'yuksek' | 'acil';
 
+// =============================================================================
+// MAPPING FOR ENGLISH TO TURKISH (for notificationStore compatibility)
+// =============================================================================
+
+// Map English categories from notificationStore to Turkish categories
+export const CATEGORY_MAP: Record<string, NotificationCategory> = {
+  general: 'genel',
+  donation: 'bagis',
+  member: 'uye',
+  aid: 'yardim',
+  campaign: 'yardim', // Campaign maps to aid/yardim
+  finance: 'mali',
+  event: 'etkinlik',
+  system: 'sistem',
+  approval: 'onay',
+  // Turkish to Turkish (pass-through)
+  genel: 'genel',
+  bagis: 'bagis',
+  uye: 'uye',
+  yardim: 'yardim',
+  mali: 'mali',
+  etkinlik: 'etkinlik',
+  sistem: 'sistem',
+  onay: 'onay',
+};
+
+// Map English priorities from notificationStore to Turkish priorities
+export const PRIORITY_MAP: Record<string, NotificationPriority> = {
+  low: 'dusuk',
+  medium: 'orta',
+  high: 'yuksek',
+  urgent: 'acil',
+  // Turkish to Turkish (pass-through)
+  dusuk: 'dusuk',
+  orta: 'orta',
+  yuksek: 'yuksek',
+  acil: 'acil',
+};
+
 export interface NotificationConfig {
   title: string;
   message: string;
-  category?: NotificationCategory;
-  priority?: NotificationPriority;
+  category?: NotificationCategory | string; // Allow both Turkish and English
+  priority?: NotificationPriority | string; // Allow both Turkish and English
   duration?: number;
   action?: {
     label: string;
     onClick: () => void;
   };
   sound?: boolean;
+}
+
+// =============================================================================
+// UTILITY FUNCTIONS
+// =============================================================================
+
+/**
+ * Convert English category to Turkish category
+ * Useful when working with notificationStore which uses English categories
+ */
+export function mapCategory(category: string | undefined): NotificationCategory {
+  if (!category) return 'genel';
+  return CATEGORY_MAP[category] || 'genel';
+}
+
+/**
+ * Convert English priority to Turkish priority
+ * Useful when working with notificationStore which uses English priorities
+ */
+export function mapPriority(priority: string | undefined): NotificationPriority {
+  if (!priority) return 'orta';
+  return PRIORITY_MAP[priority] || 'orta';
 }
 
 // Öncelik süreleri (ms)
@@ -71,78 +132,110 @@ const playNotificationSound = (priority: NotificationPriority = 'orta') => {
 export const enhancedNotifications = {
   // Başarı bildirimi
   basari: (config: NotificationConfig) => {
-    const duration = config.duration ?? priorityDurations[config.priority ?? 'orta'];
-    const categoryStyle = config.category ? categoryStyles[config.category] : categoryStyles.genel;
-    
+    const mappedPriority = mapPriority(config.priority);
+    const mappedCategory = mapCategory(config.category);
+    const duration = config.duration ?? priorityDurations[mappedPriority];
+    const categoryStyle = categoryStyles[mappedCategory];
+
     if (config.sound) {
-      playNotificationSound(config.priority);
+      playNotificationSound(mappedPriority);
     }
 
-    toast.success(config.message, {
+    const toastOptions: any = {
       description: config.title,
       duration,
-      action: config.action ? {
+      className: categoryStyle,
+    };
+
+    if (config.action) {
+      toastOptions.action = {
         label: config.action.label,
         onClick: config.action.onClick,
-      } : undefined,
-      className: categoryStyle,
-    });
+      };
+    }
+
+    toast.success(config.message, toastOptions);
   },
 
   // Hata bildirimi
   hata: (config: NotificationConfig) => {
-    const duration = config.duration ?? priorityDurations[config.priority ?? 'yuksek'];
-    const categoryStyle = config.category ? categoryStyles[config.category] : 'border-l-4 border-l-red-500 bg-red-50';
-    
+    const mappedPriority = mapPriority(config.priority);
+    const mappedCategory = mapCategory(config.category);
+    const duration = config.duration ?? priorityDurations[mappedPriority];
+    const categoryStyle = mappedCategory
+      ? categoryStyles[mappedCategory]
+      : 'border-l-4 border-l-red-500 bg-red-50';
+
     if (config.sound) {
-      playNotificationSound(config.priority);
+      playNotificationSound(mappedPriority);
     }
 
-    toast.error(config.message, {
+    const toastOptions: any = {
       description: config.title,
       duration,
-      action: config.action ? {
+      className: categoryStyle,
+    };
+
+    if (config.action) {
+      toastOptions.action = {
         label: config.action.label,
         onClick: config.action.onClick,
-      } : undefined,
-      className: categoryStyle,
-    });
+      };
+    }
+
+    toast.error(config.message, toastOptions);
   },
 
   // Uyarı bildirimi
   uyari: (config: NotificationConfig) => {
-    const duration = config.duration ?? priorityDurations[config.priority ?? 'orta'];
-    const categoryStyle = config.category ? categoryStyles[config.category] : 'border-l-4 border-l-amber-500 bg-amber-50';
-    
-    if (config.sound && config.priority === 'acil') {
-      playNotificationSound(config.priority);
+    const mappedPriority = mapPriority(config.priority);
+    const mappedCategory = mapCategory(config.category);
+    const duration = config.duration ?? priorityDurations[mappedPriority];
+    const categoryStyle = mappedCategory
+      ? categoryStyles[mappedCategory]
+      : 'border-l-4 border-l-amber-500 bg-amber-50';
+
+    if (config.sound && mappedPriority === 'acil') {
+      playNotificationSound(mappedPriority);
     }
 
-    toast.warning(config.message, {
+    const toastOptions: any = {
       description: config.title,
       duration,
-      action: config.action ? {
+      className: categoryStyle,
+    };
+
+    if (config.action) {
+      toastOptions.action = {
         label: config.action.label,
         onClick: config.action.onClick,
-      } : undefined,
-      className: categoryStyle,
-    });
+      };
+    }
+
+    toast.warning(config.message, toastOptions);
   },
 
   // Bilgi bildirimi
   bilgi: (config: NotificationConfig) => {
-    const duration = config.duration ?? priorityDurations[config.priority ?? 'orta'];
-    const categoryStyle = config.category ? categoryStyles[config.category] : categoryStyles.genel;
-    
-    toast.info(config.message, {
+    const mappedPriority = mapPriority(config.priority);
+    const mappedCategory = mapCategory(config.category);
+    const duration = config.duration ?? priorityDurations[mappedPriority];
+    const categoryStyle = categoryStyles[mappedCategory];
+
+    const toastOptions: any = {
       description: config.title,
       duration,
-      action: config.action ? {
+      className: categoryStyle,
+    };
+
+    if (config.action) {
+      toastOptions.action = {
         label: config.action.label,
         onClick: config.action.onClick,
-      } : undefined,
-      className: categoryStyle,
-    });
+      };
+    }
+
+    toast.info(config.message, toastOptions);
   },
 };
 
@@ -237,7 +330,7 @@ export const quickNotifications = {
   // Mali bildirimler
   butceUyarisi: (kategori: string, oran: number) => {
     const priority: NotificationPriority = oran >= 90 ? 'acil' : oran >= 80 ? 'yuksek' : 'orta';
-    
+
     enhancedNotifications.uyari({
       title: 'Bütçe Uyarısı',
       message: `${kategori} bütçesinin %${oran}'i kullanıldı.`,
@@ -279,18 +372,18 @@ export const notificationHistory = {
         ...notification,
         timestamp: new Date().toISOString(),
       });
-      
+
       // Son 100 bildirimi sakla
       if (history.length > 100) {
         history.splice(100);
       }
-      
+
       localStorage.setItem('notification-history', JSON.stringify(history));
     } catch {
       // LocalStorage kullanılamıyor
     }
   },
-  
+
   get: () => {
     try {
       return JSON.parse(localStorage.getItem('notification-history') ?? '[]');
@@ -298,7 +391,7 @@ export const notificationHistory = {
       return [];
     }
   },
-  
+
   clear: () => {
     try {
       localStorage.removeItem('notification-history');

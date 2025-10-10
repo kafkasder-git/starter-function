@@ -113,3 +113,24 @@ eslint-output.txt
 *_STATUS.md
 *_COMPLETE.md
 INTEGRATION_*.md
+
+# Kod Review Çıktıları
+eslint-review.log
+typecheck-review.log
+depcheck-review.log
+dead-code-review.log
+build-review.log
+bundle-size-review.log
+test-coverage-review.log
+complexity-review.json
+duplicate-code-review.log
+lighthouse-report.json
+.jscpd/
+
+# Bundle Analizi
+bundle-analysis.html
+dist/bundle-analysis.html
+
+# Metrik Karşılaştırma
+metrics-before.txt
+metrics-after.txt
