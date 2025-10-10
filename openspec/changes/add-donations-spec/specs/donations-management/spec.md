@@ -5,9 +5,9 @@
 ### Requirement: Donation Registration
 The system SHALL allow authorized users to register donations with donor information, amount, type, and payment details.
 
-**Roles**: Admin, Manager, Operator  
-**Permissions**: CREATE_DONATION  
-**Types**: cash, in_kind, services, other  
+**Roles**: Admin, Manager, Operator
+**Permissions**: CREATE_DONATION
+**Types**: cash, in_kind, services, other
 **Currency**: TL (primary), USD, EUR supported
 
 #### Scenario: Register cash donation
@@ -36,8 +36,8 @@ The system SHALL allow authorized users to register donations with donor informa
 ### Requirement: Donation Status Workflow
 The system SHALL enforce status workflow with approval process.
 
-**States**: pending → approved | rejected → processing → completed  
-**Approval**: Manager or Admin required  
+**States**: pending → approved | rejected → processing → completed
+**Approval**: Manager or Admin required
 **Audit**: All status changes logged
 
 #### Scenario: Approve pending donation
@@ -59,9 +59,9 @@ The system SHALL enforce status workflow with approval process.
 ### Requirement: Receipt Generation
 The system SHALL automatically generate donation receipts.
 
-**Trigger**: Donation status → approved  
-**Numbering**: Sequential (YYYY-SEQ format)  
-**Content**: Donor info, amount, date, organization info, tax deductible status  
+**Trigger**: Donation status → approved
+**Numbering**: Sequential (YYYY-SEQ format)
+**Content**: Donor info, amount, date, organization info, tax deductible status
 **Delivery**: Email (PDF) and/or printed
 
 #### Scenario: Generate receipt on approval
@@ -77,9 +77,9 @@ The system SHALL automatically generate donation receipts.
 ### Requirement: Tax Certificate Generation
 The system SHALL generate tax deduction certificates for eligible donations.
 
-**Eligibility**: Cash donations ≥ 100 TL  
-**Legal**: Complies with Turkish tax law  
-**Numbering**: Annual sequence  
+**Eligibility**: Cash donations ≥ 100 TL
+**Legal**: Complies with Turkish tax law
+**Numbering**: Annual sequence
 **Delivery**: Email and registered mail option
 
 #### Scenario: Generate tax certificate
@@ -95,9 +95,9 @@ The system SHALL generate tax deduction certificates for eligible donations.
 ### Requirement: Recurring Donations
 The system SHALL support recurring donations with automated processing.
 
-**Frequencies**: monthly, quarterly, yearly  
-**Processing**: Automatic on schedule  
-**End Date**: Optional, continues until cancelled  
+**Frequencies**: monthly, quarterly, yearly
+**Processing**: Automatic on schedule
+**End Date**: Optional, continues until cancelled
 **Notifications**: Remind donor before each charge
 
 #### Scenario: Setup monthly recurring donation
@@ -119,9 +119,9 @@ The system SHALL support recurring donations with automated processing.
 ### Requirement: Donor Management
 The system SHALL track donors and their donation history.
 
-**Donor Types**: individual, corporate, foundation, government  
-**History**: All donations per donor  
-**Analytics**: Lifetime value, frequency, last donation  
+**Donor Types**: individual, corporate, foundation, government
+**History**: All donations per donor
+**Analytics**: Lifetime value, frequency, last donation
 **Communication**: Preferences and opt-outs
 
 #### Scenario: View donor history
@@ -137,8 +137,8 @@ The system SHALL track donors and their donation history.
 ### Requirement: Payment Method Support
 The system SHALL support multiple payment methods with verification.
 
-**Methods**: bank_transfer, credit_card, cash, check, online, other  
-**Verification**: Payment reference validation  
+**Methods**: bank_transfer, credit_card, cash, check, online, other
+**Verification**: Payment reference validation
 **Tracking**: Transaction IDs where applicable
 
 #### Scenario: Bank transfer donation
@@ -152,8 +152,8 @@ The system SHALL support multiple payment methods with verification.
 ### Requirement: Search and Filtering
 The system SHALL provide comprehensive donation search and filtering.
 
-**Search Fields**: donor_name, donor_email, payment_reference  
-**Filters**: status, type, payment method, date range, amount range  
+**Search Fields**: donor_name, donor_email, payment_reference
+**Filters**: status, type, payment method, date range, amount range
 **Performance**: < 1s for any query
 
 #### Scenario: Search donations by donor name
@@ -171,8 +171,8 @@ The system SHALL provide comprehensive donation search and filtering.
 ### Requirement: Reporting and Analytics
 The system SHALL provide donation statistics and financial reports.
 
-**Statistics**: Total, average, by type, by donor type, by payment method  
-**Trends**: Monthly, quarterly, yearly  
+**Statistics**: Total, average, by type, by donor type, by payment method
+**Trends**: Monthly, quarterly, yearly
 **Export**: Excel, PDF, CSV
 
 #### Scenario: Generate donation statistics
@@ -189,9 +189,9 @@ The system SHALL provide donation statistics and financial reports.
 ### Requirement: RBAC for Donations
 The system SHALL enforce role-based access for donation operations.
 
-**Admin**: Full CRUD  
-**Manager**: Create, read, update, approve  
-**Operator**: Create, read  
+**Admin**: Full CRUD
+**Manager**: Create, read, update, approve
+**Operator**: Create, read
 **Viewer**: Read-only (masked financial data)
 
 #### Scenario: Manager approves donation
@@ -205,8 +205,8 @@ The system SHALL enforce role-based access for donation operations.
 ### Requirement: Audit Trail
 The system SHALL log all donation operations for compliance.
 
-**Logged**: Create, update, status change, approval, receipt generation  
-**Data**: user_id, timestamp, old/new values, IP address  
+**Logged**: Create, update, status change, approval, receipt generation
+**Data**: user_id, timestamp, old/new values, IP address
 **Retention**: 7 years (legal requirement)
 
 #### Scenario: Log donation creation
