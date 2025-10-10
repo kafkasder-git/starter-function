@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Alert, AlertDescription } from '../ui/alert';
-import LoadingSpinner from '../LoadingSpinner';
+import { LoadingSpinner } from '../LoadingSpinner';
 import { PermissionGuard } from '../auth/PermissionGuard';
 import { Users, Shield, Key, CheckCircle2, XCircle, UserCog, BarChart3 } from 'lucide-react';
 
@@ -44,12 +44,11 @@ export const RoleManagementPage: React.FC = () => {
         return;
       }
 
-      setRoles(rolesRes.data || []);
-      setUsers(usersRes.data || []);
-      setStats(statsRes.data || {});
-    } catch (err) {
+      setRoles(rolesRes.data ?? []);
+      setUsers(usersRes.data ?? []);
+      setStats(statsRes.data ?? {});
+    } catch {
       setError('Veriler yüklenirken bir hata oluştu');
-      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -110,7 +109,7 @@ export const RoleManagementPage: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {(stats.admin || 0) + (stats['yönetici'] || 0)}
+              {(stats.admin ?? 0) + (stats['yönetici'] ?? 0)}
             </div>
             <p className="text-muted-foreground text-xs">Admin kullanıcı</p>
           </CardContent>
@@ -123,7 +122,7 @@ export const RoleManagementPage: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {(stats.operator || 0) + (stats['operatör'] || 0)}
+              {(stats.operator ?? 0) + (stats['operatör'] ?? 0)}
             </div>
             <p className="text-muted-foreground text-xs">Operatör kullanıcı</p>
           </CardContent>
@@ -133,18 +132,23 @@ export const RoleManagementPage: React.FC = () => {
       {/* Roles Grid */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {roles.map((role) => {
-          const userCount = stats[role.name] || 0;
+          const userCount = stats[role.name] ?? 0;
           const permissions = Array.isArray(role.permissions) ? role.permissions : [];
           const isActive = role.is_active;
 
           // Count permissions by category
           const permissionCategories = permissions.reduce(
-            (acc: Record<string, number>, perm: any) => {
-              const [resource] = String(perm).split(':');
-              acc[resource] = (acc[resource] || 0) + 1;
+            (acc: Record<string, number>, perm: unknown) => {
+              const parts = String(perm).split(':');
+              const resource = parts[0];
+              if (resource && typeof resource === 'string') {
+                const safeResource = resource.trim();
+                // eslint-disable-next-line security/detect-object-injection
+                acc[safeResource] = (acc[safeResource] ?? 0) + 1;
+              }
               return acc;
             },
-            {},
+            {} as Record<string, number>,
           );
 
           return (
@@ -210,7 +214,7 @@ export const RoleManagementPage: React.FC = () => {
                 <div>
                   <p className="mb-2 text-sm font-medium">Örnek Yetkiler:</p>
                   <div className="flex flex-wrap gap-1">
-                    {permissions.slice(0, 5).map((perm: any, idx: number) => (
+                    {permissions.slice(0, 5).map((perm: unknown, idx: number) => (
                       <Badge key={idx} variant="secondary" className="font-mono text-xs">
                         {String(perm)}
                       </Badge>
