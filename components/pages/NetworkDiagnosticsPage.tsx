@@ -22,8 +22,7 @@ import {
   Shield,
   Activity
 } from 'lucide-react';
-import type { NetworkDiagnostics, NetworkError } from '../../lib/networkDiagnostics';
-import { NetworkManager } from '../../lib/networkDiagnostics';
+import { NetworkManager, type NetworkDiagnostics, type NetworkError } from '../../lib/networkDiagnostics';
 import { enhancedSupabase } from '../../services/enhancedSupabaseService';
 import { logger } from '../../lib/logging/logger';
 
@@ -79,6 +78,7 @@ export function NetworkDiagnosticsPage() {
 
   useEffect(() => {
     runFullDiagnostics();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getStatusIcon = (status: boolean) => {

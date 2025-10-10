@@ -62,9 +62,9 @@ export function ExportModal({
   const [config, setConfig] = useState<ExportConfig>(() => ({
     format: 'csv',
     filename: `${dataType}-export-${new Date().toISOString().slice(0, 10)}`,
-    fields: EXPORT_TEMPLATES[dataType]?.fields || [],
+    fields: EXPORT_TEMPLATES[dataType]?.fields ?? [],
     includeHeaders: true,
-    customHeaders: EXPORT_TEMPLATES[dataType]?.headers || {},
+    customHeaders: EXPORT_TEMPLATES[dataType]?.headers ?? {},
     orientation: 'portrait',
     pageSize: 'A4',
     compression: false,
@@ -79,10 +79,9 @@ export function ExportModal({
   const [step, setStep] = useState<'config' | 'preview' | 'export' | 'complete'>('config');
   const [result, setResult] = useState<ExportResult | null>(null);
 
-  const { isExporting: _isExporting, progress, exportData, cancelExport } = useDataExport({
-    onProgress: (progressValue) => {
+  const { isExporting, progress, exportData, cancelExport } = useDataExport({
+    onProgress: (_progressValue) => {
       // Progress is handled by the hook's internal state
-      console.log('Export progress:', progressValue);
     },
     onComplete: (result) => {
       setResult(result);
@@ -145,8 +144,8 @@ export function ExportModal({
     setConfig((prev) => ({
       ...prev,
       fields: checked
-        ? [...(prev.fields || []), field]
-        : (prev.fields || []).filter((f) => f !== field),
+        ? [...(prev.fields ?? []), field]
+        : (prev.fields ?? []).filter((f) => f !== field),
     }));
   };
 

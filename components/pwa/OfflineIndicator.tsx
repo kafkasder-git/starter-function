@@ -78,7 +78,7 @@ export function OfflineIndicator({
 
   // Format time since last online
   const getTimeSinceOnline = () => {
-    if (!lastOnlineTime ?? networkInfo.isOnline) return null;
+    if (!lastOnlineTime || networkInfo.isOnline) return null;
 
     const now = new Date();
     const diff = Math.floor((now.getTime() - lastOnlineTime.getTime()) / 1000);
@@ -96,7 +96,7 @@ export function OfflineIndicator({
     // Simulate reconnection attempt
     try {
       // Try to fetch a small resource to test connectivity
-      const response = await fetch('/manifest.json', {
+      await fetch('/manifest.json', {
         cache: 'no-cache',
         mode: 'no-cors',
       });
@@ -105,7 +105,7 @@ export function OfflineIndicator({
       setTimeout(() => {
         setShowReconnecting(false);
       }, 1000);
-    } catch (error) {
+    } catch (_error) {
       // Still offline
       setTimeout(() => {
         setShowReconnecting(false);
