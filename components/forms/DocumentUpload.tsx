@@ -11,7 +11,8 @@ import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Progress } from '../ui/progress';
 import { toast } from 'sonner';
-import { fileStorageService, FileUploadResult, FileUploadOptions } from '../../services/fileStorageService';
+import type { FileUploadOptions } from '../../services/fileStorageService';
+import { fileStorageService } from '../../services/fileStorageService';
 import { useAuthStore } from '../../stores/authStore';
 
 interface UploadedFile {
@@ -132,7 +133,7 @@ export function DocumentUpload({
       }
 
       // Get current user
-      const user = useAuthStore.getState().user;
+      const {user} = useAuthStore.getState();
       const uploadedBy = user?.id || 'system';
 
       // Determine bucket and folder

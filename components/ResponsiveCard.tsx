@@ -225,12 +225,12 @@ export function TouchActionCard({
         'w-full p-6 rounded-xl border-2 transition-all duration-200',
         'focus:outline-none focus:ring-2 focus:ring-primary/20',
         'min-h-[88px]', // Touch-friendly minimum height
-        variant in variantClasses ? variantClasses[variant as keyof typeof variantClasses] : variantClasses.default,
+        variant in variantClasses ? variantClasses[variant] : variantClasses.default,
         className,
       )}
     >
       <div className="flex items-center gap-4">
-        <div className={cn('text-xl', variant in iconColors ? iconColors[variant as keyof typeof iconColors] : iconColors.default)}>{icon}</div>
+        <div className={cn('text-xl', variant in iconColors ? iconColors[variant] : iconColors.default)}>{icon}</div>
         <div className="flex-1 text-left">
           <div className="font-semibold text-slate-900 mb-1">{title}</div>
           {description && <div className="text-sm text-slate-600">{description}</div>}

@@ -20,10 +20,7 @@ export const BeneficiaryDetailPageComprehensive = lazy(() =>
 );
 
 // SecurityManagementPage ve UserManagementPage kaldırıldı - eksik dosyalar
-
-export const MeetingsPage = lazy(() =>
-  import('./pages/MeetingsPage').then((m) => ({ default: m.MeetingsPage })),
-);
+// MeetingsPage kaldırıldı - dosya mevcut değil
 
 // Analytics Components - Removed (components deleted)
 // Workflow Components - Removed (components deleted)
@@ -49,9 +46,7 @@ export const DonationsPage = lazy(() =>
   import('./pages/DonationsPage').then((m) => ({ default: m.DonationsPage })),
 );
 
-export const MembersPage = lazy(() =>
-  import('./pages/MembersPage').then((m) => ({ default: m.MembersPage })),
-);
+// MembersPage kaldırıldı - dosya mevcut değil
 
 export const BeneficiariesPageEnhanced = lazy(() =>
   import('./pages/BeneficiariesPageEnhanced').then((m) => ({
@@ -67,9 +62,7 @@ export const EventsPage = lazy(() =>
   import('./pages/EventsPage').then((m) => ({ default: m.EventsPage })),
 );
 
-export const TasksPage = lazy(() =>
-  import('./pages/TasksPage').then((m) => ({ default: m.default })),
-);
+// TasksPage kaldırıldı - dosya mevcut değil
 
 // New PWA Components - Lazy load for better initial performance
 export const PushNotificationManager = lazy(() =>

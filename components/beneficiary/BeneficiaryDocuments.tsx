@@ -23,14 +23,14 @@ import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '../ui/dialog';
 import { Input } from '../ui/input';
-import { fileStorageService, FileUploadResult } from '../../services/fileStorageService';
+import type { FileUploadResult } from '../../services/fileStorageService';
+import { fileStorageService } from '../../services/fileStorageService';
 import { beneficiariesService } from '../../services/beneficiariesService';
 import { useAuthStore } from '../../stores/authStore';
-import { supabase } from '../../lib/supabase';
 
 interface BeneficiaryDocumentsProps {
   beneficiaryId: string;
-  documents?: Array<{
+  documents?: {
     id: string;
     name: string;
     type: string;
@@ -39,7 +39,7 @@ interface BeneficiaryDocumentsProps {
     bucket: string;
     path: string;
     uploadedBy?: string;
-  }>;
+  }[];
   onDocumentUpload?: (files: File[]) => void;
   onDocumentDelete?: (documentId: string) => void;
 }
@@ -70,7 +70,7 @@ export function BeneficiaryDocuments({
       setIsLoadingDocuments(true);
       try {
         const response = await beneficiariesService.getById(beneficiaryId);
-        if (response.data && response.data.supporting_documents) {
+        if (response.data?.supporting_documents) {
           const docs = response.data.supporting_documents.map((url: string, index: number) => {
             // Parse URL to extract bucket, path, name, etc.
             // Assuming URL format: https://project.supabase.co/storage/v1/object/public/bucket/path
@@ -113,7 +113,7 @@ export function BeneficiaryDocuments({
 
     try {
       // Get Current User
-      const user = useAuthStore.getState().user;
+      const {user} = useAuthStore.getState();
 
       // Prepare Upload Options
       const options = {
@@ -253,15 +253,15 @@ export function BeneficiaryDocuments({
               {Array.from({ length: 3 }).map((_, index) => (
                 <div key={index} className="flex items-center justify-between p-4 bg-gray-50 border border-gray-200 rounded-xl animate-pulse">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gray-200 rounded-lg"></div>
+                    <div className="w-10 h-10 bg-gray-200 rounded-lg" />
                     <div>
-                      <div className="w-32 h-4 bg-gray-200 rounded mb-2"></div>
-                      <div className="w-24 h-3 bg-gray-200 rounded"></div>
+                      <div className="w-32 h-4 bg-gray-200 rounded mb-2" />
+                      <div className="w-24 h-3 bg-gray-200 rounded" />
                     </div>
                   </div>
                   <div className="flex items-center gap-1">
-                    <div className="w-8 h-8 bg-gray-200 rounded"></div>
-                    <div className="w-8 h-8 bg-gray-200 rounded"></div>
+                    <div className="w-8 h-8 bg-gray-200 rounded" />
+                    <div className="w-8 h-8 bg-gray-200 rounded" />
                   </div>
                 </div>
               ))}

@@ -20,7 +20,7 @@ export const useTokenRefresh = () => {
 
   // Calculate time until token expires
   const getTimeUntilExpiry = useCallback(() => {
-    if (!session || !session.expires_at) return 0;
+    if (!session?.expires_at) return 0;
     const expiresAt = session.expires_at * 1000;
     const now = Date.now();
     return Math.max(0, expiresAt - now);
@@ -28,7 +28,7 @@ export const useTokenRefresh = () => {
 
   // Calculate time until refresh should happen (10 minutes before expiry)
   const getTimeUntilRefresh = useCallback(() => {
-    if (!session || !session.expires_at) return 0;
+    if (!session?.expires_at) return 0;
     const expiresAt = session.expires_at * 1000;
     const now = Date.now();
     const refreshTime = expiresAt - 10 * 60 * 1000; // 10 minutes before expiry

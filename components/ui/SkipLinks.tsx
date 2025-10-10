@@ -85,7 +85,7 @@ export function SkipLinks() {
           {SKIP_LINKS.map((link) => (
             <button
               key={link.id}
-              onClick={() => handleSkip(link.target)}
+              onClick={() => { handleSkip(link.target); }}
               className="flex items-center gap-1 px-3 py-1 text-sm bg-blue-700 hover:bg-blue-800 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-600"
             >
               {link.icon}

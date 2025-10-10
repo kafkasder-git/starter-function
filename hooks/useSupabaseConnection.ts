@@ -93,7 +93,7 @@ export function useSupabaseConnection(): ConnectionStatus {
  * @returns {void} Nothing
  */
 export function isSupabaseConfigured(): boolean {
-  const url = environment.supabase.url;
+  const {url} = environment.supabase;
   const key = environment.supabase.anonKey;
 
   return Boolean(url &&

@@ -127,7 +127,7 @@ export function CampaignManagementPage() {
       }
     }
 
-    const user = useAuthStore.getState().user;
+    const {user} = useAuthStore.getState();
     if (!user) {
       toast.error('Kullanıcı oturumu bulunamadı');
       return;

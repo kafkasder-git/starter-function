@@ -77,7 +77,7 @@ export function KeyboardShortcuts({ isOpen, onClose }: KeyboardShortcutsProps) {
 
     if (isOpen) {
       document.addEventListener('keydown', handleKeyDown);
-      return () => document.removeEventListener('keydown', handleKeyDown);
+      return () => { document.removeEventListener('keydown', handleKeyDown); };
     }
   }, [isOpen, onClose]);
 
@@ -112,7 +112,7 @@ export function KeyboardShortcuts({ isOpen, onClose }: KeyboardShortcutsProps) {
                 key={key}
                 variant={selectedCategory === key ? 'default' : 'outline'}
                 size="sm"
-                onClick={() => setSelectedCategory(key as Shortcut['category'])}
+                onClick={() => { setSelectedCategory(key as Shortcut['category']); }}
                 className="text-xs"
               >
                 {label}
@@ -177,12 +177,12 @@ export function useKeyboardShortcuts() {
     };
 
     document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
+    return () => { document.removeEventListener('keydown', handleKeyDown); };
   }, []);
 
   return {
     isOpen,
-    openShortcuts: () => setIsOpen(true),
-    closeShortcuts: () => setIsOpen(false),
+    openShortcuts: () => { setIsOpen(true); },
+    closeShortcuts: () => { setIsOpen(false); },
   };
 }

@@ -38,9 +38,9 @@ export function PerformanceIndicator({
       }
 
       // Simple network speed detection
-      const connection = (navigator as any).connection;
+      const {connection} = (navigator as any);
       if (connection) {
-        const effectiveType = connection.effectiveType;
+        const {effectiveType} = connection;
         if (effectiveType === '4g') {
           setNetworkStatus('fast');
         } else if (effectiveType === '3g') {
@@ -82,7 +82,7 @@ export function PerformanceIndicator({
 
     checkMemory();
     const interval = setInterval(checkMemory, 5000);
-    return () => clearInterval(interval);
+    return () => { clearInterval(interval); };
   }, []);
 
   // Battery status monitoring

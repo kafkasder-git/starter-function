@@ -245,7 +245,7 @@ export function BeneficiaryFamily({
                         </div>
                         {member.income && member.income > 0 && (
                           <div className="mt-2 flex items-center gap-2">
-                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                            <div className="w-2 h-2 bg-green-500 rounded-full" />
                             <p className="text-sm font-medium text-green-600">
                               Gelir: {member.income.toLocaleString('tr-TR')} ₺
                             </p>

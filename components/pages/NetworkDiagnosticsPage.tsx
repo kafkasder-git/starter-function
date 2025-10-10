@@ -22,7 +22,8 @@ import {
   Shield,
   Activity
 } from 'lucide-react';
-import { NetworkManager, NetworkDiagnostics, NetworkError } from '../../lib/networkDiagnostics';
+import type { NetworkDiagnostics, NetworkError } from '../../lib/networkDiagnostics';
+import { NetworkManager } from '../../lib/networkDiagnostics';
 import { enhancedSupabase } from '../../services/enhancedSupabaseService';
 import { logger } from '../../lib/logging/logger';
 

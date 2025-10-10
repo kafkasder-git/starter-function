@@ -79,9 +79,10 @@ export function ExportModal({
   const [step, setStep] = useState<'config' | 'preview' | 'export' | 'complete'>('config');
   const [result, setResult] = useState<ExportResult | null>(null);
 
-  const { isExporting: _isExporting, progress: _progress, exportData, cancelExport } = useDataExport({
-    onProgress: (progress) => {
+  const { isExporting: _isExporting, progress, exportData, cancelExport } = useDataExport({
+    onProgress: (progressValue) => {
       // Progress is handled by the hook's internal state
+      console.log('Export progress:', progressValue);
     },
     onComplete: (result) => {
       setResult(result);

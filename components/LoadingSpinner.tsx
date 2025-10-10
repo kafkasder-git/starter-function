@@ -27,7 +27,7 @@ export function LoadingSpinner({ className, size = 'md' }: LoadingSpinnerProps) 
     lg: 'w-8 h-8',
   };
 
-  const sizeClass = size in sizeClasses ? sizeClasses[size as keyof typeof sizeClasses] : sizeClasses.md;
+  const sizeClass = size in sizeClasses ? sizeClasses[size] : sizeClasses.md;
   return <Loader2 className={cn('animate-spin text-blue-600', sizeClass, className)} />;
 }
 

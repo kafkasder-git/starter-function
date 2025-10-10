@@ -90,7 +90,7 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
     setCredentials((prev) => ({ ...prev, [field]: value }));
 
     // Clear field error when user starts typing
-    if (field in formErrors && formErrors[field as keyof typeof formErrors]) {
+    if (field in formErrors && formErrors[field]) {
       setFormErrors((prev) => ({ ...prev, [field]: '' }));
     }
   };

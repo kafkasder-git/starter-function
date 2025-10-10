@@ -5,7 +5,7 @@
  * @version 1.0.0
  */
 
-import { BarChart3, TrendingUp, AlertCircle } from 'lucide-react';
+import { BarChart3, AlertCircle } from 'lucide-react';
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './card';
 import { Skeleton } from './skeleton';

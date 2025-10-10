@@ -70,7 +70,7 @@ export const Interactive: Story = {
       variant="elevated" 
       interactive 
       className="w-[350px]"
-      onClick={() => alert('Card clicked!')}
+      onClick={() => { alert('Card clicked!'); }}
     >
       <CardHeader>
         <CardTitle>Interactive Card</CardTitle>

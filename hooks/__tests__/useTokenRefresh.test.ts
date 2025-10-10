@@ -57,7 +57,7 @@ describe('useTokenRefresh', () => {
       const { result } = renderHook(() => useTokenRefresh());
       
       // Session expires in 1 hour (3600 seconds)
-      const timeUntilExpiry = result.current.timeUntilExpiry;
+      const {timeUntilExpiry} = result.current;
       
       expect(timeUntilExpiry).toBeGreaterThan(3500 * 1000); // ~59 minutes in ms
       expect(timeUntilExpiry).toBeLessThan(3600 * 1000); // < 1 hour in ms
@@ -66,7 +66,7 @@ describe('useTokenRefresh', () => {
     it('should calculate time until refresh correctly (10 min before expiry)', () => {
       const { result } = renderHook(() => useTokenRefresh());
       
-      const timeUntilRefresh = result.current.timeUntilRefresh;
+      const {timeUntilRefresh} = result.current;
       
       // Should be 50 minutes (60 - 10 minutes buffer)
       expect(timeUntilRefresh).toBeGreaterThan(49 * 60 * 1000);

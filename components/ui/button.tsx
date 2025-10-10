@@ -15,7 +15,7 @@ import { useHapticFeedback } from '../../hooks/useHapticFeedback';
 
 // Ripple effect hook
 const useRipple = () => {
-  const [ripples, setRipples] = React.useState<Array<{ id: number; x: number; y: number }>>([]);
+  const [ripples, setRipples] = React.useState<{ id: number; x: number; y: number }[]>([]);
 
   const addRipple = React.useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
     const button = event.currentTarget;
