@@ -105,8 +105,8 @@ export function ProfilePage() {
   // Load user data from Supabase
   useEffect(() => {
     if (user && isAuthenticated) {
-      const userMetadata = user.user_metadata;
-      const nameSource = typeof userMetadata.name === 'string' ? userMetadata.name : undefined;
+      const userMetadata = user.metadata || {};
+      const nameSource = typeof userMetadata.name === 'string' ? userMetadata.name : user.name;
       const emailUsername = user.email?.split('@')[0];
       const displayName = nameSource ?? emailUsername ?? '';
 

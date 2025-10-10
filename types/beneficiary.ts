@@ -95,6 +95,8 @@ export interface Beneficiary extends BaseEntity {
   notes?: string;
   /** Belge dosyaları */
   documents?: string[];
+  /** Destekleyici belgeler */
+  supporting_documents?: string[];
   /** Fotoğraflar */
   photos?: string[];
   /** İlk değerlendirme tarihi */

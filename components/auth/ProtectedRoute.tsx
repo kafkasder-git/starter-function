@@ -1,6 +1,6 @@
 /**
  * @fileoverview ProtectedRoute Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -22,7 +22,7 @@ interface ProtectedRouteProps {
 
 /**
  * ProtectedRoute function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -38,13 +38,13 @@ export function ProtectedRoute({
   // Get user role from Supabase user metadata
   const getUserRole = (): UserRole | null => {
     if (!user) return null;
-    
+
     // Try to get role from user metadata
-    const role = user.user_metadata?.role as UserRole;
+    const role = user.metadata?.role as UserRole || user.role;
     if (role && Object.values(UserRole).includes(role)) {
       return role;
     }
-    
+
     // Default to VIEWER if no role is set
     return UserRole.VIEWER;
   };
@@ -54,7 +54,7 @@ export function ProtectedRoute({
   // Check if user has required permission
   const checkPermission = (permission: Permission): boolean => {
     if (!userRole) return false;
-    
+
     const rolePermissions = ROLE_PERMISSIONS[userRole];
     return rolePermissions.includes(permission);
   };
@@ -62,23 +62,23 @@ export function ProtectedRoute({
   // Check if user has required role
   const hasRole = (role: UserRole): boolean => {
     if (!userRole) return false;
-    
+
     // Admin has access to all roles
     if (userRole === UserRole.ADMIN) return true;
-    
+
     // Check exact role match
     if (userRole === role) return true;
-    
+
     // Manager can access operator and viewer
     if (userRole === UserRole.MANAGER && (role === UserRole.OPERATOR || role === UserRole.VIEWER)) {
       return true;
     }
-    
+
     // Operator can access viewer
     if (userRole === UserRole.OPERATOR && role === UserRole.VIEWER) {
       return true;
     }
-    
+
     return false;
   };
 
@@ -115,7 +115,7 @@ export function ProtectedRoute({
 // Convenience components for common protection patterns
 /**
  * AdminRoute function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -125,7 +125,7 @@ export function AdminRoute({ children }: { children: ReactNode }) {
 
 /**
  * ManagerRoute function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -135,7 +135,7 @@ export function ManagerRoute({ children }: { children: ReactNode }) {
 
 /**
  * PermissionGuard function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -155,7 +155,7 @@ export function PermissionGuard({
   }
 
   // Get user role
-  const role = user?.user_metadata?.role as UserRole;
+  const role = user?.metadata?.role as UserRole || user?.role;
   const userRole = role && Object.values(UserRole).includes(role) ? role : UserRole.VIEWER;
 
   // Check permission

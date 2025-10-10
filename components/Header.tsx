@@ -295,7 +295,7 @@ export function Header({
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="truncate font-semibold text-slate-900">
-                        {user?.user_metadata?.name ?? user?.email?.split('@')[0] ?? 'Kullanıcı'}
+                        {user?.name ?? user?.email?.split('@')[0] ?? 'Kullanıcı'}
                       </p>
                       <p className="truncate text-sm text-slate-600">{user?.email ?? ''}</p>
                     </div>

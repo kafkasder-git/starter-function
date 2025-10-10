@@ -5,9 +5,9 @@
 ### Requirement: Aid Application Submission
 The system SHALL allow beneficiaries or authorized users to submit aid requests.
 
-**Roles**: Admin, Manager, Operator (submit on behalf)  
-**Types**: cash, in_kind, education, healthcare, emergency  
-**Urgency**: low, medium, high, urgent  
+**Roles**: Admin, Manager, Operator (submit on behalf)
+**Types**: cash, in_kind, education, healthcare, emergency
+**Urgency**: low, medium, high, urgent
 **Linked To**: Beneficiary (required)
 
 #### Scenario: Submit cash aid application
@@ -29,9 +29,9 @@ The system SHALL allow beneficiaries or authorized users to submit aid requests.
 ### Requirement: Aid Approval Workflow
 The system SHALL implement approval workflow for aid applications.
 
-**Workflow**: pending → under_review → approved | rejected → distributed → completed  
-**Approvers**: Manager, Admin  
-**Rejections**: Must include reason  
+**Workflow**: pending → under_review → approved | rejected → distributed → completed
+**Approvers**: Manager, Admin
+**Rejections**: Must include reason
 **Notifications**: All status changes notify applicant and beneficiary
 
 #### Scenario: Approve aid application
@@ -54,8 +54,8 @@ The system SHALL implement approval workflow for aid applications.
 ### Requirement: Aid Distribution
 The system SHALL track distribution of approved aid.
 
-**Types**: Cash (bank transfer, hand delivery), In-kind (inventory items)  
-**Confirmation**: Beneficiary signature/receipt required  
+**Types**: Cash (bank transfer, hand delivery), In-kind (inventory items)
+**Confirmation**: Beneficiary signature/receipt required
 **Tracking**: Distribution date, amount/items, delivery method
 
 #### Scenario: Distribute cash aid
@@ -77,9 +77,9 @@ The system SHALL track distribution of approved aid.
 ### Requirement: Case Management
 The system SHALL support case management for ongoing aid cases.
 
-**Assignment**: Cases assigned to case workers  
-**Notes**: Case notes and updates  
-**Follow-up**: Scheduled follow-ups  
+**Assignment**: Cases assigned to case workers
+**Notes**: Case notes and updates
+**Follow-up**: Scheduled follow-ups
 **Closure**: Case closure with outcome
 
 #### Scenario: Assign case to case worker
@@ -99,8 +99,8 @@ The system SHALL support case management for ongoing aid cases.
 ### Requirement: Aid Statistics and Reporting
 The system SHALL provide aid statistics and impact reports.
 
-**Metrics**: Total aid, by type, by status, by beneficiary  
-**Impact**: Beneficiaries helped, total distributed, average per case  
+**Metrics**: Total aid, by type, by status, by beneficiary
+**Impact**: Beneficiaries helped, total distributed, average per case
 **Export**: Excel, PDF reports
 
 #### Scenario: Generate aid statistics
@@ -117,9 +117,9 @@ The system SHALL provide aid statistics and impact reports.
 ### Requirement: Inventory Management for In-Kind Aid
 The system SHALL track inventory of in-kind aid items.
 
-**Items**: Food, clothing, furniture, medical supplies, education materials  
-**Stock**: Current stock levels  
-**Expiration**: Track expiration dates (food, medical)  
+**Items**: Food, clothing, furniture, medical supplies, education materials
+**Stock**: Current stock levels
+**Expiration**: Track expiration dates (food, medical)
 **Alerts**: Low stock alerts
 
 #### Scenario: Add in-kind donation to inventory
@@ -139,9 +139,9 @@ The system SHALL track inventory of in-kind aid items.
 ### Requirement: RBAC for Aid Management
 The system SHALL enforce role-based access for aid operations.
 
-**Admin**: Full access  
-**Manager**: Approve, distribute, manage cases  
-**Operator**: Submit, view, distribute (cannot approve)  
+**Admin**: Full access
+**Manager**: Approve, distribute, manage cases
+**Operator**: Submit, view, distribute (cannot approve)
 **Viewer**: Read-only
 
 #### Scenario: Manager approves aid
