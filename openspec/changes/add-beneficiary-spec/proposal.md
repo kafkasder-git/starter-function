@@ -10,9 +10,9 @@ Beneficiary Management (Yararlanıcı Yönetimi) projenin **core business capabi
 - Yardım dağıtım süreçlerinin temelini oluşturur
 - 9 farklı component ve kapsamlı type sistemi ile projenin en karmaşık özelliğidir
 
-**İhtiyaç**: 
+**İhtiyaç**:
 - Onboarding sürecini hızlandırmak
-- KVKK compliance'ı dokümante etmek  
+- KVKK compliance'ı dokümante etmek
 - Business kurallarını netleştirmek
 - Regression'ları önlemek
 - Future development'lar için baseline oluşturmak
@@ -124,13 +124,13 @@ Bu change **mevcut bir özelliği dokümante ediyor** (implementation değişikl
 
 ## Success Criteria
 
-✅ Spec passes `openspec validate --strict`  
-✅ Her requirement'ın en az 1 scenario'su var  
-✅ KVKK compliance requirements açıkça belirtilmiş  
-✅ Status workflow state machine olarak dokümante edilmiş  
-✅ Role-based permissions tanımlanmış  
-✅ API endpoints dokümante edilmiş  
-✅ Error scenarios tanımlanmış  
+✅ Spec passes `openspec validate --strict`
+✅ Her requirement'ın en az 1 scenario'su var
+✅ KVKK compliance requirements açıkça belirtilmiş
+✅ Status workflow state machine olarak dokümante edilmiş
+✅ Role-based permissions tanımlanmış
+✅ API endpoints dokümante edilmiş
+✅ Error scenarios tanımlanmış
 
 ## Timeline
 

@@ -5,9 +5,9 @@
 ### Requirement: Beneficiary Registration
 The system SHALL allow authorized users to register new beneficiaries with complete personal, family, and contact information.
 
-**Roles**: Admin, Moderator  
-**Permissions**: CREATE_BENEFICIARY  
-**Privacy**: Processes personal data (KVKK Article 5)  
+**Roles**: Admin, Moderator
+**Permissions**: CREATE_BENEFICIARY
+**Privacy**: Processes personal data (KVKK Article 5)
 **Validation**: All required fields must be provided and valid
 
 #### Scenario: Successful beneficiary registration
@@ -40,8 +40,8 @@ The system SHALL allow authorized users to register new beneficiaries with compl
 ### Requirement: Beneficiary Information Retrieval
 The system SHALL allow authorized users to retrieve beneficiary information by ID or list all beneficiaries with pagination.
 
-**Roles**: Admin, Moderator, Muhasebe (limited), Üye (limited)  
-**Permissions**: READ_BENEFICIARY  
+**Roles**: Admin, Moderator, Muhasebe (limited), Üye (limited)
+**Permissions**: READ_BENEFICIARY
 **Performance**: List view SHALL load in < 2s for 1000 records
 
 #### Scenario: Get single beneficiary by ID
@@ -72,8 +72,8 @@ The system SHALL allow authorized users to retrieve beneficiary information by I
 ### Requirement: Beneficiary Updates
 The system SHALL allow authorized users to update beneficiary information while maintaining audit trail.
 
-**Roles**: Admin, Moderator, Muhasebe (financial only)  
-**Permissions**: UPDATE_BENEFICIARY  
+**Roles**: Admin, Moderator, Muhasebe (financial only)
+**Permissions**: UPDATE_BENEFICIARY
 **Audit**: All updates SHALL be logged with user, timestamp, and changed fields
 
 #### Scenario: Update personal information
@@ -106,9 +106,9 @@ The system SHALL allow authorized users to update beneficiary information while 
 ### Requirement: Beneficiary Deletion
 The system SHALL implement soft delete with 7-year retention period and data anonymization.
 
-**Roles**: Admin only  
-**Permissions**: DELETE_BENEFICIARY  
-**Retention**: 7 years for financial records (regulatory requirement)  
+**Roles**: Admin only
+**Permissions**: DELETE_BENEFICIARY
+**Retention**: 7 years for financial records (regulatory requirement)
 **Privacy**: Right to erasure (KVKK Article 7)
 
 #### Scenario: Soft delete beneficiary
@@ -143,8 +143,8 @@ The system SHALL implement soft delete with 7-year retention period and data ano
 ### Requirement: Search and Filtering
 The system SHALL provide multi-field search and comprehensive filtering options.
 
-**Roles**: Admin, Moderator, Muhasebe, Üye  
-**Permissions**: READ_BENEFICIARY  
+**Roles**: Admin, Moderator, Muhasebe, Üye
+**Permissions**: READ_BENEFICIARY
 **Performance**: Search SHALL return results in < 1s
 
 #### Scenario: Search by name
@@ -179,10 +179,10 @@ The system SHALL provide multi-field search and comprehensive filtering options.
 ### Requirement: Document Management
 The system SHALL allow upload, storage, and verification of beneficiary documents.
 
-**Roles**: Admin, Moderator (upload), Admin (verify)  
-**File Size**: Maximum 5MB per file  
-**Formats**: PDF, JPG, PNG, HEIC  
-**Storage**: Supabase Storage with RLS policies  
+**Roles**: Admin, Moderator (upload), Admin (verify)
+**File Size**: Maximum 5MB per file
+**Formats**: PDF, JPG, PNG, HEIC
+**Storage**: Supabase Storage with RLS policies
 **Retention**: 7 years (same as beneficiary data)
 
 #### Scenario: Upload identity document
@@ -223,8 +223,8 @@ The system SHALL allow upload, storage, and verification of beneficiary document
 ### Requirement: Status Workflow
 The system SHALL enforce a state machine for beneficiary status transitions.
 
-**States**: pending, active, completed, suspended, deleted  
-**Audit**: All status changes SHALL be logged  
+**States**: pending, active, completed, suspended, deleted
+**Audit**: All status changes SHALL be logged
 **Notifications**: Status changes SHALL trigger notifications
 
 #### Scenario: New registration starts as pending
@@ -274,8 +274,8 @@ Valid transitions:
 ### Requirement: Needs Assessment
 The system SHALL support classification and prioritization of beneficiary needs.
 
-**Need Types**: food, clothing, shelter, medical, education, transportation, utilities, other  
-**Priority Levels**: low, medium, high, urgent  
+**Need Types**: food, clothing, shelter, medical, education, transportation, utilities, other
+**Priority Levels**: low, medium, high, urgent
 **Reassessment**: Every 3 months for active beneficiaries
 
 #### Scenario: Register beneficiary with multiple needs
@@ -309,8 +309,8 @@ The system SHALL support classification and prioritization of beneficiary needs.
 ### Requirement: Financial Information Tracking
 The system SHALL track income, expenses, and financial eligibility.
 
-**Fields**: monthly_income, income_source, monthly_expenses, debts, assets, IBAN  
-**Validation**: IBAN format (TR + 24 digits), amounts must be positive  
+**Fields**: monthly_income, income_source, monthly_expenses, debts, assets, IBAN
+**Validation**: IBAN format (TR + 24 digits), amounts must be positive
 **Privacy**: Financial data visible only to Admin and Muhasebe roles
 
 #### Scenario: Record monthly income
@@ -345,7 +345,7 @@ The system SHALL track income, expenses, and financial eligibility.
 ### Requirement: Family Information Management
 The system SHALL track family members and household composition.
 
-**Fields**: family_status, children_count, family_members_count, family_members[]  
+**Fields**: family_status, children_count, family_members_count, family_members[]
 **Validation**: children_count ≤ family_members_count
 
 #### Scenario: Add family members
@@ -369,9 +369,9 @@ The system SHALL track family members and household composition.
 ### Requirement: KVKK Compliance
 The system SHALL comply with Turkish Personal Data Protection Law (KVKK).
 
-**Consent**: Explicit consent required before registration  
-**Rights**: Access, rectification, erasure, portability  
-**Retention**: 7 years for financial, immediate erasure for non-financial on request  
+**Consent**: Explicit consent required before registration
+**Rights**: Access, rectification, erasure, portability
+**Retention**: 7 years for financial, immediate erasure for non-financial on request
 **Audit**: All data access SHALL be logged
 
 #### Scenario: Record explicit consent
@@ -412,8 +412,8 @@ The system SHALL comply with Turkish Personal Data Protection Law (KVKK).
 ### Requirement: Role-Based Access Control
 The system SHALL enforce role-based permissions using PostgreSQL RLS policies.
 
-**Roles**: admin, moderator, muhasebe, uye, guest  
-**Mechanism**: Row Level Security (RLS) policies on database  
+**Roles**: admin, moderator, muhasebe, uye, guest
+**Mechanism**: Row Level Security (RLS) policies on database
 **Audit**: Access denied attempts SHALL be logged
 
 #### Scenario: Admin full access
@@ -452,9 +452,9 @@ The system SHALL enforce role-based permissions using PostgreSQL RLS policies.
 ### Requirement: Reporting and Analytics
 The system SHALL provide statistics, analytics, and export capabilities.
 
-**Statistics**: Count by status, priority, city, need type  
-**Analytics**: Trends, demographics, financial analysis  
-**Export**: Excel, PDF, CSV formats  
+**Statistics**: Count by status, priority, city, need type
+**Analytics**: Trends, demographics, financial analysis
+**Export**: Excel, PDF, CSV formats
 **Performance**: Reports SHALL generate in < 5s for 10,000 records
 
 #### Scenario: Generate beneficiary statistics
@@ -498,10 +498,10 @@ The system SHALL provide statistics, analytics, and export capabilities.
 ### Requirement: Performance Requirements
 The system SHALL meet specified performance SLAs.
 
-**List View**: < 2s for 1000 records  
-**Search**: < 1s for any query  
-**Detail View**: < 500ms  
-**Export**: < 5s for 10,000 records  
+**List View**: < 2s for 1000 records
+**Search**: < 1s for any query
+**Detail View**: < 500ms
+**Export**: < 5s for 10,000 records
 **Monitoring**: Core Web Vitals (LCP < 2.5s, FID < 100ms, CLS < 0.1)
 
 #### Scenario: List view performance
@@ -527,8 +527,8 @@ The system SHALL meet specified performance SLAs.
 ### Requirement: Error Handling and Validation
 The system SHALL provide clear error messages in Turkish and handle all error scenarios gracefully.
 
-**Language**: All user-facing errors in Turkish  
-**Format**: Consistent error structure (code, message, details)  
+**Language**: All user-facing errors in Turkish
+**Format**: Consistent error structure (code, message, details)
 **Logging**: All errors SHALL be logged for debugging
 
 #### Scenario: Required field validation error
@@ -573,11 +573,11 @@ This specification documents the **Beneficiary Management** capability, covering
 - ✅ State machine workflows
 - ✅ Error handling patterns
 
-**Total Scenarios**: 60+  
-**Total Requirements**: 15  
-**KVKK Compliant**: ✅  
-**RLS Policies**: ✅  
-**Performance SLAs**: ✅  
+**Total Scenarios**: 60+
+**Total Requirements**: 15
+**KVKK Compliant**: ✅
+**RLS Policies**: ✅
+**Performance SLAs**: ✅
 
 **Related Capabilities**:
 - Aid Management (depends on Beneficiary Management)
