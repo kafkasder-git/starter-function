@@ -52,6 +52,7 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
         clearTimeout(timer);
       };
     }
+    return undefined;
   }, [error, clearError]);
 
   const validateForm = (): boolean => {
@@ -172,13 +173,13 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.2 }}
               >
-                <Alert variant="destructive" className="border-red-300 flex items-start gap-2">
-                  <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                <Alert variant="destructive" className="flex items-start gap-2 border-red-300">
+                  <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0" />
                   <AlertDescription className="flex-1">{error}</AlertDescription>
                   <button
                     type="button"
                     onClick={clearError}
-                    className="text-red-500 hover:text-red-700 transition-colors flex-shrink-0"
+                    className="flex-shrink-0 text-red-500 transition-colors hover:text-red-700"
                     aria-label="Hata mesajını kapat"
                   >
                     <X className="h-4 w-4" />

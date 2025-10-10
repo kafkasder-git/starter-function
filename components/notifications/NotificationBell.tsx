@@ -1,6 +1,6 @@
 /**
  * @fileoverview NotificationBell Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -23,7 +23,7 @@ interface NotificationBellProps {
 
 /**
  * NotificationBell function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -36,7 +36,6 @@ export function NotificationBell({
   const [isAnimating, setIsAnimating] = useState(false);
   const [lastUnreadCount, setLastUnreadCount] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
-  const [_storeReady, setStoreReady] = useState(false);
 
   // Detect mobile safely
   useEffect(() => {
@@ -50,17 +49,8 @@ export function NotificationBell({
     };
   }, []);
 
-  // Local state for animations
-  const [_unreadCount, setUnreadCount] = useState(0);
-
   // Use the notification store directly
   const store = useNotificationStore();
-
-  // Initialize store data
-  useEffect(() => {
-    setUnreadCount(store.unreadCount ?? 0);
-    setStoreReady(true);
-  }, [store]);
 
   // Size configurations
   const sizeConfig = {
@@ -99,6 +89,7 @@ export function NotificationBell({
     }
 
     setLastUnreadCount(store.unreadCount);
+    return undefined;
   }, [store.unreadCount, lastUnreadCount]);
 
   const handleClick = () => {
@@ -115,7 +106,7 @@ export function NotificationBell({
         variant={variant}
         className={cn(
           config.button,
-          'relative transition-all duration-200 min-h-[44px] min-w-[44px] rounded-lg hover:bg-slate-100/80 focus-corporate',
+          'focus-corporate relative min-h-[44px] min-w-[44px] rounded-lg transition-all duration-200 hover:bg-slate-100/80',
           isAnimating && 'animate-pulse',
         )}
         onClick={(e) => {
@@ -160,7 +151,7 @@ export function NotificationBell({
               <Badge
                 className={cn(
                   config.badge,
-                  'bg-red-500 text-white border-2 border-white shadow-sm',
+                  'border-2 border-white bg-red-500 text-white shadow-sm',
                   'flex items-center justify-center rounded-full',
                   store.unreadCount > 99 && 'px-1',
                 )}
@@ -179,7 +170,7 @@ export function NotificationBell({
               animate={{ scale: 2, opacity: 0 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 1, ease: 'easeOut' }}
-              className="absolute inset-0 border-2 border-blue-400 rounded-full"
+              className="absolute inset-0 rounded-full border-2 border-blue-400"
             />
           )}
         </AnimatePresence>
@@ -190,7 +181,7 @@ export function NotificationBell({
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          className="absolute -bottom-1 -right-1 w-3 h-3 bg-red-500 rounded-full border border-white"
+          className="absolute -right-1 -bottom-1 h-3 w-3 rounded-full border border-white bg-red-500"
         />
       )}
     </div>

@@ -6,6 +6,7 @@ import { immer } from 'zustand/middleware/immer';
 import { supabase } from '../lib/supabase';
 import { authLogger } from '../lib/logging';
 import { ROLE_PERMISSIONS, UserRole, type Permission } from '../types/auth';
+import { normalizeRoleToEnglish } from '../lib/roleMapping';
 
 // Error type for Supabase auth operations
 interface AuthError {
@@ -97,13 +98,21 @@ const buildUserFromSupabaseUser = (supabaseUser: SupabaseUser): User => {
   const appMetadata = supabaseUser.app_metadata;
 
   let role: UserRole = UserRole.VIEWER;
-  if (appMetadata.role && Object.values(UserRole).includes(appMetadata.role as UserRole)) {
-    role = appMetadata.role as UserRole;
-  } else if (metadata.role && Object.values(UserRole).includes(metadata.role as UserRole)) {
-    role = metadata.role as UserRole;
+
+  // Get role from app_metadata or user_metadata
+  const rawRole = appMetadata.role || metadata.role;
+
+  if (rawRole) {
+    // Normalize Turkish roles to English (yönetici → admin, müdür → manager, etc.)
+    const normalizedRole = normalizeRoleToEnglish(rawRole);
+
+    // Check if normalized role is valid
+    if (Object.values(UserRole).includes(normalizedRole as UserRole)) {
+      role = normalizedRole as UserRole;
+    }
   }
 
-  const {email} = supabaseUser;
+  const { email } = supabaseUser;
   if (!email) {
     throw new Error('User email is required');
   }
@@ -111,7 +120,8 @@ const buildUserFromSupabaseUser = (supabaseUser: SupabaseUser): User => {
   return {
     id: supabaseUser.id,
     email,
-    name: (metadata.name as string) || (metadata.full_name as string) || email.split('@')[0] || 'User',
+    name:
+      (metadata.name as string) || (metadata.full_name as string) || email.split('@')[0] || 'User',
     role,
     avatar: (metadata.avatar_url as string) || (appMetadata.avatar_url as string),
     permissions: ROLE_PERMISSIONS[role],
@@ -164,7 +174,6 @@ export const useAuthStore = create<AuthStore>()(
             });
 
             try {
-
               // Get initial session
               const {
                 data: { session },
@@ -426,9 +435,10 @@ export const useAuthStore = create<AuthStore>()(
                 duration: 5000,
               });
             } catch (error: unknown) {
-              const errorMessage = (error && typeof error === 'object' && 'message' in error) 
-                ? (error as AuthError).message 
-                : 'Şifre sıfırlama bağlantısı gönderilemedi';
+              const errorMessage =
+                error && typeof error === 'object' && 'message' in error
+                  ? (error as AuthError).message
+                  : 'Şifre sıfırlama bağlantısı gönderilemedi';
               toast.error(errorMessage, { duration: 4000 });
               throw new Error(errorMessage);
             }
@@ -461,9 +471,10 @@ export const useAuthStore = create<AuthStore>()(
 
               toast.success('Profil başarıyla güncellendi', { duration: 3000 });
             } catch (error: unknown) {
-              const errorMessage = (error && typeof error === 'object' && 'message' in error) 
-                ? (error as AuthError).message 
-                : 'Profil güncellenemedi';
+              const errorMessage =
+                error && typeof error === 'object' && 'message' in error
+                  ? (error as AuthError).message
+                  : 'Profil güncellenemedi';
               toast.error(errorMessage, { duration: 4000 });
               throw new Error(errorMessage);
             }

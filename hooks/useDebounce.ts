@@ -1,6 +1,6 @@
 /**
  * @fileoverview useDebounce Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -10,7 +10,7 @@ import { useState, useEffect, useRef } from 'react';
 // Debounce hook for search and input optimization
 /**
  * useDebounce function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -33,7 +33,7 @@ export function useDebounce<T>(value: T, delay: number): T {
 // Throttle hook for scroll and resize events
 /**
  * useThrottle function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -45,16 +45,16 @@ export function useThrottle<T>(value: T, delay: number): T {
     if (Date.now() >= lastExecuted.current + delay) {
       lastExecuted.current = Date.now();
       setThrottledValue(value);
-    } else {
-      const timer = setTimeout(() => {
-        lastExecuted.current = Date.now();
-        setThrottledValue(value);
-      }, delay);
-
-      return () => {
-        clearTimeout(timer);
-      };
+      return undefined;
     }
+    const timer = setTimeout(() => {
+      lastExecuted.current = Date.now();
+      setThrottledValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(timer);
+    };
   }, [value, delay]);
 
   return throttledValue;
@@ -63,7 +63,7 @@ export function useThrottle<T>(value: T, delay: number): T {
 // Optimized search hook
 /**
  * useSearch function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -100,7 +100,7 @@ export function useSearch<T>(
 // Intersection Observer hook for lazy loading
 /**
  * useIntersectionObserver function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -131,7 +131,7 @@ export function useIntersectionObserver(
 // Virtual scrolling hook for large lists
 /**
  * useVirtualScroll function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
