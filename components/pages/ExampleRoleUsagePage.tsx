@@ -256,8 +256,8 @@ function MyComponent() {
         <button>Bağışı Onayla</button>
       </PermissionGuard>
 
-      <PermissionGuard 
-        resource="settings" 
+      <PermissionGuard
+        resource="settings"
         action="write"
         showAccessDenied={true}
       >
@@ -283,7 +283,7 @@ async function checkUserPermission(userId: string) {
 
   // Rol detayları
   const { data: role } = await rolesService.getUserRole(userId);
-  
+
   // Rol değiştir
   const { data, error } = await rolesService.updateUserRole(
     userId,
