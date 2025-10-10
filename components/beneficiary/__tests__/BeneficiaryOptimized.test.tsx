@@ -3,8 +3,8 @@ import { vi } from 'vitest';
 import { BeneficiaryOptimized } from '../BeneficiaryOptimized';
 
 // Mock services
-vi.mock('../../../services/supabaseBeneficiariesService', () => ({
-  supabaseBeneficiariesService: {
+vi.mock('../../../services/beneficiariesService', () => ({
+  beneficiariesService: {
     getBeneficiary: vi.fn(),
     createBeneficiary: vi.fn(),
     updateBeneficiary: vi.fn(),
@@ -105,7 +105,7 @@ describe('BeneficiaryOptimized', () => {
     });
 
     await waitFor(() => {
-      expect(supabaseBeneficiariesService.updateBeneficiary).toHaveBeenCalledWith(
+      expect(beneficiariesService.updateBeneficiary).toHaveBeenCalledWith(
         'test-1',
         expect.any(Object),
       );

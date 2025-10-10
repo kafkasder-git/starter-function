@@ -1,12 +1,12 @@
 /**
  * @fileoverview AidPage Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
 
-import { useState } from 'react';
-import { PageLayout } from '../PageLayout';
+import { useState, useEffect } from 'react';
+import { PageLayout } from '../layouts/PageLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -25,7 +25,11 @@ import {
   CheckCircle,
   XCircle,
 } from 'lucide-react';
-import { PageLoading } from '../LoadingSpinner';
+import { PageLoading } from '../shared/LoadingSpinner';
+import { logger } from '../../lib/logging/logger';
+import { aidRequestsService } from '../../services/aidRequestsService';
+import { exportService } from '../../services/exportService';
+import type { AidRequest as ServiceAidRequest } from '../../types/database';
 
 interface AidRequest {
   id: number;
@@ -41,30 +45,179 @@ interface AidRequest {
   assignedTo?: string;
 }
 
-const initialAidRequests: AidRequest[] = [];
+// Helper functions to map between local AidRequest and service AidRequest
+const mapServiceToLocal = (serviceRequest: ServiceAidRequest): AidRequest => ({
+  id: parseInt(serviceRequest.id || '0'),
+  applicant: serviceRequest.applicant_name || '',
+  phone: serviceRequest.applicant_phone || '',
+  email: serviceRequest.applicant_email || '',
+  requestType: mapAidTypeToLocal(serviceRequest.aid_type),
+  status: mapStatusToLocal(serviceRequest.status),
+  priority: mapUrgencyToLocal(serviceRequest.urgency),
+  amount: serviceRequest.requested_amount || 0,
+  description: serviceRequest.description || '',
+  submitDate: serviceRequest.created_at || '',
+  assignedTo: serviceRequest.assigned_to || undefined,
+});
+
+const mapLocalToService = (localRequest: Partial<AidRequest>): Partial<ServiceAidRequest> => ({
+  applicant_name: localRequest.applicant,
+  applicant_phone: localRequest.phone,
+  applicant_email: localRequest.email,
+  aid_type: mapAidTypeToService(localRequest.requestType),
+  status: mapStatusToService(localRequest.status),
+  urgency: mapUrgencyToService(localRequest.priority),
+  requested_amount: localRequest.amount,
+  description: localRequest.description,
+});
+
+// Type mapping helpers
+const mapAidTypeToLocal = (type: ServiceAidRequest['aid_type']): AidRequest['requestType'] => {
+  const mapping: Record<ServiceAidRequest['aid_type'], AidRequest['requestType']> = {
+    'financial': 'Maddi',
+    'medical': 'Sağlık',
+    'education': 'Eğitim',
+    'housing': 'Barınma',
+    'food': 'Gıda',
+    'other': 'Acil Yardım'
+  };
+  return mapping[type] || 'Maddi';
+};
+
+const mapStatusToLocal = (status: ServiceAidRequest['status']): AidRequest['status'] => {
+  const mapping: Record<ServiceAidRequest['status'], AidRequest['status']> = {
+    'pending': 'Yeni',
+    'under_review': 'İnceleniyor',
+    'approved': 'Onaylandı',
+    'rejected': 'Reddedildi',
+    'completed': 'Tamamlandı'
+  };
+  return mapping[status] || 'Yeni';
+};
+
+const mapUrgencyToLocal = (urgency: ServiceAidRequest['urgency']): AidRequest['priority'] => {
+  const mapping: Record<ServiceAidRequest['urgency'], AidRequest['priority']> = {
+    'low': 'Düşük',
+    'medium': 'Orta',
+    'high': 'Yüksek',
+    'critical': 'Acil'
+  };
+  return mapping[urgency] || 'Orta';
+};
+
+const mapAidTypeToService = (type?: AidRequest['requestType']): ServiceAidRequest['aid_type'] => {
+  const mapping: Record<AidRequest['requestType'], ServiceAidRequest['aid_type']> = {
+    'Maddi': 'financial',
+    'Sağlık': 'medical',
+    'Eğitim': 'education',
+    'Barınma': 'housing',
+    'Gıda': 'food',
+    'Acil Yardım': 'other'
+  };
+  return mapping[type || 'Maddi'] || 'financial';
+};
+
+const mapStatusToService = (status?: AidRequest['status']): ServiceAidRequest['status'] => {
+  const mapping: Record<AidRequest['status'], ServiceAidRequest['status']> = {
+    'Yeni': 'pending',
+    'İnceleniyor': 'under_review',
+    'Onaylandı': 'approved',
+    'Reddedildi': 'rejected',
+    'Tamamlandı': 'completed'
+  };
+  return mapping[status || 'Yeni'] || 'pending';
+};
+
+const mapUrgencyToService = (priority?: AidRequest['priority']): ServiceAidRequest['urgency'] => {
+  const mapping: Record<AidRequest['priority'], ServiceAidRequest['urgency']> = {
+    'Düşük': 'low',
+    'Orta': 'medium',
+    'Yüksek': 'high',
+    'Acil': 'critical'
+  };
+  return mapping[priority || 'Orta'] || 'medium';
+};
 
 /**
  * AidPage function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
 export function AidPage() {
-  const [loading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [priorityFilter, setPriorityFilter] = useState('all');
-  const [aidRequests] = useState<AidRequest[]>(initialAidRequests);
-  const [showNewRequestDialog, setShowNewRequestDialog] = useState(false);
+  const [aidRequests, setAidRequests] = useState<AidRequest[]>([]);
+  const [_showNewRequestDialog, setShowNewRequestDialog] = useState(false);
 
-  const handleNewRequest = () => {
-    setShowNewRequestDialog(true);
-    // TODO: Open new request dialog
+  // Load aid requests on mount
+  useEffect(() => {
+    const loadAidRequests = async () => {
+      try {
+        setLoading(true);
+        const response = await aidRequestsService.getAidRequests(1, 100); // Load first page with large limit
+        if (!response.data) {
+          setError('Failed to load aid requests');
+          logger.error('Failed to load aid requests: No data');
+        } else {
+          const mappedRequests = response.data.map(mapServiceToLocal);
+          setAidRequests(mappedRequests);
+        }
+      } catch (err) {
+        setError('Failed to load aid requests');
+        logger.error('Error loading aid requests:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadAidRequests();
+  }, []);
+
+  const handleNewRequest = async (newRequestData: Partial<AidRequest>) => {
+    try {
+      const serviceData = mapLocalToService(newRequestData);
+      const response = await aidRequestsService.createAidRequest(serviceData as any); // Cast for simplicity; ensure types align
+      if (!response.data) {
+        logger.error('Failed to create aid request: No data returned');
+        setError('Failed to create aid request');
+      } else {
+        const newRequest = mapServiceToLocal(response.data);
+        setAidRequests((prev) => [newRequest, ...prev]);
+        setShowNewRequestDialog(false);
+      }
+    } catch (err) {
+      logger.error('Error creating aid request:', err);
+      setError('Failed to create aid request');
+    }
   };
 
-  const handleExport = () => {
-    // TODO: Export data
-    console.log('Exporting aid requests...');
+  const handleExport = async () => {
+    try {
+      logger.info('Exporting aid requests');
+      const response = await aidRequestsService.getAidRequests(1, 1000); // Fetch all for export
+      if (!response.data) {
+        logger.error('Failed to fetch data for export: No data');
+        setError('Failed to fetch data for export');
+        return;
+      }
+      const dataToExport = response.data.map(mapServiceToLocal);
+      const exportResult = await exportService.exportReport(
+        { data: dataToExport, metadata: { total_records: dataToExport.length, page: 1, page_size: 1000, execution_time: 0, generated_at: new Date() } },
+        { format: 'csv', filename: 'aid_requests_export.csv' }
+      );
+      if (exportResult.success && exportResult.downloadUrl) {
+        window.open(exportResult.downloadUrl, '_blank');
+      } else {
+        logger.error('Export failed:', exportResult.error);
+        setError(exportResult.error || 'Export failed');
+      }
+    } catch (err) {
+      logger.error('Error during export:', err);
+      setError('Export failed');
+    }
   };
 
   const filteredRequests = aidRequests.filter((request) => {
@@ -137,6 +290,14 @@ export function AidPage() {
     return <PageLoading />;
   }
 
+  if (error) {
+    return (
+      <PageLayout title="Yardım Talepleri" subtitle="Hata oluştu">
+        <div className="p-6 text-center text-red-600">{error}</div>
+      </PageLayout>
+    );
+  }
+
   return (
     <PageLayout
       title="Yardım Talepleri"
@@ -147,7 +308,7 @@ export function AidPage() {
             <Download className="w-4 h-4 mr-2" />
             Dışa Aktar
           </Button>
-          <Button size="sm" onClick={handleNewRequest}>
+          <Button size="sm" onClick={() => handleNewRequest({})}>
             <Plus className="w-4 h-4 mr-2" />
             Yeni Talep
           </Button>

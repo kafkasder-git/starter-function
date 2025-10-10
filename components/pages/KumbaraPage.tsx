@@ -19,8 +19,8 @@ import {
   TrendingUp,
 } from 'lucide-react';
 import { useState } from 'react';
-import { PageLoading } from '../LoadingSpinner';
-import { PageLayout } from '../PageLayout';
+import { PageLoading } from '../shared/LoadingSpinner';
+import { PageLayout } from '../layouts/PageLayout';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';

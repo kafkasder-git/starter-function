@@ -40,10 +40,10 @@ export function BeneficiaryFinancial({
   editMode,
   onUpdate,
 }: BeneficiaryFinancialProps) {
-  const monthlyIncome = beneficiary?.monthlyIncome ?? 0;
-  const monthlyExpenses = beneficiary?.monthlyExpenses ?? 0;
-  const savings = beneficiary?.savings ?? 0;
-  const debts = beneficiary?.debts ?? 0;
+  const monthlyIncome = beneficiary?.financialInfo?.monthlyIncome ?? 0;
+  const monthlyExpenses = beneficiary?.financialInfo?.monthlyExpenses ?? 0;
+  const savings = beneficiary?.financialInfo?.assets ?? 0;
+  const debts = beneficiary?.financialInfo?.debts ?? 0;
 
   const netIncome = monthlyIncome - monthlyExpenses;
   const financialHealth = netIncome > 0 ? 'positive' : netIncome === 0 ? 'neutral' : 'negative';
@@ -195,14 +195,14 @@ export function BeneficiaryFinancial({
             {editMode ? (
               <Input
                 id="incomeSource"
-                value={beneficiary?.incomeSource ?? ''}
+                value={(beneficiary as any)?.incomeSource ?? ''}
                 onChange={(e) => {
                   onUpdate('incomeSource', e.target.value);
                 }}
                 placeholder="Gelir kaynağı (maaş, emekli maaşı, vb.)"
               />
             ) : (
-              <p className="p-2 text-sm">{beneficiary?.incomeSource ?? '-'}</p>
+              <p className="p-2 text-sm">{(beneficiary as any)?.incomeSource ?? '-'}</p>
             )}
           </div>
 

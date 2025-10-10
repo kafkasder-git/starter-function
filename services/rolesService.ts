@@ -5,15 +5,38 @@
  * @version 1.0.0
  */
 
-import { supabase } from '../lib/supabase';
+import { db, collections, queryHelpers } from '../lib/database';
 import { logger } from '../lib/logging/logger';
-import type { Tables } from '../types/supabase';
 import { normalizeRoleToEnglish } from '../lib/roleMapping';
 
 // Type aliases for better readability
-export type Role = Tables<'roles'>;
-export type Permission = Tables<'permissions'>;
-export type UserPermission = Tables<'user_permissions'>;
+export interface Role {
+  $id: string;
+  name: string;
+  display_name: string;
+  description: string;
+  permissions: string[];
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Permission {
+  $id: string;
+  resource: string;
+  action: string;
+  description: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface UserPermission {
+  $id: string;
+  user_id: string;
+  permission_id: string;
+  granted_at: string;
+  granted_by: string;
+}
 
 export interface RoleWithPermissions extends Role {
   permissionDetails?: Permission[];
@@ -34,9 +57,9 @@ export interface ApiResponse<T> {
 }
 
 // Module-level constants
-const rolesTable = 'roles';
-const permissionsTable = 'permissions';
-const userProfilesTable = 'user_profiles';
+const rolesCollection = collections.ROLES;
+const permissionsCollection = collections.PERMISSIONS;
+const userProfilesCollection = collections.USER_PROFILES;
 
 /**
  * Role and permission management service
@@ -49,7 +72,9 @@ const rolesService = {
     try {
       logger.info('Fetching all roles');
 
-      const { data, error } = await supabase.from(rolesTable).select('*').order('name');
+      const { data, error } = await db.list(rolesCollection, [
+        queryHelpers.orderAsc('name')
+      ]);
 
       if (error) {
         logger.error('Error fetching roles', error);
@@ -59,8 +84,8 @@ const rolesService = {
         };
       }
 
-      logger.info(`Successfully fetched ${data?.length || 0} roles`);
-      return { data, error: null };
+      logger.info(`Successfully fetched ${data?.documents?.length || 0} roles`);
+      return { data: data?.documents || [], error: null };
     } catch (error) {
       logger.error('Unexpected error fetching roles', error);
       return {
@@ -77,7 +102,7 @@ const rolesService = {
     try {
       logger.info(`Fetching role: ${id}`);
 
-      const { data, error } = await supabase.from(rolesTable).select('*').eq('id', id).single();
+      const { data, error } = await db.get(rolesCollection, id);
 
       if (error) {
         logger.error('Error fetching role', error);
@@ -104,10 +129,10 @@ const rolesService = {
     try {
       logger.info('Fetching all permissions');
 
-      const { data, error } = await supabase
-        .from(permissionsTable)
-        .select('*')
-        .order('resource, action');
+      const { data, error } = await db.list(permissionsCollection, [
+        queryHelpers.orderAsc('resource'),
+        queryHelpers.orderAsc('action')
+      ]);
 
       if (error) {
         logger.error('Error fetching permissions', error);
@@ -117,8 +142,8 @@ const rolesService = {
         };
       }
 
-      logger.info(`Successfully fetched ${data?.length || 0} permissions`);
-      return { data, error: null };
+      logger.info(`Successfully fetched ${data?.documents?.length || 0} permissions`);
+      return { data: data?.documents || [], error: null };
     } catch (error) {
       logger.error('Unexpected error fetching permissions', error);
       return {
@@ -167,31 +192,27 @@ const rolesService = {
   async hasPermission(userId: string, permissionName: string): Promise<boolean> {
     try {
       // Get user role
-      const { data: userProfile } = await supabase
-        .from(userProfilesTable)
-        .select('role')
-        .eq('id', userId)
-        .single();
+      const { data: userProfile } = await db.list(userProfilesCollection, [
+        queryHelpers.equal('$id', userId)
+      ]);
 
-      if (!userProfile) {
+      if (!userProfile?.documents?.[0]) {
         return false;
       }
 
       // Normalize role name (Turkish to English)
-      const normalizedRole = normalizeRoleToEnglish(userProfile.role);
+      const normalizedRole = normalizeRoleToEnglish(userProfile.documents[0].role);
 
       // Get role permissions
-      const { data: role } = await supabase
-        .from(rolesTable)
-        .select('permissions')
-        .eq('name', normalizedRole)
-        .single();
+      const { data: role } = await db.list(rolesCollection, [
+        queryHelpers.equal('name', normalizedRole)
+      ]);
 
-      if (!role || !role.permissions) {
+      if (!role?.documents?.[0] || !role.documents[0].permissions) {
         return false;
       }
 
-      const permissions = Array.isArray(role.permissions) ? role.permissions : [];
+      const permissions = Array.isArray(role.documents[0].permissions) ? role.documents[0].permissions : [];
 
       // Check for wildcard permissions (e.g., "users:*")
       const [resource] = permissionName.split(':');
@@ -214,13 +235,11 @@ const rolesService = {
       logger.info(`Fetching role for user: ${userId}`);
 
       // Get user profile with role
-      const { data: userProfile, error: userError } = await supabase
-        .from(userProfilesTable)
-        .select('role')
-        .eq('id', userId)
-        .single();
+      const { data: userProfile, error: userError } = await db.list(userProfilesCollection, [
+        queryHelpers.equal('$id', userId)
+      ]);
 
-      if (userError || !userProfile) {
+      if (userError || !userProfile?.documents?.[0]) {
         logger.error('Error fetching user profile', userError);
         return {
           data: null,
@@ -229,16 +248,14 @@ const rolesService = {
       }
 
       // Normalize role name (Turkish to English)
-      const normalizedRole = normalizeRoleToEnglish(userProfile.role);
+      const normalizedRole = normalizeRoleToEnglish(userProfile.documents[0].role);
 
       // Get role details
-      const { data: role, error: roleError } = await supabase
-        .from(rolesTable)
-        .select('*')
-        .eq('name', normalizedRole)
-        .single();
+      const { data: role, error: roleError } = await db.list(rolesCollection, [
+        queryHelpers.equal('name', normalizedRole)
+      ]);
 
-      if (roleError || !role) {
+      if (roleError || !role?.documents?.[0]) {
         logger.error('Error fetching role details', roleError);
         return {
           data: null,
@@ -246,7 +263,7 @@ const rolesService = {
         };
       }
 
-      return { data: role, error: null };
+      return { data: role.documents[0], error: null };
     } catch (error) {
       logger.error('Unexpected error fetching user role', error);
       return {
@@ -264,13 +281,11 @@ const rolesService = {
       logger.info(`Updating user ${userId} role to ${newRole}`);
 
       // Verify role exists
-      const { data: roleExists } = await supabase
-        .from(rolesTable)
-        .select('name')
-        .eq('name', newRole)
-        .single();
+      const { data: roleExists } = await db.list(rolesCollection, [
+        queryHelpers.equal('name', newRole)
+      ]);
 
-      if (!roleExists) {
+      if (!roleExists?.documents?.[0]) {
         return {
           data: null,
           error: 'Belirtilen rol bulunamadı',
@@ -278,10 +293,10 @@ const rolesService = {
       }
 
       // Update user role
-      const { error } = await supabase
-        .from(userProfilesTable)
-        .update({ role: newRole as any, updated_at: new Date().toISOString() })
-        .eq('id', userId);
+      const { error } = await db.update(userProfilesCollection, userId, { 
+        role: newRole, 
+        $updatedAt: new Date().toISOString() 
+      });
 
       if (error) {
         logger.error('Error updating user role', error);
@@ -309,10 +324,9 @@ const rolesService = {
     try {
       logger.info('Fetching users with roles');
 
-      const { data: users, error } = await supabase
-        .from(userProfilesTable)
-        .select('id, name, email, role, is_active')
-        .order('name');
+      const { data: users, error } = await db.list(userProfilesCollection, [
+        queryHelpers.orderAsc('name')
+      ]);
 
       if (error) {
         logger.error('Error fetching users', error);
@@ -322,7 +336,15 @@ const rolesService = {
         };
       }
 
-      return { data: users as UserWithRole[], error: null };
+      const userRoles = users?.documents?.map(user => ({
+        id: user.$id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        is_active: user.is_active
+      })) || [];
+
+      return { data: userRoles as UserWithRole[], error: null };
     } catch (error) {
       logger.error('Unexpected error fetching users', error);
       return {
@@ -339,10 +361,9 @@ const rolesService = {
     try {
       logger.info('Fetching role statistics');
 
-      const { data: users, error } = await supabase
-        .from(userProfilesTable)
-        .select('role')
-        .eq('is_active', true);
+      const { data: users, error } = await db.list(userProfilesCollection, [
+        queryHelpers.equal('is_active', true)
+      ]);
 
       if (error) {
         logger.error('Error fetching role stats', error);
@@ -354,7 +375,7 @@ const rolesService = {
 
       // Count users by normalized role (both Turkish and English)
       const stats =
-        users?.reduce(
+        users?.documents?.reduce(
           (acc: Record<string, number>, user: { role: string | null }) => {
             const userRole = user.role || 'unknown';
             const normalized = normalizeRoleToEnglish(userRole);
@@ -390,17 +411,13 @@ const rolesService = {
     try {
       logger.info(`Creating new role: ${name}`);
 
-      const { data, error } = await supabase
-        .from(rolesTable)
-        .insert({
-          name,
-          display_name: displayName,
-          description,
-          permissions: permissions as any,
-          is_active: true,
-        })
-        .select()
-        .single();
+      const { data, error } = await db.create(rolesCollection, {
+        name,
+        display_name: displayName,
+        description,
+        permissions: permissions,
+        is_active: true,
+      });
 
       if (error) {
         logger.error('Error creating role', error);
@@ -437,7 +454,7 @@ const rolesService = {
       logger.info(`Updating role: ${id}`);
 
       const updateData: any = {
-        updated_at: new Date().toISOString(),
+        $updatedAt: new Date().toISOString(),
       };
 
       if (updates.display_name) updateData.display_name = updates.display_name;
@@ -445,12 +462,7 @@ const rolesService = {
       if (updates.permissions) updateData.permissions = updates.permissions;
       if (updates.is_active !== undefined) updateData.is_active = updates.is_active;
 
-      const { data, error } = await supabase
-        .from(rolesTable)
-        .update(updateData)
-        .eq('id', id)
-        .select()
-        .single();
+      const { data, error } = await db.update(rolesCollection, id, updateData);
 
       if (error) {
         logger.error('Error updating role', error);

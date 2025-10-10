@@ -6,7 +6,7 @@ Authentication & Authorization sistemi **güvenliğin temeli** olup kritik bir c
 
 - Tüm sistem erişimini kontrol eder
 - Role-based access control (RBAC) ile granular permissions sağlar
-- Supabase Auth entegrasyonu kullanır
+- Appwrite Auth entegrasyonu kullanır
 - Session management ve token refresh içerir
 - 4 farklı rol (Admin, Manager, Operator, Viewer) ve 30+ permission tanımlı
 
@@ -32,7 +32,7 @@ Bu change **mevcut auth sistemini dokümante ediyor** (implementation değişikl
 
 2. **User Registration**
    - New user signup
-   - Email verification (Supabase)
+   - Email verification (Appwrite)
    - Initial role assignment
    - Welcome email
 
@@ -84,7 +84,7 @@ Bu change **mevcut auth sistemini dokümante ediyor** (implementation değişikl
 - Two-factor authentication (2FA) - Future capability
 - OAuth providers (Google, GitHub) - Future capability
 - LDAP/Active Directory - Future capability
-- Magic link authentication - Future (Supabase supports)
+- Magic link authentication - Future (Appwrite supports)
 
 ## Impact
 
@@ -113,7 +113,7 @@ Bu change **mevcut auth sistemini dokümante ediyor** (implementation değişikl
 - `hooks/usePermission.ts` - Permission checking (121 lines)
 
 **Database**:
-- Supabase Auth (built-in)
+- Appwrite Auth (built-in)
 - Tables: `user_profiles`, `roles`, `permissions`, `user_permissions`
 - RLS policies for role-based access
 

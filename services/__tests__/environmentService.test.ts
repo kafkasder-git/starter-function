@@ -1,32 +1,6 @@
-/**    it('should throw error for missing required variables', () => {
-      // Create a copy without the required variable
-      const { VITE_SUPABASE_URL: _removedUrl, ..._envWithoutUrl } = mockEnv;
-
-      // Mock import.meta.env without required variable
-      vi.stubGlobal('import', {
-        meta: {
-          env: _envWithoutUrl,
-        },
-      });overview Environment Service Unit Tests
- * @description Tests   describe('Environment Validation', () => {
-    it('should throw error for missing required variables', () => {
-      // Create a copy without the required variable
-      const { VITE_SUPABASE_URL: _removed, ...envWithoutUrl } = mockEnv;
-
-      // Mock import.meta.env without required variable
-      vi.stubGlobal('import', {
-        meta: {
-          env: envWithoutUrl,
-        },
-      });
-
-      // Re-import environment module to test validation
-      expect(() => {
-        const envModule = require('../../lib/environment');
-        // Access the environment to trigger validation
-        const { environment: env } = envModule;
-        expect(env).toBeDefined(); // This will trigger the validation
-      }).toThrow();onfiguration and validation
+/**
+ * @fileoverview Environment Service Unit Tests
+ * @description Tests configuration and validation
  */
 
 import { describe, expect, it, vi, beforeEach } from 'vitest';
@@ -35,8 +9,9 @@ import { environment } from '../../lib/environment';
 // Mock environment variables
 const mockEnv = {
   MODE: 'test',
-  VITE_SUPABASE_URL: 'https://test-project.supabase.co',
-  VITE_SUPABASE_ANON_KEY: 'test-anon-key',
+  VITE_APPWRITE_ENDPOINT: 'https://test-project.appwrite.io/v1',
+  VITE_APPWRITE_PROJECT_ID: 'test-project-id',
+  VITE_APPWRITE_DATABASE_ID: 'test-database-id',
   VITE_CSRF_SECRET: 'test-csrf-secret-key',
   VITE_APP_NAME: 'Test App',
   VITE_APP_VERSION: '1.0.0',
@@ -67,11 +42,13 @@ describe('Environment Service', () => {
       expect(typeof environment.app.debug).toBe('boolean');
     });
 
-    it('should have valid Supabase configuration', () => {
-      expect(environment.supabase.url).toBeDefined();
-      expect(environment.supabase.anonKey).toBeDefined();
-      expect(typeof environment.supabase.url).toBe('string');
-      expect(typeof environment.supabase.anonKey).toBe('string');
+    it('should have valid Appwrite configuration', () => {
+      expect(environment.appwrite.endpoint).toBeDefined();
+      expect(environment.appwrite.projectId).toBeDefined();
+      expect(environment.appwrite.databaseId).toBeDefined();
+      expect(typeof environment.appwrite.endpoint).toBe('string');
+      expect(typeof environment.appwrite.projectId).toBe('string');
+      expect(typeof environment.appwrite.databaseId).toBe('string');
     });
 
     it('should have valid feature flags', () => {
@@ -109,8 +86,9 @@ describe('Environment Service', () => {
       expect(typeof environment.mode).toBe('string');
       expect(typeof environment.app.debug).toBe('boolean');
 
-      expect(typeof environment.supabase.url).toBe('string');
-      expect(typeof environment.supabase.anonKey).toBe('string');
+      expect(typeof environment.appwrite.endpoint).toBe('string');
+      expect(typeof environment.appwrite.projectId).toBe('string');
+      expect(typeof environment.appwrite.databaseId).toBe('string');
 
       expect(typeof environment.features.pwa).toBe('boolean');
       expect(typeof environment.features.analytics).toBe('boolean');

@@ -16,7 +16,7 @@ export interface NetworkError {
 
 export interface NetworkDiagnostics {
   isOnline: boolean;
-  canReachSupabase: boolean;
+  canReachAppwrite: boolean;
   canReachInternet: boolean;
   lastError?: NetworkError;
   connectionQuality: 'excellent' | 'good' | 'poor' | 'offline';
@@ -29,7 +29,7 @@ export class NetworkManager {
   private static instance: NetworkManager;
   private diagnostics: NetworkDiagnostics = {
     isOnline: true,
-    canReachSupabase: false,
+    canReachAppwrite: false,
     canReachInternet: false,
     connectionQuality: 'offline'
   };
@@ -124,7 +124,7 @@ export class NetworkManager {
   async testConnectivity(): Promise<NetworkDiagnostics> {
     const diagnostics: NetworkDiagnostics = {
       isOnline: navigator.onLine,
-      canReachSupabase: false,
+      canReachAppwrite: false,
       canReachInternet: false,
       connectionQuality: 'offline'
     };
@@ -134,41 +134,66 @@ export class NetworkManager {
       return diagnostics;
     }
 
-    try {
-      // Test internet connectivity
-      await fetch('https://httpbin.org/status/200', {
-        method: 'HEAD',
-        mode: 'no-cors',
-        cache: 'no-cache'
-      });
-      diagnostics.canReachInternet = true;
-    } catch (error) {
-      logger.warn('Internet connectivity test failed:', error);
+    // Test internet connectivity with multiple fallback endpoints
+    const internetTestUrls = [
+      'https://httpbin.org/status/200',
+      'https://www.google.com/favicon.ico',
+      'https://api.github.com/zen'
+    ];
+
+    for (const url of internetTestUrls) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+        
+        await fetch(url, {
+          method: 'HEAD',
+          mode: 'no-cors',
+          cache: 'no-cache',
+          signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        diagnostics.canReachInternet = true;
+        logger.info(`Internet connectivity test successful via ${url}`);
+        break; // Exit loop on first success
+      } catch (error) {
+        logger.warn(`Internet connectivity test failed for ${url}:`, error);
+        continue; // Try next URL
+      }
     }
 
+    // Test Appwrite connectivity
     try {
-      // Test Supabase connectivity
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      if (supabaseUrl) {
-        const supabaseResponse = await fetch(`${supabaseUrl}/rest/v1/`, {
+      const appwriteEndpoint = import.meta.env.VITE_APPWRITE_ENDPOINT;
+      if (appwriteEndpoint) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+        
+        await fetch(`${appwriteEndpoint}/health`, {
           method: 'HEAD',
-          headers: {
-            'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY || '',
-          }
+          mode: 'no-cors',
+          cache: 'no-cache',
+          signal: controller.signal
         });
-        diagnostics.canReachSupabase = supabaseResponse.ok;
+        
+        clearTimeout(timeoutId);
+        diagnostics.canReachAppwrite = true;
+        logger.info('Appwrite connectivity test successful');
       }
     } catch (error) {
-      logger.warn('Supabase connectivity test failed:', error);
+      logger.warn('Appwrite connectivity test failed:', error);
     }
 
-    // Determine connection quality
-    if (diagnostics.canReachSupabase && diagnostics.canReachInternet) {
+    // Determine connection quality based on what we can reach
+    if (diagnostics.canReachAppwrite && diagnostics.canReachInternet) {
       diagnostics.connectionQuality = 'excellent';
+    } else if (diagnostics.canReachAppwrite) {
+      diagnostics.connectionQuality = 'good'; // Appwrite is more important than general internet
     } else if (diagnostics.canReachInternet) {
-      diagnostics.connectionQuality = 'good';
-    } else if (diagnostics.isOnline) {
       diagnostics.connectionQuality = 'poor';
+    } else if (diagnostics.isOnline) {
+      diagnostics.connectionQuality = 'offline'; // Browser says online but can't reach anything
     }
 
     this.diagnostics = diagnostics;
@@ -221,15 +246,27 @@ export class NetworkManager {
     let type: NetworkError['type'] = 'NETWORK_ERROR';
     let message = error.message;
 
-    if (error.message.includes('Failed to fetch')) {
+    if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
       type = 'NETWORK_ERROR';
-      message = 'Failed to fetch - check your internet connection and try again';
-    } else if (error.message.includes('CORS')) {
+      message = 'Network error - unable to reach the server. Please check your internet connection and try again.';
+    } else if (error.message.includes('CORS') || error.message.includes('cross-origin')) {
       type = 'CORS_ERROR';
       message = 'Cross-origin request blocked - this might be a configuration issue';
-    } else if (error.message.includes('timeout')) {
+    } else if (error.message.includes('timeout') || error.name === 'AbortError') {
       type = 'TIMEOUT_ERROR';
       message = 'Request timeout - the server took too long to respond';
+    } else if (error.message.includes('TypeError') && error.message.includes('fetch')) {
+      type = 'NETWORK_ERROR';
+      message = 'Network request failed - please check your connection and try again';
+    } else if (error.message.includes('ERR_NETWORK') || error.message.includes('ERR_INTERNET_DISCONNECTED')) {
+      type = 'NETWORK_ERROR';
+      message = 'No internet connection - please check your network settings';
+    } else if (error.message.includes('ERR_CONNECTION_REFUSED')) {
+      type = 'SERVER_ERROR';
+      message = 'Connection refused - the server is not accepting connections';
+    } else if (error.message.includes('ERR_CONNECTION_TIMED_OUT')) {
+      type = 'TIMEOUT_ERROR';
+      message = 'Connection timeout - the server is not responding';
     }
 
     return {
@@ -260,8 +297,8 @@ export class NetworkManager {
   private updateDiagnostics(success: boolean, url: string): void {
     if (success) {
       this.diagnostics.isOnline = navigator.onLine;
-      if (url.includes('supabase')) {
-        this.diagnostics.canReachSupabase = true;
+      if (url.includes('appwrite')) {
+        this.diagnostics.canReachAppwrite = true;
       }
       this.diagnostics.canReachInternet = true;
       this.diagnostics.connectionQuality = 'excellent';

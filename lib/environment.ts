@@ -10,10 +10,10 @@ interface EnvironmentConfig {
     version: string;
     debug: boolean;
   };
-  supabase: {
-    url: string;
-    anonKey: string;
-    // serviceRoleKey removed for security - should only be used in backend
+  appwrite: {
+    endpoint: string;
+    projectId: string;
+    databaseId: string;
   };
   sentry?: {
     dsn: string;
@@ -82,10 +82,10 @@ export const environment: EnvironmentConfig = {
     debug: getBoolEnv('VITE_APP_DEBUG', true),
   },
   
-  supabase: {
-    url: getEnv('VITE_SUPABASE_URL', ''),
-    anonKey: getEnv('VITE_SUPABASE_ANON_KEY', ''),
-    // serviceRoleKey removed - never expose in frontend for security
+  appwrite: {
+    endpoint: getEnv('VITE_APPWRITE_ENDPOINT', 'https://cloud.appwrite.io/v1'),
+    projectId: getEnv('VITE_APPWRITE_PROJECT_ID', '68e92f380024d5de7dfa'),
+    databaseId: getEnv('VITE_APPWRITE_DATABASE_ID', '68e9310d0008e60db79f'),
   },
   
   sentry: getEnv('VITE_SENTRY_DSN') ? {
@@ -114,18 +114,22 @@ export const environment: EnvironmentConfig = {
 export function validateEnvironment(): { valid: boolean; errors: string[] } {
   const errors: string[] = [];
   
-  // Check required Supabase configuration
-  if (!environment.supabase.url) {
-    errors.push('VITE_SUPABASE_URL is required');
+  // Check required Appwrite configuration
+  if (!environment.appwrite.endpoint) {
+    errors.push('VITE_APPWRITE_ENDPOINT is required');
   }
   
-  if (!environment.supabase.anonKey) {
-    errors.push('VITE_SUPABASE_ANON_KEY is required');
+  if (!environment.appwrite.projectId) {
+    errors.push('VITE_APPWRITE_PROJECT_ID is required');
+  }
+  
+  if (!environment.appwrite.databaseId) {
+    errors.push('VITE_APPWRITE_DATABASE_ID is required');
   }
   
   // Validate URL format
-  if (environment.supabase.url && !environment.supabase.url.startsWith('http')) {
-    errors.push('VITE_SUPABASE_URL must be a valid URL');
+  if (environment.appwrite.endpoint && !environment.appwrite.endpoint.startsWith('http')) {
+    errors.push('VITE_APPWRITE_ENDPOINT must be a valid URL');
   }
   
   return {
@@ -163,10 +167,11 @@ export function getEnvironmentInfo() {
     mode: environment.mode,
     app: environment.app,
     features: environment.features,
-    supabase: {
-      configured: Boolean(environment.supabase.url && environment.supabase.anonKey),
-      url: environment.supabase.url ? '✓' : '✗',
-      anonKey: environment.supabase.anonKey ? '✓' : '✗',
+    appwrite: {
+      configured: Boolean(environment.appwrite.endpoint && environment.appwrite.projectId && environment.appwrite.databaseId),
+      endpoint: environment.appwrite.endpoint ? '✓' : '✗',
+      projectId: environment.appwrite.projectId ? '✓' : '✗',
+      databaseId: environment.appwrite.databaseId ? '✓' : '✗',
     },
     sentry: {
       configured: Boolean(environment.sentry?.dsn),

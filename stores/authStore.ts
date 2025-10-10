@@ -1,21 +1,28 @@
-import type { Session, User as SupabaseUser } from '@supabase/supabase-js';
+/**
+ * @fileoverview Authentication Store with Appwrite
+ * @description Centralized authentication state management using Appwrite SDK
+ */
+
+import type { Models } from 'appwrite';
 import { toast } from 'sonner';
 import { create } from 'zustand';
 import { devtools, persist, subscribeWithSelector } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
-import { supabase } from '../lib/supabase';
+import { account, ID, Query } from '../lib/appwrite';
+import { db, collections } from '../lib/database';
 import { authLogger } from '../lib/logging';
 import { ROLE_PERMISSIONS, UserRole, type Permission } from '../types/auth';
 import { normalizeRoleToEnglish } from '../lib/roleMapping';
+import { AppwriteException } from 'appwrite';
 
-// Error type for Supabase auth operations
-interface AuthError {
-  message: string;
-  status?: number;
-  statusText?: string;
-}
+// Error type for Appwrite auth operations
+// interface AuthError {
+//   message: string;
+//   status?: number;
+//   type?: string;
+// }
 
-// Mutable version of User interface for Zustand store
+// User interface for Zustand store
 interface User {
   id: string;
   email: string;
@@ -28,6 +35,12 @@ interface User {
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
+}
+
+// Session interface (simplified for Appwrite)
+interface Session {
+  userId: string;
+  expire: string;
 }
 
 interface AuthState {
@@ -48,12 +61,14 @@ interface AuthState {
   // Session management
   sessionExpiresAt?: Date;
   refreshPromise?: Promise<void>;
+  sessionExpiryWarningShown: boolean;
+  sessionExpiryWarningTime?: Date;
 }
 
 interface AuthActions {
   // Authentication actions
   login: (email: string, password: string, rememberMe?: boolean) => Promise<void>;
-  logout: () => Promise<void>;
+  logout: (callback?: () => void) => Promise<void>;
   register: (userData: RegisterData) => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   updateProfile: (userData: Partial<User>) => Promise<void>;
@@ -62,6 +77,8 @@ interface AuthActions {
   initializeAuth: () => Promise<void>;
   refreshSession: () => Promise<void>;
   checkSessionExpiry: () => void;
+  dismissSessionWarning: () => void;
+  handleSessionExpired: () => Promise<void>;
 
   // UI actions
   setShowLoginModal: (show: boolean) => void;
@@ -74,13 +91,17 @@ interface AuthActions {
   hasAnyPermission: (permissions: Permission[]) => boolean;
   hasAllPermissions: (permissions: Permission[]) => boolean;
 
-  // Internal actions
-  setUser: (user: User | null) => void;
-  setSession: (session: Session | null) => void;
-  setLoading: (loading: boolean) => void;
-  setError: (error: string | null) => void;
-  incrementLoginAttempts: () => void;
-  resetLoginAttempts: () => void;
+          // Internal actions
+          setUser: (user: User | null) => void;
+          setSession: (session: Session | null) => void;
+          setLoading: (loading: boolean) => void;
+          setError: (error: string | null) => void;
+          incrementLoginAttempts: () => void;
+          resetLoginAttempts: () => void;
+          
+          // Database sync actions
+          syncUserProfile: (userId: string) => Promise<void>;
+          createUserProfile: (userData: any) => Promise<void>;
 }
 
 interface RegisterData {
@@ -92,62 +113,87 @@ interface RegisterData {
 
 type AuthStore = AuthState & AuthActions;
 
-// Build User object from Supabase User
-const buildUserFromSupabaseUser = (supabaseUser: SupabaseUser): User => {
-  const metadata = supabaseUser.user_metadata;
-  const appMetadata = supabaseUser.app_metadata;
+// Build User object from Appwrite User and Database Profile
+const buildUserFromAppwriteUser = async (appwriteUser: Models.User<Models.Preferences>): Promise<User> => {
+  const prefs = appwriteUser.prefs || {};
 
   let role: UserRole = UserRole.VIEWER;
+  let isActive = true;
+  let avatar: string | undefined;
+  let metadata: Record<string, unknown> = prefs;
 
-  // Get role from app_metadata or user_metadata
-  const rawRole = appMetadata.role || metadata.role;
+  // Try to get user profile from database with better error handling
+  try {
+    const { data: profileData, error } = await db.list(
+      collections.USER_PROFILES,
+      [Query.equal('$id', appwriteUser.$id)]
+    );
 
-  if (rawRole) {
-    // Normalize Turkish roles to English (yönetici → admin, müdür → manager, etc.)
-    const normalizedRole = normalizeRoleToEnglish(rawRole);
-
-    // Check if normalized role is valid
-    if (Object.values(UserRole).includes(normalizedRole as UserRole)) {
-      role = normalizedRole as UserRole;
+    if (!error && profileData?.documents?.[0]) {
+      const profile = profileData.documents[0];
+      role = (profile.role as UserRole) || UserRole.VIEWER;
+      isActive = profile.is_active !== false;
+      avatar = profile.avatar_url;
+      metadata = { ...prefs, ...profile };
+      
+      authLogger.info('Successfully fetched user profile from database', {
+        userId: appwriteUser.$id,
+        role: profile.role
+      });
+    } else if (error) {
+      authLogger.warn('Database query returned error, using preferences fallback', {
+        userId: appwriteUser.$id,
+        error: error.message,
+        errorType: (error as any).type || 'unknown'
+      });
+    } else {
+      authLogger.info('No user profile found in database, using preferences', {
+        userId: appwriteUser.$id
+      });
     }
+  } catch (error: any) {
+    authLogger.error('Failed to fetch user profile from database, using preferences', { 
+      userId: appwriteUser.$id, 
+      error: error.message,
+      errorType: (error as any).type || 'unknown'
+    });
   }
 
-  const { email } = supabaseUser;
+  // Always fallback to preferences if database query fails or returns no data
+  const rawRole = (prefs as any).role as string;
+  if (rawRole) {
+    const normalizedRole = normalizeRoleToEnglish(rawRole);
+    if (Object.values(UserRole).includes(normalizedRole as UserRole)) {
+      role = normalizedRole as UserRole;
+      authLogger.info('Using role from preferences', {
+        userId: appwriteUser.$id,
+        rawRole,
+        normalizedRole
+      });
+    }
+  }
+  
+  isActive = (prefs as any).is_active !== false;
+  avatar = (prefs as any).avatar_url as string;
+
+  const { email } = appwriteUser;
   if (!email) {
     throw new Error('User email is required');
   }
 
   return {
-    id: supabaseUser.id,
+    id: appwriteUser.$id,
     email,
-    name:
-      (metadata.name as string) || (metadata.full_name as string) || email.split('@')[0] || 'User',
+    name: appwriteUser.name || (prefs as any).name as string || email.split('@')[0] || 'User',
     role,
-    avatar: (metadata.avatar_url as string) || (appMetadata.avatar_url as string),
+    avatar,
     permissions: ROLE_PERMISSIONS[role],
-    metadata: { ...metadata, ...appMetadata },
-    lastLogin: supabaseUser.last_sign_in_at ? new Date(supabaseUser.last_sign_in_at) : undefined,
-    isActive: true,
-    createdAt: new Date(supabaseUser.created_at),
-    updatedAt: new Date(supabaseUser.updated_at ?? supabaseUser.created_at),
+    metadata,
+    lastLogin: new Date(),
+    isActive,
+    createdAt: new Date(appwriteUser.$createdAt),
+    updatedAt: new Date(appwriteUser.$updatedAt),
   };
-};
-
-// Session management helpers
-const isSessionExpired = (session: Session | null): boolean => {
-  if (!session?.expires_at) return true;
-  const expiresAt = session.expires_at * 1000;
-  const now = Date.now();
-  const bufferTime = 5 * 60 * 1000; // 5 minutes buffer
-  return expiresAt - bufferTime <= now;
-};
-
-const shouldRefreshSession = (session: Session | null): boolean => {
-  if (!session?.expires_at) return false;
-  const expiresAt = session.expires_at * 1000;
-  const now = Date.now();
-  const refreshThreshold = 10 * 60 * 1000; // Refresh 10 minutes before expiry
-  return expiresAt - refreshThreshold <= now;
 };
 
 export const useAuthStore = create<AuthStore>()(
@@ -165,6 +211,7 @@ export const useAuthStore = create<AuthStore>()(
           showLoginModal: false,
           rememberMe: false,
           loginAttempts: 0,
+          sessionExpiryWarningShown: false,
 
           // Initialize authentication
           initializeAuth: async () => {
@@ -174,31 +221,42 @@ export const useAuthStore = create<AuthStore>()(
             });
 
             try {
-              // Get initial session
-              const {
-                data: { session },
-                error,
-              } = await supabase.auth.getSession();
+              // Get current account session
+              const appwriteUser = await account.get();
 
-              if (error) {
-                authLogger.error('getting session', error);
-                set((state) => {
-                  state.error = error.message;
-                  state.isLoading = false;
-                  state.isInitialized = true;
-                });
-                return;
-              }
+              if (appwriteUser) {
+                const user = await buildUserFromAppwriteUser(appwriteUser);
 
-              if (session?.user && session.expires_at) {
-                const user = buildUserFromSupabaseUser(session.user);
+                // Update Appwrite preferences with database role if different
+                try {
+                  const currentPrefs = appwriteUser.prefs || {};
+                  if (currentPrefs.role !== user.role) {
+                    await account.updatePrefs({
+                      ...currentPrefs,
+                      role: user.role,
+                      name: user.name,
+                      is_active: user.isActive,
+                    });
+                  authLogger.info('Updated Appwrite preferences with database role on init', {
+                    userId: user.id,
+                    role: user.role
+                  });
+                  }
+                } catch (prefsError) {
+                  authLogger.error('Failed to update Appwrite preferences on init', {
+                    userId: user.id,
+                    error: prefsError
+                  });
+                  // Continue even if preferences update fails
+                }
+
                 set((state) => {
                   state.user = user;
-                  state.session = session;
                   state.isAuthenticated = true;
-                  state.sessionExpiresAt = session.expires_at
-                    ? new Date(session.expires_at * 1000)
-                    : undefined;
+                  state.session = {
+                    userId: appwriteUser.$id,
+                    expire: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+                  };
                 });
               }
 
@@ -206,55 +264,12 @@ export const useAuthStore = create<AuthStore>()(
                 state.isLoading = false;
                 state.isInitialized = true;
               });
-
-              // Setup auth state listener
-              supabase.auth.onAuthStateChange((event, session) => {
-                const store = get();
-
-                try {
-                  if (event === 'SIGNED_IN' && session?.user && session.expires_at) {
-                    const user = buildUserFromSupabaseUser(session.user);
-                    set((state) => {
-                      state.user = user;
-                      state.session = session;
-                      state.isAuthenticated = true;
-                      state.error = null;
-                      state.sessionExpiresAt = session.expires_at
-                        ? new Date(session.expires_at * 1000)
-                        : undefined;
-                    });
-
-                    store.resetLoginAttempts();
-                  } else if (event === 'SIGNED_OUT') {
-                    set((state) => {
-                      state.user = null;
-                      state.session = null;
-                      state.isAuthenticated = false;
-                      state.error = null;
-                      state.sessionExpiresAt = undefined;
-                    });
-                  } else if (event === 'TOKEN_REFRESHED' && session?.user && session.expires_at) {
-                    const user = buildUserFromSupabaseUser(session.user);
-                    set((state) => {
-                      state.user = user;
-                      state.session = session;
-                      state.sessionExpiresAt = session.expires_at
-                        ? new Date(session.expires_at * 1000)
-                        : undefined;
-                      state.error = null;
-                    });
-                  }
-                } catch (error) {
-                  authLogger.error('auth state change', error);
-                  set((state) => {
-                    state.error = 'Kimlik doğrulama hatası';
-                  });
-                }
-              });
             } catch (error) {
               authLogger.error('auth initialization', error);
               set((state) => {
-                state.error = 'Kimlik doğrulama başlatılamadı';
+                state.user = null;
+                state.session = null;
+                state.isAuthenticated = false;
                 state.isLoading = false;
                 state.isInitialized = true;
               });
@@ -282,50 +297,118 @@ export const useAuthStore = create<AuthStore>()(
             });
 
             try {
-              const { data, error } = await supabase.auth.signInWithPassword({
-                email,
-                password,
+              authLogger.info('Attempting login', { email });
+              
+              // Create email session
+              await account.createEmailPasswordSession(email, password);
+              authLogger.info('Email session created successfully', { email });
+
+              // Get user data
+              const appwriteUser = await account.get();
+              authLogger.info('Retrieved Appwrite user data', { 
+                userId: appwriteUser.$id,
+                email: appwriteUser.email 
+              });
+              
+              const user = await buildUserFromAppwriteUser(appwriteUser);
+              authLogger.info('Built user object successfully', { 
+                userId: user.id,
+                role: user.role,
+                isActive: user.isActive 
               });
 
-              if (error) {
-                get().incrementLoginAttempts();
-                throw error;
+              // Update Appwrite preferences with database role if different
+              try {
+                const currentPrefs = appwriteUser.prefs || {};
+                if (currentPrefs.role !== user.role) {
+                  await account.updatePrefs({
+                    ...currentPrefs,
+                    role: user.role,
+                    name: user.name,
+                    is_active: user.isActive,
+                  });
+                  authLogger.info('Updated Appwrite preferences with database role', {
+                    userId: user.id,
+                    role: user.role
+                  });
+                }
+              } catch (prefsError: any) {
+                authLogger.error('Failed to update Appwrite preferences', {
+                  userId: user.id,
+                  error: prefsError.message,
+                  errorType: (prefsError as any).type || 'unknown'
+                });
+                // Continue even if preferences update fails
               }
-
-              const user = buildUserFromSupabaseUser(data.user);
 
               set((state) => {
                 state.user = user;
-                state.session = data.session;
+                state.session = {
+                  userId: appwriteUser.$id,
+                  expire: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+                };
                 state.isAuthenticated = true;
                 state.isLoading = false;
                 state.error = null;
-                state.sessionExpiresAt = data.session.expires_at
-                  ? new Date(data.session.expires_at * 1000)
-                  : undefined;
               });
 
               get().resetLoginAttempts();
 
-              // Removed welcome toast notification
+              toast.success(`Hoş geldiniz, ${user.name}!`, { duration: 3000 });
             } catch (error: unknown) {
+              get().incrementLoginAttempts();
+
               let errorMessage = 'Giriş yapılamadı';
 
-              if (error && typeof error === 'object' && 'message' in error) {
-                const authError = error as AuthError;
-                switch (authError.message) {
-                  case 'Invalid login credentials':
+              if (error instanceof AppwriteException) {
+                
+                switch (error.type) {
+                  case 'user_invalid_credentials':
                     errorMessage = 'Geçersiz email veya şifre';
                     break;
-                  case 'Email not confirmed':
+                  case 'user_blocked':
+                    errorMessage = 'Kullanıcı engellenmiş';
+                    break;
+                  case 'user_email_not_verified':
                     errorMessage = 'Email adresinizi doğrulayın';
                     break;
-                  case 'Too many requests':
-                    errorMessage = 'Çok fazla deneme. Lütfen bekleyin';
+                  case 'general_unauthorized_scope':
+                    errorMessage = 'Yetkisiz erişim';
+                    break;
+                  case 'general_unsupported_provider':
+                    errorMessage = 'Desteklenmeyen kimlik doğrulama yöntemi';
                     break;
                   default:
-                    errorMessage = authError.message || 'Giriş yapılamadı';
+                    errorMessage = error.message || 'Giriş yapılamadı';
                 }
+                
+                authLogger.error('Appwrite login error', {
+                  email,
+                  errorType: error.type,
+                  errorCode: error.code,
+                  errorMessage: error.message
+                });
+              } else if (error instanceof Error) {
+                
+                // Check for network errors
+                if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+                  errorMessage = 'Ağ bağlantısı hatası. Lütfen internet bağlantınızı kontrol edin.';
+                } else if (error.message.includes('timeout')) {
+                  errorMessage = 'Bağlantı zaman aşımı. Lütfen tekrar deneyin.';
+                } else {
+                  errorMessage = error.message || 'Bilinmeyen hata oluştu';
+                }
+                
+                authLogger.error('Login error', {
+                  email,
+                  errorName: error.name,
+                  errorMessage: error.message
+                });
+              } else {
+                authLogger.error('Unknown login error', {
+                  email,
+                  error: error
+                });
               }
 
               set((state) => {
@@ -339,13 +422,9 @@ export const useAuthStore = create<AuthStore>()(
           },
 
           // Logout action
-          logout: async () => {
+          logout: async (callback?: () => void) => {
             try {
-              const { error } = await supabase.auth.signOut();
-
-              if (error) {
-                throw error;
-              }
+              await account.deleteSession('current');
 
               set((state) => {
                 state.user = null;
@@ -354,12 +433,32 @@ export const useAuthStore = create<AuthStore>()(
                 state.error = null;
                 state.sessionExpiresAt = undefined;
                 state.showLoginModal = false;
+                state.sessionExpiryWarningShown = false;
+                state.sessionExpiryWarningTime = undefined;
               });
 
               toast.success('Başarıyla çıkış yaptınız', { duration: 2000 });
+              if (callback) {
+                callback();
+              } else {
+                window.location.href = '/login';
+              }
             } catch (error: unknown) {
               authLogger.error('logout', error);
+              // Even if logout fails on server, clear local state
+              set((state) => {
+                state.user = null;
+                state.session = null;
+                state.isAuthenticated = false;
+                state.sessionExpiryWarningShown = false;
+                state.sessionExpiryWarningTime = undefined;
+              });
               toast.error('Çıkış yapılırken hata oluştu', { duration: 3000 });
+              if (callback) {
+                callback();
+              } else {
+                window.location.href = '/login';
+              }
             }
           },
 
@@ -371,22 +470,41 @@ export const useAuthStore = create<AuthStore>()(
             });
 
             try {
-              const { error } = await supabase.auth.signUp({
-                email: userData.email,
-                password: userData.password,
-                options: {
-                  data: {
-                    name: userData.name,
-                    role: userData.role ?? UserRole.VIEWER,
-                  },
-                },
+              // Create account
+              const userId = ID.unique();
+              await account.create(
+                userId,
+                userData.email,
+                userData.password,
+                userData.name
+              );
+
+              // Update preferences with role
+              await account.updatePrefs({
+                role: userData.role ?? UserRole.VIEWER,
+                name: userData.name,
               });
 
-              if (error) {
-                throw error;
+              // Create user profile in database
+              try {
+                await db.create(collections.USER_PROFILES, {
+                  id: userId,
+                  email: userData.email,
+                  name: userData.name,
+                  role: userData.role ?? UserRole.VIEWER,
+                  is_active: true,
+                  created_at: new Date().toISOString(),
+                  updated_at: new Date().toISOString(),
+                });
+              } catch (dbError) {
+                authLogger.error('Failed to create user profile in database', { 
+                  userId, 
+                  error: dbError 
+                });
+                // Continue even if database profile creation fails
               }
 
-              toast.success('Kayıt başarılı! Email adresinizi doğrulayın.', {
+              toast.success('Kayıt başarılı! Giriş yapabilirsiniz.', {
                 duration: 5000,
               });
 
@@ -396,17 +514,19 @@ export const useAuthStore = create<AuthStore>()(
             } catch (error: unknown) {
               let errorMessage = 'Kayıt oluşturulamadı';
 
-              if (error && typeof error === 'object' && 'message' in error) {
-                const authError = error as AuthError;
-                switch (authError.message) {
-                  case 'User already registered':
+              if (error instanceof AppwriteException) {
+                switch (error.type) {
+                  case 'user_already_exists':
                     errorMessage = 'Bu email adresi zaten kayıtlı';
                     break;
-                  case 'Password should be at least 6 characters':
-                    errorMessage = 'Şifre en az 6 karakter olmalıdır';
+                  case 'password_recently_used':
+                    errorMessage = 'Bu şifre yakın zamanda kullanılmış';
+                    break;
+                  case 'password_personal_data':
+                    errorMessage = 'Şifre kişisel bilgiler içeremez';
                     break;
                   default:
-                    errorMessage = authError.message || 'Kayıt oluşturulamadı';
+                    errorMessage = error.message || 'Kayıt oluşturulamadı';
                 }
               }
 
@@ -423,21 +543,18 @@ export const useAuthStore = create<AuthStore>()(
           // Reset password action
           resetPassword: async (email: string) => {
             try {
-              const { error } = await supabase.auth.resetPasswordForEmail(email, {
-                redirectTo: `${window.location.origin}/reset-password`,
-              });
-
-              if (error) {
-                throw error;
-              }
+              await account.createRecovery(
+                email,
+                `${window.location.origin}/reset-password`
+              );
 
               toast.success('Şifre sıfırlama bağlantısı email adresinize gönderildi', {
                 duration: 5000,
               });
             } catch (error: unknown) {
               const errorMessage =
-                error && typeof error === 'object' && 'message' in error
-                  ? (error as AuthError).message
+                error instanceof AppwriteException
+                  ? error.message
                   : 'Şifre sıfırlama bağlantısı gönderilemedi';
               toast.error(errorMessage, { duration: 4000 });
               throw new Error(errorMessage);
@@ -452,19 +569,42 @@ export const useAuthStore = create<AuthStore>()(
             }
 
             try {
-              const { error } = await supabase.auth.updateUser({
-                data: {
-                  name: userData.name,
-                  avatar_url: userData.avatar,
-                  ...userData.metadata,
-                },
-              });
-
-              if (error) {
-                throw error;
+              // Update name if provided
+              if (userData.name) {
+                await account.updateName(userData.name);
               }
 
-              const updatedUser = { ...user, ...userData, updatedAt: new Date() };
+              // Update preferences
+              const newPrefs = {
+                ...(user.metadata || {}),
+                ...userData.metadata,
+                name: userData.name || user.name,
+                avatar_url: userData.avatar,
+                role: userData.role || user.role,
+              };
+
+              await account.updatePrefs(newPrefs);
+
+              // Update user profile in database
+              try {
+                const updateData: any = {
+                  updated_at: new Date().toISOString(),
+                };
+
+                if (userData.name) updateData.name = userData.name;
+                if (userData.role) updateData.role = userData.role;
+                if (userData.avatar) updateData.avatar_url = userData.avatar;
+
+                await db.update(collections.USER_PROFILES, user.id, updateData);
+              } catch (dbError) {
+                authLogger.error('Failed to update user profile in database', { 
+                  userId: user.id, 
+                  error: dbError 
+                });
+                // Continue even if database update fails
+              }
+
+              const updatedUser = { ...user, ...userData, updatedAt: new Date() } as User;
               set((state) => {
                 state.user = updatedUser;
               });
@@ -472,8 +612,8 @@ export const useAuthStore = create<AuthStore>()(
               toast.success('Profil başarıyla güncellendi', { duration: 3000 });
             } catch (error: unknown) {
               const errorMessage =
-                error && typeof error === 'object' && 'message' in error
-                  ? (error as AuthError).message
+                error instanceof AppwriteException
+                  ? error.message
                   : 'Profil güncellenemedi';
               toast.error(errorMessage, { duration: 4000 });
               throw new Error(errorMessage);
@@ -491,27 +631,25 @@ export const useAuthStore = create<AuthStore>()(
 
             const promise = (async () => {
               try {
-                const { data, error } = await supabase.auth.refreshSession();
+                // Get current session
+                const appwriteUser = await account.get();
 
-                if (error) {
-                  throw error;
-                }
-
-                if (data.session?.user) {
-                  const user = buildUserFromSupabaseUser(data.session.user);
+                if (appwriteUser) {
+                  const user = await buildUserFromAppwriteUser(appwriteUser);
                   set((state) => {
                     state.user = user;
-                    state.session = data.session;
-                    state.sessionExpiresAt = data.session
-                      ? data.session.expires_at
-                        ? new Date(data.session.expires_at * 1000)
-                        : undefined
-                      : undefined;
+                    state.session = {
+                      userId: appwriteUser.$id,
+                      expire: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+                    };
                     state.error = null;
+                    state.sessionExpiryWarningShown = false;
+                    state.sessionExpiryWarningTime = undefined;
                   });
                 }
               } catch (error) {
                 authLogger.error('session refresh', error);
+                toast.error('Oturum yenilenemedi. Lütfen tekrar giriş yapın.', { duration: 0 });
                 await get().logout();
               } finally {
                 set((state) => {
@@ -528,18 +666,55 @@ export const useAuthStore = create<AuthStore>()(
           },
 
           checkSessionExpiry: () => {
-            const { session, isAuthenticated } = get();
+            const { session, isAuthenticated, sessionExpiryWarningShown, sessionExpiryWarningTime } = get();
 
             if (!isAuthenticated || !session) return;
 
-            if (isSessionExpired(session)) {
-              get().logout();
-              toast.error('Oturumunuz sona erdi. Lütfen tekrar giriş yapın.', {
-                duration: 5000,
-              });
-            } else if (shouldRefreshSession(session)) {
-              get().refreshSession();
+            const expiryTime = new Date(session.expire).getTime();
+            const now = Date.now();
+            const fiveMinutes = 5 * 60 * 1000;
+
+            // If session has expired
+            if (expiryTime <= now) {
+              get().handleSessionExpired();
+              return;
             }
+
+            // If session expires in less than 5 minutes and warning not shown
+            if (expiryTime - now < fiveMinutes && !sessionExpiryWarningShown) {
+              set((state) => {
+                state.sessionExpiryWarningShown = true;
+                state.sessionExpiryWarningTime = new Date();
+              });
+              toast('Oturumunuz sona ermek üzere. Devam etmek ister misiniz?', {
+                duration: 0,
+                action: {
+                  label: 'Devam Et',
+                  onClick: () => {
+                    get().dismissSessionWarning();
+                    get().refreshSession();
+                  },
+                },
+              });
+            }
+
+            // If warning was shown more than 5 minutes ago and no action, logout
+            if (sessionExpiryWarningShown && sessionExpiryWarningTime && now - sessionExpiryWarningTime.getTime() > fiveMinutes) {
+              get().handleSessionExpired();
+            }
+          },
+
+          // Session management actions
+          dismissSessionWarning: () => {
+            set((state) => {
+              state.sessionExpiryWarningShown = false;
+              state.sessionExpiryWarningTime = undefined;
+            });
+          },
+
+          handleSessionExpired: async () => {
+            toast.error('Oturumunuz sona erdi. Lütfen tekrar giriş yapın.', { duration: 0 });
+            await get().logout();
           },
 
           // Permission helpers
@@ -624,6 +799,60 @@ export const useAuthStore = create<AuthStore>()(
               state.lastLoginAttempt = undefined;
             });
           },
+
+          // Sync user profile with database
+          syncUserProfile: async (userId: string) => {
+            try {
+              const { data: profileData, error } = await db.list(
+                collections.USER_PROFILES,
+                [Query.equal('$id', userId)]
+              );
+
+              if (!error && profileData?.documents?.[0]) {
+                const profile = profileData.documents[0];
+                const { user } = get();
+                
+                if (user && user.id === userId) {
+                  const updatedUser = {
+                    ...user,
+                    role: (profile.role as UserRole) || user.role,
+                    isActive: profile.is_active !== false,
+                    avatar: profile.avatar_url || user.avatar,
+                    metadata: { ...user.metadata, ...profile },
+                    updatedAt: new Date(),
+                  };
+                  
+                  set((state) => {
+                    state.user = updatedUser;
+                  });
+                  
+                  authLogger.info('User profile synced with database', { userId });
+                }
+              }
+            } catch (error) {
+              authLogger.error('Failed to sync user profile', { userId, error });
+            }
+          },
+
+          // Create user profile for existing Appwrite users
+          createUserProfile: async (userData: any) => {
+            try {
+              await db.create(collections.USER_PROFILES, {
+                id: userData.id,
+                email: userData.email,
+                name: userData.name,
+                role: userData.role || UserRole.VIEWER,
+                is_active: true,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+              });
+              
+              authLogger.info('User profile created in database', { userId: userData.id });
+            } catch (error) {
+              authLogger.error('Failed to create user profile', { userId: userData.id, error });
+              throw error;
+            }
+          },
         })),
         {
           name: 'auth-store',
@@ -632,7 +861,19 @@ export const useAuthStore = create<AuthStore>()(
             loginAttempts: state.loginAttempts,
             lastLoginAttempt: state.lastLoginAttempt,
           }),
-          version: 1,
+          version: 2, // Changed version to clear old Supabase data
+          migrate: (persistedState: any, version: number) => {
+            // Clear any old Supabase data and reset to clean state
+            if (version < 2) {
+              console.log('🧹 Migrating auth store from version', version, 'to version 2 - clearing old data');
+              return {
+                rememberMe: false,
+                loginAttempts: 0,
+                lastLoginAttempt: null,
+              };
+            }
+            return persistedState;
+          },
         },
       ),
     ),

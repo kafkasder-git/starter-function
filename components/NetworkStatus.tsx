@@ -37,7 +37,7 @@ export function NetworkStatus({
 }: NetworkStatusProps) {
   const [diagnostics, setDiagnostics] = useState<NetworkDiagnostics>({
     isOnline: navigator.onLine,
-    canReachSupabase: false,
+    canReachAppwrite: false,
     canReachInternet: false,
     connectionQuality: 'offline',
   });
@@ -80,7 +80,7 @@ export function NetworkStatus({
       setDiagnostics((prev) => ({
         ...prev,
         isOnline: false,
-        canReachSupabase: false,
+        canReachAppwrite: false,
         canReachInternet: false,
         connectionQuality: 'offline',
       }));
@@ -215,17 +215,17 @@ export function NetworkStatus({
           </div>
         </div>
 
-        {/* Supabase Connection */}
+        {/* Appwrite Connection */}
         <div className="flex items-center justify-between">
-          <span className="text-sm">Supabase Bağlantısı:</span>
+          <span className="text-sm">Appwrite Bağlantısı:</span>
           <div className="flex items-center gap-2">
-            {diagnostics.canReachSupabase ? (
+            {diagnostics.canReachAppwrite ? (
               <Server className="h-4 w-4 text-green-500" />
             ) : (
               <XCircle className="h-4 w-4 text-red-500" />
             )}
             <span className="text-sm">
-              {diagnostics.canReachSupabase ? 'Erişilebilir' : 'Erişilemiyor'}
+              {diagnostics.canReachAppwrite ? 'Erişilebilir' : 'Erişilemiyor'}
             </span>
           </div>
         </div>

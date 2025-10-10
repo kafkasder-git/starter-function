@@ -37,10 +37,9 @@ import {
 } from 'lucide-react';
 import React, { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
-// Removed direct supabase import - using service layer instead
+// Using service layer for database operations
 import { beneficiariesService } from '../../services/beneficiariesService';
-// supabaseAdmin removed for security - use regular supabase client with RLS
-import { supabase } from '../../lib/supabase';
+import { db, queryHelpers } from '../../lib/database';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
@@ -633,10 +632,9 @@ export function BeneficiaryDetailPageComprehensive({
 
       logger.info('🔄 Searching relationships for UUID:', primaryUuid);
 
-      const { data: relationships, error } = await supabase
-        .from('family_relationships')
-        .select('*')
-        .eq('primary_beneficiary_id', primaryUuid);
+      const { data: relationships, error } = await db.list('family_relationships', [
+        queryHelpers.equal('primary_beneficiary_id', primaryUuid)
+      ]);
 
       if (error) {
         logger.error('❌ Error loading relationships:', error);
@@ -861,16 +859,12 @@ export function BeneficiaryDetailPageComprehensive({
         memberUuid,
       });
 
-      const { data, error } = await supabase
-        .from('family_relationships')
-        .insert({
-          primary_beneficiary_id: primaryUuid,
-          family_member_id: memberUuid,
-          relationship_type: selectedRelationshipType,
-          is_dependent: true,
-        })
-        .select()
-        .single();
+      const { data, error } = await db.create('family_relationships', {
+        primary_beneficiary_id: primaryUuid,
+        family_member_id: memberUuid,
+        relationship_type: selectedRelationshipType,
+        is_dependent: true,
+      });
 
       if (error) {
         logger.error('❌ Error creating relationship:', error);
@@ -900,10 +894,7 @@ export function BeneficiaryDetailPageComprehensive({
     try {
       logger.info('🔄 Removing relationship:', relationshipId);
 
-      const { error } = await supabase
-        .from('family_relationships')
-        .delete()
-        .eq('id', relationshipId);
+      const { error } = await db.delete('family_relationships', relationshipId);
 
       if (error) {
         logger.error('❌ Error removing relationship:', error);

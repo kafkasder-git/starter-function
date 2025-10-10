@@ -7,8 +7,10 @@
 
 import { Calendar, Clock, Filter, MapPin, Plus, Users } from 'lucide-react';
 import { motion } from 'motion/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
+import { logger } from '../../lib/logging/logger';
+import { eventsService } from '../../services/eventsService';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
@@ -53,44 +55,24 @@ export function EventsPage() {
     type: 'meeting' as Event['type'],
   });
 
-  const events: Event[] = [
-    {
-      id: 1,
-      title: 'Aylık Yönetim Toplantısı',
-      description: 'Kasım ayı yönetim kurulu toplantısı',
-      date: '2024-11-15',
-      time: '14:00',
-      location: 'Dernek Merkezi',
-      attendees: 12,
-      maxAttendees: 15,
-      type: 'meeting',
-      status: 'upcoming',
-    },
-    {
-      id: 2,
-      title: 'Hayır Bazaarı',
-      description: 'Yardım toplama amaçlı hayır bazaarı',
-      date: '2024-11-20',
-      time: '10:00',
-      location: 'Merkez Park',
-      attendees: 45,
-      maxAttendees: 100,
-      type: 'charity',
-      status: 'upcoming',
-    },
-    {
-      id: 3,
-      title: 'Eğitim Semineri',
-      description: 'Gençler için kişisel gelişim semineri',
-      date: '2024-11-25',
-      time: '19:00',
-      location: 'Konferans Salonu',
-      attendees: 28,
-      maxAttendees: 50,
-      type: 'education',
-      status: 'upcoming',
-    },
-  ];
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const loadEvents = async () => {
+    setLoading(true);
+    const filters = filterType === 'all' ? {} : { type: filterType };
+    const result = await eventsService.getEvents(filters);
+    if (!result.error) {
+      setEvents(result.data || []);
+    } else {
+      logger.error('Error loading events:', result.error);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    loadEvents();
+  }, [filterType]);
 
   const getEventTypeBadge = (type: Event['type']) => {
     const mapping = {
@@ -118,11 +100,24 @@ export function EventsPage() {
     try {
       setIsSubmitting(true);
 
-      // TODO: Integrate with actual API
-      // const result = await eventsService.createEvent(formData);
+      const result = await eventsService.createEvent({
+        title: formData.title,
+        description: formData.description,
+        date: formData.date,
+        time: formData.time,
+        location: formData.location,
+        max_attendees: formData.max_attendees,
+        type: formData.type,
+        status: 'upcoming',
+        attendees: 0,
+      });
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      if (!result.error) {
+        toast.success('Etkinlik başarıyla oluşturuldu!');
+        loadEvents();
+      } else {
+        toast.error(result.error);
+      }
 
       toast.success('Etkinlik başarıyla oluşturuldu!');
       setShowEventDialog(false);
@@ -137,7 +132,8 @@ export function EventsPage() {
         max_attendees: 0,
         type: 'meeting',
       });
-    } catch {
+    } catch (error) {
+      logger.error('Error creating event:', error);
       toast.error('Etkinlik oluşturulurken hata oluştu');
     } finally {
       setIsSubmitting(false);

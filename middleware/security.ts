@@ -6,7 +6,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseAdmin } from '../lib/supabase';
+// Removed Supabase admin import - using Appwrite instead
 import { rateLimit } from './rateLimit';
 import { validateCSRF } from './csrf';
 import { InputSanitizer } from '../lib/security/InputSanitizer';
@@ -21,11 +21,8 @@ import { logger } from '../lib/logging/logger';
  * @class SecurityMiddleware
  */
 export class SecurityMiddleware {
-  private readonly supabase;
-
   constructor() {
-    // Use existing supabaseAdmin instance to avoid Multiple GoTrueClient warning
-    this.supabase = supabaseAdmin;
+    // Security middleware for Appwrite-based authentication
   }
 
   // Main security middleware
@@ -92,49 +89,14 @@ export class SecurityMiddleware {
     const token = authHeader.substring(7);
 
     try {
-      const {
-        data: { user },
-        error,
-      } = await this.supabase.auth.getUser(token);
-
-      if (error || !user) {
-        return {
-          success: false,
-          error: 'Invalid or expired token',
-          status: 401,
-        };
-      }
-
-      // Check if user is active
-      const { data: userProfile, error: profileError } = await this.supabase
-        .from('user_profiles')
-        .select('status, role, permissions')
-        .eq('id', user.id)
-        .single();
-
-      if (profileError || !userProfile) {
-        return {
-          success: false,
-          error: 'User profile not found',
-          status: 401,
-        };
-      }
-
-      if (userProfile.status !== 'active') {
-        return {
-          success: false,
-          error: 'User account is not active',
-          status: 403,
-        };
-      }
-
+      // TODO: Implement Appwrite JWT validation
+      // For now, return a placeholder implementation
+      logger.warn('Appwrite JWT validation not yet implemented in security middleware');
+      
       return {
-        success: true,
-        user: {
-          ...user,
-          role: userProfile.role,
-          permissions: userProfile.permissions || [],
-        },
+        success: false,
+        error: 'Authentication not implemented for Appwrite',
+        status: 501,
       };
     } catch (error) {
       logger.error('Authentication error:', error);
@@ -277,7 +239,7 @@ export class SecurityMiddleware {
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: https:",
       "font-src 'self'",
-      "connect-src 'self' https://api.supabase.co wss://realtime.supabase.co https://*.supabase.co wss://*.supabase.co",
+      "connect-src 'self' https://cloud.appwrite.io https://*.appwrite.io",
       "frame-ancestors 'none'",
     ].join('; ');
 

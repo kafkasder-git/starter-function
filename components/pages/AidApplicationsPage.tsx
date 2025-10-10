@@ -18,9 +18,9 @@ import {
   Search,
   XCircle,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { PageLayout } from '../PageLayout';
+import { PageLayout } from '../layouts/PageLayout';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
@@ -30,22 +30,51 @@ import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { Textarea } from '../ui/textarea';
+import { aidRequestsService } from '../../services/aidRequestsService';
+import { logger } from '../../lib/logging/logger';
+import type { AidRequest } from '../../types/database';
 
-interface AidApplication {
-  id: number;
-  applicantName: string;
-  applicantId: string;
-  applicationDate: string;
-  aidType: string;
-  requestedAmount: number;
-  status: 'pending' | 'approved' | 'rejected' | 'under-review';
-  priority: 'low' | 'medium' | 'high' | 'urgent';
-  description: string;
-  phone: string;
-  address: string;
-}
+// Helper functions for mapping
+const mapAidTypeToEnum = (aidType: string): AidRequest['aid_type'] => {
+  const mapping: Record<string, AidRequest['aid_type']> = {
+    'Nakdi Yardım': 'financial',
+    'Ayni Yardım': 'other',
+    'Sağlık Yardımı': 'medical',
+    'Eğitim Yardımı': 'education',
+  };
+  return mapping[aidType] || 'other';
+};
 
-const initialApplications: AidApplication[] = [];
+const mapUrgencyToEnum = (priority: string): AidRequest['urgency'] => {
+  const mapping: Record<string, AidRequest['urgency']> = {
+    low: 'low',
+    medium: 'medium',
+    high: 'high',
+    urgent: 'critical',
+  };
+  return mapping[priority] || 'medium';
+};
+
+const mapStatusForDisplay = (status: AidRequest['status']): string => {
+  const mapping: Record<AidRequest['status'], string> = {
+    pending: 'pending',
+    under_review: 'under-review',
+    approved: 'approved',
+    rejected: 'rejected',
+    completed: 'completed',
+  };
+  return mapping[status] || status;
+};
+
+const mapUrgencyForDisplay = (urgency: AidRequest['urgency']): string => {
+  const mapping: Record<AidRequest['urgency'], string> = {
+    low: 'low',
+    medium: 'medium',
+    high: 'high',
+    critical: 'urgent',
+  };
+  return mapping[urgency] || urgency;
+};
 
 /**
  * AidApplicationsPage function
@@ -54,7 +83,8 @@ const initialApplications: AidApplication[] = [];
  * @returns {void} Nothing
  */
 export function AidApplicationsPage() {
-  const [applications, setApplications] = useState<AidApplication[]>(initialApplications);
+  const [applications, setApplications] = useState<AidRequest[]>([]);
+  const [_loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [priorityFilter, setPriorityFilter] = useState<string>('all');
@@ -68,23 +98,49 @@ export function AidApplicationsPage() {
     address: '',
     aidType: 'Nakdi Yardım',
     requestedAmount: 0,
-    priority: 'medium' as AidApplication['priority'],
+    priority: 'medium' as AidRequest['urgency'],
     description: '',
   });
 
-  const getStatusBadge = (status: AidApplication['status']) => {
+  // Load applications on mount
+  useEffect(() => {
+    loadApplications();
+  }, []);
+
+  const loadApplications = async () => {
+    try {
+      setLoading(true);
+      const result = await aidRequestsService.getAidRequests(1, 100); // Load first 100 for now
+      if (!result.data) {
+        console.error('Failed to load aid applications: No data');
+        toast.error('Başvurular yüklenirken hata oluştu');
+      } else {
+        setApplications(result.data);
+      }
+    } catch (error) {
+      console.error('Error loading applications:', error);
+      toast.error('Başvurular yüklenirken hata oluştu');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getStatusBadge = (status: AidRequest['status']) => {
+    const displayStatus = mapStatusForDisplay(status);
     const statusConfig = {
       pending: { label: 'Beklemede', color: 'bg-yellow-100 text-yellow-800' },
       approved: { label: 'Onaylandı', color: 'bg-green-100 text-green-800' },
       rejected: { label: 'Reddedildi', color: 'bg-red-100 text-red-800' },
       'under-review': { label: 'İncelemede', color: 'bg-blue-100 text-blue-800' },
+      completed: { label: 'Tamamlandı', color: 'bg-purple-100 text-purple-800' },
     };
 
-    const config = statusConfig[status];
-    return <Badge className={config.color}>{config.label}</Badge>;
+    const config = statusConfig[displayStatus as keyof typeof statusConfig];
+    return <Badge className={config?.color || 'bg-gray-100 text-gray-800'}>{config?.label || displayStatus}</Badge>;
   };
 
-  const getPriorityBadge = (priority: AidApplication['priority']) => {
+  const getPriorityBadge = (urgency: AidRequest['urgency']) => {
+    const displayPriority = mapUrgencyForDisplay(urgency);
     const priorityConfig = {
       low: { label: 'Düşük', color: 'bg-gray-100 text-gray-800' },
       medium: { label: 'Orta', color: 'bg-blue-100 text-blue-800' },
@@ -92,34 +148,52 @@ export function AidApplicationsPage() {
       urgent: { label: 'Acil', color: 'bg-red-100 text-red-800' },
     };
 
-    const config = priorityConfig[priority];
-    return <Badge className={config.color}>{config.label}</Badge>;
+    const config = priorityConfig[displayPriority as keyof typeof priorityConfig];
+    return <Badge className={config?.color || 'bg-gray-100 text-gray-800'}>{config?.label || displayPriority}</Badge>;
   };
 
   const filteredApplications = applications.filter((app) => {
     const matchesSearch =
-      app.applicantName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      app.applicantId.includes(searchTerm) ||
+      app.applicant_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      app.id.includes(searchTerm) ||
       app.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || app.status === statusFilter;
-    const matchesPriority = priorityFilter === 'all' || app.priority === priorityFilter;
-    const matchesAidType = aidTypeFilter === 'all' || app.aidType === aidTypeFilter;
+    const matchesStatus = statusFilter === 'all' || mapStatusForDisplay(app.status) === statusFilter;
+    const matchesPriority = priorityFilter === 'all' || mapUrgencyForDisplay(app.urgency) === priorityFilter;
+    const matchesAidType = aidTypeFilter === 'all' || app.aid_type === mapAidTypeToEnum(aidTypeFilter);
 
     return matchesSearch && matchesStatus && matchesPriority && matchesAidType;
   });
 
-  const handleApprove = (id: number) => {
-    setApplications((prev) =>
-      prev.map((app) => (app.id === id ? { ...app, status: 'approved' as const } : app)),
-    );
-    toast.success('Başvuru onaylandı');
+  const handleApprove = async (id: string) => {
+    try {
+      const result = await aidRequestsService.approveAidRequest(id, applications.find(app => app.id === id)?.requested_amount || 0, 'current-user-id'); // Replace with actual user ID
+      if (result.error) {
+        logger.error('Failed to approve application:', result.error);
+        toast.error('Başvuru onaylanırken hata oluştu');
+      } else {
+        toast.success('Başvuru onaylandı');
+        loadApplications(); // Reload to get updated data
+      }
+    } catch (error) {
+      logger.error('Error approving application:', error);
+      toast.error('Başvuru onaylanırken hata oluştu');
+    }
   };
 
-  const handleReject = (id: number) => {
-    setApplications((prev) =>
-      prev.map((app) => (app.id === id ? { ...app, status: 'rejected' as const } : app)),
-    );
-    toast.success('Başvuru reddedildi');
+  const handleReject = async (id: string) => {
+    try {
+      const result = await aidRequestsService.rejectAidRequest(id, 'current-user-id'); // Replace with actual user ID
+      if (result.error) {
+        logger.error('Failed to reject application:', result.error);
+        toast.error('Başvuru reddedilirken hata oluştu');
+      } else {
+        toast.success('Başvuru reddedildi');
+        loadApplications(); // Reload to get updated data
+      }
+    } catch (error) {
+      logger.error('Error rejecting application:', error);
+      toast.error('Başvuru reddedilirken hata oluştu');
+    }
   };
 
   const handleCreateApplication = async (e: React.FormEvent) => {
@@ -133,37 +207,39 @@ export function AidApplicationsPage() {
     try {
       setIsSubmitting(true);
 
-      // TODO: Integrate with actual API
-      // const result = await aidApplicationsService.createApplication(formData);
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // Add to local state for demonstration
-      const newApplication: AidApplication = {
-        id: Math.max(...applications.map((a) => a.id), 0) + 1,
-        ...formData,
-        applicationDate: new Date().toISOString().split('T')[0],
-        status: 'pending',
-      };
-
-      setApplications((prev) => [newApplication, ...prev]);
-
-      toast.success('Başvuru başarıyla oluşturuldu!');
-      setShowCreateDialog(false);
-
-      // Reset form
-      setFormData({
-        applicantName: '',
-        applicantId: '',
-        phone: '',
-        address: '',
-        aidType: 'Nakdi Yardım',
-        requestedAmount: 0,
-        priority: 'medium',
-        description: '',
+      const result = await aidRequestsService.createAidRequest({
+        applicant_name: formData.applicantName,
+        applicant_phone: formData.phone,
+        applicant_address: formData.address,
+        aid_type: mapAidTypeToEnum(formData.aidType),
+        requested_amount: formData.requestedAmount || null,
+        urgency: mapUrgencyToEnum(formData.priority),
+        description: formData.description,
+        reason: formData.description, // Using description as reason for now
       });
-    } catch {
+
+      if (result.error) {
+        logger.error('Failed to create application:', result.error);
+        toast.error('Başvuru oluşturulurken hata oluştu');
+      } else {
+        toast.success('Başvuru başarıyla oluşturuldu!');
+        setShowCreateDialog(false);
+        loadApplications(); // Reload to get updated data
+
+        // Reset form
+        setFormData({
+          applicantName: '',
+          applicantId: '',
+          phone: '',
+          address: '',
+          aidType: 'Nakdi Yardım',
+          requestedAmount: 0,
+          priority: 'medium',
+          description: '',
+        });
+      }
+    } catch (error) {
+      logger.error('Error creating application:', error);
       toast.error('Başvuru oluşturulurken hata oluştu');
     } finally {
       setIsSubmitting(false);
@@ -355,31 +431,31 @@ export function AidApplicationsPage() {
                         <div className="mb-3 flex items-start justify-between">
                           <div className="flex-1">
                             <h3 className="font-medium text-gray-900">
-                              {application.applicantName}
+                              {application.applicant_name}
                             </h3>
-                            <p className="text-sm text-gray-600">{application.applicantId}</p>
+                            <p className="text-sm text-gray-600">{application.id}</p>
                             <p className="mt-1 text-xs text-gray-500">{application.description}</p>
                           </div>
-                          <div className="text-right">{getPriorityBadge(application.priority)}</div>
+                          <div className="text-right">{getPriorityBadge(application.urgency)}</div>
                         </div>
 
                         <div className="mb-3 grid grid-cols-2 gap-3 text-sm">
                           <div>
                             <span className="text-gray-500">Tür:</span>
-                            <p className="font-medium">{application.aidType}</p>
+                            <p className="font-medium">{application.aid_type}</p>
                           </div>
                           <div>
                             <span className="text-gray-500">Tutar:</span>
                             <p className="font-medium">
-                              {application.requestedAmount > 0
-                                ? `₺${application.requestedAmount.toLocaleString('tr-TR')}`
+                              {application.requested_amount && application.requested_amount > 0
+                                ? `₺${application.requested_amount.toLocaleString('tr-TR')}`
                                 : 'Ayni Yardım'}
                             </p>
                           </div>
                           <div>
                             <span className="text-gray-500">Tarih:</span>
                             <p className="font-medium">
-                              {new Date(application.applicationDate).toLocaleDateString('tr-TR')}
+                              {new Date(application.created_at).toLocaleDateString('tr-TR')}
                             </p>
                           </div>
                           <div>
@@ -394,7 +470,7 @@ export function AidApplicationsPage() {
                               variant="ghost"
                               size="sm"
                               className="min-h-[44px] min-w-[44px] p-2 hover:bg-blue-50 hover:text-blue-600"
-                              aria-label={`${application.applicantName} başvurusunu görüntüle`}
+                              aria-label={`${application.applicant_name} başvurusunu görüntüle`}
                             >
                               <Eye className="h-4 w-4" />
                             </Button>
@@ -402,7 +478,7 @@ export function AidApplicationsPage() {
                               variant="ghost"
                               size="sm"
                               className="min-h-[44px] min-w-[44px] p-2 hover:bg-gray-50"
-                              aria-label={`${application.applicantName} başvurusunu düzenle`}
+                              aria-label={`${application.applicant_name} başvurusunu düzenle`}
                             >
                               <Edit className="h-4 w-4" />
                             </Button>
@@ -417,7 +493,7 @@ export function AidApplicationsPage() {
                                   handleApprove(application.id);
                                 }}
                                 className="min-h-[44px] min-w-[44px] p-2 text-green-600 hover:bg-green-50 hover:text-green-700"
-                                aria-label={`${application.applicantName} başvurusunu onayla`}
+                                aria-label={`${application.applicant_name} başvurusunu onayla`}
                               >
                                 <CheckCircle className="h-4 w-4" />
                               </Button>
@@ -428,7 +504,7 @@ export function AidApplicationsPage() {
                                   handleReject(application.id);
                                 }}
                                 className="min-h-[44px] min-w-[44px] p-2 text-red-600 hover:bg-red-50 hover:text-red-700"
-                                aria-label={`${application.applicantName} başvurusunu reddet`}
+                                aria-label={`${application.applicant_name} başvurusunu reddet`}
                               >
                                 <XCircle className="h-4 w-4" />
                               </Button>
@@ -472,30 +548,30 @@ export function AidApplicationsPage() {
                     >
                       <TableCell className="p-3 sm:p-4">
                         <div>
-                          <p className="font-medium">{application.applicantName}</p>
-                          <p className="text-muted-foreground text-sm">{application.applicantId}</p>
+                          <p className="font-medium">{application.applicant_name}</p>
+                          <p className="text-muted-foreground text-sm">{application.id}</p>
                         </div>
                       </TableCell>
                       <TableCell className="p-3 sm:p-4">
                         <div className="flex items-center gap-2">
                           <Calendar className="h-4 w-4 text-gray-400" />
                           <span className="text-sm">
-                            {new Date(application.applicationDate).toLocaleDateString('tr-TR')}
+                            {new Date(application.created_at).toLocaleDateString('tr-TR')}
                           </span>
                         </div>
                       </TableCell>
                       <TableCell className="p-3 sm:p-4">
-                        <Badge variant="outline">{application.aidType}</Badge>
+                        <Badge variant="outline">{application.aid_type}</Badge>
                       </TableCell>
                       <TableCell className="p-3 sm:p-4">
                         <span className="font-medium">
-                          {application.requestedAmount > 0
-                            ? `₺${application.requestedAmount.toLocaleString('tr-TR')}`
+                          {application.requested_amount && application.requested_amount > 0
+                            ? `₺${application.requested_amount.toLocaleString('tr-TR')}`
                             : 'Ayni Yardım'}
                         </span>
                       </TableCell>
                       <TableCell className="p-3 sm:p-4">
-                        {getPriorityBadge(application.priority)}
+                        {getPriorityBadge(application.urgency)}
                       </TableCell>
                       <TableCell className="p-3 sm:p-4">
                         {getStatusBadge(application.status)}
@@ -506,7 +582,7 @@ export function AidApplicationsPage() {
                             variant="ghost"
                             size="sm"
                             className="h-8 w-8 p-0 hover:bg-blue-50 hover:text-blue-600"
-                            aria-label={`${application.applicantName} başvurusunu görüntüle`}
+                            aria-label={`${application.applicant_name} başvurusunu görüntüle`}
                           >
                             <Eye className="h-4 w-4" />
                           </Button>
@@ -514,7 +590,7 @@ export function AidApplicationsPage() {
                             variant="ghost"
                             size="sm"
                             className="h-8 w-8 p-0 hover:bg-gray-50"
-                            aria-label={`${application.applicantName} başvurusunu düzenle`}
+                            aria-label={`${application.applicant_name} başvurusunu düzenle`}
                           >
                             <Edit className="h-4 w-4" />
                           </Button>
@@ -527,7 +603,7 @@ export function AidApplicationsPage() {
                                   handleApprove(application.id);
                                 }}
                                 className="h-8 w-8 p-0 text-green-600 hover:bg-green-50 hover:text-green-700"
-                                aria-label={`${application.applicantName} başvurusunu onayla`}
+                                aria-label={`${application.applicant_name} başvurusunu onayla`}
                               >
                                 <CheckCircle className="h-4 w-4" />
                               </Button>
@@ -538,7 +614,7 @@ export function AidApplicationsPage() {
                                   handleReject(application.id);
                                 }}
                                 className="h-8 w-8 p-0 text-red-600 hover:bg-red-50 hover:text-red-700"
-                                aria-label={`${application.applicantName} başvurusunu reddet`}
+                                aria-label={`${application.applicant_name} başvurusunu reddet`}
                               >
                                 <XCircle className="h-4 w-4" />
                               </Button>
@@ -623,8 +699,8 @@ export function AidApplicationsPage() {
                 <Label htmlFor="priority">Öncelik</Label>
                 <Select
                   value={formData.priority}
-                  onValueChange={(value: AidApplication['priority']) => {
-                    setFormData({ ...formData, priority: value });
+                  onValueChange={(value: string) => {
+                    setFormData({ ...formData, priority: value as AidRequest['urgency'] });
                   }}
                 >
                   <SelectTrigger>
@@ -634,7 +710,7 @@ export function AidApplicationsPage() {
                     <SelectItem value="low">Düşük</SelectItem>
                     <SelectItem value="medium">Orta</SelectItem>
                     <SelectItem value="high">Yüksek</SelectItem>
-                    <SelectItem value="urgent">Acil</SelectItem>
+                    <SelectItem value="critical">Acil</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

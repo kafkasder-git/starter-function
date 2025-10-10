@@ -3,16 +3,16 @@
 ## ADDED Requirements
 
 ### Requirement: User Login
-The system SHALL authenticate users using email and password via Supabase Auth.
+The system SHALL authenticate users using email and password via Appwrite Auth.
 
-**Authentication Method**: Supabase Auth (signInWithPassword)
+**Authentication Method**: Appwrite Auth (createEmailPasswordSession)
 **Session Duration**: 1 hour (3600 seconds) default, extended with remember me
 **Rate Limiting**: Maximum 5 login attempts per 15 minutes
 **Audit**: All login attempts SHALL be logged
 
 #### Scenario: Successful login with valid credentials
 - **WHEN** User submits email "user@example.com" and correct password
-- **THEN** Supabase Auth validates credentials
+- **THEN** Appwrite Auth validates credentials
 - **AND** System creates session with 1-hour expiration
 - **AND** System retrieves user role and permissions from user_metadata
 - **AND** System stores session in authStore
@@ -21,7 +21,7 @@ The system SHALL authenticate users using email and password via Supabase Auth.
 
 #### Scenario: Login with invalid credentials
 - **WHEN** User submits email "user@example.com" and incorrect password
-- **THEN** Supabase Auth returns "Invalid credentials" error
+- **THEN** Appwrite Auth returns "Invalid credentials" error
 - **AND** System displays "Email veya şifre hatalı"
 - **AND** System increments failed login attempt counter
 - **AND** System logs failed attempt (email, IP, timestamp)
@@ -29,7 +29,7 @@ The system SHALL authenticate users using email and password via Supabase Auth.
 
 #### Scenario: Login with non-existent account
 - **WHEN** User submits email "nonexistent@example.com"
-- **THEN** Supabase Auth returns error
+- **THEN** Appwrite Auth returns error
 - **AND** System displays generic error "Email veya şifre hatalı" (security: no user enumeration)
 - **AND** System logs failed attempt
 
@@ -85,7 +85,7 @@ The system SHALL provide secure logout that invalidates sessions.
 ### Requirement: User Registration
 The system SHALL allow new user registration with email verification.
 
-**Email Verification**: Required via Supabase Auth
+**Email Verification**: Required via Appwrite Auth
 **Default Role**: Viewer (lowest privilege)
 **Approval**: Admin approval required for elevated roles
 **Security**: Email confirmation link valid for 24 hours
@@ -93,14 +93,14 @@ The system SHALL allow new user registration with email verification.
 #### Scenario: New user registration
 - **WHEN** User submits registration form with email, password, name
 - **THEN** System validates email format and password strength
-- **AND** System calls supabase.auth.signUp()
-- **AND** Supabase sends verification email
+- **AND** System calls account.create()
+- **AND** Appwrite sends verification email
 - **AND** System displays "Kayıt başarılı! Lütfen email'inizi kontrol edin."
 - **AND** System does NOT log user in (email verification required)
 
 #### Scenario: Email verification
 - **WHEN** User clicks verification link in email
-- **THEN** Supabase confirms email address
+- **THEN** Appwrite confirms email address
 - **AND** System activates user account
 - **AND** System assigns default role "Viewer"
 - **AND** System sends welcome notification

@@ -21,7 +21,7 @@
  * );
  */
 
-import { supabase } from '../lib/supabase';
+import { db, collections, queryHelpers } from '../lib/database';
 import { logger } from '../lib/logging/logger';
 import { useAuthStore } from '../stores/authStore';
 
@@ -72,7 +72,7 @@ export interface SystemSettingsApiResponse<T> {
  * System settings management service class
  */
 export class SystemSettingsService {
-  private tableName = 'system_settings';
+  private collectionName = collections.SYSTEM_SETTINGS;
 
   /**
    * Get default settings
@@ -112,22 +112,11 @@ export class SystemSettingsService {
     try {
       logger.info('Fetching system settings');
 
-      const { data, error } = await supabase
-        .from(this.tableName)
-        .select('*')
-        .eq('id', 1)
-        .single();
+      const { data, error } = await db.list(this.collectionName, [
+        queryHelpers.limit(1)
+      ]);
 
       if (error) {
-        // If table doesn't exist or no data, return default settings
-        if (error.code === 'PGRST116' || error.message.includes('relation') || error.message.includes('does not exist')) {
-          logger.warn('System settings table does not exist, returning default settings');
-          return {
-            data: this.getDefaultSettings(),
-            error: 'Sistem ayarları tablosu bulunamadı. Varsayılan ayarlar kullanılıyor.'
-          };
-        }
-
         logger.error('Error fetching system settings', error);
         return {
           data: this.getDefaultSettings(),
@@ -135,7 +124,8 @@ export class SystemSettingsService {
         };
       }
 
-      if (!data) {
+      const settingsData = data?.documents?.[0];
+      if (!settingsData) {
         logger.info('No system settings found, returning defaults');
         return {
           data: this.getDefaultSettings(),
@@ -146,10 +136,10 @@ export class SystemSettingsService {
       // Parse JSON fields and merge with defaults
       const defaults = this.getDefaultSettings();
       const settings: SystemSettings = {
-        general: { ...defaults.general, ...(data.general || {}) },
-        notifications: { ...defaults.notifications, ...(data.notifications || {}) },
-        security: { ...defaults.security, ...(data.security || {}) },
-        database: { ...defaults.database, ...(data.database || {}) }
+        general: { ...defaults.general, ...(settingsData.general || {}) },
+        notifications: { ...defaults.notifications, ...(settingsData.notifications || {}) },
+        security: { ...defaults.security, ...(settingsData.security || {}) },
+        database: { ...defaults.database, ...(settingsData.database || {}) }
       };
 
       logger.info('Successfully fetched system settings');
@@ -176,7 +166,6 @@ export class SystemSettingsService {
 
       const user = useAuthStore.getState().user;
       const updateData = {
-        id: 1,
         general: settings.general,
         notifications: settings.notifications,
         security: settings.security,
@@ -185,21 +174,25 @@ export class SystemSettingsService {
         updated_by: user?.id || null
       };
 
-      const { error } = await supabase
-        .from(this.tableName)
-        .upsert(updateData, { onConflict: 'id' });
+      // Check if settings document exists
+      const { data: existingData } = await db.list(this.collectionName, [
+        queryHelpers.limit(1)
+      ]);
 
-      if (error) {
-        // If table doesn't exist, provide helpful error message
-        if (error.message.includes('relation') || error.message.includes('does not exist')) {
-          logger.error('System settings table does not exist', error);
-          return {
-            data: null,
-            error: 'Sistem ayarları tablosu bulunamadı. Lütfen veritabanı migrasyonunu çalıştırın.'
-          };
-        }
+      let result;
+      if (existingData?.documents?.[0]) {
+        // Update existing document
+        result = await db.update(this.collectionName, existingData.documents[0].$id, updateData);
+      } else {
+        // Create new document with fixed ID
+        result = await db.create(this.collectionName, {
+          ...updateData,
+          id: 1
+        }, 'system-settings-1');
+      }
 
-        logger.error('Error updating system settings', error);
+      if (result.error) {
+        logger.error('Error updating system settings', result.error);
         return {
           data: null,
           error: 'Sistem ayarları güncellenirken bir hata oluştu'

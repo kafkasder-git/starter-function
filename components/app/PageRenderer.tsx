@@ -6,8 +6,7 @@
  */
 
 import React, { lazy, Suspense, useMemo } from 'react';
-import { PageTransition } from '../AnimatedContainer';
-import { SkeletonLoader } from '../LoadingSpinner';
+import { SkeletonLoader } from '../shared/LoadingSpinner';
 import { getRouteConfig } from './AppNavigation';
 import { useNavigation } from './NavigationManager';
 
@@ -54,9 +53,7 @@ export function PageRenderer({ onQuickAction }: PageRendererProps) {
       skeletonVariant: 'detail' | 'table' | 'form' | 'dashboard' = 'detail',
     ) => (
       <Suspense fallback={getSkeletonFallback(skeletonVariant)}>
-        <PageTransition>
-          <PageComponent {...props} />
-        </PageTransition>
+        <PageComponent {...props} />
       </Suspense>
     );
 

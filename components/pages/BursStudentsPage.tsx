@@ -17,7 +17,7 @@ import {
   TrendingUp,
 } from 'lucide-react';
 import { motion } from 'motion/react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { useIsMobile } from '../../hooks/useTouchDevice';
 import { MobileInfoCard, ResponsiveCardGrid, TouchActionCard } from '../ResponsiveCard';
@@ -30,9 +30,11 @@ import { Label } from '../ui/label';
 import { Textarea } from '../ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../ui/dialog';
+import { aidRequestsService } from '../../services/aidRequestsService';
+import { logger } from '../../lib/logging/logger';
 
 interface Student {
-  id: number;
+  id: string;
   name: string;
   email: string;
   phone: string;
@@ -66,6 +68,8 @@ export function BursStudentsPage() {
   const [programFilter, setProgramFilter] = useState<string>('all');
   const [showApplicationDialog, setShowApplicationDialog] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [students, setStudents] = useState<Student[]>([]);
+  const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     student_name: '',
     email: '',
@@ -78,7 +82,56 @@ export function BursStudentsPage() {
     notes: '',
   });
 
-  const students: Student[] = useMemo(() => [], []);
+  useEffect(() => {
+    loadStudents();
+  }, []);
+
+  const loadStudents = async () => {
+    try {
+      const result = await aidRequestsService.getAidRequests(1, 1000, { aidType: 'education' });
+      if (result.data) {
+        const mappedStudents = result.data.data.map(mapAidRequestToStudent);
+        setStudents(mappedStudents);
+      }
+    } catch (error) {
+      logger.error('Failed to load students', error);
+      toast.error('Öğrenciler yüklenirken hata oluştu');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const mapAidRequestToStudent = (req: any): Student => {
+    const descParts = req.description.split(' - ');
+    const school = descParts[0] || '';
+    const grade = descParts[1] || '';
+    const program = descParts[2] || '';
+    const gpaPart = descParts.find((p: string) => p.startsWith('GPA:')) || 'GPA: 0';
+    const gpa = parseFloat(gpaPart.replace('GPA: ', '')) || 0;
+
+    const statusMap: Record<string, Student['status']> = {
+      'approved': 'active',
+      'completed': 'graduated',
+      'rejected': 'dropped',
+      'pending': 'suspended',
+      'under_review': 'suspended',
+    };
+
+    return {
+      id: req.$id,
+      name: req.applicant_name,
+      email: req.applicant_email || '',
+      phone: req.applicant_phone,
+      school,
+      grade,
+      program,
+      scholarshipAmount: req.requested_amount || 0,
+      status: statusMap[req.status] || 'active',
+      startDate: req.created_at,
+      gpa,
+      avatar: undefined,
+    };
+  };
 
   // Calculate statistics
   const stats: StudentStats = useMemo(() => {
@@ -118,7 +171,7 @@ export function BursStudentsPage() {
     return statusConfig[status] ?? statusConfig.active;
   };
 
-  const handleViewStudent = (studentId: number) => {
+  const handleViewStudent = (studentId: string) => {
     toast.success(`Öğrenci detayları açılıyor: ${studentId}`);
   };
 
@@ -137,28 +190,43 @@ export function BursStudentsPage() {
     try {
       setIsSubmitting(true);
 
-      // TODO: Integrate with actual API
-      // const result = await scholarshipService.createApplication(formData);
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      toast.success('Burs başvurusu başarıyla oluşturuldu!');
-      setShowApplicationDialog(false);
-
-      // Reset form
-      setFormData({
-        student_name: '',
-        email: '',
-        phone: '',
-        school: '',
-        grade: '',
-        program: '',
-        scholarship_amount: 0,
-        gpa: 0,
-        notes: '',
+      const result = await aidRequestsService.createAidRequest({
+        applicant_name: formData.student_name,
+        applicant_email: formData.email,
+        applicant_phone: formData.phone,
+        applicant_address: formData.school,
+        aid_type: 'education',
+        requested_amount: formData.scholarship_amount,
+        currency: 'TRY',
+        urgency: 'medium',
+        description: `${formData.school} - ${formData.grade} - ${formData.program} - GPA: ${formData.gpa} - ${formData.notes}`,
+        reason: 'Scholarship application',
       });
-    } catch {
+
+      if (result.error) {
+        logger.error('Failed to create scholarship application', result.error);
+        toast.error('Başvuru oluşturulurken hata oluştu');
+      } else {
+        toast.success('Burs başvurusu başarıyla oluşturuldu!');
+        setShowApplicationDialog(false);
+
+        // Reset form
+        setFormData({
+          student_name: '',
+          email: '',
+          phone: '',
+          school: '',
+          grade: '',
+          program: '',
+          scholarship_amount: 0,
+          gpa: 0,
+          notes: '',
+        });
+
+        loadStudents(); // refresh list
+      }
+    } catch (error) {
+      logger.error('Error submitting application', error);
       toast.error('Başvuru oluşturulurken hata oluştu');
     } finally {
       setIsSubmitting(false);

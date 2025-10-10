@@ -199,7 +199,7 @@ export default [
       'vite.config.ts',
       'vitest.config.ts',
       'playwright.config.ts',
-      'supabase/migrations/**',
+      'appwrite/migrations/**',
       '**/*.cjs',
       '**/*.mjs',
       '.env.production',

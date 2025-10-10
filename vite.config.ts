@@ -1,6 +1,6 @@
 import react from '@vitejs/plugin-react';
 import path from 'path';
-// import { visualizer } from 'rollup-plugin-visualizer'; // Temporarily disabled for Netlify deployment
+// import { visualizer } from 'rollup-plugin-visualizer';
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
@@ -19,85 +19,84 @@ export default defineConfig({
       include: ['**/*.{jsx,tsx}'],
       exclude: [/node_modules/],
     }),
-    VitePWA({
-      registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg'],
-      workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
-        maximumFileSizeToCacheInBytes: 3000000,
-        // NavigateFallback must be null for SPAs
-        navigateFallback: null,
-        navigateFallbackDenylist: [/^\/_/, /\/[^/?]+\.[^/]+$/],
-      },
-      manifest: {
-        name: 'Dernek Yönetim Sistemi',
-        short_name: 'DernekYS',
-        description:
-          'Kar amacı gütmeyen dernekler için modern, kapsamlı yönetim sistemi. 11 modül ile tam dernek operasyonlarını yönetin.',
-        theme_color: '#1e3a8a',
-        background_color: '#ffffff',
-        display: 'standalone',
-        orientation: 'portrait-primary',
-        scope: '/',
-        start_url: '/',
-        lang: 'tr',
-        dir: 'ltr',
-        categories: ['business', 'productivity', 'social'],
-        icons: [
-          {
-            src: '/favicon.svg',
-            sizes: 'any',
-            type: 'image/svg+xml',
-            purpose: 'any maskable',
-          },
-        ],
-        shortcuts: [
-          {
-            name: 'Yardım Başvuruları',
-            url: '/#/yardim/basvurular',
-            description: 'Yardım başvurularını görüntüle ve yönet',
-            icons: [{ src: '/favicon.svg', sizes: 'any' }],
-          },
-          {
-            name: 'Bağış Kaydet',
-            url: '/#/bagis/yeni',
-            description: 'Yeni bağış kaydı oluştur',
-            icons: [{ src: '/favicon.svg', sizes: 'any' }],
-          },
-          {
-            name: 'Üye Listesi',
-            url: '/#/uye/liste',
-            description: 'Üye listesini görüntüle',
-            icons: [{ src: '/favicon.svg', sizes: 'any' }],
-          },
-          {
-            name: 'Dashboard',
-            url: '/#/genel',
-            description: 'Ana dashboard ve istatistikler',
-            icons: [{ src: '/favicon.svg', sizes: 'any' }],
-          },
-        ],
-        screenshots: [
-          {
-            src: '/screenshots/desktop-dashboard.png',
-            sizes: '1280x720',
-            type: 'image/png',
-            form_factor: 'wide',
-            label: 'Ana dashboard görünümü',
-          },
-          {
-            src: '/screenshots/mobile-navigation.png',
-            sizes: '390x844',
-            type: 'image/png',
-            form_factor: 'narrow',
-            label: 'Mobil navigasyon menüsü',
-          },
-        ],
-        related_applications: [],
-        prefer_related_applications: false,
-      },
-    }),
-    // Temporarily disabled for Netlify deployment
+    // VitePWA({
+    //   registerType: 'autoUpdate',
+    //   includeAssets: ['favicon.svg'],
+    //   workbox: {
+    //     globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+    //     maximumFileSizeToCacheInBytes: 3000000,
+    //     // NavigateFallback must be null for SPAs
+    //     navigateFallback: null,
+    //     navigateFallbackDenylist: [/^\/_/, /\/[^/?]+\.[^/]+$/],
+    //   },
+    //   manifest: {
+    //     name: 'Dernek Yönetim Sistemi',
+    //     short_name: 'DernekYS',
+    //     description:
+    //       'Kar amacı gütmeyen dernekler için modern, kapsamlı yönetim sistemi. 11 modül ile tam dernek operasyonlarını yönetin.',
+    //     theme_color: '#1e3a8a',
+    //     background_color: '#ffffff',
+    //     display: 'standalone',
+    //     orientation: 'portrait-primary',
+    //     scope: '/',
+    //     start_url: '/',
+    //     lang: 'tr',
+    //     dir: 'ltr',
+    //     categories: ['business', 'productivity', 'social'],
+    //     icons: [
+    //       {
+    //         src: '/favicon.svg',
+    //         sizes: 'any',
+    //         type: 'image/svg+xml',
+    //         purpose: 'any maskable',
+    //       },
+    //     ],
+    //     shortcuts: [
+    //       {
+    //         name: 'Yardım Başvuruları',
+    //         url: '/#/yardim/basvurular',
+    //         description: 'Yardım başvurularını görüntüle ve yönet',
+    //         icons: [{ src: '/favicon.svg', sizes: 'any' }],
+    //       },
+    //       {
+    //         name: 'Bağış Kaydet',
+    //         url: '/#/bagis/yeni',
+    //         description: 'Yeni bağış kaydı oluştur',
+    //         icons: [{ src: '/favicon.svg', sizes: 'any' }],
+    //       },
+    //       {
+    //         name: 'Üye Listesi',
+    //         url: '/#/uye/liste',
+    //         description: 'Üye listesini görüntüle',
+    //         icons: [{ src: '/favicon.svg', sizes: 'any' }],
+    //       },
+    //       {
+    //         name: 'Dashboard',
+    //         url: '/#/genel',
+    //         description: 'Ana dashboard ve istatistikler',
+    //         icons: [{ src: '/favicon.svg', sizes: 'any' }],
+    //       },
+    //     ],
+    //     screenshots: [
+    //       {
+    //         src: '/screenshots/desktop-dashboard.png',
+    //         sizes: '1280x720',
+    //         type: 'image/png',
+    //         form_factor: 'wide',
+    //         label: 'Ana dashboard görünümü',
+    //       },
+    //       {
+    //         src: '/screenshots/mobile-navigation.png',
+    //         sizes: '390x844',
+    //         type: 'image/png',
+    //         form_factor: 'narrow',
+    //         label: 'Mobil navigasyon menüsü',
+    //       },
+    //     ],
+    //     related_applications: [],
+    //     prefer_related_applications: false,
+    //   },
+    // }),
     // visualizer({
     //   filename: 'dist/bundle-analysis.html',
     //   open: false,
@@ -134,7 +133,6 @@ export default defineConfig({
     target: 'esnext',
     outDir: 'dist',
     chunkSizeWarningLimit: 1000, // Daha düşük limit
-    // Cloudflare Pages optimization
     assetsDir: 'assets',
     rollupOptions: {
       output: {
@@ -174,7 +172,7 @@ export default defineConfig({
             '@radix-ui/react-progress',
             '@radix-ui/react-scroll-area',
           ],
-          'supabase-vendor': ['@supabase/supabase-js'],
+          'appwrite-vendor': ['appwrite'],
           'chart-vendor': ['recharts'],
           'form-vendor': ['react-hook-form', '@hookform/resolvers', 'zod'],
           'utils-vendor': [

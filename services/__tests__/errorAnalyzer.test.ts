@@ -60,7 +60,7 @@ describe('ErrorAnalyzer', () => {
     it('should categorize deploy errors as DEPLOYMENT', () => {
       const error: ParsedError = {
         type: ErrorType.DEPLOY,
-        message: 'Cloudflare API token invalid',
+        message: 'Appwrite API token invalid',
         severity: 'error',
         rawLog: 'test log',
       };
@@ -739,13 +739,13 @@ describe('ErrorAnalyzer', () => {
 
       expect(tokenSuggestion).toBeDefined();
       expect(tokenSuggestion?.steps).toBeDefined();
-      expect(tokenSuggestion?.steps?.some((step) => step.includes('Cloudflare'))).toBe(true);
+      expect(tokenSuggestion?.steps?.some((step) => step.includes('Appwrite'))).toBe(true);
     });
 
     it('should suggest verifying configuration for project not found', () => {
       const error: ParsedError = {
         type: ErrorType.DEPLOY,
-        message: 'Project not found in Cloudflare',
+        message: 'Project not found in Appwrite',
         severity: 'error',
         rawLog: 'test log',
       };

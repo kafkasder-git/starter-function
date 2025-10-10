@@ -5,6 +5,7 @@
     "types": ["vite/client"]
   },
   "include": [
+    "src/**/*",
     "components/**/*",
     "hooks/**/*",
     "lib/**/*",
@@ -13,8 +14,8 @@
     "types/**/*",
     "utils/**/*",
     "contexts/**/*",
-    "main.tsx",
-    "App.tsx"
+    "src/main.tsx",
+    "src/App.tsx"
   ],
   "exclude": [
     "node_modules",

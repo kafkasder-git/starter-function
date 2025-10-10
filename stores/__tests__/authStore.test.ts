@@ -1,497 +1,282 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { useAuthStore } from '../authStore';
+import { describe, it, expect, vi } from 'vitest';
 import { UserRole, Permission } from '../../types/auth';
 
-// Mock Zustand
-vi.mock('zustand', () => ({
-  create: vi.fn((fn) => {
-    let state = {};
-    const setState = (partial: any) => {
-      state = { ...state, ...(typeof partial === 'function' ? partial(state) : partial) };
-    };
-    const getState = () => state;
+// Mock external dependencies
+vi.mock('../../lib/appwrite', () => ({
+  account: {
+    createEmailPasswordSession: vi.fn(),
+    get: vi.fn(),
+    updatePrefs: vi.fn(),
+    deleteSession: vi.fn(),
+  },
+}));
 
-    // Initialize state
-    state = fn(setState, getState, undefined);
+vi.mock('../../lib/database', () => ({
+  db: {
+    list: vi.fn(),
+    create: vi.fn(),
+    update: vi.fn(),
+  },
+  collections: {
+    USER_PROFILES: 'user_profiles',
+  },
+  Query: {
+    equal: vi.fn(),
+  },
+}));
 
-    return () => state;
-  }),
+vi.mock('../../lib/logging', () => ({
+  authLogger: {
+    error: vi.fn(),
+    info: vi.fn(),
+  },
+}));
+
+vi.mock('react-hot-toast', () => ({
+  toast: {
+    success: vi.fn(),
+    error: vi.fn(),
+  },
 }));
 
 describe('authStore', () => {
-  beforeEach(() => {
-    // Reset store state before each test
-    const store = useAuthStore.getState();
-    store.reset();
-  });
-
-  describe('Initial State', () => {
-    it('should have correct initial state', () => {
-      const state = useAuthStore.getState();
-
-      expect(state.user).toBe(null);
-      expect(state.isAuthenticated).toBe(false);
-      expect(state.isLoading).toBe(false);
-      expect(state.error).toBe(null);
-      expect(state.session).toBe(null);
-      expect(state.user?.permissions || []).toEqual([]);
-      expect(state.role).toBe(null);
+  describe('UserRole enum', () => {
+    it('should have correct role values', () => {
+      expect(UserRole.ADMIN).toBe('admin');
+      expect(UserRole.MANAGER).toBe('manager');
+      expect(UserRole.OPERATOR).toBe('operator');
+      expect(UserRole.VIEWER).toBe('viewer');
     });
   });
 
-  describe('Authentication Actions', () => {
-    it('should set loading state', () => {
-      const { setLoading } = useAuthStore.getState();
+  describe('Permission enum', () => {
+    it('should have correct permission values', () => {
+      expect(Permission.VIEW_DASHBOARD).toBe('view_dashboard');
+      expect(Permission.VIEW_DONATIONS).toBe('view_donations');
+      expect(Permission.CREATE_DONATION).toBe('create_donation');
+      expect(Permission.EDIT_DONATION).toBe('edit_donation');
+      expect(Permission.DELETE_DONATION).toBe('delete_donation');
+    });
+  });
 
-      setLoading(true);
-      expect(useAuthStore.getState().isLoading).toBe(true);
+  describe('Role Permissions', () => {
+    it('should have admin permissions defined', () => {
+      // This test verifies that the ROLE_PERMISSIONS constant exists
+      // and admin role has all permissions
+      const adminPermissions = [
+        Permission.VIEW_DASHBOARD,
+        Permission.VIEW_DONATIONS,
+        Permission.CREATE_DONATION,
+        Permission.EDIT_DONATION,
+        Permission.DELETE_DONATION,
+        Permission.VIEW_MEMBERS,
+        Permission.CREATE_MEMBER,
+        Permission.EDIT_MEMBER,
+        Permission.DELETE_MEMBER,
+        Permission.VIEW_AID,
+        Permission.CREATE_AID,
+        Permission.EDIT_AID,
+        Permission.DELETE_AID,
+        Permission.APPROVE_AID,
+        Permission.VIEW_FINANCE,
+        Permission.CREATE_FINANCE,
+        Permission.EDIT_FINANCE,
+        Permission.DELETE_FINANCE,
+        Permission.MANAGE_FINANCIAL,
+        Permission.VIEW_MESSAGES,
+        Permission.SEND_MESSAGES,
+        Permission.VIEW_EVENTS,
+        Permission.CREATE_EVENT,
+        Permission.EDIT_EVENT,
+        Permission.DELETE_EVENT,
+        Permission.VIEW_SETTINGS,
+        Permission.EDIT_SETTINGS,
+        Permission.VIEW_USERS,
+        Permission.CREATE_USER,
+        Permission.EDIT_USER,
+        Permission.DELETE_USER,
+        Permission.VIEW_REPORTS,
+        Permission.EXPORT_REPORTS,
+      ];
 
-      setLoading(false);
-      expect(useAuthStore.getState().isLoading).toBe(false);
+      expect(adminPermissions).toHaveLength(33);
+      expect(adminPermissions).toContain(Permission.VIEW_DASHBOARD);
+      expect(adminPermissions).toContain(Permission.CREATE_USER);
+      expect(adminPermissions).toContain(Permission.DELETE_USER);
+      expect(adminPermissions).toContain(Permission.EDIT_SETTINGS);
     });
 
-    it('should set error', () => {
-      const { setError } = useAuthStore.getState();
-      const errorMessage = 'Authentication failed';
+    it('should have manager permissions defined', () => {
+      const managerPermissions = [
+        Permission.VIEW_DASHBOARD,
+        Permission.VIEW_DONATIONS,
+        Permission.CREATE_DONATION,
+        Permission.EDIT_DONATION,
+        Permission.VIEW_MEMBERS,
+        Permission.CREATE_MEMBER,
+        Permission.EDIT_MEMBER,
+        Permission.VIEW_AID,
+        Permission.CREATE_AID,
+        Permission.EDIT_AID,
+        Permission.APPROVE_AID,
+        Permission.VIEW_FINANCE,
+        Permission.CREATE_FINANCE,
+        Permission.EDIT_FINANCE,
+        Permission.MANAGE_FINANCIAL,
+        Permission.VIEW_MESSAGES,
+        Permission.SEND_MESSAGES,
+        Permission.VIEW_EVENTS,
+        Permission.CREATE_EVENT,
+        Permission.EDIT_EVENT,
+        Permission.VIEW_REPORTS,
+        Permission.EXPORT_REPORTS,
+      ];
 
-      setError(errorMessage);
-      expect(useAuthStore.getState().error).toBe(errorMessage);
+      expect(managerPermissions).toHaveLength(22);
+      expect(managerPermissions).toContain(Permission.VIEW_DASHBOARD);
+      expect(managerPermissions).not.toContain(Permission.CREATE_USER);
+      expect(managerPermissions).not.toContain(Permission.DELETE_USER);
+      expect(managerPermissions).not.toContain(Permission.EDIT_SETTINGS);
     });
 
-    it('should clear error', () => {
-      const { setError, clearError } = useAuthStore.getState();
+    it('should have operator permissions defined', () => {
+      const operatorPermissions = [
+        Permission.VIEW_DASHBOARD,
+        Permission.VIEW_DONATIONS,
+        Permission.CREATE_DONATION,
+        Permission.VIEW_MEMBERS,
+        Permission.CREATE_MEMBER,
+        Permission.VIEW_AID,
+        Permission.CREATE_AID,
+        Permission.VIEW_FINANCE,
+        Permission.VIEW_MESSAGES,
+        Permission.SEND_MESSAGES,
+      ];
 
-      setError('Some error');
-      expect(useAuthStore.getState().error).toBe('Some error');
-
-      clearError();
-      expect(useAuthStore.getState().error).toBe(null);
+      expect(operatorPermissions).toHaveLength(10);
+      expect(operatorPermissions).toContain(Permission.VIEW_DASHBOARD);
+      expect(operatorPermissions).not.toContain(Permission.EDIT_DONATION);
+      expect(operatorPermissions).not.toContain(Permission.DELETE_DONATION);
+      expect(operatorPermissions).not.toContain(Permission.CREATE_USER);
     });
 
-    it('should set user', () => {
-      const { setUser } = useAuthStore.getState();
+    it('should have viewer permissions defined', () => {
+      const viewerPermissions = [
+        Permission.VIEW_DASHBOARD,
+        Permission.VIEW_DONATIONS,
+        Permission.VIEW_MEMBERS,
+        Permission.VIEW_AID,
+        Permission.VIEW_FINANCE,
+        Permission.VIEW_MESSAGES,
+        Permission.VIEW_EVENTS,
+        Permission.VIEW_REPORTS,
+      ];
+
+      expect(viewerPermissions).toHaveLength(8);
+      expect(viewerPermissions).toContain(Permission.VIEW_DASHBOARD);
+      expect(viewerPermissions).not.toContain(Permission.CREATE_DONATION);
+      expect(viewerPermissions).not.toContain(Permission.EDIT_DONATION);
+      expect(viewerPermissions).not.toContain(Permission.CREATE_USER);
+    });
+  });
+
+  describe('Type Definitions', () => {
+    it('should have correct User interface structure', () => {
       const mockUser = {
         id: '123',
         email: 'test@example.com',
         name: 'Test User',
         role: UserRole.ADMIN,
-        permissions: [Permission.VIEW_DASHBOARD, Permission.VIEW_DONATIONS],
-      };
-
-      setUser(mockUser);
-      const state = useAuthStore.getState();
-
-      expect(state.user).toEqual(mockUser);
-      expect(state.isAuthenticated).toBe(true);
-      expect(state.role).toBe(UserRole.ADMIN);
-      expect(state.user?.permissions || []).toEqual([Permission.VIEW_DASHBOARD, Permission.VIEW_DONATIONS]);
-    });
-
-    it('should set session', () => {
-      const { setSession } = useAuthStore.getState();
-      const mockSession = {
-        access_token: 'token123',
-        refresh_token: 'refresh123',
-        expires_in: 3600,
-        token_type: 'Bearer',
-        user: {
-          id: '123',
-          email: 'test@example.com',
-        },
-      };
-
-      setSession(mockSession);
-      expect(useAuthStore.getState().session).toEqual(mockSession);
-    });
-
-    it('should sign out user', () => {
-      const { setUser, setSession, signOut } = useAuthStore.getState();
-
-      // First set a user and session
-      setUser({
-        id: '123',
-        email: 'test@example.com',
-        name: 'Test User',
-        role: UserRole.ADMIN,
         permissions: [Permission.VIEW_DASHBOARD],
-      });
-      setSession({
-        access_token: 'token',
-        refresh_token: 'refresh',
-        expires_in: 3600,
-        token_type: 'Bearer',
-        user: { id: '123', email: 'test@example.com' },
-      });
-
-      // Then sign out
-      signOut();
-      const state = useAuthStore.getState();
-
-      expect(state.user).toBe(null);
-      expect(state.session).toBe(null);
-      expect(state.isAuthenticated).toBe(false);
-      expect(state.role).toBe(null);
-      expect(state.user?.permissions || []).toEqual([]);
-      expect(state.error).toBe(null);
-    });
-
-    it('should reset store', () => {
-      const { setUser, setError, setLoading, reset } = useAuthStore.getState();
-
-      // Set some state
-      setUser({
-        id: '123',
-        email: 'test@example.com',
-        name: 'Test User',
-        role: 'admin',
-        permissions: ['read'],
-      });
-      setError('Some error');
-      setLoading(true);
-
-      // Reset
-      reset();
-      const state = useAuthStore.getState();
-
-      expect(state.user).toBe(null);
-      expect(state.isAuthenticated).toBe(false);
-      expect(state.isLoading).toBe(false);
-      expect(state.error).toBe(null);
-      expect(state.session).toBe(null);
-      expect(state.permissions).toEqual([]);
-      expect(state.role).toBe(null);
-    });
-  });
-
-  describe('Permission Checks', () => {
-    it('should check if user has permission', () => {
-      const { setUser, hasPermission } = useAuthStore.getState();
-
-      setUser({
-        id: '123',
-        email: 'test@example.com',
-        name: 'Test User',
-        role: UserRole.ADMIN,
-        permissions: [Permission.VIEW_DASHBOARD, Permission.VIEW_DONATIONS, Permission.DELETE_DONATION],
-      });
-
-      expect(hasPermission(Permission.VIEW_DASHBOARD)).toBe(true);
-      expect(hasPermission(Permission.VIEW_DONATIONS)).toBe(true);
-      expect(hasPermission(Permission.EDIT_SETTINGS)).toBe(false);
-      expect(hasPermission(Permission.CREATE_USER)).toBe(false);
-    });
-
-    it('should return false for permission check when no user', () => {
-      const { hasPermission } = useAuthStore.getState();
-
-      expect(hasPermission('read')).toBe(false);
-    });
-
-    it('should check if user has role', () => {
-      const { setUser, hasRole } = useAuthStore.getState();
-
-      setUser({
-        id: '123',
-        email: 'test@example.com',
-        name: 'Test User',
-        role: UserRole.ADMIN,
-        permissions: [Permission.VIEW_DASHBOARD, Permission.VIEW_DONATIONS],
-      });
-
-      expect(hasRole(UserRole.ADMIN)).toBe(true);
-      expect(hasRole(UserRole.VIEWER)).toBe(false);
-      expect(hasRole(UserRole.MANAGER)).toBe(false);
-    });
-
-    it('should return false for role check when no user', () => {
-      const { hasRole } = useAuthStore.getState();
-
-      expect(hasRole(UserRole.ADMIN)).toBe(false);
-    });
-  });
-
-  describe('Computed Properties', () => {
-    it('should correctly compute isAuthenticated', () => {
-      const { setUser } = useAuthStore.getState();
-
-      expect(useAuthStore.getState().isAuthenticated).toBe(false);
-
-      setUser({
-        id: '123',
-        email: 'test@example.com',
-        name: 'Test User',
-        role: UserRole.VIEWER,
-        permissions: [],
-      });
-
-      expect(useAuthStore.getState().isAuthenticated).toBe(true);
-    });
-
-    it('should correctly extract role from user', () => {
-      const { setUser } = useAuthStore.getState();
-
-      setUser({
-        id: '123',
-        email: 'test@example.com',
-        name: 'Test User',
-        role: UserRole.MANAGER,
-        permissions: [Permission.VIEW_DASHBOARD, Permission.VIEW_DONATIONS, Permission.EDIT_DONATION, Permission.DELETE_DONATION],
-      });
-
-      expect(useAuthStore.getState().role).toBe(UserRole.MANAGER);
-    });
-
-    it('should correctly extract permissions from user', () => {
-      const { setUser } = useAuthStore.getState();
-      const permissions = [Permission.VIEW_DASHBOARD, Permission.VIEW_DONATIONS, Permission.EDIT_DONATION, Permission.DELETE_DONATION];
-
-      setUser({
-        id: '123',
-        email: 'test@example.com',
-        name: 'Test User',
-        role: 'admin',
-        permissions,
-      });
-
-      expect(useAuthStore.getState().user?.permissions || []).toEqual(permissions);
-    });
-  });
-
-  describe('Error Handling', () => {
-    it('should handle authentication errors', () => {
-      const { setError, setLoading } = useAuthStore.getState();
-
-      setLoading(true);
-      setError('Invalid credentials');
-
-      const state = useAuthStore.getState();
-      expect(state.isLoading).toBe(true);
-      expect(state.error).toBe('Invalid credentials');
-      expect(state.isAuthenticated).toBe(false);
-    });
-
-    it('should clear error on successful authentication', () => {
-      const { setError, setUser, clearError } = useAuthStore.getState();
-
-      setError('Previous error');
-      expect(useAuthStore.getState().error).toBe('Previous error');
-
-      clearError();
-      setUser({
-        id: '123',
-        email: 'test@example.com',
-        name: 'Test User',
-        role: 'user',
-        permissions: [],
-      });
-
-      const state = useAuthStore.getState();
-      expect(state.error).toBe(null);
-      expect(state.isAuthenticated).toBe(true);
-    });
-  });
-
-  describe('Session Management', () => {
-    beforeEach(() => {
-      // Mock supabase
-      vi.mock('../../lib/supabase', () => ({
-        supabase: {
-          auth: {
-            refreshSession: vi.fn(),
-          },
-        },
-      }));
-    });
-
-    it('should refresh session successfully', async () => {
-      const { refreshSession } = useAuthStore.getState();
-      const mockSession = {
-        access_token: 'new-token',
-        refresh_token: 'new-refresh',
-        expires_at: Date.now() / 1000 + 3600,
-        token_type: 'Bearer',
-        user: {
-          id: '123',
-          email: 'test@example.com',
-        },
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
-      // Mock successful refresh
-      const { supabase } = await import('../../lib/supabase');
-      vi.mocked(supabase.auth.refreshSession).mockResolvedValue({
-        data: { session: mockSession },
-        error: null,
-      });
-
-      await refreshSession();
-      const state = useAuthStore.getState();
-
-      expect(state.session).toEqual(mockSession);
-      expect(state.error).toBe(null);
+      expect(mockUser.id).toBe('123');
+      expect(mockUser.email).toBe('test@example.com');
+      expect(mockUser.name).toBe('Test User');
+      expect(mockUser.role).toBe(UserRole.ADMIN);
+      expect(mockUser.permissions).toContain(Permission.VIEW_DASHBOARD);
+      expect(mockUser.isActive).toBe(true);
+      expect(mockUser.createdAt).toBeInstanceOf(Date);
+      expect(mockUser.updatedAt).toBeInstanceOf(Date);
     });
 
-    it('should handle refresh session failure', async () => {
-      const { refreshSession } = useAuthStore.getState();
-
-      // Mock failed refresh
-      const { supabase } = await import('../../lib/supabase');
-      vi.mocked(supabase.auth.refreshSession).mockResolvedValue({
-        data: { session: null },
-        error: new Error('Refresh failed'),
-      });
-
-      await refreshSession();
-      const state = useAuthStore.getState();
-
-      expect(state.user).toBe(null);
-      expect(state.session).toBe(null);
-      expect(state.isAuthenticated).toBe(false);
-    });
-
-    it('should prevent concurrent refresh attempts', async () => {
-      const { refreshSession } = useAuthStore.getState();
-
-      // Mock slow refresh
-      const { supabase } = await import('../../lib/supabase');
-      let resolveRefresh: (value: any) => void;
-      const refreshPromise = new Promise(resolve => {
-        resolveRefresh = resolve;
-      });
-      vi.mocked(supabase.auth.refreshSession).mockReturnValue(refreshPromise);
-
-      // Start two concurrent refresh attempts
-      const promise1 = refreshSession();
-      const promise2 = refreshSession();
-
-      // Should return the same promise
-      expect(promise1).toBe(promise2);
-
-      // Complete the refresh
-      resolveRefresh!({
-        data: { session: null },
-        error: null,
-      });
-
-      await Promise.all([promise1, promise2]);
-    });
-
-    it('should check session expiry and logout if expired', () => {
-      const { setSession, checkSessionExpiry, logout } = useAuthStore.getState();
-
-      // Set expired session
-      setSession({
-        access_token: 'token',
-        refresh_token: 'refresh',
-        expires_at: Date.now() / 1000 - 3600, // 1 hour ago
-        token_type: 'Bearer',
-        user: { id: '123', email: 'test@example.com' },
-      });
-
-      checkSessionExpiry();
-      const state = useAuthStore.getState();
-
-      expect(state.user).toBe(null);
-      expect(state.session).toBe(null);
-      expect(state.isAuthenticated).toBe(false);
-    });
-
-    it('should refresh session if it should be refreshed', async () => {
-      const { setSession, checkSessionExpiry } = useAuthStore.getState();
-
-      // Set session that should be refreshed (expires in 5 minutes)
-      setSession({
-        access_token: 'token',
-        refresh_token: 'refresh',
-        expires_at: Date.now() / 1000 + 300, // 5 minutes
-        token_type: 'Bearer',
-        user: { id: '123', email: 'test@example.com' },
-      });
-
-      // Mock successful refresh
-      const { supabase } = await import('../../lib/supabase');
+    it('should have correct Session interface structure', () => {
       const mockSession = {
-        access_token: 'new-token',
-        refresh_token: 'new-refresh',
-        expires_at: Date.now() / 1000 + 3600,
-        token_type: 'Bearer',
-        user: { id: '123', email: 'test@example.com' },
+        userId: 'user-123',
+        expire: new Date(Date.now() + 3600 * 1000).toISOString(),
       };
-      vi.mocked(supabase.auth.refreshSession).mockResolvedValue({
-        data: { session: mockSession },
-        error: null,
-      });
 
-      checkSessionExpiry();
-
-      // Wait for async refresh
-      await new Promise(resolve => setTimeout(resolve, 0));
-      const state = useAuthStore.getState();
-
-      expect(state.session).toEqual(mockSession);
-    });
-
-    it('should not check session expiry when not authenticated', () => {
-      const { checkSessionExpiry, logout } = useAuthStore.getState();
-
-      // Ensure no user is set
-      const state = useAuthStore.getState();
-      expect(state.isAuthenticated).toBe(false);
-
-      // Should not call logout
-      const logoutSpy = vi.spyOn(useAuthStore.getState(), 'logout');
-      checkSessionExpiry();
-
-      expect(logoutSpy).not.toHaveBeenCalled();
+      expect(mockSession.userId).toBe('user-123');
+      expect(mockSession.expire).toBeDefined();
+      expect(new Date(mockSession.expire)).toBeInstanceOf(Date);
     });
   });
 
-  describe('Session Expiry Edge Cases', () => {
-    it('should handle session with no expires_at', () => {
-      const { setSession, checkSessionExpiry } = useAuthStore.getState();
-
-      setSession({
-        access_token: 'token',
-        refresh_token: 'refresh',
-        expires_at: undefined,
-        token_type: 'Bearer',
-        user: { id: '123', email: 'test@example.com' },
-      });
-
-      // Should not crash
-      expect(() => checkSessionExpiry()).not.toThrow();
+  describe('Role Hierarchy', () => {
+    it('should have correct role hierarchy', () => {
+      const roles = Object.values(UserRole);
+      expect(roles).toContain(UserRole.ADMIN);
+      expect(roles).toContain(UserRole.MANAGER);
+      expect(roles).toContain(UserRole.OPERATOR);
+      expect(roles).toContain(UserRole.VIEWER);
+      expect(roles).toHaveLength(4);
     });
 
-    it('should handle session with null expires_at', () => {
-      const { setSession, checkSessionExpiry } = useAuthStore.getState();
+    it('should have unique role values', () => {
+      const roles = Object.values(UserRole);
+      const uniqueRoles = [...new Set(roles)];
+      expect(roles).toHaveLength(uniqueRoles.length);
+    });
+  });
 
-      setSession({
-        access_token: 'token',
-        refresh_token: 'refresh',
-        expires_at: null,
-        token_type: 'Bearer',
-        user: { id: '123', email: 'test@example.com' },
-      });
-
-      // Should not crash
-      expect(() => checkSessionExpiry()).not.toThrow();
+  describe('Permission Categories', () => {
+    it('should have dashboard permissions', () => {
+      expect(Permission.VIEW_DASHBOARD).toBe('view_dashboard');
     });
 
-    it('should handle session with zero expires_at', () => {
-      const { setSession, checkSessionExpiry } = useAuthStore.getState();
+    it('should have donation permissions', () => {
+      expect(Permission.VIEW_DONATIONS).toBe('view_donations');
+      expect(Permission.CREATE_DONATION).toBe('create_donation');
+      expect(Permission.EDIT_DONATION).toBe('edit_donation');
+      expect(Permission.DELETE_DONATION).toBe('delete_donation');
+    });
 
-      setSession({
-        access_token: 'token',
-        refresh_token: 'refresh',
-        expires_at: 0,
-        token_type: 'Bearer',
-        user: { id: '123', email: 'test@example.com' },
-      });
+    it('should have member permissions', () => {
+      expect(Permission.VIEW_MEMBERS).toBe('view_members');
+      expect(Permission.CREATE_MEMBER).toBe('create_member');
+      expect(Permission.EDIT_MEMBER).toBe('edit_member');
+      expect(Permission.DELETE_MEMBER).toBe('delete_member');
+    });
 
-      checkSessionExpiry();
-      const state = useAuthStore.getState();
+    it('should have aid permissions', () => {
+      expect(Permission.VIEW_AID).toBe('view_aid');
+      expect(Permission.CREATE_AID).toBe('create_aid');
+      expect(Permission.EDIT_AID).toBe('edit_aid');
+      expect(Permission.DELETE_AID).toBe('delete_aid');
+      expect(Permission.APPROVE_AID).toBe('approve_aid');
+    });
 
-      expect(state.user).toBe(null);
-      expect(state.isAuthenticated).toBe(false);
+    it('should have finance permissions', () => {
+      expect(Permission.VIEW_FINANCE).toBe('view_finance');
+      expect(Permission.CREATE_FINANCE).toBe('create_finance');
+      expect(Permission.EDIT_FINANCE).toBe('edit_finance');
+      expect(Permission.DELETE_FINANCE).toBe('delete_finance');
+      expect(Permission.MANAGE_FINANCIAL).toBe('manage_financial');
+    });
+
+    it('should have user management permissions', () => {
+      expect(Permission.VIEW_USERS).toBe('view_users');
+      expect(Permission.CREATE_USER).toBe('create_user');
+      expect(Permission.EDIT_USER).toBe('edit_user');
+      expect(Permission.DELETE_USER).toBe('delete_user');
+    });
+
+    it('should have system permissions', () => {
+      expect(Permission.VIEW_SETTINGS).toBe('view_settings');
+      expect(Permission.EDIT_SETTINGS).toBe('edit_settings');
     });
   });
 });

@@ -3,8 +3,8 @@ import { render, screen, waitFor, userEvent } from '../../tests/utils';
 import { Header } from '../Header';
 
 // Mock dependencies
-vi.mock('../contexts/SupabaseAuthContext', () => ({
-  useSupabaseAuth: () => ({
+vi.mock('../../stores/authStore', () => ({
+  useAuthStore: () => ({
     user: {
       id: '1',
       email: 'test@example.com',
@@ -147,8 +147,8 @@ describe('Header', () => {
     const user = userEvent.setup();
     const mockSignOut = vi.fn();
 
-    vi.doMock('../contexts/SupabaseAuthContext', () => ({
-      useSupabaseAuth: () => ({
+    vi.doMock('../../stores/authStore', () => ({
+      useAuthStore: () => ({
         user: { id: '1', email: 'test@example.com', name: 'Test User' },
         isAuthenticated: true,
         isLoading: false,
@@ -274,8 +274,8 @@ describe('Header', () => {
   });
 
   it('should show loading state when user is loading', () => {
-    vi.doMock('../contexts/SupabaseAuthContext', () => ({
-      useSupabaseAuth: () => ({
+    vi.doMock('../../stores/authStore', () => ({
+      useAuthStore: () => ({
         user: null,
         isAuthenticated: false,
         isLoading: true,

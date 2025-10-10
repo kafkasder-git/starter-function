@@ -20,7 +20,7 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 import { partnersService, type SponsorOrganization as ServiceSponsorOrganization } from '../../services/partnersService';
 import { logger } from '../../lib/logging/logger';
-import { LoadingSpinner } from '../LoadingSpinner';
+import { LoadingSpinner } from '../shared/LoadingSpinner';
 import { toast } from 'sonner';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';

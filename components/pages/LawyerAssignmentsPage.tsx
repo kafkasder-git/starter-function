@@ -5,7 +5,7 @@
  * @version 1.0.0
  */
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { toast } from 'sonner';
 import { Plus } from 'lucide-react';
 
@@ -18,6 +18,9 @@ import { Label } from '../ui/label';
 import { Input } from '../ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Textarea } from '../ui/textarea';
+import { legalConsultationsService } from '../../services/legalConsultationsService';
+import { logger } from '../../lib/logging/logger';
+import type { Consultation } from '../../types/consultation';
 
 type TabKey = 'all' | 'available' | 'busy' | 'top';
 
@@ -33,27 +36,57 @@ const LAWYER_SEARCH_CONFIG: SearchConfig = {
   debounceMs: 300,
 };
 
-// Lawyer data - will be fetched from API in the future
-
-const lawyers: Lawyer[] = [];
-
 /**
  * LawyerAssignmentsPage component
  */
 export function LawyerAssignmentsPage() {
+  const [consultations, setConsultations] = useState<Consultation[]>([]);
+  const [lawyers, setLawyers] = useState<Lawyer[]>([]);
+  const [loadingConsultations, setLoadingConsultations] = useState(true);
+  const [loadingLawyers, setLoadingLawyers] = useState(true);
   const [selectedLawyer, setSelectedLawyer] = useState<Lawyer | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<TabKey>('all');
   const [showAssignDialog, setShowAssignDialog] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [assignmentData, setAssignmentData] = useState({
+    consultationId: '',
     lawyerId: '',
-    caseTitle: '',
-    caseType: '',
-    description: '',
-    clientName: '',
-    clientPhone: '',
   });
+
+  // Load data on mount
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setLoadingConsultations(true);
+        const consResult = await legalConsultationsService.getConsultationsNeedingAssignment();
+        if (consResult.error) {
+          logger.error('Failed to load consultations:', consResult.error);
+        } else {
+          setConsultations(consResult.data || []);
+        }
+      } catch (err) {
+        logger.error('Error loading consultations:', err);
+      } finally {
+        setLoadingConsultations(false);
+      }
+
+      try {
+        setLoadingLawyers(true);
+        const lawResult = await legalConsultationsService.getAvailableLawyers();
+        if (lawResult.error) {
+          logger.error('Failed to load lawyers:', lawResult.error);
+        } else {
+          setLawyers(lawResult.data || []);
+        }
+      } catch (err) {
+        logger.error('Error loading lawyers:', err);
+      } finally {
+        setLoadingLawyers(false);
+      }
+    };
+    loadData();
+  }, []);
 
   // Use the optimized search hook
   const { searchState, setQuery, setFilters, clearFilters, isEmpty } = useSearch<Lawyer>({
@@ -89,7 +122,7 @@ export function LawyerAssignmentsPage() {
   const handleAssignLawyer = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!assignmentData.lawyerId || !assignmentData.caseTitle || !assignmentData.clientName) {
+    if (!assignmentData.consultationId || !assignmentData.lawyerId) {
       toast.error('Lütfen zorunlu alanları doldurun');
       return;
     }
@@ -97,25 +130,32 @@ export function LawyerAssignmentsPage() {
     try {
       setIsSubmitting(true);
 
-      // TODO: Integrate with actual API
-      // const result = await legalService.assignLawyer(assignmentData);
+      const result = await legalConsultationsService.assignLawyer(
+        assignmentData.consultationId,
+        assignmentData.lawyerId
+      );
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      if (result.error) {
+        logger.error('Failed to assign lawyer:', result.error);
+        toast.error('Avukat ataması başarısız');
+      } else {
+        toast.success('Avukat başarıyla atandı!');
+        setShowAssignDialog(false);
 
-      toast.success('Avukat başarıyla atandı!');
-      setShowAssignDialog(false);
+        // Reset form
+        setAssignmentData({
+          consultationId: '',
+          lawyerId: '',
+        });
 
-      // Reset form
-      setAssignmentData({
-        lawyerId: '',
-        caseTitle: '',
-        caseType: '',
-        description: '',
-        clientName: '',
-        clientPhone: '',
-      });
-    } catch {
+        // Reload consultations
+        const consResult = await legalConsultationsService.getConsultationsNeedingAssignment();
+        if (!consResult.error) {
+          setConsultations(consResult.data || []);
+        }
+      }
+    } catch (err) {
+      logger.error('Error assigning lawyer:', err);
       toast.error('Avukat ataması yapılırken hata oluştu');
     } finally {
       setIsSubmitting(false);
@@ -253,11 +293,32 @@ export function LawyerAssignmentsPage() {
               Avukat Ataması
             </DialogTitle>
             <DialogDescription>
-              Bir davaya avukat atayın. Zorunlu alanları (*) doldurmanız gereklidir.
+              Bir danışmaya avukat atayın. Zorunlu alanları (*) doldurmanız gereklidir.
             </DialogDescription>
           </DialogHeader>
 
           <form onSubmit={handleAssignLawyer} className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="consultationId">Danışma Seçin *</Label>
+              <Select
+                value={assignmentData.consultationId}
+                onValueChange={(value) => {
+                  setAssignmentData({ ...assignmentData, consultationId: value });
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Danışma seçin" />
+                </SelectTrigger>
+                <SelectContent>
+                  {consultations.map((consultation) => (
+                    <SelectItem key={consultation.id} value={consultation.id}>
+                      {consultation.title} - {consultation.clientName}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
             <div className="space-y-2">
               <Label htmlFor="lawyerId">Avukat Seçin *</Label>
               <Select
@@ -277,80 +338,6 @@ export function LawyerAssignmentsPage() {
                   ))}
                 </SelectContent>
               </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="clientName">Müvekkil Adı *</Label>
-              <Input
-                id="clientName"
-                value={assignmentData.clientName}
-                onChange={(e) => {
-                  setAssignmentData({ ...assignmentData, clientName: e.target.value });
-                }}
-                placeholder="Müvekkil adı"
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="clientPhone">Müvekkil Telefonu</Label>
-              <Input
-                id="clientPhone"
-                type="tel"
-                value={assignmentData.clientPhone}
-                onChange={(e) => {
-                  setAssignmentData({ ...assignmentData, clientPhone: e.target.value });
-                }}
-                placeholder="0555 123 45 67"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="caseTitle">Dava Başlığı *</Label>
-              <Input
-                id="caseTitle"
-                value={assignmentData.caseTitle}
-                onChange={(e) => {
-                  setAssignmentData({ ...assignmentData, caseTitle: e.target.value });
-                }}
-                placeholder="Dava konusu"
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="caseType">Dava Türü</Label>
-              <Select
-                value={assignmentData.caseType}
-                onValueChange={(value) => {
-                  setAssignmentData({ ...assignmentData, caseType: value });
-                }}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Dava türü seçin" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="is_hukuku">İş Hukuku</SelectItem>
-                  <SelectItem value="aile_hukuku">Aile Hukuku</SelectItem>
-                  <SelectItem value="ceza_hukuku">Ceza Hukuku</SelectItem>
-                  <SelectItem value="medeni_hukuk">Medeni Hukuk</SelectItem>
-                  <SelectItem value="idare_hukuku">İdare Hukuku</SelectItem>
-                  <SelectItem value="diger">Diğer</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="description">Açıklama</Label>
-              <Textarea
-                id="description"
-                value={assignmentData.description}
-                onChange={(e) => {
-                  setAssignmentData({ ...assignmentData, description: e.target.value });
-                }}
-                placeholder="Dava detayları ve notlar"
-                rows={4}
-              />
             </div>
 
             <div className="flex justify-end gap-2 border-t pt-4">

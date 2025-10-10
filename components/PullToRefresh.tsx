@@ -53,7 +53,7 @@ export function PullToRefresh({
     (e: TouchEvent) => {
       if (!checkCanPull()) return;
 
-      startYRef.current = e.touches[0].clientY;
+      startYRef.current = e.touches[0]?.clientY ?? 0;
       isScrollingRef.current = false;
       setCanPull(true);
     },
@@ -65,7 +65,7 @@ export function PullToRefresh({
     (e: TouchEvent) => {
       if (!canPull || disabled) return;
 
-      const currentY = e.touches[0].clientY;
+      const currentY = e.touches[0]?.clientY ?? 0;
       const deltaY = currentY - startYRef.current;
 
       // Only allow pulling down

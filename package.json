@@ -50,21 +50,11 @@
     "clean:win": "npx rimraf dist node_modules/.vite .tsbuildinfo",
     "test:e2e:report": "playwright test --reporter=html",
     "test:e2e:report:open": "playwright show-report",
-    "cloudflare:build": "npm run build",
-    "cloudflare:deploy": "npx wrangler pages deploy dist",
-    "cloudflare:deploy:prod": "npx wrangler pages deploy dist --project-name=kafkasderpanel",
-    "cloudflare:dev": "npx wrangler pages dev dist",
-    "cloudflare:preview": "npx wrangler pages dev dist --local",
-    "deploy": "npm run cloudflare:deploy",
-    "deploy:prod": "npm run cloudflare:deploy:prod",
     "storybook": "storybook dev -p 6006",
     "storybook:build": "storybook build",
-    "backup:db": "bash scripts/backup-database.sh",
-    "restore:db": "bash scripts/restore-database.sh",
     "load:test": "k6 run tests/load/k6-load-test.js",
-    "review": "bash scripts/code-review.sh",
     "review:quick": "npm run lint:check && npm run type-check && npm run build",
-    "review:full": "npm run review && npm run test:coverage",
+    "review:full": "npm run test:coverage",
     "dead-code": "npx ts-prune",
     "unused-deps": "npx depcheck",
     "complexity": "npx eslint . --ext ts,tsx --format json --config .eslintrc.review.json",
@@ -72,8 +62,7 @@
     "analyze:size": "du -sh dist/",
     "analyze:chunks": "npx vite-bundle-visualizer",
     "lighthouse": "npx lighthouse http://localhost:5173 --view",
-    "lighthouse:ci": "npx lighthouse http://localhost:5173 --output json --output-path ./lighthouse-report.json",
-    "compare-metrics": "bash scripts/compare-metrics.sh"
+    "lighthouse:ci": "npx lighthouse http://localhost:5173 --output json --output-path ./lighthouse-report.json"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
@@ -103,12 +92,12 @@
     "@radix-ui/react-toggle": "^1.1.2",
     "@radix-ui/react-toggle-group": "^1.1.2",
     "@radix-ui/react-tooltip": "^1.1.8",
-    "@supabase/supabase-js": "^2.57.4",
     "@tailwindcss/postcss": "^4.1.13",
     "@tailwindcss/vite": "^4.0.0",
     "@tanstack/react-query": "^5.59.20",
     "@types/tesseract.js": "^0.0.2",
     "@vitejs/plugin-react": "^4.3.3",
+    "appwrite": "^21.2.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
@@ -123,6 +112,7 @@
     "lucide-react": "^0.487.0",
     "motion": "^12.0.0",
     "next-themes": "^0.4.6",
+    "node-appwrite": "^20.2.1",
     "react": "^18.3.1",
     "react-day-picker": "^8.10.1",
     "react-dom": "^18.3.1",
@@ -226,17 +216,21 @@
     "react",
     "typescript",
     "vite",
-    "supabase",
+    "appwrite",
     "corporate"
   ],
   "author": "Kafkasder",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/kafkasder/panel.git"
+    "url": "git+https://github.com/kafkasder/panel.git"
   },
   "bugs": {
     "url": "https://github.com/kafkasder/panel/issues"
   },
-  "homepage": "https://panel.kafkasder.org"
+  "homepage": "https://panel.kafkasder.org",
+  "directories": {
+    "lib": "lib",
+    "test": "tests"
+  }
 }

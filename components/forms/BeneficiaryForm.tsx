@@ -605,7 +605,7 @@ export default function BeneficiaryForm({
           </Button>
         </div>
 
-        {(watchedValues.family_members ?? []).map((member, index) => (
+        {(watchedValues.family_members ?? []).map((_member, index) => (
           <div key={index} className="border rounded-lg p-4 space-y-4">
             <div className="flex justify-between items-center">
               <h4 className="font-medium">Aile Üyesi {index + 1}</h4>
@@ -676,7 +676,7 @@ export default function BeneficiaryForm({
           </Button>
         </div>
 
-        {(watchedValues.needs ?? []).map((need, index) => (
+        {(watchedValues.needs ?? []).map((_need, index) => (
           <div key={index} className="border rounded-lg p-4 space-y-4">
             <div className="flex justify-between items-center">
               <h4 className="font-medium">İhtiyaç {index + 1}</h4>

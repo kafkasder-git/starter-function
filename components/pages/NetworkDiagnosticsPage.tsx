@@ -23,20 +23,20 @@ import {
   Activity
 } from 'lucide-react';
 import { NetworkManager, type NetworkDiagnostics, type NetworkError } from '../../lib/networkDiagnostics';
-import { enhancedSupabase } from '../../services/enhancedSupabaseService';
+import { enhancedAppwrite } from '../../services/enhancedAppwriteService';
 import { logger } from '../../lib/logging/logger';
 
 export function NetworkDiagnosticsPage() {
   const [diagnostics, setDiagnostics] = useState<NetworkDiagnostics>({
     isOnline: navigator.onLine,
-    canReachSupabase: false,
+    canReachAppwrite: false,
     canReachInternet: false,
     connectionQuality: 'offline'
   });
   const [isRunning, setIsRunning] = useState(false);
   const [lastCheck, setLastCheck] = useState<Date | null>(null);
   const [errors, setErrors] = useState<NetworkError[]>([]);
-  const [supabaseConnection, setSupabaseConnection] = useState<{
+  const [appwriteConnection, setAppwriteConnection] = useState<{
     connected: boolean;
     error?: string;
   } | null>(null);
@@ -52,15 +52,15 @@ export function NetworkDiagnosticsPage() {
       const networkDiag = await networkManager.testConnectivity();
       setDiagnostics(networkDiag);
 
-      // Test Supabase connection
-      const supabaseTest = await enhancedSupabase.testConnection();
-      setSupabaseConnection(supabaseTest);
+      // Test Appwrite connection
+      const appwriteTest = await enhancedAppwrite.testConnection();
+      setAppwriteConnection(appwriteTest);
 
       setLastCheck(new Date());
 
       logger.info('Network diagnostics completed:', {
         network: networkDiag,
-        supabase: supabaseTest
+        appwrite: appwriteTest
       });
 
     } catch (error) {
@@ -120,9 +120,9 @@ export function NetworkDiagnosticsPage() {
       steps.push('Güvenlik duvarı ayarlarınızı kontrol edin');
       steps.push('VPN bağlantınızı kapatmayı deneyin');
       steps.push('Proxy ayarlarınızı kontrol edin');
-    } else if (!diagnostics.canReachSupabase) {
-      steps.push('Supabase sunucuları bakım modunda olabilir');
-      steps.push('Güvenlik duvarı Supabase erişimini engelliyor olabilir');
+    } else if (!diagnostics.canReachAppwrite) {
+      steps.push('Appwrite sunucuları bakım modunda olabilir');
+      steps.push('Güvenlik duvarı Appwrite erişimini engelliyor olabilir');
       steps.push('DNS ayarlarınızı kontrol edin');
     }
 
@@ -204,13 +204,13 @@ export function NetworkDiagnosticsPage() {
               <div className="flex items-center gap-3">
                 <Server className="h-6 w-6 text-purple-500" />
                 <div>
-                  <div className="font-medium">Supabase</div>
+                  <div className="font-medium">Appwrite</div>
                   <div className="text-sm text-gray-500">
-                    {diagnostics.canReachSupabase ? 'Erişilebilir' : 'Erişilemiyor'}
+                    {diagnostics.canReachAppwrite ? 'Erişilebilir' : 'Erişilemiyor'}
                   </div>
                 </div>
               </div>
-              {getStatusIcon(diagnostics.canReachSupabase)}
+              {getStatusIcon(diagnostics.canReachAppwrite)}
             </div>
           </div>
 
@@ -223,37 +223,37 @@ export function NetworkDiagnosticsPage() {
         </CardContent>
       </Card>
 
-      {/* Supabase Connection Details */}
+      {/* Appwrite Connection Details */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Shield className="h-5 w-5" />
-            Supabase Bağlantı Detayları
+            Appwrite Bağlantı Detayları
           </CardTitle>
           <CardDescription>
             Veritabanı bağlantısı ve kimlik doğrulama durumu
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {supabaseConnection ? (
+          {appwriteConnection ? (
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <span>Bağlantı Durumu:</span>
                 <div className="flex items-center gap-2">
-                  {getStatusIcon(supabaseConnection.connected)}
-                  <span className={supabaseConnection.connected ? 'text-green-600' : 'text-red-600'}>
-                    {supabaseConnection.connected ? 'Bağlı' : 'Bağlantı Yok'}
+                  {getStatusIcon(appwriteConnection.connected)}
+                  <span className={appwriteConnection.connected ? 'text-green-600' : 'text-red-600'}>
+                    {appwriteConnection.connected ? 'Bağlı' : 'Bağlantı Yok'}
                   </span>
                 </div>
               </div>
 
-              {supabaseConnection.error && (
+              {appwriteConnection.error && (
                 <Alert variant="destructive">
                   <AlertTriangle className="h-4 w-4" />
                   <AlertTitle>Bağlantı Hatası</AlertTitle>
                   <AlertDescription>
                     <code className="text-sm bg-red-50 p-2 rounded block mt-2">
-                      {supabaseConnection.error}
+                      {appwriteConnection.error}
                     </code>
                   </AlertDescription>
                 </Alert>
@@ -279,16 +279,16 @@ export function NetworkDiagnosticsPage() {
         <CardContent className="space-y-3">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <div className="font-medium text-sm text-gray-500">Supabase URL</div>
+              <div className="font-medium text-sm text-gray-500">Appwrite Endpoint</div>
               <div className="text-sm font-mono bg-gray-50 p-2 rounded">
-                {import.meta.env.VITE_SUPABASE_URL ?? 'Tanımlanmamış'}
+                {import.meta.env.VITE_APPWRITE_ENDPOINT ?? 'Tanımlanmamış'}
               </div>
             </div>
             <div>
-              <div className="font-medium text-sm text-gray-500">Anon Key</div>
+              <div className="font-medium text-sm text-gray-500">Project ID</div>
               <div className="text-sm font-mono bg-gray-50 p-2 rounded truncate">
-                {import.meta.env.VITE_SUPABASE_ANON_KEY ?
-                  `${import.meta.env.VITE_SUPABASE_ANON_KEY.substring(0, 20)}...` :
+                {import.meta.env.VITE_APPWRITE_PROJECT_ID ?
+                  `${import.meta.env.VITE_APPWRITE_PROJECT_ID.substring(0, 20)}...` :
                   'Tanımlanmamış'
                 }
               </div>

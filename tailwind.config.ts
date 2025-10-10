@@ -114,6 +114,8 @@ export default {
       colors: {
         // Semantic color scales
         primary: {
+          DEFAULT: 'hsl(var(--primary))',
+          foreground: 'hsl(var(--primary-foreground))',
           50: 'hsl(var(--primary-50))',
           100: 'hsl(var(--primary-100))',
           200: 'hsl(var(--primary-200))',
@@ -164,6 +166,35 @@ export default {
           800: 'hsl(var(--error-800))',
           900: 'hsl(var(--error-900))',
           950: 'hsl(var(--error-950))',
+        },
+        destructive: {
+          DEFAULT: 'hsl(var(--error-500))',
+          foreground: 'hsl(var(--error-50))',
+        },
+        muted: {
+          DEFAULT: 'hsl(210 40% 96%)',
+          foreground: 'hsl(215.4 16.3% 46.9%)',
+        },
+        accent: {
+          DEFAULT: 'hsl(210 40% 96%)',
+          foreground: 'hsl(222.2 84% 4.9%)',
+        },
+        popover: {
+          DEFAULT: 'hsl(0 0% 100%)',
+          foreground: 'hsl(222.2 84% 4.9%)',
+        },
+        card: {
+          DEFAULT: 'hsl(0 0% 100%)',
+          foreground: 'hsl(222.2 84% 4.9%)',
+        },
+        border: 'hsl(214.3 31.8% 91.4%)',
+        input: 'hsl(214.3 31.8% 91.4%)',
+        ring: 'hsl(222.2 84% 4.9%)',
+        background: 'hsl(0 0% 100%)',
+        foreground: 'hsl(222.2 84% 4.9%)',
+        secondary: {
+          DEFAULT: 'hsl(210 40% 96%)',
+          foreground: 'hsl(222.2 84% 4.9%)',
         },
       },
       

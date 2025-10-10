@@ -1,207 +1,124 @@
-import { supabase } from '../lib/supabase';
+import { db, collections, queryHelpers } from '../lib/database';
 import { logger } from '../lib/logging/logger';
-
-// Donation interface (UUID-based)
-export interface Donation {
-  id: string; // UUID
-  donor_name: string;
-  donor_email?: string;
-  donor_phone?: string;
-  donor_type: 'individual' | 'corporate' | 'foundation' | 'government';
-  amount: number;
-  currency: string;
-  donation_type: 'cash' | 'in_kind' | 'services' | 'other';
-  category?: string;
-  description?: string;
-  payment_method: 'bank_transfer' | 'credit_card' | 'cash' | 'check' | 'online' | 'other';
-  payment_reference?: string;
-  bank_account?: string;
-  transaction_id?: string;
-  status: 'pending' | 'approved' | 'rejected' | 'processing' | 'completed';
-  approval_date?: string;
-  processed_by?: string;
-  rejection_reason?: string;
-  allocated_to?: string;
-  beneficiary_id?: number;
-  allocation_percentage: number;
-  receipt_issued: boolean;
-  receipt_number?: string;
-  receipt_date?: string;
-  tax_deductible: boolean;
-  tax_certificate_number?: string;
-  campaign_id?: number;
-  source?: string;
-  referral_code?: string;
-  thank_you_sent: boolean;
-  thank_you_date?: string;
-  communication_preference?: 'email' | 'phone' | 'mail' | 'none';
-  is_recurring: boolean;
-  recurring_frequency?: 'monthly' | 'quarterly' | 'yearly';
-  recurring_end_date?: string;
-  recurring_amount?: number;
-  created_at: string;
-  updated_at: string;
-  created_by?: string;
-  updated_by?: string;
-  ip_address?: string;
-  user_agent?: string;
-  notes?: string;
-}
-
-// API response type
-export interface DonationsApiResponse<T> {
-  data?: T;
-  error?: string;
-  count?: number;
-  totalPages?: number;
-}
-
-// Filters interface
-export interface DonationsFilters {
-  searchTerm?: string;
-  status?: string;
-  donationType?: string;
-  paymentMethod?: string;
-  donorType?: string;
-  dateFrom?: string;
-  dateTo?: string;
-  minAmount?: number;
-  maxAmount?: number;
-}
-
-// Donation statistics interface
-export interface DonationStats {
-  total: number;
-  totalAmount: number;
-  pending: number;
-  approved: number;
-  rejected: number;
-  averageAmount: number;
-  monthlyTrend: Record<string, number>;
-  donorTypes: Record<string, number>;
-  donationTypes: Record<string, number>;
-  paymentMethods: Record<string, number>;
-}
+import type { ApiResponse } from '../types/database';
+import type { Donation, DonationInsert, DonationUpdate, DonationFilters, DonationStats } from '../types/donation';
 
 const donationsService = {
   // Get all donations with pagination and filters
   async getDonations(
     page = 1,
     pageSize = 10,
-    filters: DonationsFilters = {},
-  ): Promise<DonationsApiResponse<Donation[]>> {
+    filters: DonationFilters = {},
+  ): Promise<ApiResponse<{ data: Donation[]; count: number; totalPages: number }>> {
     try {
       logger.info('🔄 Fetching donations with filters:', filters);
 
-      let query = supabase.from('donations').select('*', { count: 'exact' });
-
-      // Search filter
-      if (filters.searchTerm) {
-        const term = filters.searchTerm.toLowerCase();
-        query = query.or(
-          `donor_name.ilike.%${term}%,donor_email.ilike.%${term}%,payment_reference.ilike.%${term}%`,
-        );
-      }
+      const queries: string[] = [];
 
       // Status filter
       if (filters.status && filters.status !== 'all') {
-        query = query.eq('status', filters.status);
+        queries.push(queryHelpers.equal('status', filters.status));
       }
 
       // Donation type filter
       if (filters.donationType && filters.donationType !== 'all') {
-        query = query.eq('donation_type', filters.donationType);
+        queries.push(queryHelpers.equal('donation_type', filters.donationType));
       }
 
       // Payment method filter
       if (filters.paymentMethod && filters.paymentMethod !== 'all') {
-        query = query.eq('payment_method', filters.paymentMethod);
+        queries.push(queryHelpers.equal('payment_method', filters.paymentMethod));
       }
 
       // Donor type filter
       if (filters.donorType && filters.donorType !== 'all') {
-        query = query.eq('donor_type', filters.donorType);
+        queries.push(queryHelpers.equal('donor_type', filters.donorType));
       }
 
       // Date range filter
       if (filters.dateFrom) {
-        query = query.gte('created_at', filters.dateFrom);
+        queries.push(queryHelpers.greaterThanEqualDate('created_at', filters.dateFrom));
       }
       if (filters.dateTo) {
-        query = query.lte('created_at', filters.dateTo);
+        queries.push(queryHelpers.lessThanEqualDate('created_at', filters.dateTo));
       }
 
       // Amount range filter
       if (filters.minAmount) {
-        query = query.gte('amount', filters.minAmount);
+        queries.push(queryHelpers.greaterThanEqual('amount', filters.minAmount));
       }
       if (filters.maxAmount) {
-        query = query.lte('amount', filters.maxAmount);
+        queries.push(queryHelpers.lessThanEqual('amount', filters.maxAmount));
       }
+
+      // Order by creation date (newest first)
+      queries.push(queryHelpers.orderDesc('created_at'));
 
       // Pagination
       const startIndex = (page - 1) * pageSize;
-      query = query.range(startIndex, startIndex + pageSize - 1);
+      queries.push(queryHelpers.offset(startIndex));
+      queries.push(queryHelpers.limit(pageSize));
 
-      // Order by creation date (newest first)
-      query = query.order('created_at', { ascending: false });
-
-      const { data, error, count } = await query;
+      const { data, error } = await db.list(collections.DONATIONS, queries);
 
       if (error) {
         logger.error('❌ Error fetching donations:', error);
-        return { error: error.message };
+        return { data: null, error: error.message };
       }
 
-      logger.info('✅ Successfully fetched', data?.length || 0, 'donations');
+      logger.info('✅ Successfully fetched', data?.documents?.length || 0, 'donations');
 
       return {
-        data: data || [],
-        count: count || 0,
-        totalPages: Math.ceil((count || 0) / pageSize),
+        data: {
+          data: data?.documents || [],
+          count: data?.total || 0,
+          totalPages: Math.ceil((data?.total || 0) / pageSize),
+        },
+        error: null,
       };
     } catch (error: any) {
       logger.error('❌ Unexpected error in getDonations:', error);
-      return { error: error.message || 'Beklenmeyen hata oluştu' };
+      return { data: null, error: error.message || 'Beklenmeyen hata oluştu' };
     }
   },
 
   // Get single donation
-  async getDonation(id: number): Promise<DonationsApiResponse<Donation>> {
+  async getDonation(id: string): Promise<ApiResponse<Donation>> {
     try {
       logger.info('🔄 Fetching single donation with id:', id);
 
-      const { data, error } = await supabase.from('donations').select('*').eq('id', id).single();
+      const { data, error } = await db.get(collections.DONATIONS, id);
 
       if (error) {
         logger.error('❌ Error fetching single donation:', error);
-        return { error: error.message };
+        return { data: null, error: error.message };
       }
 
       logger.info('✅ Successfully fetched donation:', data?.donor_name);
-      return { data };
+      return { data, error: null };
     } catch (error: any) {
       logger.error('❌ Unexpected error in getDonation:', error);
-      return { error: error.message || 'Bağış bulunamadı' };
+      return { data: null, error: error.message || 'Bağış bulunamadı' };
     }
   },
 
   // Get donation statistics
-  async getDonationStats(): Promise<DonationsApiResponse<DonationStats>> {
+  async getDonationStats(): Promise<ApiResponse<DonationStats>> {
     try {
       logger.info('🔄 Fetching donation statistics');
 
       // Get total count and amount
-      const { data: totalData, error: totalError } = await supabase
-        .from('donations')
-        .select('amount, status, donor_type, donation_type, payment_method, created_at');
+      const { data: totalData, error: totalError } = await db.list(
+        collections.DONATIONS,
+        [queryHelpers.select(['amount', 'status', 'donor_type', 'donation_type', 'payment_method', 'created_at'])]
+      );
 
       if (totalError) {
         logger.error('❌ Error fetching donation stats:', totalError);
-        return { error: totalError.message };
+        return { data: null, error: totalError.message };
       }
 
-      const donations = totalData || [];
+      const donations = totalData?.documents || [];
 
       // Calculate statistics
       const total = donations.length;
@@ -270,261 +187,257 @@ const donationsService = {
         averageAmount: stats.averageAmount,
       });
 
-      return { data: stats };
+      return { data: stats, error: null };
     } catch (error: any) {
       logger.error('❌ Error calculating donation statistics:', error);
-      return { error: error.message || 'İstatistikler hesaplanamadı' };
+      return { data: null, error: error.message || 'İstatistikler hesaplanamadı' };
     }
   },
 
   // Create new donation
-  async createDonation(donationData: Partial<Donation>): Promise<DonationsApiResponse<Donation>> {
+  async createDonation(donationData: Partial<Donation>): Promise<ApiResponse<Donation>> {
     try {
       logger.info('🔄 Creating new donation:', donationData);
 
-      const { data: newDonation, error } = await supabase
-        .from('donations')
-        .insert([
-          {
-            donor_name: donationData.donor_name!,
-            donor_email: donationData.donor_email,
-            donor_phone: donationData.donor_phone,
-            donor_type: donationData.donor_type || 'individual',
-            amount: donationData.amount!,
-            currency: donationData.currency || 'TRY',
-            donation_type: donationData.donation_type || 'cash',
-            category: donationData.category,
-            description: donationData.description,
-            payment_method: donationData.payment_method || 'bank_transfer',
-            payment_reference: donationData.payment_reference,
-            bank_account: donationData.bank_account,
-            transaction_id: donationData.transaction_id,
-            status: donationData.status || 'pending',
-            allocated_to: donationData.allocated_to,
-            beneficiary_id: donationData.beneficiary_id,
-            allocation_percentage: donationData.allocation_percentage || 100.0,
-            receipt_issued: donationData.receipt_issued || false,
-            tax_deductible: donationData.tax_deductible || false,
-            campaign_id: donationData.campaign_id,
-            source: donationData.source,
-            referral_code: donationData.referral_code,
-            communication_preference: donationData.communication_preference,
-            is_recurring: donationData.is_recurring || false,
-            recurring_frequency: donationData.recurring_frequency,
-            recurring_end_date: donationData.recurring_end_date,
-            recurring_amount: donationData.recurring_amount,
-            notes: donationData.notes,
-          },
-        ])
-        .select()
-        .single();
+      const insertData = {
+        donor_name: donationData.donor_name!,
+        donor_email: donationData.donor_email,
+        donor_phone: donationData.donor_phone,
+        donor_type: donationData.donor_type || 'individual',
+        amount: donationData.amount!,
+        currency: donationData.currency || 'TRY',
+        donation_type: donationData.donation_type || 'cash',
+        category: donationData.category,
+        description: donationData.description,
+        payment_method: donationData.payment_method || 'bank_transfer',
+        payment_reference: donationData.payment_reference,
+        bank_account: donationData.bank_account,
+        transaction_id: donationData.transaction_id,
+        status: donationData.status || 'pending',
+        allocated_to: donationData.allocated_to,
+        beneficiary_id: donationData.beneficiary_id,
+        allocation_percentage: donationData.allocation_percentage || 100.0,
+        receipt_issued: donationData.receipt_issued || false,
+        tax_deductible: donationData.tax_deductible || false,
+        campaign_id: donationData.campaign_id,
+        source: donationData.source,
+        referral_code: donationData.referral_code,
+        communication_preference: donationData.communication_preference,
+        is_recurring: donationData.is_recurring || false,
+        recurring_frequency: donationData.recurring_frequency,
+        recurring_end_date: donationData.recurring_end_date,
+        recurring_amount: donationData.recurring_amount,
+        notes: donationData.notes,
+      };
+
+      const { data: newDonation, error } = await db.create(collections.DONATIONS, insertData);
 
       if (error) {
         logger.error('❌ Error creating donation:', error);
-        return { error: error.message };
+        return { data: null, error: error.message };
       }
 
       logger.info('✅ Successfully created donation:', newDonation?.donor_name);
-      return { data: newDonation };
+      return { data: newDonation, error: null };
     } catch (error: any) {
       logger.error('❌ Unexpected error in createDonation:', error);
-      return { error: error.message || 'Bağış oluşturulamadı' };
+      return { data: null, error: error.message || 'Bağış oluşturulamadı' };
     }
   },
 
   // Update donation
   async updateDonation(
-    id: number,
+    id: string,
     updates: Partial<Donation>,
-  ): Promise<DonationsApiResponse<Donation>> {
+  ): Promise<ApiResponse<Donation>> {
     try {
       logger.info('🔄 Updating donation:', id, updates);
 
-      const { data, error } = await supabase
-        .from('donations')
-        .update({
-          ...updates,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', id)
-        .select()
-        .single();
+      const { data, error } = await db.update(collections.DONATIONS, id, {
+        ...updates,
+        updated_at: new Date().toISOString(),
+      });
 
       if (error) {
         logger.error('❌ Error updating donation:', error);
-        return { error: error.message };
+        return { data: null, error: error.message };
       }
 
       logger.info('✅ Successfully updated donation:', data?.donor_name);
-      return { data };
+      return { data, error: null };
     } catch (error: any) {
       logger.error('❌ Unexpected error in updateDonation:', error);
-      return { error: error.message || 'Bağış güncellenemedi' };
+      return { data: null, error: error.message || 'Bağış güncellenemedi' };
     }
   },
 
   // Delete donation
-  async deleteDonation(id: number): Promise<DonationsApiResponse<boolean>> {
+  async deleteDonation(id: string): Promise<ApiResponse<boolean>> {
     try {
       logger.info('🔄 Deleting donation:', id);
 
-      const { error } = await supabase.from('donations').delete().eq('id', id);
+      const { error } = await db.delete(collections.DONATIONS, id);
 
       if (error) {
         logger.error('❌ Error deleting donation:', error);
-        return { error: error.message };
+        return { data: null, error: error.message };
       }
 
       logger.info('✅ Successfully deleted donation:', id);
-      return { data: true };
+      return { data: true, error: null };
     } catch (error: any) {
       logger.error('❌ Unexpected error in deleteDonation:', error);
-      return { error: error.message || 'Bağış silinemedi' };
+      return { data: null, error: error.message || 'Bağış silinemedi' };
     }
   },
 
   // Get donor types for filter dropdown
-  async getDonorTypes(): Promise<DonationsApiResponse<string[]>> {
+  async getDonorTypes(): Promise<ApiResponse<string[]>> {
     try {
-      const { data, error } = await supabase
-        .from('donations')
-        .select('donor_type')
-        .not('donor_type', 'is', null);
+      const { data, error } = await db.list(
+        collections.DONATIONS,
+        [
+          queryHelpers.select(['donor_type']),
+          queryHelpers.notEqual('donor_type', null)
+        ]
+      );
 
       if (error) {
-        return { error: error.message };
+        return { data: null, error: error.message };
       }
 
-      const donorTypes = [...new Set(data.map((item) => item.donor_type))].sort((a, b) =>
+      const donorTypes = [...new Set(data?.documents?.map((item) => item.donor_type))].sort((a, b) =>
         a.localeCompare(b),
       );
-      return { data: donorTypes };
+      return { data: donorTypes, error: null };
     } catch (error: any) {
-      return { error: error.message || 'Bağışçı türleri getirilemedi' };
+      return { data: null, error: error.message || 'Bağışçı türleri getirilemedi' };
     }
   },
 
   // Get donation types for filter dropdown
-  async getDonationTypes(): Promise<DonationsApiResponse<string[]>> {
+  async getDonationTypes(): Promise<ApiResponse<string[]>> {
     try {
-      const { data, error } = await supabase
-        .from('donations')
-        .select('donation_type')
-        .not('donation_type', 'is', null);
+      const { data, error } = await db.list(
+        collections.DONATIONS,
+        [
+          queryHelpers.select(['donation_type']),
+          queryHelpers.notEqual('donation_type', null)
+        ]
+      );
 
       if (error) {
-        return { error: error.message };
+        return { data: null, error: error.message };
       }
 
-      const donationTypes = [...new Set(data.map((item) => item.donation_type))].sort((a, b) =>
+      const donationTypes = [...new Set(data?.documents?.map((item) => item.donation_type))].sort((a, b) =>
         a.localeCompare(b),
       );
-      return { data: donationTypes };
+      return { data: donationTypes, error: null };
     } catch (error: any) {
-      return { error: error.message || 'Bağış türleri getirilemedi' };
+      return { data: null, error: error.message || 'Bağış türleri getirilemedi' };
     }
   },
 
   // Get payment methods for filter dropdown
-  async getPaymentMethods(): Promise<DonationsApiResponse<string[]>> {
+  async getPaymentMethods(): Promise<ApiResponse<string[]>> {
     try {
-      const { data, error } = await supabase
-        .from('donations')
-        .select('payment_method')
-        .not('payment_method', 'is', null);
+      const { data, error } = await db.list(
+        collections.DONATIONS,
+        [
+          queryHelpers.select(['payment_method']),
+          queryHelpers.notEqual('payment_method', null)
+        ]
+      );
 
       if (error) {
-        return { error: error.message };
+        return { data: null, error: error.message };
       }
 
-      const paymentMethods = [...new Set(data.map((item) => item.payment_method))].sort((a, b) =>
+      const paymentMethods = [...new Set(data?.documents?.map((item) => item.payment_method))].sort((a, b) =>
         a.localeCompare(b),
       );
-      return { data: paymentMethods };
+      return { data: paymentMethods, error: null };
     } catch (error: any) {
-      return { error: error.message || 'Ödeme yöntemleri getirilemedi' };
+      return { data: null, error: error.message || 'Ödeme yöntemleri getirilemedi' };
     }
   },
 
   // Bulk approve donations
-  async bulkApproveDonations(ids: number[]): Promise<DonationsApiResponse<boolean>> {
+  async bulkApproveDonations(ids: string[]): Promise<ApiResponse<boolean>> {
     try {
       logger.info('🔄 Bulk approving donations:', ids);
 
-      const { error } = await supabase
-        .from('donations')
-        .update({
+      // Appwrite doesn't have bulk update, so we'll update each donation individually
+      const updatePromises = ids.map(id => 
+        db.update(collections.DONATIONS, id, {
           status: 'approved',
           approval_date: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         })
-        .in('id', ids);
+      );
 
-      if (error) {
-        logger.error('❌ Error bulk approving donations:', error);
-        return { error: error.message };
+      const results = await Promise.allSettled(updatePromises);
+      const errors = results.filter(result => result.status === 'rejected');
+
+      if (errors.length > 0) {
+        logger.error('❌ Error bulk approving donations:', errors);
+        return { data: null, error: `Failed to approve ${errors.length} donations` };
       }
 
       logger.info('✅ Successfully bulk approved', ids.length, 'donations');
-      return { data: true };
+      return { data: true, error: null };
     } catch (error: any) {
       logger.error('❌ Unexpected error in bulkApproveDonations:', error);
-      return { error: error.message || 'Toplu onay işlemi başarısız' };
+      return { data: null, error: error.message || 'Toplu onay işlemi başarısız' };
     }
   },
 
   // Export donations to CSV
-  async exportDonations(filters: DonationsFilters = {}): Promise<DonationsApiResponse<Donation[]>> {
+  async exportDonations(filters: DonationFilters = {}): Promise<ApiResponse<Donation[]>> {
     try {
       logger.info('🔄 Exporting donations with filters:', filters);
 
-      let query = supabase.from('donations').select('*');
+      const queries: string[] = [];
 
       // Apply same filters as getDonations but without pagination
-      if (filters.searchTerm) {
-        const term = filters.searchTerm.toLowerCase();
-        query = query.or(
-          `donor_name.ilike.%${term}%,donor_email.ilike.%${term}%,payment_reference.ilike.%${term}%`,
-        );
-      }
-
       if (filters.status && filters.status !== 'all') {
-        query = query.eq('status', filters.status);
+        queries.push(queryHelpers.equal('status', filters.status));
       }
 
       if (filters.donationType && filters.donationType !== 'all') {
-        query = query.eq('donation_type', filters.donationType);
+        queries.push(queryHelpers.equal('donation_type', filters.donationType));
       }
 
       if (filters.paymentMethod && filters.paymentMethod !== 'all') {
-        query = query.eq('payment_method', filters.paymentMethod);
+        queries.push(queryHelpers.equal('payment_method', filters.paymentMethod));
       }
 
       if (filters.donorType && filters.donorType !== 'all') {
-        query = query.eq('donor_type', filters.donorType);
+        queries.push(queryHelpers.equal('donor_type', filters.donorType));
       }
 
       if (filters.dateFrom) {
-        query = query.gte('created_at', filters.dateFrom);
+        queries.push(queryHelpers.greaterThanEqualDate('created_at', filters.dateFrom));
       }
       if (filters.dateTo) {
-        query = query.lte('created_at', filters.dateTo);
+        queries.push(queryHelpers.lessThanEqualDate('created_at', filters.dateTo));
       }
 
-      query = query.order('created_at', { ascending: false });
+      queries.push(queryHelpers.orderDesc('created_at'));
 
-      const { data, error } = await query;
+      const { data, error } = await db.list(collections.DONATIONS, queries);
 
       if (error) {
         logger.error('❌ Error exporting donations:', error);
-        return { error: error.message };
+        return { data: null, error: error.message };
       }
 
-      logger.info('✅ Successfully exported', data?.length || 0, 'donations');
-      return { data: data || [] };
+      logger.info('✅ Successfully exported', data?.documents?.length || 0, 'donations');
+      return { data: data?.documents || [], error: null };
     } catch (error: any) {
       logger.error('❌ Unexpected error in exportDonations:', error);
-      return { error: error.message || 'Dışa aktarma başarısız' };
+      return { data: null, error: error.message || 'Dışa aktarma başarısız' };
     }
   },
 };

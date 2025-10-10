@@ -55,8 +55,8 @@ export const getEnvironmentConfig = () => ({
   enableAnalytics: isProduction,
   enableErrorReporting: isProduction,
   apiUrl: import.meta.env.VITE_API_URL ?? 'http://localhost:3000',
-  supabaseUrl: import.meta.env.VITE_SUPABASE_URL,
-  supabaseKey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+  appwriteEndpoint: import.meta.env.VITE_APPWRITE_ENDPOINT,
+  appwriteProjectId: import.meta.env.VITE_APPWRITE_PROJECT_ID,
 });
 
 // Bundle size optimization - tree shaking helper

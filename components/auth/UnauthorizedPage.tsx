@@ -191,7 +191,7 @@ export function UnauthorizedPage({
               </Button>
 
               <Button
-                onClick={logout}
+                onClick={() => logout()}
                 variant="ghost"
                 className="w-full h-10 text-slate-600 hover:text-slate-800 font-medium"
               >

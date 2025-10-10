@@ -5,9 +5,9 @@
  * @version 1.0.0
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
-import { PageLayout } from '../PageLayout';
+import { PageLayout } from '../layouts/PageLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../ui/dialog';
@@ -32,6 +32,8 @@ import {
   Heart,
   Download,
 } from 'lucide-react';
+import { db, collections, queryHelpers } from '../../lib/database';
+import { logger } from '../../lib/logging/logger';
 
 interface InKindTransaction {
   id: number;
@@ -52,8 +54,6 @@ interface InKindTransaction {
   notes?: string;
 }
 
-const initialTransactions: InKindTransaction[] = [];
-
 /**
  * InKindAidTransactionsPage function
  *
@@ -61,7 +61,8 @@ const initialTransactions: InKindTransaction[] = [];
  * @returns {void} Nothing
  */
 export function InKindAidTransactionsPage() {
-  const [transactions, setTransactions] = useState<InKindTransaction[]>(initialTransactions);
+  const [transactions, setTransactions] = useState<InKindTransaction[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
@@ -80,6 +81,53 @@ export function InKindAidTransactionsPage() {
     storageLocation: '',
     notes: '',
   });
+
+  const loadTransactions = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await db.list(collections.FINANCE_TRANSACTIONS, [
+        queryHelpers.equal('transaction_type', 'in_kind'),
+        queryHelpers.orderDesc('created_at'),
+      ]);
+
+      if (error) {
+        logger.error('Error loading in-kind transactions:', error);
+        toast.error('İşlemler yüklenirken hata oluştu');
+        return;
+      }
+
+      // Map database records to InKindTransaction interface
+      const mappedTransactions: InKindTransaction[] = (data?.documents || []).map((doc: any) => ({
+        id: doc.$id,
+        transactionNumber: doc.transaction_number || `AYT-${new Date(doc.created_at).getFullYear()}-${doc.$id.slice(-3)}`,
+        recipientName: doc.recipient_name || '',
+        recipientId: doc.recipient_id || '',
+        itemCategory: doc.item_category || 'Gıda',
+        itemDescription: doc.item_description || '',
+        quantity: doc.quantity || 1,
+        unit: doc.unit || 'Koli',
+        estimatedValue: doc.amount || 0,
+        deliveryDate: doc.delivery_date || doc.created_at,
+        deliveryMethod: doc.delivery_method || 'delivery',
+        status: doc.status || 'prepared',
+        processedBy: doc.processed_by || 'Sistem Kullanıcısı',
+        approvedBy: doc.approved_by || 'Bekliyor',
+        storageLocation: doc.storage_location || '',
+        notes: doc.notes || '',
+      }));
+
+      setTransactions(mappedTransactions);
+    } catch (error) {
+      logger.error('Failed to load transactions:', error);
+      toast.error('İşlemler yüklenirken hata oluştu');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadTransactions();
+  }, []);
 
   const getStatusBadge = (status: InKindTransaction['status']) => {
     const statusConfig = {
@@ -155,24 +203,36 @@ export function InKindAidTransactionsPage() {
     try {
       setIsSubmitting(true);
 
-      // TODO: Integrate with actual API
-      // const result = await inKindAidService.createDelivery(formData);
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // Add to local state for demonstration
-      const newTransaction: InKindTransaction = {
-        id: Math.max(...transactions.map((t) => t.id), 0) + 1,
-        transactionNumber: `AYT-${new Date().getFullYear()}-${String(transactions.length + 1).padStart(3, '0')}`,
-        ...formData,
-        deliveryDate: `${formData.deliveryDate} ${new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}`,
+      const transactionData = {
+        transaction_type: 'in_kind',
+        recipient_name: formData.recipientName,
+        recipient_id: formData.recipientId,
+        item_category: formData.itemCategory,
+        item_description: formData.itemDescription,
+        quantity: formData.quantity,
+        unit: formData.unit,
+        amount: formData.estimatedValue,
+        delivery_date: formData.deliveryDate,
+        delivery_method: formData.deliveryMethod,
         status: 'prepared',
-        processedBy: 'Sistem Kullanıcısı',
-        approvedBy: 'Bekliyor',
+        processed_by: 'Sistem Kullanıcısı',
+        approved_by: 'Bekliyor',
+        storage_location: formData.storageLocation,
+        notes: formData.notes,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
       };
 
-      setTransactions((prev) => [newTransaction, ...prev]);
+      const { data, error } = await db.create(collections.FINANCE_TRANSACTIONS, transactionData);
+
+      if (error) {
+        logger.error('Error creating in-kind transaction:', error);
+        toast.error('Teslimat kaydı oluşturulurken hata oluştu');
+        return;
+      }
+
+      // Reload transactions to reflect the new entry
+      await loadTransactions();
 
       toast.success('Teslimat kaydı başarıyla oluşturuldu!');
       setShowDeliveryDialog(false);
@@ -191,7 +251,8 @@ export function InKindAidTransactionsPage() {
         storageLocation: '',
         notes: '',
       });
-    } catch {
+    } catch (error) {
+      logger.error('Failed to create delivery:', error);
       toast.error('Teslimat kaydı oluşturulurken hata oluştu');
     } finally {
       setIsSubmitting(false);
@@ -337,97 +398,103 @@ export function InKindAidTransactionsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>İşlem No</TableHead>
-                    <TableHead>İhtiyaç Sahibi</TableHead>
-                    <TableHead>Kategori</TableHead>
-                    <TableHead>Ürün/Açıklama</TableHead>
-                    <TableHead>Miktar</TableHead>
-                    <TableHead>Değer</TableHead>
-                    <TableHead>Teslimat</TableHead>
-                    <TableHead>Durum</TableHead>
-                    <TableHead>İşleyen</TableHead>
-                    <TableHead>İşlemler</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredTransactions.map((transaction) => (
-                    <TableRow key={transaction.id}>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <FileText className="h-4 w-4 text-gray-400" />
-                          <span className="font-mono text-sm">{transaction.transactionNumber}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div>
-                          <p className="font-medium">{transaction.recipientName}</p>
-                          <p className="text-muted-foreground text-sm">{transaction.recipientId}</p>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          {getCategoryIcon(transaction.itemCategory)}
-                          <Badge variant="outline">{transaction.itemCategory}</Badge>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div>
-                          <p className="text-sm font-medium">{transaction.itemDescription}</p>
-                          {transaction.notes && (
-                            <p className="text-muted-foreground text-xs">{transaction.notes}</p>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="text-center">
-                          <p className="font-medium">{transaction.quantity}</p>
-                          <p className="text-muted-foreground text-xs">{transaction.unit}</p>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <span className="font-medium">
-                          ₺{transaction.estimatedValue.toLocaleString('tr-TR')}
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        <div>
-                          {getDeliveryMethodBadge(transaction.deliveryMethod)}
-                          <p className="text-muted-foreground mt-1 text-xs">
-                            {new Date(transaction.deliveryDate).toLocaleDateString('tr-TR')}
-                          </p>
-                        </div>
-                      </TableCell>
-                      <TableCell>{getStatusBadge(transaction.status)}</TableCell>
-                      <TableCell>
-                        <div>
-                          <p className="text-sm font-medium">{transaction.processedBy}</p>
-                          <p className="text-muted-foreground text-xs">
-                            Onay: {transaction.approvedBy}
-                          </p>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Button variant="ghost" size="sm">
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="sm">
-                            <FileText className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="sm">
-                            <Download className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
+            {loading ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="text-muted-foreground">Yükleniyor...</div>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>İşlem No</TableHead>
+                      <TableHead>İhtiyaç Sahibi</TableHead>
+                      <TableHead>Kategori</TableHead>
+                      <TableHead>Ürün/Açıklama</TableHead>
+                      <TableHead>Miktar</TableHead>
+                      <TableHead>Değer</TableHead>
+                      <TableHead>Teslimat</TableHead>
+                      <TableHead>Durum</TableHead>
+                      <TableHead>İşleyen</TableHead>
+                      <TableHead>İşlemler</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredTransactions.map((transaction) => (
+                      <TableRow key={transaction.id}>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <FileText className="h-4 w-4 text-gray-400" />
+                            <span className="font-mono text-sm">{transaction.transactionNumber}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div>
+                            <p className="font-medium">{transaction.recipientName}</p>
+                            <p className="text-muted-foreground text-sm">{transaction.recipientId}</p>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            {getCategoryIcon(transaction.itemCategory)}
+                            <Badge variant="outline">{transaction.itemCategory}</Badge>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div>
+                            <p className="text-sm font-medium">{transaction.itemDescription}</p>
+                            {transaction.notes && (
+                              <p className="text-muted-foreground text-xs">{transaction.notes}</p>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="text-center">
+                            <p className="font-medium">{transaction.quantity}</p>
+                            <p className="text-muted-foreground text-xs">{transaction.unit}</p>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <span className="font-medium">
+                            ₺{transaction.estimatedValue.toLocaleString('tr-TR')}
+                          </span>
+                        </TableCell>
+                        <TableCell>
+                          <div>
+                            {getDeliveryMethodBadge(transaction.deliveryMethod)}
+                            <p className="text-muted-foreground mt-1 text-xs">
+                              {new Date(transaction.deliveryDate).toLocaleDateString('tr-TR')}
+                            </p>
+                          </div>
+                        </TableCell>
+                        <TableCell>{getStatusBadge(transaction.status)}</TableCell>
+                        <TableCell>
+                          <div>
+                            <p className="text-sm font-medium">{transaction.processedBy}</p>
+                            <p className="text-muted-foreground text-xs">
+                              Onay: {transaction.approvedBy}
+                            </p>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <Button variant="ghost" size="sm">
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                            <Button variant="ghost" size="sm">
+                              <FileText className="h-4 w-4" />
+                            </Button>
+                            <Button variant="ghost" size="sm">
+                              <Download className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

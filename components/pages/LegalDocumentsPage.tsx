@@ -16,7 +16,7 @@ import {
   Upload,
   User,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
@@ -27,6 +27,8 @@ import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { Textarea } from '../ui/textarea';
+import { fileStorageService } from '../../services/fileStorageService';
+import { logger } from '../../lib/logging/logger';
 
 interface LegalDocument {
   id: number;
@@ -50,7 +52,8 @@ interface LegalDocument {
  * @returns {void} Nothing
  */
 export function LegalDocumentsPage() {
-  const [documents] = useState<LegalDocument[]>([]);
+  const [documents, setDocuments] = useState<LegalDocument[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<string>('all');
   const [filterCategory, setFilterCategory] = useState<string>('all');
@@ -63,7 +66,37 @@ export function LegalDocumentsPage() {
     category: 'medeni' as LegalDocument['category'],
     relatedCase: '',
     description: '',
+    file: null as File | null,
   });
+
+  useEffect(() => {
+    loadDocuments();
+  }, []);
+
+  const loadDocuments = async () => {
+    setLoading(true);
+    try {
+      const result = await fileStorageService.listFiles({ folder: 'legal-documents' });
+      const docs: LegalDocument[] = result.files.map((f) => ({
+        id: parseInt(f.id) || Math.floor(Math.random() * 1000000),
+        name: f.name,
+        type: (f.metadata?.documentType as LegalDocument['type']) || 'diger',
+        category: (f.metadata?.category as LegalDocument['category']) || 'medeni',
+        relatedCase: f.metadata?.caseNumber,
+        uploadDate: f.createdAt.toISOString(),
+        uploadedBy: f.uploadedBy || 'Unknown',
+        size: `${(f.size / 1024 / 1024).toFixed(2)} MB`,
+        status: 'onaylandi' as const,
+        description: f.description || f.metadata?.description,
+      }));
+      setDocuments(docs);
+    } catch (error) {
+      logger.error('Failed to load legal documents', error);
+      toast.error('Belgeler yüklenirken hata oluştu');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filteredDocuments = documents.filter((doc) => {
     const matchesSearch =
@@ -114,11 +147,16 @@ export function LegalDocumentsPage() {
 
   const approvedDocs = documents.filter((d) => d.status === 'onaylandi').length;
   const pendingDocs = documents.filter((d) => d.status === 'bekliyor').length;
+  const thisMonthDocs = documents.filter((d) => {
+    const docDate = new Date(d.uploadDate);
+    const now = new Date();
+    return docDate.getMonth() === now.getMonth() && docDate.getFullYear() === now.getFullYear();
+  }).length;
 
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.name || !formData.type || !formData.category) {
+    if (!formData.name || !formData.type || !formData.category || !formData.file) {
       toast.error('Lütfen zorunlu alanları doldurun');
       return;
     }
@@ -126,24 +164,37 @@ export function LegalDocumentsPage() {
     try {
       setIsSubmitting(true);
 
-      // TODO: Integrate with actual API
-      // const result = await legalDocumentsService.uploadDocument(formData);
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      toast.success('Belge başarıyla yüklendi!');
-      setShowUploadDialog(false);
-
-      // Reset form
-      setFormData({
-        name: '',
-        type: 'sozlesme',
-        category: 'medeni',
-        relatedCase: '',
-        description: '',
+      const result = await fileStorageService.uploadFile(formData.file, {
+        folder: 'legal-documents',
+        metadata: {
+          documentType: formData.type,
+          category: formData.category,
+          caseNumber: formData.relatedCase,
+          description: formData.description,
+        },
       });
-    } catch {
+
+      if (result.success) {
+        toast.success('Belge başarıyla yüklendi!');
+        setShowUploadDialog(false);
+
+        // Reset form
+        setFormData({
+          name: '',
+          type: 'sozlesme',
+          category: 'medeni',
+          relatedCase: '',
+          description: '',
+          file: null,
+        });
+
+        // Reload documents
+        await loadDocuments();
+      } else {
+        toast.error(result.error || 'Belge yüklenirken hata oluştu');
+      }
+    } catch (error) {
+      logger.error('Failed to upload legal document', error);
       toast.error('Belge yüklenirken hata oluştu');
     } finally {
       setIsSubmitting(false);
@@ -212,7 +263,7 @@ export function LegalDocumentsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-muted-foreground text-sm">Bu Ay</p>
-                <p className="text-2xl font-medium text-blue-600">3</p>
+                <p className="text-2xl font-medium text-blue-600">{thisMonthDocs}</p>
               </div>
               <Plus className="h-5 w-5 text-blue-600" />
             </div>
@@ -276,62 +327,68 @@ export function LegalDocumentsPage() {
         </TabsList>
 
         <TabsContent value={activeTab} className="mt-4">
-          <div className="grid gap-4">
-            {filteredDocuments.map((document) => (
-              <Card key={document.id} className="transition-shadow hover:shadow-md">
-                <CardHeader className="pb-3">
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                    <div className="min-w-0 flex-1">
-                      <CardTitle className="text-lg font-medium">{document.name}</CardTitle>
-                      {document.relatedCase && (
-                        <p className="text-muted-foreground mt-1">
-                          Dava No: {document.relatedCase}
-                        </p>
-                      )}
-                      <div className="mt-2 flex flex-wrap items-center gap-2">
-                        {getStatusBadge(document.status)}
-                        {getTypeBadge(document.type)}
+          {loading ? (
+            <div className="flex justify-center py-8">
+              <div className="text-muted-foreground">Belgeler yükleniyor...</div>
+            </div>
+          ) : (
+            <div className="grid gap-4">
+              {filteredDocuments.map((document) => (
+                <Card key={document.id} className="transition-shadow hover:shadow-md">
+                  <CardHeader className="pb-3">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                      <div className="min-w-0 flex-1">
+                        <CardTitle className="text-lg font-medium">{document.name}</CardTitle>
+                        {document.relatedCase && (
+                          <p className="text-muted-foreground mt-1">
+                            Dava No: {document.relatedCase}
+                          </p>
+                        )}
+                        <div className="mt-2 flex flex-wrap items-center gap-2">
+                          {getStatusBadge(document.status)}
+                          {getTypeBadge(document.type)}
+                        </div>
+                      </div>
+
+                      <div className="flex gap-2">
+                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <Download className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </CardHeader>
+
+                  <CardContent className="pt-0">
+                    <div className="mb-3 grid grid-cols-1 gap-4 sm:grid-cols-3">
+                      <div className="flex items-center gap-2 text-sm">
+                        <User className="text-muted-foreground h-4 w-4" />
+                        <span className="truncate">{document.uploadedBy}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm">
+                        <Calendar className="text-muted-foreground h-4 w-4" />
+                        <span className="truncate">
+                          {new Date(document.uploadDate).toLocaleDateString('tr-TR')}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm">
+                        <FileText className="text-muted-foreground h-4 w-4" />
+                        <span className="truncate">{document.size}</span>
                       </div>
                     </div>
 
-                    <div className="flex gap-2">
-                      <Button variant="ghost" size="icon" className="h-8 w-8">
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="icon" className="h-8 w-8">
-                        <Download className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </CardHeader>
-
-                <CardContent className="pt-0">
-                  <div className="mb-3 grid grid-cols-1 gap-4 sm:grid-cols-3">
-                    <div className="flex items-center gap-2 text-sm">
-                      <User className="text-muted-foreground h-4 w-4" />
-                      <span className="truncate">{document.uploadedBy}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <Calendar className="text-muted-foreground h-4 w-4" />
-                      <span className="truncate">
-                        {new Date(document.uploadDate).toLocaleDateString('tr-TR')}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <FileText className="text-muted-foreground h-4 w-4" />
-                      <span className="truncate">{document.size}</span>
-                    </div>
-                  </div>
-
-                  {document.description && (
-                    <div className="rounded-lg bg-gray-50 p-3">
-                      <p className="text-sm text-gray-700">{document.description}</p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                    {document.description && (
+                      <div className="rounded-lg bg-gray-50 p-3">
+                        <p className="text-sm text-gray-700">{document.description}</p>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </TabsContent>
       </Tabs>
 
@@ -445,8 +502,18 @@ export function LegalDocumentsPage() {
 
             {/* File Upload Input */}
             <div className="space-y-2">
-              <Label htmlFor="file">Dosya Seç</Label>
-              <Input id="file" type="file" accept=".pdf,.doc,.docx" className="cursor-pointer" />
+              <Label htmlFor="file">
+                Dosya Seç <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="file"
+                type="file"
+                accept=".pdf,.doc,.docx"
+                className="cursor-pointer"
+                onChange={(e) => {
+                  setFormData({ ...formData, file: e.target.files?.[0] || null });
+                }}
+              />
               <p className="text-muted-foreground text-xs">
                 Desteklenen formatlar: PDF, DOC, DOCX (Maks. 10MB)
               </p>

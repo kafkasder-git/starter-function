@@ -6,7 +6,7 @@
  */
 
 import { logger } from '../lib/logging/logger';
-import { supabase, TABLES } from '../lib/supabase';
+import { db, collections, queryHelpers, getMappedField } from '../lib/database';
 import type {
   Beneficiary,
   BeneficiaryInsert,
@@ -17,7 +17,7 @@ import { mapDBToBeneficiary, mapBeneficiaryToDB } from '../types/beneficiary';
 import type { ApiResponse } from './config';
 
 // Module-level constants
-const tableName = 'ihtiyac_sahipleri';
+const collectionName = collections.BENEFICIARIES;
 
 /**
  * BeneficiariesService - İhtiyaç sahipleri için CRUD operasyonları
@@ -28,17 +28,17 @@ const beneficiariesService = {
    */
   async getAll(): Promise<ApiResponse<Beneficiary[]>> {
     try {
-      const { data, error } = await supabase
-        .from(tableName)
-        .select('*')
-        .order('created_at', { ascending: false });
+      const { data, error } = await db.list(
+        collectionName,
+        [queryHelpers.orderDesc('created_at', 'beneficiaries')]
+      );
 
       if (error) {
         logger.error('Error fetching all beneficiaries', error);
         return { data: null, error: error.message };
       }
 
-      const mapped = data?.map((item: BeneficiaryDBFields) => mapDBToBeneficiary(item)) || [];
+      const mapped = data?.documents?.map((item: BeneficiaryDBFields) => mapDBToBeneficiary(item)) || [];
       return { data: mapped, error: null };
     } catch (error) {
       logger.error('Unexpected error in getAll', error);
@@ -51,7 +51,7 @@ const beneficiariesService = {
    */
   async getById(id: string): Promise<ApiResponse<Beneficiary>> {
     try {
-      const { data, error } = await supabase.from(tableName).select('*').eq('id', id).single();
+      const { data, error } = await db.get(collectionName, id);
 
       if (error) {
         logger.error('Error fetching beneficiary by ID', error);
@@ -74,11 +74,7 @@ const beneficiariesService = {
       // Convert English fields to Turkish DB fields
       const dbData = mapBeneficiaryToDB(data as Partial<Beneficiary>);
 
-      const { data: result, error } = await supabase
-        .from(tableName)
-        .insert(dbData)
-        .select()
-        .single();
+      const { data: result, error } = await db.create(collectionName, dbData);
 
       if (error) {
         logger.error('Error creating beneficiary', error);
@@ -101,12 +97,7 @@ const beneficiariesService = {
       // Convert English fields to Turkish DB fields
       const dbData = mapBeneficiaryToDB(data as Partial<Beneficiary>);
 
-      const { data: result, error } = await supabase
-        .from(tableName)
-        .update(dbData)
-        .eq('id', id)
-        .select()
-        .single();
+      const { data: result, error } = await db.update(collectionName, id, dbData);
 
       if (error) {
         logger.error('Error updating beneficiary', error);
@@ -126,7 +117,7 @@ const beneficiariesService = {
    */
   async delete(id: string): Promise<ApiResponse<boolean>> {
     try {
-      const { error } = await supabase.from(tableName).delete().eq('id', id);
+      const { error } = await db.delete(collectionName, id);
 
       if (error) {
         logger.error('Error deleting beneficiary', error);
@@ -149,11 +140,13 @@ const beneficiariesService = {
     try {
       logger.info('Fetching active beneficiaries');
 
-      const { data, error } = await supabase
-        .from(tableName)
-        .select('*')
-        .eq('status', 'active')
-        .order('created_at', { ascending: false });
+      const { data, error } = await db.list(
+        collectionName,
+        [
+          queryHelpers.equal('status', 'active'),
+          queryHelpers.orderDesc('created_at')
+        ]
+      );
 
       if (error) {
         logger.error('Error fetching active beneficiaries', error);
@@ -161,7 +154,7 @@ const beneficiariesService = {
       }
 
       // Map Turkish DB fields to English app model
-      const mapped = data?.map((item: BeneficiaryDBFields) => mapDBToBeneficiary(item)) || [];
+      const mapped = data?.documents?.map((item: BeneficiaryDBFields) => mapDBToBeneficiary(item)) || [];
 
       logger.info(`Successfully fetched ${mapped.length} active beneficiaries`);
       return { data: mapped, error: null };
@@ -181,12 +174,14 @@ const beneficiariesService = {
     try {
       logger.info('Fetching beneficiaries by city', { city });
 
-      const { data, error } = await supabase
-        .from(tableName)
-        .select('*')
-        .eq('sehri', city) // Use Turkish DB field name
-        .eq('status', 'active')
-        .order('created_at', { ascending: false });
+      const { data, error } = await db.list(
+        collectionName,
+        [
+          queryHelpers.equal('city', city), // Use English DB field name
+          queryHelpers.equal('status', 'active'),
+          queryHelpers.orderDesc('created_at')
+        ]
+      );
 
       if (error) {
         logger.error('Error fetching beneficiaries by city', error);
@@ -194,7 +189,7 @@ const beneficiariesService = {
       }
 
       // Map Turkish DB fields to English app model
-      const mapped = data?.map((item: BeneficiaryDBFields) => mapDBToBeneficiary(item)) || [];
+      const mapped = data?.documents?.map((item: BeneficiaryDBFields) => mapDBToBeneficiary(item)) || [];
 
       logger.info(`Successfully fetched ${mapped.length} beneficiaries for city: ${city}`);
       return { data: mapped, error: null };
@@ -215,12 +210,14 @@ const beneficiariesService = {
       logger.info('Fetching beneficiaries by need type', { needType });
 
       // Note: DB uses 'kategori' field instead of need_types array
-      const { data, error } = await supabase
-        .from(tableName)
-        .select('*')
-        .eq('kategori', needType) // Use Turkish DB field name
-        .eq('status', 'active')
-        .order('created_at', { ascending: false });
+      const { data, error } = await db.list(
+        collectionName,
+        [
+          queryHelpers.equal('kategori', needType), // Use Turkish DB field name
+          queryHelpers.equal('status', 'active'),
+          queryHelpers.orderDesc('created_at')
+        ]
+      );
 
       if (error) {
         logger.error('Error fetching beneficiaries by need type', error);
@@ -228,7 +225,7 @@ const beneficiariesService = {
       }
 
       // Map Turkish DB fields to English app model
-      const mapped = data?.map((item: BeneficiaryDBFields) => mapDBToBeneficiary(item)) || [];
+      const mapped = data?.documents?.map((item: BeneficiaryDBFields) => mapDBToBeneficiary(item)) || [];
 
       logger.info(`Successfully fetched ${mapped.length} beneficiaries for need type: ${needType}`);
       return { data: mapped, error: null };
@@ -248,12 +245,14 @@ const beneficiariesService = {
       logger.info('Fetching urgent beneficiaries');
 
       // Note: DB doesn't have priority field, return all active
-      const { data, error } = await supabase
-        .from(tableName)
-        .select('*')
-        .eq('status', 'active')
-        .order('created_at', { ascending: false })
-        .limit(20); // Limit to recent entries as fallback
+      const { data, error } = await db.list(
+        collectionName,
+        [
+          queryHelpers.equal('status', 'active'),
+          queryHelpers.orderDesc('created_at'),
+          queryHelpers.limit(20) // Limit to recent entries as fallback
+        ]
+      );
 
       if (error) {
         logger.error('Error fetching urgent beneficiaries', error);
@@ -261,7 +260,7 @@ const beneficiariesService = {
       }
 
       // Map Turkish DB fields to English app model
-      const mapped = data?.map((item: BeneficiaryDBFields) => mapDBToBeneficiary(item)) || [];
+      const mapped = data?.documents?.map((item: BeneficiaryDBFields) => mapDBToBeneficiary(item)) || [];
 
       logger.info(`Successfully fetched ${mapped.length} urgent beneficiaries`);
       return { data: mapped, error: null };
@@ -278,19 +277,14 @@ const beneficiariesService = {
    * @param status - Yeni durum
    * @returns Promise<ApiResponse<Beneficiary>>
    */
-  async updateBeneficiaryStatus(id: number, status: string): Promise<ApiResponse<Beneficiary>> {
+  async updateBeneficiaryStatus(id: string, status: string): Promise<ApiResponse<Beneficiary>> {
     try {
       logger.info('Updating beneficiary status', { id, status });
 
-      const { data, error } = await supabase
-        .from(tableName)
-        .update({
-          status,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', id)
-        .select()
-        .single();
+      const { data, error } = await db.update(collectionName, id, {
+        status,
+        updated_at: new Date().toISOString(),
+      });
 
       if (error) {
         logger.error('Error updating beneficiary status', error);
@@ -317,32 +311,37 @@ const beneficiariesService = {
     try {
       logger.info('Fetching beneficiary statistics');
 
-      const { data, error } = await supabase.from(tableName).select('status, sehri, kategori'); // Use Turkish DB field names
+      const { data, error } = await db.list(
+        collectionName,
+        [queryHelpers.select(['status', 'city', 'category'])] // Use English DB field names
+      );
 
       if (error) {
         logger.error('Error fetching beneficiary statistics', error);
         return { data: null, error: error.message };
       }
 
+      const documents = data?.documents || [];
+
       // İstatistikleri hesapla
       const stats: any = {
-        total: data?.length || 0,
-        active: data?.filter((b: any) => b.status === 'active').length || 0,
-        completed: data?.filter((b: any) => b.status === 'inactive').length || 0,
+        total: documents.length,
+        active: documents.filter((b: any) => b.status === 'active').length,
+        completed: documents.filter((b: any) => b.status === 'inactive').length,
         urgent: 0, // DB doesn't have priority field
         byCity: {} as Record<string, number>,
         byNeedType: {} as Record<string, number>,
       };
 
-      // Şehir bazında istatistikler (using Turkish field name)
-      data?.forEach((beneficiary: any) => {
-        if (beneficiary.sehri) {
-          stats.byCity[beneficiary.sehri] = (stats.byCity[beneficiary.sehri] || 0) + 1;
+      // Şehir bazında istatistikler (using English field name)
+      documents.forEach((beneficiary: any) => {
+        if (beneficiary.city) {
+          stats.byCity[beneficiary.city] = (stats.byCity[beneficiary.city] || 0) + 1;
         }
       });
 
       // İhtiyaç türü bazında istatistikler (using kategori field)
-      data?.forEach((beneficiary: any) => {
+      documents.forEach((beneficiary: any) => {
         if (beneficiary.kategori) {
           stats.byNeedType[beneficiary.kategori] =
             (stats.byNeedType[beneficiary.kategori] || 0) + 1;
@@ -566,40 +565,33 @@ const beneficiariesService = {
       logger.info('Fetching beneficiaries with pagination', { page, limit, filters });
 
       const offset = (page - 1) * limit;
+      const queries: string[] = [];
 
-      let query = supabase.from(tableName).select('*', { count: 'exact' });
-
-      // Apply filters using Turkish DB field names
+      // Apply filters using English DB field names
       if (filters.sehir) {
-        query = query.eq('sehri', filters.sehir);
+        queries.push(queryHelpers.equal('city', filters.sehir));
       }
 
       if (filters.kategori) {
-        query = query.eq('kategori', filters.kategori);
+        queries.push(queryHelpers.equal('kategori', filters.kategori));
       }
 
       if (filters.status) {
-        query = query.eq('status', filters.status);
-      }
-
-      if (filters.searchTerm) {
-        query = query.or(
-          `ad_soyad.ilike.%${filters.searchTerm}%,kimlik_no.ilike.%${filters.searchTerm}%,telefon_no.ilike.%${filters.searchTerm}%`,
-        );
+        queries.push(queryHelpers.equal('status', filters.status));
       }
 
       // Apply sorting
-      let sortField = 'ad_soyad';
+      let sortField = 'name';
       let ascending = true;
 
       if (filters.sortBy) {
         switch (filters.sortBy) {
           case 'name-asc':
-            sortField = 'ad_soyad';
+            sortField = 'name';
             ascending = true;
             break;
           case 'name-desc':
-            sortField = 'ad_soyad';
+            sortField = 'name';
             ascending = false;
             break;
           case 'date-newest':
@@ -611,7 +603,7 @@ const beneficiariesService = {
             ascending = true;
             break;
           case 'city-asc':
-            sortField = 'sehri';
+            sortField = 'city';
             ascending = true;
             break;
           case 'category-asc':
@@ -619,14 +611,23 @@ const beneficiariesService = {
             ascending = true;
             break;
           default:
-            sortField = 'ad_soyad';
+            sortField = 'name';
             ascending = true;
         }
       }
 
-      const { data, error, count } = await query
-        .order(sortField, { ascending })
-        .range(offset, offset + limit - 1);
+      // Add sorting
+      if (ascending) {
+        queries.push(queryHelpers.orderAsc(sortField));
+      } else {
+        queries.push(queryHelpers.orderDesc(sortField));
+      }
+
+      // Add pagination
+      queries.push(queryHelpers.offset(offset));
+      queries.push(queryHelpers.limit(limit));
+
+      const { data, error } = await db.list(collectionName, queries);
 
       if (error) {
         logger.error('Error fetching beneficiaries', error);
@@ -640,13 +641,13 @@ const beneficiariesService = {
       }
 
       // Map Turkish DB fields to English app model
-      const mapped = data?.map((item: BeneficiaryDBFields) => mapDBToBeneficiary(item)) || [];
+      const mapped = data?.documents?.map((item: BeneficiaryDBFields) => mapDBToBeneficiary(item)) || [];
 
-      logger.info(`Successfully fetched ${mapped.length} beneficiaries from ${count ?? 0} total`);
+      logger.info(`Successfully fetched ${mapped.length} beneficiaries from ${data?.total ?? 0} total`);
 
       return {
         data: mapped,
-        total: count ?? 0,
+        total: data?.total ?? 0,
         page,
         limit,
       };
@@ -670,10 +671,13 @@ const beneficiariesService = {
     try {
       logger.info('Getting unique cities');
 
-      const { data, error } = await supabase
-        .from(tableName)
-        .select('sehri')
-        .not('sehri', 'is', null);
+      const { data, error } = await db.list(
+        collectionName,
+        [
+          queryHelpers.select(['city']),
+          queryHelpers.notEqual('city', null)
+        ]
+      );
 
       if (error) {
         logger.error('Error fetching cities:', error);
@@ -684,7 +688,7 @@ const beneficiariesService = {
       }
 
       // Get unique cities
-      const cities = [...new Set(data?.map((item: any) => item.sehri).filter(Boolean))].sort(
+      const cities = [...new Set(data?.documents?.map((item: any) => item.city).filter(Boolean))].sort(
         (a, b) => a.localeCompare(b),
       );
 
@@ -703,25 +707,25 @@ const beneficiariesService = {
 
   /**
    * Legacy compatibility: testConnection
-   * Test database connection and table existence
+   * Test database connection and collection existence
    */
   async testConnection(): Promise<{ exists: boolean; data?: any; error?: string }> {
     try {
-      logger.info('Testing Supabase connection and table existence...');
+      logger.info('Testing Appwrite connection and collection existence...');
 
-      const { data: tableData, error: tableError } = await supabase
-        .from(tableName)
-        .select('*')
-        .limit(1);
+      const { data: tableData, error: tableError } = await db.list(
+        collectionName,
+        [queryHelpers.limit(1)]
+      );
 
-      logger.info('Table test result:', { tableData, tableError });
+      logger.info('Collection test result:', { tableData, tableError });
 
       if (tableError) {
-        logger.error('Table does not exist or access denied:', tableError);
+        logger.error('Collection does not exist or access denied:', tableError);
         return { exists: false, error: tableError.message };
       }
 
-      logger.info('Table exists and is accessible');
+      logger.info('Collection exists and is accessible');
       return { exists: true, data: tableData };
     } catch (error) {
       logger.error('Connection test failed:', error);

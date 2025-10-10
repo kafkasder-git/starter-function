@@ -22,9 +22,9 @@ import { toast } from 'sonner';
 // Note: useSupabaseAuth removed as authentication is handled at app level
 import { beneficiariesService } from '../../services/beneficiariesService';
 import type { Beneficiary } from '../../types/beneficiary';
-import { PageLoading } from '../LoadingSpinner';
+import { PageLoading } from '../shared/LoadingSpinner';
 // OCR Scanner removed
-import { PageLayout } from '../PageLayout';
+import { PageLayout } from '../layouts/PageLayout';
 import { NewCategoryNotification } from '../notifications/NewCategoryNotification';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
@@ -330,7 +330,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
     }
   }, []);
 
-  // Test Supabase connection first
+  // Test Appwrite connection first
   useEffect(() => {
     const testConnection = async () => {
       const result = await beneficiariesService.testConnection();

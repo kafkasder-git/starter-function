@@ -14,10 +14,10 @@ import { Label } from '../ui/label';
 import { Switch } from '../ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { toast } from 'sonner';
-import { PageLayout } from '../PageLayout';
+import { PageLayout } from '../layouts/PageLayout';
 import { systemSettingsService, type SystemSettings as ServiceSystemSettings } from '../../services/systemSettingsService';
 import { logger } from '../../lib/logging/logger';
-import { LoadingSpinner } from '../LoadingSpinner';
+import { LoadingSpinner } from '../shared/LoadingSpinner';
 import { Alert, AlertDescription } from '../ui/alert';
 
 // Use ServiceSystemSettings type from the service

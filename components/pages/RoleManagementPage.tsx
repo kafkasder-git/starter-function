@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Alert, AlertDescription } from '../ui/alert';
-import { LoadingSpinner } from '../LoadingSpinner';
+import { LoadingSpinner } from '../shared/LoadingSpinner';
 import { PermissionGuard } from '../auth/PermissionGuard';
 import { Users, Shield, Key, CheckCircle2, XCircle, UserCog, BarChart3 } from 'lucide-react';
 

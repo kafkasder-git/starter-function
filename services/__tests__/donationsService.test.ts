@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { donationsService } from '../donationsService';
 
-vi.mock('../../lib/supabase', () => ({
-  supabase: {
+vi.mock('../../lib/database', () => ({
+  db: {
     from: vi.fn(() => ({
       select: vi.fn(() => ({
         eq: vi.fn(() => ({

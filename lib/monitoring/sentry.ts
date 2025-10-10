@@ -6,6 +6,7 @@
 import * as Sentry from '@sentry/react';
 import { BrowserTracing } from '@sentry/tracing';
 import { environment } from '../environment';
+import { logger } from '../logging/logger';
 
 /**
  * Initialize Sentry error monitoring
@@ -13,7 +14,7 @@ import { environment } from '../environment';
 export function initSentry() {
   // Only initialize if DSN is provided
   if (!environment.sentry?.dsn) {
-    console.warn('Sentry DSN not configured. Error monitoring disabled.');
+    logger.warn('Sentry DSN not configured. Error monitoring disabled.');
     return;
   }
 
@@ -28,7 +29,7 @@ export function initSentry() {
         tracePropagationTargets: [
           'localhost',
           /^https:\/\/.*\.kafkasder\.com/,
-          environment.supabase.url,
+          environment.appwrite.endpoint,
         ],
       }),
     ],
@@ -115,7 +116,7 @@ export function initSentry() {
     Sentry.setUser(user);
   }
 
-  console.log('✅ Sentry initialized successfully');
+  logger.info('Sentry initialized successfully');
 }
 
 /**
@@ -127,7 +128,7 @@ function getUserContext() {
     if (userStr) {
       const authData = JSON.parse(userStr);
       const user = authData?.state?.user;
-      
+
       if (user) {
         return {
           id: user.id,
@@ -137,9 +138,9 @@ function getUserContext() {
       }
     }
   } catch (error) {
-    console.warn('Failed to get user context for Sentry:', error);
+    logger.warn('Failed to get user context for Sentry:', error);
   }
-  
+
   return null;
 }
 

@@ -7,7 +7,7 @@
 
 import { AlertCircle, Check, Clock, Download, Eye, FileText, Plus, X } from 'lucide-react';
 import { motion } from 'motion/react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { useIsMobile } from '../../hooks/useTouchDevice';
 import { MobileInfoCard, ResponsiveCardGrid } from '../ResponsiveCard';
@@ -19,9 +19,11 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { aidRequestsService } from '../../services/aidRequestsService';
+import { logger } from '../../lib/logging/logger';
 
 interface Application {
-  id: number;
+  id: string;
   applicantName: string;
   email: string;
   phone: string;
@@ -63,6 +65,8 @@ export function BursApplicationsPage() {
   const [priorityFilter, setPriorityFilter] = useState<string>('all');
   const [showApplicationDialog, setShowApplicationDialog] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [applications, setApplications] = useState<Application[]>([]);
+  const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     applicantName: '',
     email: '',
@@ -75,7 +79,70 @@ export function BursApplicationsPage() {
     gpa: 0,
   });
 
-  const applications: Application[] = useMemo(() => [], []);
+  useEffect(() => {
+    loadApplications();
+  }, []);
+
+  const loadApplications = async () => {
+    try {
+      const result = await aidRequestsService.getAidRequests(1, 1000, { aidType: 'education' });
+      if (result.data) {
+        const mappedApplications = result.data.data.map(mapAidRequestToApplication);
+        setApplications(mappedApplications);
+      }
+    } catch (error) {
+      logger.error('Failed to load applications', error);
+      toast.error('Başvurular yüklenirken hata oluştu');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const mapAidRequestToApplication = (req: any): Application => {
+    const descParts = req.description.split(' - ');
+    const school = descParts[0] || '';
+    const grade = descParts[1] || '';
+    const program = descParts[2] || '';
+    const familyIncomePart = descParts.find((p: string) => p.startsWith('Aile Geliri:')) || 'Aile Geliri: 0';
+    const familyIncome = parseFloat(familyIncomePart.replace('Aile Geliri: ', '')) || 0;
+    const gpaPart = descParts.find((p: string) => p.startsWith('GPA:')) || 'GPA: 0';
+    const gpa = parseFloat(gpaPart.replace('GPA: ', '')) || 0;
+
+    const statusMap: Record<string, Application['status']> = {
+      'pending': 'pending',
+      'approved': 'approved',
+      'rejected': 'rejected',
+      'under_review': 'interview',
+    };
+
+    const priorityMap: Record<string, Application['priority']> = {
+      'high': 'high',
+      'medium': 'medium',
+      'low': 'low',
+    };
+
+    return {
+      id: req.$id,
+      applicantName: req.applicant_name,
+      email: req.applicant_email || '',
+      phone: req.applicant_phone,
+      school,
+      program,
+      grade,
+      requestedAmount: req.requested_amount || 0,
+      familyIncome,
+      gpa,
+      status: statusMap[req.status] || 'pending',
+      applicationDate: req.created_at,
+      documents: {
+        transcript: false,
+        incomeProof: false,
+        recommendation: false,
+        essay: false,
+      },
+      priority: priorityMap[req.urgency] || 'medium',
+    };
+  };
 
   // Calculate statistics
   const stats: ApplicationStats = useMemo(() => {
@@ -103,26 +170,55 @@ export function BursApplicationsPage() {
     });
   }, [applications, searchQuery, statusFilter, priorityFilter]);
 
-  const handleSubmitApplication = async () => {
-    setIsSubmitting(true);
+  const handleSubmitApplication = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!formData.applicantName || !formData.email || !formData.school) {
+      toast.error('Başvuran adı, e-posta ve okul alanları zorunludur');
+      return;
+    }
+
     try {
-      // TODO: Implement application submission
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      toast.success('Başvuru başarıyla gönderildi');
-      setShowApplicationDialog(false);
-      setFormData({
-        applicantName: '',
-        email: '',
-        phone: '',
-        school: '',
-        program: '',
-        grade: '',
-        requestedAmount: 0,
-        familyIncome: 0,
-        gpa: 0,
+      setIsSubmitting(true);
+
+      const result = await aidRequestsService.createAidRequest({
+        applicant_name: formData.applicantName,
+        applicant_email: formData.email,
+        applicant_phone: formData.phone,
+        applicant_address: formData.school,
+        aid_type: 'education',
+        requested_amount: formData.requestedAmount,
+        currency: 'TRY',
+        urgency: 'medium',
+        description: `${formData.school} - ${formData.grade} - ${formData.program} - Aile Geliri: ${formData.familyIncome} - GPA: ${formData.gpa}`,
+        reason: 'Scholarship application',
       });
-    } catch {
-      toast.error('Başvuru gönderilirken hata oluştu');
+
+      if (result.error) {
+        logger.error('Failed to create scholarship application', result.error);
+        toast.error('Başvuru oluşturulurken hata oluştu');
+      } else {
+        toast.success('Burs başvurusu başarıyla oluşturuldu!');
+        setShowApplicationDialog(false);
+
+        // Reset form
+        setFormData({
+          applicantName: '',
+          email: '',
+          phone: '',
+          school: '',
+          program: '',
+          grade: '',
+          requestedAmount: 0,
+          familyIncome: 0,
+          gpa: 0,
+        });
+
+        loadApplications(); // refresh list
+      }
+    } catch (error) {
+      logger.error('Error submitting application', error);
+      toast.error('Başvuru oluşturulurken hata oluştu');
     } finally {
       setIsSubmitting(false);
     }
@@ -550,7 +646,7 @@ export function BursApplicationsPage() {
             <DialogTitle>Yeni Burs Başvurusu</DialogTitle>
             <DialogDescription>Burs başvurusu için gerekli bilgileri doldurun</DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
+          <form onSubmit={handleSubmitApplication} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="applicantName">Başvuran Adı</Label>
@@ -663,11 +759,11 @@ export function BursApplicationsPage() {
               >
                 İptal
               </Button>
-              <Button onClick={handleSubmitApplication} disabled={isSubmitting}>
+              <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting ? 'Gönderiliyor...' : 'Başvuru Gönder'}
               </Button>
             </div>
-          </div>
+          </form>
         </DialogContent>
       </Dialog>
     </div>

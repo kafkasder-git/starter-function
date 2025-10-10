@@ -5,17 +5,17 @@
  * @version 1.0.0
  */
 
-// Real data stats service with Supabase integration
-import { supabase } from '../lib/supabase';
+// Real data stats service with Appwrite integration
+import { db, collections, queryHelpers } from '../lib/database';
 import type { ApiResponse } from '../types/database';
 import type { SafeStats } from '../types/stats';
 
 import { logger } from '../lib/logging/logger';
 class IntelligentStatsService {
-  // Get real stats from Supabase
+  // Get real stats from Appwrite
   async getAllStats(): Promise<ApiResponse<SafeStats>> {
     try {
-      // Fetch real data from Supabase
+      // Fetch real data from Appwrite
       const [beneficiariesResult, membersResult, donationsResult, aidRequestsResult] =
         await Promise.all([
           this.getBeneficiariesStats(),
@@ -57,7 +57,7 @@ class IntelligentStatsService {
   // Get beneficiaries stats
   private async getBeneficiariesStats() {
     try {
-      const { data: beneficiaries, error } = await supabase.from('ihtiyac_sahipleri').select('*');
+      const { data: beneficiaries, error } = await db.list('beneficiaries', []);
 
       if (error) throw error;
 
@@ -115,7 +115,7 @@ class IntelligentStatsService {
   // Get members stats
   private async getMembersStats() {
     try {
-      const { data: members, error } = await supabase.from('members').select('*');
+      const { data: members, error } = await db.list('members', []);
 
       if (error) throw error;
 
@@ -188,7 +188,7 @@ class IntelligentStatsService {
   // Get donations stats
   private async getDonationsStats() {
     try {
-      const { data: donations, error } = await supabase.from('donations').select('*');
+      const { data: donations, error } = await db.list('donations', []);
 
       if (error) throw error;
 
@@ -260,7 +260,7 @@ class IntelligentStatsService {
   // Get aid requests stats
   private async getAidRequestsStats() {
     try {
-      const { data: aidRequests, error } = await supabase.from('aid_applications').select('*');
+      const { data: aidRequests, error } = await db.list('aid_applications', []);
 
       if (error) throw error;
 

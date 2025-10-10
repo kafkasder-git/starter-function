@@ -6,6 +6,7 @@
  */
 
 import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { toast } from 'sonner';
 import { Eye, EyeOff, Lock, Mail, Shield, AlertCircle, X } from 'lucide-react';
@@ -17,6 +18,8 @@ import { Checkbox } from '../ui/checkbox';
 import { Alert, AlertDescription } from '../ui/alert';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../ui/dialog';
 import { useAuthStore } from '../../stores/authStore';
+import { account } from '../../lib/appwrite';
+import { logger } from '../../lib/logging/logger';
 
 interface LoginPageProps {
   onLoginSuccess?: () => void;
@@ -29,7 +32,9 @@ interface LoginPageProps {
  * @returns {void} Nothing
  */
 export function LoginPage({ onLoginSuccess }: LoginPageProps) {
-  const { login, isLoading, error, clearError } = useAuthStore();
+  const { login, isLoading, error, clearError, isAuthenticated } = useAuthStore();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [credentials, setCredentials] = useState({
     email: '',
     password: '',
@@ -54,6 +59,13 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
     }
     return undefined;
   }, [error, clearError]);
+
+  // Redirect authenticated users away from login page
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/', { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
 
   const validateForm = (): boolean => {
     const errors: Record<string, string> = {};
@@ -82,8 +94,11 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
     try {
       await login(credentials.email, credentials.password, credentials.rememberMe);
       onLoginSuccess?.();
+      // Redirect logic
+      const from = location.state?.from?.pathname || '/';
+      navigate(from, { replace: true });
     } catch {
-      // Error is handled in SupabaseAuthContext
+      // Error is handled in auth store
     }
   };
 
@@ -114,16 +129,16 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
     try {
       setIsResetting(true);
 
-      // TODO: Integrate with actual API
-      // const result = await authService.resetPassword(resetEmail);
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      await account.createRecovery(
+        resetEmail,
+        `${window.location.origin}/reset-password` // Redirect URL
+      );
 
       toast.success('Şifre sıfırlama bağlantısı e-posta adresinize gönderildi!');
       setShowResetDialog(false);
       setResetEmail('');
-    } catch {
+    } catch (error) {
+      logger.error('Failed to send password reset email:', error);
       toast.error('Şifre sıfırlama talebi gönderilemedi');
     } finally {
       setIsResetting(false);
@@ -175,7 +190,29 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
               >
                 <Alert variant="destructive" className="flex items-start gap-2 border-red-300">
                   <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0" />
-                  <AlertDescription className="flex-1">{error}</AlertDescription>
+                  <AlertDescription className="flex-1">
+                    <div className="space-y-2">
+                      <div className="font-medium">{error}</div>
+                      {error.includes('Ağ bağlantısı') && (
+                        <div className="text-sm text-red-700">
+                          <ul className="list-disc list-inside space-y-1">
+                            <li>İnternet bağlantınızı kontrol edin</li>
+                            <li>Sayfayı yenileyin (F5)</li>
+                            <li>Birkaç dakika sonra tekrar deneyin</li>
+                          </ul>
+                        </div>
+                      )}
+                      {error.includes('Geçersiz email') && (
+                        <div className="text-sm text-red-700">
+                          <ul className="list-disc list-inside space-y-1">
+                            <li>Email adresinizi kontrol edin</li>
+                            <li>Şifrenizi kontrol edin</li>
+                            <li>Hesabınızın aktif olduğundan emin olun</li>
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  </AlertDescription>
                   <button
                     type="button"
                     onClick={clearError}

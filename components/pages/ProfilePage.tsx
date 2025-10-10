@@ -23,7 +23,10 @@ import {
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { useAuthStore } from '../../stores/authStore';
-import { PageLayout } from '../PageLayout';
+import { userManagementService } from '../../services/userManagementService';
+import { logger } from '../../lib/logging/logger';
+import { account } from '../../lib/appwrite';
+import { PageLayout } from '../layouts/PageLayout';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
@@ -68,7 +71,7 @@ interface ValidationErrors {
  * @returns {void} Nothing
  */
 export function ProfilePage() {
-  const { user, isAuthenticated } = useAuthStore();
+  const { user, isAuthenticated, updateProfile } = useAuthStore();
   const [editMode, setEditMode] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<ValidationErrors>({});
@@ -102,7 +105,25 @@ export function ProfilePage() {
     };
   };
 
-  // Load user data from Supabase
+  const [notificationSettings, setNotificationSettings] = useState({
+    emailNotifications: true,
+    pushNotifications: true,
+    smsNotifications: false,
+    weeklyReports: true,
+    systemAlerts: true,
+    newDonations: true,
+    newMembers: false,
+    systemUpdates: true,
+  });
+
+  const [privacySettings, setPrivacySettings] = useState({
+    profileVisibility: 'internal',
+    showEmail: false,
+    showPhone: false,
+    allowContact: true,
+  });
+
+  // Load user data from Appwrite
   useEffect(() => {
     if (user && isAuthenticated) {
       const userMetadata = user.metadata || {};
@@ -139,28 +160,19 @@ export function ProfilePage() {
         showPhone: false,
         allowContact: true,
       });
+
+      // Load notification settings from metadata
+      if (userMetadata.notificationSettings) {
+        setNotificationSettings({ ...notificationSettings, ...userMetadata.notificationSettings });
+      }
+
+      // Load privacy settings from metadata
+      if (userMetadata.privacySettings) {
+        setPrivacySettings({ ...privacySettings, ...userMetadata.privacySettings });
+      }
     }
   }, [user, isAuthenticated]);
 
-  const [notificationSettings, setNotificationSettings] = useState({
-    emailNotifications: true,
-    pushNotifications: true,
-    smsNotifications: false,
-    weeklyReports: true,
-    systemAlerts: true,
-    newDonations: true,
-    newMembers: false,
-    systemUpdates: true,
-  });
-
-  const [privacySettings, setPrivacySettings] = useState({
-    profileVisibility: 'internal',
-    showEmail: false,
-    showPhone: false,
-    allowContact: true,
-  });
-
-  // Validation functions
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
@@ -202,21 +214,34 @@ export function ProfilePage() {
 
     setIsLoading(true);
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      // Here you would make actual API call
-      // const response = await fetch('/api/profile', {
-      //   method: 'PUT',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(profileData)
-      // });
-
+      const result = await userManagementService.updateUser(
+        user!.id,
+        {
+          name: `${profileData.firstName} ${profileData.lastName}`,
+          email: profileData.email,
+          phone: profileData.phone,
+        }
+      );
+      // Update auth store with new user data
+      await updateProfile({
+        name: result.name,
+        email: result.email,
+        metadata: {
+          ...user!.metadata,
+          phone: profileData.phone,
+          title: profileData.title,
+          department: profileData.department,
+          location: profileData.location,
+          bio: profileData.bio,
+          avatar_url: profileData.avatar,
+        },
+      });
       setEditMode(false);
       toast.success('Profil bilgileri başarıyla güncellendi', {
         duration: 3000,
       });
-    } catch {
+    } catch (error) {
+      logger.error('Failed to update profile', error);
       toast.error('Profil güncellenirken bir hata oluştu');
     } finally {
       setIsLoading(false);
@@ -226,20 +251,23 @@ export function ProfilePage() {
   const handleSaveNotifications = async () => {
     setIsLoading(true);
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // Here you would make actual API call
-      // const response = await fetch('/api/notifications', {
-      //   method: 'PUT',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(notificationSettings)
-      // });
-
+      // Store notification preferences in user preferences
+      await account.updatePrefs({
+        ...user!.metadata,
+        notificationSettings,
+      });
+      // Update local metadata
+      await updateProfile({
+        metadata: {
+          ...user!.metadata,
+          notificationSettings,
+        },
+      });
       toast.success('Bildirim ayarları kaydedildi', {
         duration: 2000,
       });
-    } catch {
+    } catch (error) {
+      logger.error('Failed to save notification settings', error);
       toast.error('Bildirim ayarları güncellenirken bir hata oluştu');
     } finally {
       setIsLoading(false);
@@ -249,20 +277,23 @@ export function ProfilePage() {
   const handleSavePrivacy = async () => {
     setIsLoading(true);
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // Here you would make actual API call
-      // const response = await fetch('/api/privacy', {
-      //   method: 'PUT',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(privacySettings)
-      // });
-
+      // Store privacy settings in user preferences
+      await account.updatePrefs({
+        ...user!.metadata,
+        privacySettings,
+      });
+      // Update local metadata
+      await updateProfile({
+        metadata: {
+          ...user!.metadata,
+          privacySettings,
+        },
+      });
       toast.success('Gizlilik ayarları güncellendi', {
         duration: 2000,
       });
-    } catch {
+    } catch (error) {
+      logger.error('Failed to save privacy settings', error);
       toast.error('Gizlilik ayarları güncellenirken bir hata oluştu');
     } finally {
       setIsLoading(false);

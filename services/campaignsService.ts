@@ -5,88 +5,16 @@
  * @version 1.0.0
  */
 
-import { supabase, TABLES } from '../lib/supabase';
+import { db, collections, queryHelpers } from '../lib/database';
+import type { ApiResponse } from '../types/database';
+import type { Campaign, CampaignInsert, CampaignUpdate, CampaignsFilters, CampaignStats } from '../types/campaign';
 import { logger } from '../lib/logging/logger';
 import { useAuthStore } from '../stores/authStore';
 
-// Campaign interfaces
-export interface Campaign {
-  id: string;
-  created_at: string;
-  updated_at: string;
-  name: string;
-  description: string;
-  goal_amount: number;
-  current_amount: number;
-  currency: string;
-  start_date: string;
-  end_date: string | null;
-  status: 'draft' | 'active' | 'completed' | 'paused';
-  category: string;
-  image_url: string | null;
-  featured: boolean;
-  created_by: string;
-  updated_by: string | null;
-  deleted_at: string | null;
-}
-
-export interface CampaignInsert {
-  name: string;
-  description?: string;
-  goal_amount: number;
-  start_date: string;
-  category?: string;
-  created_by: string;
-  end_date?: string | null;
-  currency?: string;
-  current_amount?: number;
-  status?: 'draft' | 'active' | 'completed' | 'paused';
-  image_url?: string | null;
-  featured?: boolean;
-}
-
-export interface CampaignUpdate {
-  name?: string;
-  description?: string;
-  goal_amount?: number;
-  start_date?: string;
-  end_date?: string | null;
-  status?: 'draft' | 'active' | 'completed' | 'paused';
-  category?: string;
-  image_url?: string | null;
-  featured?: boolean;
-  updated_by?: string;
-  updated_at?: string;
-}
-
-export interface CampaignsFilters {
-  searchTerm?: string;
-  status?: string;
-  category?: string;
-  dateFrom?: string;
-  dateTo?: string;
-}
-
-export interface CampaignStats {
-  total: number;
-  active: number;
-  completed: number;
-  draft: number;
-  paused: number;
-  totalGoalAmount: number;
-  totalCurrentAmount: number;
-  averageProgress: number;
-}
-
-export interface CampaignsApiResponse<T> {
-  data: T | null;
-  error: string | null;
-  count?: number;
-  totalPages?: number;
-}
+// Module-level constants
 
 // Module-level constants
-const tableName = TABLES.CAMPAIGNS;
+const collectionName = collections.CAMPAIGNS;
 
 /**
  * Campaign management service
@@ -99,73 +27,60 @@ const campaignsService = {
     page: number = 1,
     pageSize: number = 10,
     filters?: CampaignsFilters,
-  ): Promise<CampaignsApiResponse<Campaign[]>> {
+  ): Promise<ApiResponse<Campaign[]>> {
     try {
       logger.info('Fetching campaigns', { page, pageSize, filters });
 
-      let query = supabase
-        .from(tableName)
-        .select('*', { count: 'exact' })
-        .is('deleted_at', null)
-        .order('created_at', { ascending: false });
+      const queries: string[] = [];
 
       // Apply filters
-      if (filters?.searchTerm) {
-        query = query.or(
-          `name.ilike.%${filters.searchTerm}%,description.ilike.%${filters.searchTerm}%`,
-        );
-      }
-
       if (filters?.status) {
-        query = query.eq('status', filters.status);
+        queries.push(queryHelpers.equal('status', filters.status));
       }
 
       if (filters?.category) {
-        query = query.eq('category', filters.category);
+        queries.push(queryHelpers.equal('category', filters.category));
       }
 
       if (filters?.dateFrom) {
-        query = query.gte('created_at', filters.dateFrom);
+        queries.push(queryHelpers.greaterThanEqualDate('created_at', filters.dateFrom));
       }
 
       if (filters?.dateTo) {
-        query = query.lte('created_at', filters.dateTo);
+        queries.push(queryHelpers.lessThanEqualDate('created_at', filters.dateTo));
       }
+
+      // Order by creation date (newest first)
+      queries.push(queryHelpers.orderDesc('created_at'));
 
       // Apply pagination
       const from = (page - 1) * pageSize;
-      const to = from + pageSize - 1;
-      query = query.range(from, to);
+      queries.push(queryHelpers.offset(from));
+      queries.push(queryHelpers.limit(pageSize));
 
-      const { data, error, count } = await query;
+      const { data, error } = await db.list(collectionName, queries);
 
       if (error) {
         logger.error('Error fetching campaigns', error);
         return {
           data: null,
           error: 'Kampanyalar yüklenirken bir hata oluştu',
-          count: 0,
-          totalPages: 0,
         };
       }
 
-      const totalPages = count ? Math.ceil(count / pageSize) : 0;
+      const totalPages = data?.total ? Math.ceil(data.total / pageSize) : 0;
 
-      logger.info('Successfully fetched campaigns', { count, totalPages });
+      logger.info('Successfully fetched campaigns', { count: data?.total, totalPages });
 
       return {
-        data: data as Campaign[],
+        data: data?.documents as Campaign[],
         error: null,
-        count: count || 0,
-        totalPages,
       };
     } catch (error) {
       logger.error('Unexpected error fetching campaigns', error);
       return {
         data: null,
         error: 'Beklenmeyen bir hata oluştu',
-        count: 0,
-        totalPages: 0,
       };
     }
   },
@@ -173,16 +88,11 @@ const campaignsService = {
   /**
    * Fetch single campaign by ID
    */
-  async getCampaign(id: string): Promise<CampaignsApiResponse<Campaign>> {
+  async getCampaign(id: string): Promise<ApiResponse<Campaign>> {
     try {
       logger.info('Fetching campaign by ID', { id });
 
-      const { data, error } = await supabase
-        .from(tableName)
-        .select('*')
-        .eq('id', id)
-        .is('deleted_at', null)
-        .single();
+      const { data, error } = await db.get(collectionName, id);
 
       if (error) {
         logger.error('Error fetching campaign', error);
@@ -210,7 +120,7 @@ const campaignsService = {
   /**
    * Create new campaign
    */
-  async createCampaign(campaignData: CampaignInsert): Promise<CampaignsApiResponse<Campaign>> {
+  async createCampaign(campaignData: CampaignInsert): Promise<ApiResponse<Campaign>> {
     try {
       logger.info('Creating campaign', { name: campaignData.name });
 
@@ -222,7 +132,7 @@ const campaignsService = {
         featured: campaignData.featured || false,
       };
 
-      const { data, error } = await supabase.from(tableName).insert([insertData]).select().single();
+      const { data, error } = await db.create(collectionName, insertData);
 
       if (error) {
         logger.error('Error creating campaign', error);
@@ -253,7 +163,7 @@ const campaignsService = {
   async updateCampaign(
     id: string,
     updates: CampaignUpdate,
-  ): Promise<CampaignsApiResponse<Campaign>> {
+  ): Promise<ApiResponse<Campaign>> {
     try {
       logger.info('Updating campaign', { id });
 
@@ -264,12 +174,7 @@ const campaignsService = {
         updated_by: user?.id || null,
       };
 
-      const { data, error } = await supabase
-        .from(tableName)
-        .update(updateData)
-        .eq('id', id)
-        .select()
-        .single();
+      const { data, error } = await db.update(collectionName, id, updateData);
 
       if (error) {
         logger.error('Error updating campaign', error);
@@ -297,14 +202,13 @@ const campaignsService = {
   /**
    * Soft delete campaign
    */
-  async deleteCampaign(id: string): Promise<CampaignsApiResponse<boolean>> {
+  async deleteCampaign(id: string): Promise<ApiResponse<boolean>> {
     try {
       logger.info('Deleting campaign', { id });
 
-      const { error } = await supabase
-        .from(tableName)
-        .update({ deleted_at: new Date().toISOString() })
-        .eq('id', id);
+      const { error } = await db.update(collectionName, id, {
+        deleted_at: new Date().toISOString()
+      });
 
       if (error) {
         logger.error('Error deleting campaign', error);
@@ -332,14 +236,13 @@ const campaignsService = {
   /**
    * Get campaign statistics
    */
-  async getCampaignStats(): Promise<CampaignsApiResponse<CampaignStats>> {
+  async getCampaignStats(): Promise<ApiResponse<CampaignStats>> {
     try {
       logger.info('Fetching campaign statistics');
 
-      const { data, error } = await supabase
-        .from(tableName)
-        .select('status, goal_amount, current_amount')
-        .is('deleted_at', null);
+      const { data, error } = await db.list(collectionName, [
+        queryHelpers.select(['status', 'goal_amount', 'current_amount'])
+      ]);
 
       if (error) {
         logger.error('Error fetching campaign stats', error);
@@ -349,7 +252,7 @@ const campaignsService = {
         };
       }
 
-      const campaigns = data as Campaign[];
+      const campaigns = data?.documents as Campaign[];
       const total = campaigns.length;
       const active = campaigns.filter((c) => c.status === 'active').length;
       const completed = campaigns.filter((c) => c.status === 'completed').length;
@@ -390,19 +293,14 @@ const campaignsService = {
   /**
    * Update campaign amount (used when donations are linked)
    */
-  async updateCampaignAmount(id: string, amount: number): Promise<CampaignsApiResponse<Campaign>> {
+  async updateCampaignAmount(id: string, amount: number): Promise<ApiResponse<Campaign>> {
     try {
       logger.info('Updating campaign amount', { id, amount });
 
-      const { data, error } = await supabase
-        .from(tableName)
-        .update({
-          current_amount: amount,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', id)
-        .select()
-        .single();
+      const { data, error } = await db.update(collectionName, id, {
+        current_amount: amount,
+        updated_at: new Date().toISOString(),
+      });
 
       if (error) {
         logger.error('Error updating campaign amount', error);

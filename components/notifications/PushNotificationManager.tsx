@@ -72,13 +72,6 @@ const PushNotificationManager: React.FC<PushNotificationManagerProps> = ({ class
         title: testNotification.title,
         body: testNotification.body,
         icon: '/favicon.svg',
-        badge: '/favicon.svg',
-        requireInteraction: testNotification.requireInteraction,
-        tag: 'test',
-        actions: [
-          { action: 'view', title: 'Görüntüle', icon: '/favicon.svg' },
-          { action: 'dismiss', title: 'Kapat', icon: '/favicon.svg' },
-        ],
       });
 
       toast.success('Test bildirimi başarıyla gönderildi.');
@@ -97,7 +90,6 @@ const PushNotificationManager: React.FC<PushNotificationManagerProps> = ({ class
       title: 'Kişisel Bildirim',
       body: `Size özel bir mesaj: ${testNotification.body}`,
       icon: '/favicon.svg',
-      requireInteraction: true,
     });
 
     if (success) {
@@ -117,13 +109,6 @@ const PushNotificationManager: React.FC<PushNotificationManagerProps> = ({ class
       title: broadcastMessage.title,
       body: broadcastMessage.body,
       icon: '/favicon.svg',
-      badge: '/favicon.svg',
-      requireInteraction: broadcastMessage.requireInteraction,
-      tag: 'broadcast',
-      actions: [
-        { action: 'view', title: 'Görüntüle' },
-        { action: 'dismiss', title: 'Kapat' },
-      ],
     });
 
     if (success) {

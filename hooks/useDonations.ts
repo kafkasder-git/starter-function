@@ -7,14 +7,14 @@
 
 import { useCallback, useMemo } from 'react';
 import { toast } from 'sonner';
-import { TABLES } from '../lib/supabase';
+import { collections } from '../lib/database';
 import type {
   Donation,
   DonationInsert,
   DonationUpdate,
   DonationWithMember,
 } from '../types/database';
-import { useSupabaseData, useSupabasePagination } from './useSupabaseData';
+import { useAppwriteData, useAppwritePagination } from './useAppwriteData';
 
 // Basic donations hook
 /**
@@ -91,7 +91,7 @@ export function useDonations(
     bulkInsert,
     bulkUpdate,
     bulkDelete,
-  } = useSupabaseData<Donation>(TABLES.DONATIONS, {
+  } = useAppwriteData<Donation>(collections.DONATIONS, {
     select: '*',
     orderBy: { column: 'created_at', ascending: false },
     filters,
@@ -312,7 +312,7 @@ export function useDonationsPaginated(
 
   const searchFields = ['donor_name', 'donor_email', 'reference_number'];
 
-  return useSupabasePagination<Donation>(TABLES.DONATIONS, {
+  return useAppwritePagination<Donation>(collections.DONATIONS, {
     select: '*',
     orderBy: { column: 'created_at', ascending: false },
     pageSize,
@@ -357,7 +357,7 @@ export function useDonationsWithMembers(
     data: donations,
     loading: donationsLoading,
     error: donationsError,
-  } = useSupabaseData<Donation>(TABLES.DONATIONS, {
+  } = useAppwriteData<Donation>(collections.DONATIONS, {
     select: '*',
     orderBy: { column: 'created_at', ascending: false },
     filters,

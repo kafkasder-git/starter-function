@@ -1,470 +1,154 @@
-# 🏛️ Dernek Yönetim Sistemi
+# Kafkasder Yönetim Sistemi
 
-Modern, güvenli ve ölçeklenebilir dernek yönetim sistemi. React, TypeScript ve
-Supabase ile geliştirilmiştir.
+Modern, kapsamlı dernek yönetim sistemi.
+
+## 🎉 Son Güncellemeler (v2.0)
+
+### ✅ Önemli İyileştirmeler
+- **React Router v6 Entegrasyonu** - URL-based routing ve browser history desteği
+- **Component Reorganizasyonu** - Feature-based yapı ile daha iyi bakım
+- **CSS/Tema Birleştirme** - Tailwind v4 native format ile tek kaynak
+- **TypeScript İyileştirmeleri** - Yeni type helper'lar ve daha sıkı type safety
+- **Geliştirilmiş Dokümantasyon** - Kapsamlı kılavuzlar ve migration dokümanları
+
+### 📚 Dokümantasyon
+- [Frontend İyileştirmeleri](./FRONTEND_IMPROVEMENTS.md) - Detaylı değişiklik listesi
+- [Migration Kılavuzu](./docs/MIGRATION_GUIDE.md) - Yeni yapıya geçiş rehberi
+- [Component Kılavuzu](./docs/COMPONENT_GUIDELINES.md) - Geliştirme standartları
+- [Uygulama Özeti](./IMPLEMENTATION_SUMMARY.md) - Türkçe özet
 
 ## 🚀 Hızlı Başlangıç
 
-### Gereksinimler
-
-- Node.js 18+
-- npm veya yarn
-- Supabase hesabı
-
-### Kurulum
-
 ```bash
-# Repository'yi klonlayın
-git clone <repository-url>
-cd kafkasderpanel.com-main-3
-
-# Dependencies yükleyin
+# Bağımlılıkları yükle
 npm install
 
-# Environment variables ayarlayın
-cp .env.example .env.local
-# .env.local dosyasını düzenleyin
-
-# Development server başlatın
+# Geliştirme sunucusunu başlat
 npm run dev
+
+# Production build
+npm run build
+
+# Testleri çalıştır
+npm test
 ```
-
-## 🏗️ Teknoloji Stack
-
-### Frontend
-
-- **React 18** - Modern React hooks ve concurrent features
-- **TypeScript** - Strict mode ile tip güvenliği
-- **Vite** - Hızlı build ve development server
-- **Tailwind CSS** - Utility-first CSS framework
-- **Radix UI** - Accessible component library
-- **Zustand** - Lightweight state management
-
-### Backend & Database
-
-- **Supabase** - Backend-as-a-Service
-- **PostgreSQL** - Relational database
-- **Row Level Security (RLS)** - Database-level security
-
-### Development Tools
-
-- **ESLint** - Code linting ve quality
-- **Prettier** - Code formatting
-- **Vitest** - Unit testing
-- **Playwright** - E2E testing
 
 ## 📁 Proje Yapısı
 
-```text
-src/
-├── components/          # React components
-│   ├── auth/           # Authentication
-│   ├── forms/          # Form components
-│   ├── pages/          # Page components
-│   └── ui/             # UI components
-├── services/           # Business logic
-│   ├── beneficiariesService.ts
-│   ├── donationsService.ts
-│   └── ...
-├── hooks/              # Custom React hooks
-├── stores/             # Zustand stores
-├── types/              # TypeScript definitions
-├── lib/                # Utility libraries
-└── scripts/            # Build and utility scripts
+```
+panel/
+├── components/
+│   ├── ui/              # Shadcn ve temel UI componentleri
+│   ├── layouts/         # Layout componentleri (Header, Sidebar)
+│   ├── shared/          # Paylaşılan componentler
+│   ├── features/        # Feature-bazlı componentler
+│   └── pages/           # Sayfa componentleri
+├── src/
+│   ├── App.tsx          # Ana uygulama
+│   ├── main.tsx         # Entry point
+│   └── routes.tsx       # Route tanımları
+├── types/               # TypeScript type tanımları
+├── stores/              # Zustand store'lar
+├── hooks/               # Custom hooks
+├── lib/                 # Utility fonksiyonlar
+└── docs/                # Dokümantasyon
+
 ```
 
-## 🎨 UI Components
+## 🛠️ Teknolojiler
 
-### Table Components
+- **React 18** - UI framework
+- **TypeScript** - Type safety
+- **Vite** - Build tool
+- **React Router v6** - Routing
+- **Tailwind CSS v4** - Styling
+- **Shadcn/ui** - Component library
+- **Zustand** - State management
+- **TanStack Query** - Data fetching
+- **Appwrite** - Backend services
 
-The project uses base table primitives from `components/ui/table.tsx` for
-maximum flexibility. Wrapper components (`EnhancedTable`, `ResponsiveTable`,
-`DesktopTable`, `MobileResponsiveTable`, `DataTable`) have been removed as they
-were unused.
+## 📖 Geliştirme Kılavuzları
 
-**Resources:**
+### Component Oluşturma
+```typescript
+// components/features/myfeature/MyComponent.tsx
+import type { BaseComponentProps } from '@/types/components';
 
-- 📘 **Usage Guide:** See `docs/components/TABLE_USAGE_GUIDE.md` for detailed
-  patterns and best practices
-- 🔧 **Optional Helpers:** `components/ui/table-helpers.tsx` provides optional
-  utilities for common patterns like loading states and empty states
-- 🎯 **Examples:** Check `components/pages/DonationsPage.tsx` and
-  `components/pages/AidApplicationsPage.tsx` for real-world implementations
+interface MyComponentProps extends BaseComponentProps {
+  title: string;
+}
 
-**Key Features:**
+export const MyComponent = ({ title, className }: MyComponentProps) => {
+  return <div className={className}>{title}</div>;
+};
+```
 
-- Flexible primitives for custom table implementations
-- Built-in XSS protection through automatic sanitization
-- Responsive column patterns with Tailwind utilities
-- Accessibility features (ARIA attributes, keyboard navigation)
-- Loading states, empty states, and action button patterns
+### Routing Kullanımı
+```typescript
+import { useNavigate } from 'react-router-dom';
 
-## 🎯 Ana Özellikler
+const MyComponent = () => {
+  const navigate = useNavigate();
+  
+  const handleClick = () => {
+    navigate('/yardim/ihtiyac-sahipleri');
+  };
+  
+  return <button onClick={handleClick}>Git</button>;
+};
+```
 
-### 👥 Üye Yönetimi
-
-- Üye kayıt ve güncelleme
-- Üye arama ve filtreleme
-- Üye istatistikleri
-- Toplu işlemler
-
-### 💰 Bağış Yönetimi
-
-- Bağış kayıt sistemi
-- Bağışçı takibi
-- Raporlama ve analiz
-- Otomatik bildirimler
-
-### 🤝 İhtiyaç Sahipleri
-
-- Yardım başvuru sistemi
-- Durum takibi
-- Aile bilgileri
-- Belge yönetimi
-
-### 📊 Raporlama
-
-- Detaylı analizler
-- Grafik ve tablolar
-- Excel/PDF export
-- Otomatik raporlar
-
-### 🔐 Güvenlik
-
-- XSS koruması
-- SQL Injection koruması
-- CSRF koruması
-- Rate limiting
-- Input sanitization
-
-## 🛠️ Geliştirme
-
-### Komutlar
+## 🧪 Test
 
 ```bash
-# Development
-npm run dev          # Development server
-npm run build        # Production build
-npm run preview      # Preview build
+# Tüm testleri çalıştır
+npm test
 
-# Testing
-npm test             # Unit tests
-npm run test:coverage # Test coverage
-npm run test:e2e     # E2E tests
-
-# Code Quality
-npm run lint         # ESLint check
-npm run lint:fix     # ESLint fix
-npm run type-check   # TypeScript check
-npm run format       # Prettier format
-```
-
-### GitHub Copilot Kullanımı
-
-Bu proje GitHub Copilot ile optimize edilmiştir. Detaylı kullanım için:
-
-- [Copilot Integration Guide](./COPILOT_INTEGRATION_GUIDE.md)
-- [Project Status Report](./PROJECT_STATUS_REPORT.md)
-
-## 🚀 Deployment
-
-### Cloudflare Pages (Önerilen)
-
-Proje Cloudflare Pages için optimize edilmiştir. 3 farklı deployment yöntemi:
-
-#### Yöntem 1: Git Integration (Önerilen)
-
-```bash
-# GitHub'a push
-git push origin main
-
-# Cloudflare otomatik deploy eder
-```
-
-**Setup:**
-
-1. [Cloudflare Pages](https://dash.cloudflare.com/pages) > Create a project
-2. GitHub repository bağlayın
-3. Build ayarları: `npm run build`, output: `dist/`
-4. Environment variables ekleyin (Dashboard'dan)
-
-#### Yöntem 2: Wrangler CLI
-
-```bash
-# API token ayarla
-export CLOUDFLARE_API_TOKEN="your_token"
-
-# Deploy
-npm run deploy:prod
-```
-
-#### Yöntem 3: Drag & Drop
-
-```bash
-# Build yap
-npm run build
-
-# dist/ klasörünü Cloudflare Dashboard'a yükle
-```
-
-**Deployment URL:** `https://kafkasder-panel.pages.dev`
-
-**⚠️ ÖNEMLİ:** `.env` dosyalarını repository'ye commit etmeyin! Environment
-variables'ları Cloudflare Dashboard'da ayarlayın.
-
-**Detaylı deployment rehberi:**
-[Cloudflare Deployment Rehberi](./docs/deployment/QUICK_DEPLOY_GUIDE.md)
-
-### Environment Variables
-
-**Cloudflare Pages'de Ayarlama:**
-
-1. Dashboard > Workers & Pages > Your Project > Settings > Environment variables
-2. Production environment için aşağıdaki variables'ları ekleyin
-
-```env
-# Supabase (Zorunlu)
-VITE_SUPABASE_URL=your_supabase_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-
-# Application
-VITE_APP_NAME=Dernek Yönetim Sistemi
-VITE_APP_VERSION=1.0.0
-VITE_APP_DEBUG=false
-
-# Feature Flags
-VITE_ENABLE_OCR=true
-VITE_ENABLE_PWA=true
-VITE_ENABLE_ANALYTICS=true
-```
-
-**Not:** Vite environment variables build-time'da değerlendirilir. Değişiklik
-sonrası yeniden deploy gereklidir.
-
-## 📊 Performans
-
-### Metrikler
-
-- **Build Time:** < 2 dakika
-- **Bundle Size:** Optimize edildi
-- **Lighthouse Score:** 90+
-- **Test Coverage:** 80%+
-- **Core Web Vitals:** Optimized
-- **API Response Time:** < 200ms
-
-### Optimizasyonlar
-
-- React memo, useMemo, useCallback
-- Lazy loading ve code splitting
-- Image optimization
-- Bundle analysis
-- Service Worker caching
-- Rate limiting
-- Database query optimization
-- Virtual scrolling for large lists
-
-## 🔒 Güvenlik
-
-### Uygulanan Güvenlik Önlemleri
-
-- **XSS Protection** - Input sanitization with DOMPurify
-- **SQL Injection Protection** - Parameterized queries
-- **CSRF Protection** - Token validation
-- **Rate Limiting** - Request throttling (100 req/min)
-- **Input Validation** - Client ve server-side with Zod
-- **2FA/MFA** - Two-factor authentication support
-- **Security Headers** - CSP, HSTS, X-Frame-Options
-- **Row Level Security** - Database-level access control
-- **Encrypted Storage** - Sensitive data encryption
-
-### Güvenlik Kontrolleri
-
-```bash
-# Security audit
-npm audit
-
-# Dependency check
-npm run security:check
-
-# Run security audit script
-bash scripts/security-audit.sh
-
-# Check for vulnerabilities
-npm run deps:audit
-```
-
-## 🧪 Testing
-
-### Test Stratejisi
-
-- **Unit Tests** - Vitest ile
-- **Integration Tests** - Service layer
-- **E2E Tests** - Playwright ile
-- **Visual Tests** - Component testing
-
-### Test Coverage
-
-```bash
 # Coverage raporu
 npm run test:coverage
 
-# Coverage threshold: 80%
+# Watch mode
+npm test -- --watch
 ```
 
-## 📈 Monitoring
+## 📊 Kod Kalitesi
 
-### Error Tracking
+```bash
+# Linting
+npm run lint
 
-- **Console Logging** - Structured logging
-- **Performance Monitoring** - Core Web Vitals
+# Type checking
+npm run type-check
 
-### Analytics
+# Format
+npm run format
+```
 
-- **User Behavior** - Page views, interactions
-- **Performance Metrics** - Load times, errors
-- **Business Metrics** - Donations, members
+## 🔧 Yapılandırma
+
+### Environment Variables
+```env
+VITE_APPWRITE_ENDPOINT=your_endpoint
+VITE_APPWRITE_PROJECT_ID=your_project_id
+```
 
 ## 🤝 Katkıda Bulunma
 
-### Geliştirme Süreci
-
 1. Fork yapın
 2. Feature branch oluşturun (`git checkout -b feature/amazing-feature`)
-3. Commit yapın (`git commit -m 'Add amazing feature'`)
+3. Commit yapın (`git commit -m 'feat: add amazing feature'`)
 4. Push yapın (`git push origin feature/amazing-feature`)
-5. Pull Request oluşturun
+5. Pull Request açın
 
-### Kod Standartları
+## 📝 Lisans
 
-- TypeScript strict mode
-- ESLint kuralları
-- Prettier formatting
-- JSDoc yorumları
-- Test coverage
+MIT License
 
-## 📚 Dokümantasyon
+## 👥 Ekip
 
-### 📁 Organize Edilmiş Dokümantasyon Yapısı
+Kafkasder Development Team
 
-```
-docs/
-├── deployment/          # Deployment dokümantasyonları
-│   ├── CLOUDFLARE_DEPLOYMENT.md
-│   ├── CLOUDFLARE_MANUAL_DEPLOY.md
-│   ├── DEPLOYMENT_QUICKSTART.md
-│   ├── DEPLOYMENT.md
-│   └── QUICK_DEPLOY_GUIDE.md
-├── setup/              # Kurulum ve konfigürasyon
-│   ├── GITHUB_ACTIONS_SETUP.md
-│   ├── MCP_SETUP.md
-│   ├── SUPABASE_SETUP.md
-│   └── TOKEN_SETUP.md
-├── reports/            # Raporlar ve teknik dokümantasyon
-│   ├── TECHNICAL_DOCUMENTATION.md
-│   ├── TESTSPRITE_FIXES_PROGRESS.md
-│   └── TESTSPRITE_PROGRESS_REPORT.md
-├── security/            # Güvenlik dokümantasyonları
-│   └── security-audit-report-20251007_202150.txt
-├── api/               # API dokümantasyonları
-├── TESTING_GUIDE.md
-├── TYPESCRIPT_CONFIG.md
-└── USER_GUIDE.md
-```
+## 📞 İletişim
 
-### 🚀 Deployment Dokümantasyonları
-
-- [Cloudflare Pages Deployment Rehberi](./docs/deployment/QUICK_DEPLOY_GUIDE.md) -
-  Kapsamlı deployment rehberi (Git, Wrangler CLI, Drag & Drop)
-
-### ⚙️ Setup ve Konfigürasyon
-
-- [Supabase Setup](./docs/setup/SUPABASE_SETUP.md) - Supabase kurulumu
-- [Token Setup](./docs/setup/TOKEN_SETUP.md) - Token konfigürasyonu
-- [MCP Setup](./docs/setup/MCP_SETUP.md) - MCP kurulumu
-- [GitHub Actions Setup](./docs/setup/GITHUB_ACTIONS_SETUP.md) - CI/CD kurulumu
-
-### 📊 Raporlar ve Teknik Dokümantasyon
-
-- [Technical Documentation](./docs/reports/TECHNICAL_DOCUMENTATION.md) - Teknik
-  dokümantasyon
-- [TestSprite Progress Report](./docs/reports/TESTSPRITE_PROGRESS_REPORT.md) -
-  TestSprite ilerleme raporu
-- [TestSprite Fixes Progress](./docs/reports/TESTSPRITE_FIXES_PROGRESS.md) -
-  TestSprite düzeltme ilerlemesi
-
-### 🔒 Güvenlik
-
-- [Security Audit Report](./docs/security/security-audit-report-20251007_202150.txt) -
-  Güvenlik denetim raporu
-
-### 📖 Diğer Dokümantasyonlar
-
-- [API Documentation](./docs/api/) - API referansı
-- [Testing Guide](./docs/TESTING_GUIDE.md) - Test rehberi
-- [TypeScript Config](./docs/TYPESCRIPT_CONFIG.md) - TypeScript konfigürasyonu
-- [User Guide](./docs/USER_GUIDE.md) - Kullanıcı rehberi
-
-## 🐛 Sorun Giderme
-
-### Yaygın Sorunlar
-
-#### Build Hataları
-
-```bash
-# Dependencies temizle
-rm -rf node_modules package-lock.json
-npm install
-
-# TypeScript hataları
-npm run type-check
-```
-
-#### Supabase Bağlantı Sorunları
-
-```bash
-# Environment variables kontrol et
-echo $VITE_SUPABASE_URL
-echo $VITE_SUPABASE_ANON_KEY
-
-# Supabase status kontrol et
-curl https://status.supabase.com/
-```
-
-#### Performance Sorunları
-
-```bash
-# Bundle analizi
-npm run build:analyze
-
-# Lighthouse audit
-npm run lighthouse
-```
-
-## 📞 Destek
-
-### İletişim
-
-- **GitHub Issues** - Bug reports ve feature requests
-- **GitHub Discussions** - Genel sorular
-- **Email** - [your-email@domain.com]
-
-### Acil Durumlar
-
-- **Security Issues** - Hemen bildirin
-- **Production Issues** - GitHub Issues'da "urgent" label'ı
-
-## 📄 Lisans
-
-Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için [LICENSE](LICENSE)
-dosyasına bakın.
-
-## 🙏 Teşekkürler
-
-- **Supabase** - Backend infrastructure
-- **Netlify** - Deployment platform
-- **GitHub** - Version control ve CI/CD
-- **Open Source Community** - Kullanılan kütüphaneler
-
----
-
-**Versiyon:** 1.0.0 **Son Güncelleme:** $(date) **Durum:** Production Ready ✅
+- Website: https://panel.kafkasder.org
+- Issues: https://github.com/kafkasder/panel/issues

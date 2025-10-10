@@ -1,7 +1,7 @@
 /**
  * @fileoverview Two-Factor Authentication Flow Tests
  * @description Tests for 2FA database operations and user flows
- * Comment 5: Unit tests with Supabase mocked to assert DB contracts
+ * Comment 5: Unit tests with Appwrite mocked to assert DB contracts
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
@@ -15,29 +15,18 @@ import {
   regenerateBackupCodes,
 } from '../auth/twoFactor';
 
-// Comment 5: Mock Supabase
-vi.mock('../supabase', () => {
-  const mockSupabase = {
-    from: vi.fn(() => ({
-      select: vi.fn(() => ({
-        eq: vi.fn(() => ({
-          single: vi.fn(),
-        })),
-      })),
-      upsert: vi.fn(),
-      update: vi.fn(() => ({
-        eq: vi.fn(),
-      })),
-    })),
-  };
-
-  return {
-    supabase: mockSupabase,
-  };
-});
-
-// Import after mock
-import { supabase } from '../supabase';
+// Mock Appwrite database operations
+vi.mock('../database', () => ({
+  db: {
+    list: vi.fn(),
+    create: vi.fn(),
+    update: vi.fn(),
+    delete: vi.fn(),
+  },
+  collections: {
+    USER_PROFILES: 'user_profiles',
+  },
+}));
 
 describe('Two-Factor Authentication Flows', () => {
   let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
@@ -61,7 +50,7 @@ describe('Two-Factor Authentication Flows', () => {
       const singleMock = vi.fn().mockResolvedValue({ data: mockUser, error: null });
       const eqMock = vi.fn().mockReturnValue({ single: singleMock });
       const selectMock = vi.fn().mockReturnValue({ eq: eqMock });
-      (supabase.from as any).mockReturnValue({ select: selectMock, upsert: vi.fn().mockResolvedValue({}) });
+      (db.list as any).mockResolvedValue({ data: { documents: [mockUser] }, error: null });
 
       const result = await enable2FA(userId);
 
@@ -72,9 +61,7 @@ describe('Two-Factor Authentication Flows', () => {
       expect(result.backupCodes).toHaveLength(10);
 
       // Verify database calls
-      expect(supabase.from).toHaveBeenCalledWith('users');
-      expect(selectMock).toHaveBeenCalledWith('email');
-      expect(eqMock).toHaveBeenCalledWith('id', userId);
+      expect(db.list).toHaveBeenCalledWith('user_profiles', expect.any(Array));
     });
 
     it('should throw error when user not found', async () => {
@@ -83,7 +70,7 @@ describe('Two-Factor Authentication Flows', () => {
       const singleMock = vi.fn().mockResolvedValue({ data: null, error: null });
       const eqMock = vi.fn().mockReturnValue({ single: singleMock });
       const selectMock = vi.fn().mockReturnValue({ eq: eqMock });
-      (supabase.from as any).mockReturnValue({ select: selectMock });
+      (db.list as any).mockResolvedValue({ data: { documents: [] }, error: null });
 
       await expect(enable2FA(userId)).rejects.toThrow('User not found');
 
@@ -113,10 +100,7 @@ describe('Two-Factor Authentication Flows', () => {
       const updateEqMock = vi.fn().mockResolvedValue({});
       const updateMock = vi.fn().mockReturnValue({ eq: updateEqMock });
       
-      (supabase.from as any).mockReturnValue({ 
-        select: selectMock,
-        update: updateMock,
-      });
+      (db.update as any).mockResolvedValue({ data: {}, error: null });
 
       // Mock verifyTOTP to return true
       vi.mock('../auth/twoFactor', async () => {
@@ -142,7 +126,7 @@ describe('Two-Factor Authentication Flows', () => {
       const singleMock = vi.fn().mockResolvedValue({ data: mockTwoFA, error: null });
       const eqMock = vi.fn().mockReturnValue({ single: singleMock });
       const selectMock = vi.fn().mockReturnValue({ eq: eqMock });
-      (supabase.from as any).mockReturnValue({ select: selectMock });
+      (db.list as any).mockResolvedValue({ data: { documents: [] }, error: null });
 
       const result = await verify2FASetup(userId, invalidCode);
 
@@ -156,7 +140,7 @@ describe('Two-Factor Authentication Flows', () => {
       const singleMock = vi.fn().mockResolvedValue({ data: null, error: null });
       const eqMock = vi.fn().mockReturnValue({ single: singleMock });
       const selectMock = vi.fn().mockReturnValue({ eq: eqMock });
-      (supabase.from as any).mockReturnValue({ select: selectMock });
+      (db.list as any).mockResolvedValue({ data: { documents: [] }, error: null });
 
       await expect(verify2FASetup(userId, code)).rejects.toThrow('2FA not set up');
     });
@@ -171,7 +155,7 @@ describe('Two-Factor Authentication Flows', () => {
       const singleMock = vi.fn().mockResolvedValue({ data: mockTwoFA, error: null });
       const eqMock = vi.fn().mockReturnValue({ single: singleMock });
       const selectMock = vi.fn().mockReturnValue({ eq: eqMock });
-      (supabase.from as any).mockReturnValue({ select: selectMock });
+      (db.list as any).mockResolvedValue({ data: { documents: [] }, error: null });
 
       const result = await verify2FALogin(userId, code);
 
@@ -194,10 +178,7 @@ describe('Two-Factor Authentication Flows', () => {
       const updateEqMock = vi.fn().mockResolvedValue({});
       const updateMock = vi.fn().mockReturnValue({ eq: updateEqMock });
       
-      (supabase.from as any).mockReturnValue({ 
-        select: selectMock,
-        update: updateMock,
-      });
+      (db.update as any).mockResolvedValue({ data: {}, error: null });
 
       const result = await verify2FALogin(userId, backupCode);
 
@@ -220,7 +201,7 @@ describe('Two-Factor Authentication Flows', () => {
       const singleMock = vi.fn().mockResolvedValue({ data: mockTwoFA, error: null });
       const eqMock = vi.fn().mockReturnValue({ single: singleMock });
       const selectMock = vi.fn().mockReturnValue({ eq: eqMock });
-      (supabase.from as any).mockReturnValue({ select: selectMock });
+      (db.list as any).mockResolvedValue({ data: { documents: [] }, error: null });
 
       const result = await verify2FALogin(userId, invalidCode);
 
@@ -234,7 +215,7 @@ describe('Two-Factor Authentication Flows', () => {
       const singleMock = vi.fn().mockRejectedValue(new Error('Database error'));
       const eqMock = vi.fn().mockReturnValue({ single: singleMock });
       const selectMock = vi.fn().mockReturnValue({ eq: eqMock });
-      (supabase.from as any).mockReturnValue({ select: selectMock });
+      (db.list as any).mockResolvedValue({ data: { documents: [] }, error: null });
 
       const result = await verify2FALogin(userId, code);
 
@@ -263,10 +244,7 @@ describe('Two-Factor Authentication Flows', () => {
       const updateEqMock = vi.fn().mockResolvedValue({});
       const updateMock = vi.fn().mockReturnValue({ eq: updateEqMock });
       
-      (supabase.from as any).mockReturnValue({ 
-        select: selectMock,
-        update: updateMock,
-      });
+      (db.update as any).mockResolvedValue({ data: {}, error: null });
 
       const result = await disable2FA(userId, validCode);
 
@@ -286,7 +264,7 @@ describe('Two-Factor Authentication Flows', () => {
       const singleMock = vi.fn().mockResolvedValue({ data: mockTwoFA, error: null });
       const eqMock = vi.fn().mockReturnValue({ single: singleMock });
       const selectMock = vi.fn().mockReturnValue({ eq: eqMock });
-      (supabase.from as any).mockReturnValue({ select: selectMock });
+      (db.list as any).mockResolvedValue({ data: { documents: [] }, error: null });
 
       const result = await disable2FA(userId, invalidCode);
 
@@ -302,7 +280,7 @@ describe('Two-Factor Authentication Flows', () => {
       const singleMock = vi.fn().mockResolvedValue({ data: mockTwoFA, error: null });
       const eqMock = vi.fn().mockReturnValue({ single: singleMock });
       const selectMock = vi.fn().mockReturnValue({ eq: eqMock });
-      (supabase.from as any).mockReturnValue({ select: selectMock });
+      (db.list as any).mockResolvedValue({ data: { documents: [] }, error: null });
 
       const result = await is2FAEnabled(userId);
 
@@ -316,7 +294,7 @@ describe('Two-Factor Authentication Flows', () => {
       const singleMock = vi.fn().mockResolvedValue({ data: mockTwoFA, error: null });
       const eqMock = vi.fn().mockReturnValue({ single: singleMock });
       const selectMock = vi.fn().mockReturnValue({ eq: eqMock });
-      (supabase.from as any).mockReturnValue({ select: selectMock });
+      (db.list as any).mockResolvedValue({ data: { documents: [] }, error: null });
 
       const result = await is2FAEnabled(userId);
 
@@ -329,7 +307,7 @@ describe('Two-Factor Authentication Flows', () => {
       const singleMock = vi.fn().mockRejectedValue(new Error('Database error'));
       const eqMock = vi.fn().mockReturnValue({ single: singleMock });
       const selectMock = vi.fn().mockReturnValue({ eq: eqMock });
-      (supabase.from as any).mockReturnValue({ select: selectMock });
+      (db.list as any).mockResolvedValue({ data: { documents: [] }, error: null });
 
       const result = await is2FAEnabled(userId);
 
@@ -345,7 +323,7 @@ describe('Two-Factor Authentication Flows', () => {
       const singleMock = vi.fn().mockResolvedValue({ data: mockTwoFA, error: null });
       const eqMock = vi.fn().mockReturnValue({ single: singleMock });
       const selectMock = vi.fn().mockReturnValue({ eq: eqMock });
-      (supabase.from as any).mockReturnValue({ select: selectMock });
+      (db.list as any).mockResolvedValue({ data: { documents: [] }, error: null });
 
       const result = await getBackupCodesCount(userId);
 
@@ -359,7 +337,7 @@ describe('Two-Factor Authentication Flows', () => {
       const singleMock = vi.fn().mockResolvedValue({ data: mockTwoFA, error: null });
       const eqMock = vi.fn().mockReturnValue({ single: singleMock });
       const selectMock = vi.fn().mockReturnValue({ eq: eqMock });
-      (supabase.from as any).mockReturnValue({ select: selectMock });
+      (db.list as any).mockResolvedValue({ data: { documents: [] }, error: null });
 
       const result = await getBackupCodesCount(userId);
 
@@ -384,10 +362,7 @@ describe('Two-Factor Authentication Flows', () => {
       const updateEqMock = vi.fn().mockResolvedValue({});
       const updateMock = vi.fn().mockReturnValue({ eq: updateEqMock });
       
-      (supabase.from as any).mockReturnValue({ 
-        select: selectMock,
-        update: updateMock,
-      });
+      (db.update as any).mockResolvedValue({ data: {}, error: null });
 
       const result = await regenerateBackupCodes(userId, validCode);
 
@@ -409,7 +384,7 @@ describe('Two-Factor Authentication Flows', () => {
       const singleMock = vi.fn().mockResolvedValue({ data: mockTwoFA, error: null });
       const eqMock = vi.fn().mockReturnValue({ single: singleMock });
       const selectMock = vi.fn().mockReturnValue({ eq: eqMock });
-      (supabase.from as any).mockReturnValue({ select: selectMock });
+      (db.list as any).mockResolvedValue({ data: { documents: [] }, error: null });
 
       await expect(regenerateBackupCodes(userId, invalidCode)).rejects.toThrow(
         'Invalid verification code'

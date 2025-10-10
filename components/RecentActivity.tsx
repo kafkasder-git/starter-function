@@ -5,14 +5,17 @@
  * @version 1.0.0
  */
 
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Button } from './ui/button';
 import { Heart, Users, HelpingHand, Calendar, MoreHorizontal } from 'lucide-react';
+// import { aidRequestsService } from '../../services/aidRequestsService';
+// import { logger } from '../../lib/logging/logger';
 
 interface Activity {
-  id: number;
+  id: string;
   type: 'donation' | 'member' | 'aid' | 'event';
   title: string;
   description: string;
@@ -22,14 +25,6 @@ interface Activity {
   status?: 'success' | 'pending' | 'failed';
 }
 
-// Activity data will be fetched from API
-// const _getActivities = async (): Promise<Activity[]> => {
-//   // TODO: Implement real API call to fetch activities
-//   return [];
-// };
-
-const recentActivities: Activity[] = [];
-
 /**
  * RecentActivity function
  * 
@@ -37,6 +32,34 @@ const recentActivities: Activity[] = [];
  * @returns {void} Nothing
  */
 export function RecentActivity() {
+  const [activities, setActivities] = useState<Activity[]>([]);
+  const [_loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchActivities = async () => {
+      try {
+        // Mock data for now since service is not available
+        const mockActivities: Activity[] = [
+          {
+            id: '1',
+            type: 'aid',
+            title: 'Yeni Yardım Başvurusu',
+            description: 'Ahmet Yılmaz tarafından maddi yardım talebi yapıldı.',
+            timestamp: new Date().toLocaleString('tr-TR'),
+            user: 'Ahmet Yılmaz',
+            status: 'pending'
+          }
+        ];
+        setActivities(mockActivities);
+      } catch (error) {
+        console.error('Error fetching recent activities:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchActivities();
+  }, []);
+
   const getActivityIcon = (type: Activity['type']) => {
     const icons = {
       donation: <Heart className="w-4 h-4" />,
@@ -64,17 +87,19 @@ export function RecentActivity() {
       success: 'bg-green-100 text-green-800',
       pending: 'bg-yellow-100 text-yellow-800',
       failed: 'bg-red-100 text-red-800',
+      completed: 'bg-green-100 text-green-800',
     };
 
     const labels = {
       success: 'Tamamlandı',
       pending: 'Beklemede',
       failed: 'Başarısız',
+      completed: 'Tamamlandı',
     };
 
     return (
-      <Badge className={status in variants ? variants[status] : variants.completed} variant="secondary">
-        {status in labels ? labels[status] : labels.completed}
+      <Badge className={status in variants ? variants[status as keyof typeof variants] : variants.completed} variant="secondary">
+        {status in labels ? labels[status as keyof typeof labels] : labels.completed}
       </Badge>
     );
   };
@@ -88,8 +113,8 @@ export function RecentActivity() {
         </Button>
       </CardHeader>
       <CardContent className="space-y-3 lg:space-y-4 max-h-96 overflow-y-auto scrollbar-thin px-6 py-6">
-        {recentActivities.length > 0 ? (
-          [].map((activity) => ( // TODO: Replace with real data from getActivities()
+        {activities.length > 0 ? (
+          activities.map((activity) => (
             <div
               key={activity.id}
               className="flex items-start gap-4 p-4 hover:bg-slate-50/80 rounded-xl transition-all duration-200 border border-transparent hover:border-slate-200/60 cursor-pointer group"
@@ -126,7 +151,7 @@ export function RecentActivity() {
                   <AvatarFallback className="bg-slate-100 text-slate-700 text-xs font-semibold border border-slate-200/60">
                     {activity.user
                       .split(' ')
-                      .map((n) => n[0])
+                      .map((n: string) => n[0])
                       .join('')}
                   </AvatarFallback>
                 </Avatar>

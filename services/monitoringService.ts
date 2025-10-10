@@ -5,7 +5,7 @@
  *
  * For security monitoring:
  * - Use Supabase audit_logs table for audit trails
- * - Use Cloudflare Analytics for security metrics
+ * - Use Appwrite Analytics for security metrics
  * - Use lib/security/ module for security features
  *
  * @author Dernek Yönetim Sistemi Team

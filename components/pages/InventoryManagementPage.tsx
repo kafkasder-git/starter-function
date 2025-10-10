@@ -32,6 +32,9 @@ import {
 import { Input } from '../ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
+import { partnersService } from '../../services/partnersService';
+import { logger } from '../../lib/logging/logger';
+import { toast } from '../ui/toast'; // Assuming toast is imported from UI library
 
 interface AssociationPartner {
   id: number;
@@ -81,10 +84,33 @@ interface AssociationPartner {
   tags: string[];
 }
 
-// Service call to fetch associations
-const fetchAssociations = async (): Promise<AssociationPartner[]> => {
-  // TODO: Replace with actual API call
-  return [];
+// Mapping function to convert Partner to AssociationPartner
+const mapPartnerToAssociationPartner = (partner: any): AssociationPartner => {
+  return {
+    id: partner.id,
+    name: partner.name,
+    type: partner.partner_type as AssociationPartner['type'], // Assuming types match
+    focusArea: 'genel' as AssociationPartner['focusArea'], // Default, as not in Partner
+    location: partner.city || '',
+    contactPerson: partner.contact_person || '',
+    position: '', // Not in Partner
+    phone: partner.phone || '',
+    email: partner.email || '',
+    address: partner.address || '',
+    status: partner.status === 'active' ? 'aktif' : partner.status === 'inactive' ? 'pasif' : 'işbirliği-arayışı',
+    collaborationType: 'network' as AssociationPartner['collaborationType'], // Default
+    establishedDate: partner.relationship_start,
+    memberCount: undefined, // Not in Partner
+    budget: undefined, // Not in Partner
+    lastCollaboration: partner.last_contact_date,
+    rating: partner.rating || 0,
+    website: partner.website,
+    socialMedia: partner.social_media,
+    description: partner.notes,
+    specialties: partner.services_provided || [],
+    sharedProjects: [], // Not in Partner
+    tags: [], // Not in Partner
+  };
 };
 
 /**
@@ -103,21 +129,28 @@ export default function PartnerAssociationsPage() {
   const [selectedAssociation, setSelectedAssociation] = useState<AssociationPartner | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('all');
+  const [loading, setLoading] = useState(true);
 
   // Load associations data
   useEffect(() => {
     const loadAssociations = async () => {
+      setLoading(true);
       try {
-        const data = await fetchAssociations();
-        setAssociationsList(data);
-        setFilteredAssociations(data);
-      } catch (error) {
-        // Use logger instead of console.error
-        if (typeof window !== 'undefined') {
-          import('../../lib/logging/logger').then(({ logger }) => {
-            logger.error('Error loading associations:', error);
-          });
+        const response = await partnersService.getPartners(1, 100); // Fetch first page with large limit
+        if (response.error) {
+          logger.error('Error fetching partners:', response.error);
+          toast.error('Dernekler yüklenirken hata oluştu');
+          setAssociationsList([]);
+        } else {
+          const mappedAssociations = response.data?.map(mapPartnerToAssociationPartner) || [];
+          setAssociationsList(mappedAssociations);
         }
+      } catch (error) {
+        logger.error('Error loading associations:', error);
+        toast.error('Dernekler yüklenirken hata oluştu');
+        setAssociationsList([]);
+      } finally {
+        setLoading(false);
       }
     };
     loadAssociations();
@@ -316,6 +349,19 @@ export default function PartnerAssociationsPage() {
   const largeAssociations = associationsList.filter(
     (a) => a.memberCount && a.memberCount >= 100,
   ).length;
+
+  if (loading) {
+    return (
+      <div className="flex-1 space-y-4 p-4 sm:space-y-6 sm:p-6">
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <div className="mb-4 h-8 w-8 animate-spin rounded-full border-4 border-gray-300 border-t-blue-600"></div>
+            <p className="text-muted-foreground">Dernekler yükleniyor...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 space-y-4 p-4 sm:space-y-6 sm:p-6">

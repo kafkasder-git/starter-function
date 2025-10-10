@@ -352,7 +352,34 @@ export const ErrorUtils = {
       ErrorType.NETWORK,
       message,
       ErrorSeverity.HIGH,
-      { details, userMessage: 'Bağlantı hatası. Lütfen internet bağlantınızı kontrol edin.' }
+      { 
+        details, 
+        userMessage: 'Ağ bağlantısı hatası. Lütfen internet bağlantınızı kontrol edin ve sayfayı yenileyin.',
+        actionRequired: true,
+        retryable: true
+      }
+    );
+  },
+
+  /**
+   * Create a fetch error (NetworkError when attempting to fetch resource)
+   */
+  fetchError: (url?: string, details?: Record<string, unknown>): AppErrorClass => {
+    return new AppErrorClass(
+      ErrorType.NETWORK,
+      `NetworkError when attempting to fetch resource${url ? ` from ${url}` : ''}`,
+      ErrorSeverity.HIGH,
+      { 
+        details, 
+        userMessage: 'Sunucuya bağlanırken hata oluştu. Lütfen bağlantınızı kontrol edin ve tekrar deneyin.',
+        actionRequired: true,
+        retryable: true,
+        suggestedActions: [
+          'İnternet bağlantınızı kontrol edin',
+          'Sayfayı yenileyin (F5)',
+          'Birkaç dakika sonra tekrar deneyin'
+        ]
+      }
     );
   },
 

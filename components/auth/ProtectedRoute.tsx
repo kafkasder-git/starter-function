@@ -6,11 +6,11 @@
  */
 
 import type { ReactNode } from 'react';
+import { useLocation, Navigate } from 'react-router-dom';
 import { useAuthStore } from '../../stores/authStore';
 import { UserRole, type Permission, ROLE_PERMISSIONS } from '../../types/auth';
 import { UnauthorizedPage } from './UnauthorizedPage';
-import { LoadingSpinner } from '../LoadingSpinner';
-import { LoginPage } from './LoginPage';
+import { LoadingSpinner } from '../shared/LoadingSpinner';
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -34,8 +34,9 @@ export function ProtectedRoute({
   fallback,
 }: ProtectedRouteProps) {
   const { isAuthenticated, isLoading, user } = useAuthStore();
+  const location = useLocation();
 
-  // Get user role from Supabase user metadata
+  // Get user role from Appwrite user metadata
   const getUserRole = (): UserRole | null => {
     if (!user) return null;
 
@@ -96,7 +97,7 @@ export function ProtectedRoute({
 
   // Check if authentication is required
   if (requireAuth && !isAuthenticated) {
-    return fallback || <LoginPage />;
+    return fallback || <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   // Check role requirement

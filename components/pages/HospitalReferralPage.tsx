@@ -5,9 +5,12 @@
  * @version 1.0.0
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
-import { PageLayout } from '../PageLayout';
+import { aidRequestsService } from '../../services/aidRequestsService';
+import { logger } from '../../lib/logging/logger';
+import { useAuthStore } from '../../stores/authStore';
+import { PageLayout } from '../layouts/PageLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../ui/dialog';
@@ -58,7 +61,7 @@ interface HospitalReferral {
   followUpRequired: boolean;
 }
 
-const initialReferrals: HospitalReferral[] = [];
+
 
 /**
  * HospitalReferralPage function
@@ -67,7 +70,9 @@ const initialReferrals: HospitalReferral[] = [];
  * @returns {void} Nothing
  */
 export function HospitalReferralPage() {
-  const [referrals, setReferrals] = useState<HospitalReferral[]>(initialReferrals);
+  const { user } = useAuthStore();
+  const [referrals, setReferrals] = useState<HospitalReferral[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [urgencyFilter, setUrgencyFilter] = useState<string>('all');
@@ -88,6 +93,48 @@ export function HospitalReferralPage() {
     transportNeeded: false,
     estimatedCost: 0,
   });
+
+  const loadReferrals = async () => {
+    try {
+      setLoading(true);
+      const result = await aidRequestsService.getAidRequests(1, 100, { aid_type: 'medical' });
+      if (result.error) {
+        logger.error('Failed to load referrals:', result.error);
+        toast.error('Sevkler yüklenirken hata oluştu');
+        return;
+      }
+      const mappedReferrals: HospitalReferral[] = result.data.map((req: any) => ({
+        id: req.$id,
+        referralNumber: `HSK-${new Date(req.created_at).getFullYear()}-${req.$id.slice(-3)}`,
+        patientName: req.applicant_name,
+        patientId: req.applicant_id || req.$id,
+        patientAge: 0,
+        patientGender: 'male' as 'male' | 'female',
+        patientPhone: req.applicant_phone,
+        medicalCondition: req.reason,
+        urgencyLevel: req.urgency === 'low' ? 'routine' : req.urgency === 'medium' ? 'urgent' : 'emergency',
+        referralDate: req.created_at.split('T')[0],
+        hospital: req.description.split('Hospital: ')[1]?.split(',')[0] || '',
+        department: req.description.split('Department: ')[1]?.split(',')[0] || '',
+        status: req.status === 'pending' ? 'pending' : req.status === 'approved' ? 'scheduled' : req.status === 'completed' ? 'completed' : 'cancelled',
+        referredBy: '',
+        notes: req.notes,
+        estimatedCost: req.requested_amount || 0,
+        transportNeeded: false,
+        followUpRequired: req.follow_up_required || false,
+      }));
+      setReferrals(mappedReferrals);
+    } catch (error) {
+      logger.error('Error loading referrals:', error);
+      toast.error('Sevkler yüklenirken hata oluştu');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadReferrals();
+  }, []);
 
   const getStatusBadge = (status: HospitalReferral['status']) => {
     const statusConfig = {
@@ -164,23 +211,26 @@ export function HospitalReferralPage() {
     try {
       setIsSubmitting(true);
 
-      // TODO: Integrate with actual API
-      // const result = await hospitalReferralService.createReferral(formData);
+      const result = await aidRequestsService.createAidRequest({
+        applicant_name: formData.patientName,
+        applicant_phone: formData.patientPhone || '',
+        applicant_address: '',
+        aid_type: 'medical',
+        requested_amount: formData.estimatedCost,
+        currency: 'TRY',
+        urgency: formData.urgencyLevel === 'routine' ? 'low' : formData.urgencyLevel === 'urgent' ? 'medium' : 'high',
+        description: `Hospital: ${formData.hospital}, Department: ${formData.department}, Diagnosis: ${formData.medicalCondition}`,
+        reason: formData.medicalCondition,
+        notes: formData.notes,
+        follow_up_required: formData.urgencyLevel !== 'routine',
+        created_by: user?.id || '',
+      });
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // Add to local state for demonstration
-      const newReferral: HospitalReferral = {
-        id: Math.max(...referrals.map((r) => r.id), 0) + 1,
-        referralNumber: `HSK-${new Date().getFullYear()}-${String(referrals.length + 1).padStart(3, '0')}`,
-        ...formData,
-        referralDate: new Date().toISOString().split('T')[0],
-        status: 'pending',
-        followUpRequired: formData.urgencyLevel !== 'routine',
-      };
-
-      setReferrals((prev) => [newReferral, ...prev]);
+      if (result.error) {
+        logger.error('Failed to create referral:', result.error);
+        toast.error('Sevk oluşturulurken hata oluştu');
+        return;
+      }
 
       toast.success('Hastane sevki başarıyla oluşturuldu!');
       setShowReferralDialog(false);
@@ -201,7 +251,10 @@ export function HospitalReferralPage() {
         transportNeeded: false,
         estimatedCost: 0,
       });
-    } catch {
+
+      loadReferrals();
+    } catch (error) {
+      logger.error('Error creating referral:', error);
       toast.error('Sevk oluşturulurken hata oluştu');
     } finally {
       setIsSubmitting(false);

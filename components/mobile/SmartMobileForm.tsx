@@ -124,8 +124,8 @@ export function SmartMobileForm({
     if (!deviceInfo.isMobile) return { fieldsPerStep: fields.length, totalSteps: 1 };
 
     // İlgili alanları grupla
-    const groups = [];
-    let currentGroup = [];
+    const groups: any[][] = [];
+    let currentGroup: any[] = [];
 
     fields.forEach((field, index) => {
       currentGroup.push(field);
@@ -168,8 +168,8 @@ export function SmartMobileForm({
   const handleNextStep = async () => {
     // Validate current step fields
     const fieldsToValidate = deviceInfo.isMobile
-      ? smartFieldGrouping.currentFields.map((f) => f.name)
-      : currentFields.map((f) => f.name);
+      ? smartFieldGrouping.currentFields?.map((f: any) => f.name) || []
+      : currentFields.map((f: any) => f.name);
 
     const isValid = await trigger(fieldsToValidate);
 
@@ -183,7 +183,7 @@ export function SmartMobileForm({
         if (deviceInfo.isMobile && currentStep + 1 < maxSteps) {
           setTimeout(() => {
             const nextFields = deviceInfo.isMobile
-              ? smartFieldGrouping.groups[currentStep + 1]
+              ? smartFieldGrouping.groups?.[currentStep + 1] || []
               : fields.slice((currentStep + 1) * fieldsPerStep, (currentStep + 2) * fieldsPerStep);
 
             if (nextFields.length > 0) {
@@ -196,7 +196,7 @@ export function SmartMobileForm({
         }
       }
     } else {
-      triggerHapticFeedback('error');
+      triggerHapticFeedback('light');
 
       // İlk hatalı alana scroll et
       const firstErrorField = fieldsToValidate.find((fieldName) => errors[fieldName]);
@@ -220,7 +220,7 @@ export function SmartMobileForm({
     try {
       await onSubmit(data);
       setSubmitSuccess(true);
-      triggerHapticFeedback('success');
+      triggerHapticFeedback('medium');
 
       // Success animasyonundan sonra formu reset et
       setTimeout(() => {
@@ -229,7 +229,7 @@ export function SmartMobileForm({
         setSubmitSuccess(false);
       }, 2000);
     } catch (error) {
-      triggerHapticFeedback('error');
+      triggerHapticFeedback('heavy');
       logger.error('Form submission error:', error);
     }
   };
@@ -378,7 +378,7 @@ export function SmartMobileForm({
               className="mt-1 flex items-center gap-2 text-red-600"
             >
               <AlertCircle className="h-4 w-4" />
-              <span className="text-sm">{errors[field.name]?.message}</span>
+              <span className="text-sm">{String(errors[field.name]?.message || 'Validation error')}</span>
             </motion.div>
           )}
         </div>
@@ -459,7 +459,7 @@ export function SmartMobileForm({
                 transition={{ duration: 0.3 }}
                 className="space-y-4"
               >
-                {(deviceInfo.isMobile ? smartFieldGrouping.currentFields : currentFields).map(
+                {(deviceInfo.isMobile ? smartFieldGrouping.currentFields || [] : currentFields).map(
                   renderField,
                 )}
               </motion.div>

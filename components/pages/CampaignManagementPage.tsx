@@ -16,11 +16,11 @@ import { Badge } from '../ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { Progress } from '../ui/progress';
 import { toast } from 'sonner';
-import { PageLayout } from '../PageLayout';
+import { PageLayout } from '../layouts/PageLayout';
 import { campaignsService, type Campaign as ServiceCampaign, type CampaignStats } from '../../services/campaignsService';
 import { useAuthStore } from '../../stores/authStore';
 import { logger } from '../../lib/logging/logger';
-import { LoadingSpinner } from '../LoadingSpinner';
+import { LoadingSpinner } from '../shared/LoadingSpinner';
 
 // Use ServiceCampaign type from the service
 type Campaign = ServiceCampaign;

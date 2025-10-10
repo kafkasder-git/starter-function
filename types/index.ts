@@ -37,8 +37,35 @@ export type {
 
 export { mapDBToBeneficiary, mapBeneficiaryToDB } from './beneficiary';
 
+// Donations
+export type {
+  Donation,
+  DonationInsert,
+  DonationUpdate,
+  DonationFilters,
+  DonationStats,
+} from './donation';
+
+// Aid Requests
+export type {
+  AidRequest,
+  AidRequestInsert,
+  AidRequestUpdate,
+  AidRequestFilters,
+  AidRequestStats,
+} from './aidRequest';
+
+// Campaigns
+export type {
+  Campaign,
+  CampaignInsert,
+  CampaignUpdate,
+  CampaignsFilters,
+  CampaignStats,
+} from './campaign';
+
 // Database
-export type { Member, Donation, DonationInsert, DonationUpdate, DonationFilters } from './database';
+export type { Member } from './database';
 
 // Kumbara
 export type {
@@ -184,12 +211,40 @@ export type {
 } from './pagination';
 
 // =============================================================================
-// SUPABASE TYPES
+// APPWRITE TYPES
 // =============================================================================
 
 export type {
-  SupabaseResponse,
-  SupabaseQueryOptions,
-  ConnectionStatus,
-  BatchOperationResult,
-} from './supabase';
+  AppwriteDocument,
+  UserProfile,
+  Beneficiary,
+  Donation,
+  AidApplication,
+  Campaign,
+  SystemSettings,
+  Role,
+  Permission,
+  UserPermission,
+  Partner,
+  AuditLog,
+  FamilyRelationship,
+  FileMetadata,
+  BeneficiaryStats,
+  DonationStats,
+  CampaignStats,
+  AidRequestStats,
+  AppwriteResponse,
+  AppwriteListResponse,
+  QueryOptions,
+  CollectionName,
+  BucketName,
+  PermissionName,
+  RoleName,
+} from './appwrite';
+
+export {
+  COLLECTIONS,
+  BUCKETS,
+  PERMISSIONS,
+  ROLES,
+} from './appwrite';

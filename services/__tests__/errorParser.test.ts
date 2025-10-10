@@ -47,8 +47,8 @@ describe('ErrorParser', () => {
     expect(errors[0]?.type).toBe(ErrorType.BUILD);
   });
 
-  it('should parse Cloudflare deploy errors', () => {
-    const log = 'Error: Cloudflare API token is invalid';
+  it('should parse Appwrite deploy errors', () => {
+    const log = 'Error: Appwrite API token is invalid';
     const errors = parser.parse(log);
 
     expect(errors[0]?.type).toBe(ErrorType.DEPLOY);
@@ -119,15 +119,15 @@ describe('ErrorParser', () => {
   });
 
   // Additional Deploy tests (Requirement 2.4)
-  it('should parse Cloudflare Pages deploy errors', () => {
-    const log = 'Error: Cloudflare Pages deployment failed: Project not found';
+  it('should parse Appwrite Sites deploy errors', () => {
+    const log = 'Error: Appwrite Sites deployment failed: Project not found';
     const errors = parser.parse(log);
 
     expect(errors[0]?.type).toBe(ErrorType.DEPLOY);
   });
 
-  it('should parse Wrangler errors', () => {
-    const log = 'wrangler error: Failed to publish to Cloudflare';
+  it('should parse Appwrite CLI errors', () => {
+    const log = 'appwrite error: Failed to publish to Appwrite';
     const errors = parser.parse(log);
 
     expect(errors[0]?.type).toBe(ErrorType.DEPLOY);

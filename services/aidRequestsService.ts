@@ -5,51 +5,19 @@
  * @version 1.0.0
  */
 
-import { supabase, TABLES } from '../lib/supabase';
+import { db, collections, queryHelpers } from '../lib/database';
 import { logger } from '../lib/logging/logger';
 import type {
   AidRequest,
   AidRequestInsert,
   AidRequestUpdate,
+  AidRequestFilters,
+  AidRequestStats,
+} from '../types/aidRequest';
+import type {
   PaginatedResponse,
   ApiResponse,
 } from '../types/database';
-
-/**
- * AidRequestFilters Interface
- * 
- * @interface AidRequestFilters
- */
-export interface AidRequestFilters {
-  status?: string;
-  aidType?: string;
-  urgency?: string;
-  assignedTo?: string;
-  searchTerm?: string;
-  dateFrom?: string;
-  dateTo?: string;
-  minAmount?: number;
-  maxAmount?: number;
-}
-
-/**
- * AidRequestStats Interface
- * 
- * @interface AidRequestStats
- */
-export interface AidRequestStats {
-  total: number;
-  pending: number;
-  underReview: number;
-  approved: number;
-  rejected: number;
-  completed: number;
-  totalRequestedAmount: number;
-  totalApprovedAmount: number;
-  byAidType: Record<string, number>;
-  byUrgency: Record<string, number>;
-  avgProcessingDays?: number;
-}
 
 class AidRequestsService {
   // Get all aid requests with pagination and filters
@@ -59,70 +27,61 @@ class AidRequestsService {
     filters: AidRequestFilters = {},
   ): Promise<PaginatedResponse<AidRequest>> {
     try {
-      let query = supabase
-        .from(TABLES.AID_REQUESTS)
-        .select('*', { count: 'exact' })
-        .order('created_at', { ascending: false });
+      const queries: string[] = [];
 
       // Apply filters
       if (filters.status) {
-        query = query.eq('status', filters.status);
+        queries.push(queryHelpers.equal('status', filters.status));
       }
 
       if (filters.aidType) {
-        query = query.eq('aid_type', filters.aidType);
+        queries.push(queryHelpers.equal('aid_type', filters.aidType));
       }
 
       if (filters.urgency) {
-        query = query.eq('urgency', filters.urgency);
+        queries.push(queryHelpers.equal('urgency', filters.urgency));
       }
 
       if (filters.assignedTo) {
-        query = query.eq('assigned_to', filters.assignedTo);
-      }
-
-      if (filters.searchTerm) {
-        query = query.or(`
-          applicant_name.ilike.%${filters.searchTerm}%,
-          applicant_email.ilike.%${filters.searchTerm}%,
-          applicant_phone.ilike.%${filters.searchTerm}%,
-          description.ilike.%${filters.searchTerm}%
-        `);
+        queries.push(queryHelpers.equal('assigned_to', filters.assignedTo));
       }
 
       if (filters.dateFrom) {
-        query = query.gte('created_at', filters.dateFrom);
+        queries.push(queryHelpers.greaterThanEqualDate('created_at', filters.dateFrom));
       }
 
       if (filters.dateTo) {
-        query = query.lte('created_at', filters.dateTo);
+        queries.push(queryHelpers.lessThanEqualDate('created_at', filters.dateTo));
       }
 
       if (filters.minAmount) {
-        query = query.gte('requested_amount', filters.minAmount);
+        queries.push(queryHelpers.greaterThanEqual('requested_amount', filters.minAmount));
       }
 
       if (filters.maxAmount) {
-        query = query.lte('requested_amount', filters.maxAmount);
+        queries.push(queryHelpers.lessThanEqual('requested_amount', filters.maxAmount));
       }
+
+      // Order by creation date (newest first)
+      queries.push(queryHelpers.orderDesc('created_at'));
 
       // Apply pagination
       const from = (page - 1) * pageSize;
-      const to = from + pageSize - 1;
-      query = query.range(from, to);
+      queries.push(queryHelpers.offset(from));
+      queries.push(queryHelpers.limit(pageSize));
 
-      const { data, error, count } = await query;
+      const { data, error } = await db.list(collections.AID_APPLICATIONS, queries);
 
       if (error) {
         logger.error('Error fetching aid requests:', error);
         throw new Error(`Aid requests fetch failed: ${error.message}`);
       }
 
-      const totalPages = Math.ceil((count ?? 0) / pageSize);
+      const totalPages = Math.ceil((data?.total ?? 0) / pageSize);
 
       return {
-        data: data || [],
-        count: count ?? 0,
+        data: data?.documents || [],
+        count: data?.total ?? 0,
         page,
         pageSize,
         totalPages,
@@ -138,11 +97,7 @@ class AidRequestsService {
   // Get single aid request by ID
   async getAidRequest(id: string): Promise<ApiResponse<AidRequest>> {
     try {
-      const { data, error } = await supabase
-        .from(TABLES.AID_REQUESTS)
-        .select('*')
-        .eq('id', id)
-        .single();
+      const { data, error } = await db.get(collections.AID_APPLICATIONS, id);
 
       if (error) {
         logger.error('Error fetching aid request:', error);
@@ -160,19 +115,17 @@ class AidRequestsService {
   async createAidRequest(aidRequest: AidRequestInsert): Promise<ApiResponse<AidRequest>> {
     try {
       const now = new Date().toISOString();
-      const { data, error } = await supabase
-        .from(TABLES.AID_REQUESTS)
-        .insert({
-          ...aidRequest,
-          created_at: now,
-          updated_at: now,
-          status: aidRequest.status ?? 'pending',
-          urgency: aidRequest.urgency ?? 'medium',
-          currency: aidRequest.currency ?? 'TRY',
-          follow_up_required: aidRequest.follow_up_required ?? false,
-        })
-        .select()
-        .single();
+      const insertData = {
+        ...aidRequest,
+        created_at: now,
+        updated_at: now,
+        status: aidRequest.status ?? 'pending',
+        urgency: aidRequest.urgency ?? 'medium',
+        currency: aidRequest.currency ?? 'TRY',
+        follow_up_required: aidRequest.follow_up_required ?? false,
+      };
+
+      const { data, error } = await db.create(collections.AID_APPLICATIONS, insertData);
 
       if (error) {
         logger.error('Error creating aid request:', error);
@@ -189,15 +142,10 @@ class AidRequestsService {
   // Update aid request
   async updateAidRequest(id: string, updates: AidRequestUpdate): Promise<ApiResponse<AidRequest>> {
     try {
-      const { data, error } = await supabase
-        .from(TABLES.AID_REQUESTS)
-        .update({
-          ...updates,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', id)
-        .select()
-        .single();
+      const { data, error } = await db.update(collections.AID_APPLICATIONS, id, {
+        ...updates,
+        updated_at: new Date().toISOString(),
+      });
 
       if (error) {
         logger.error('Error updating aid request:', error);
@@ -218,18 +166,12 @@ class AidRequestsService {
     assignedBy: string,
   ): Promise<ApiResponse<AidRequest>> {
     try {
-      const { data, error } = await supabase
-        .from(TABLES.AID_REQUESTS)
-        .update({
-          assigned_to: assignedTo,
-          status: 'under_review',
-          updated_by: assignedBy,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', id)
-        .is('deleted_at', null)
-        .select()
-        .single();
+      const { data, error } = await db.update(collections.AID_APPLICATIONS, id, {
+        assigned_to: assignedTo,
+        status: 'under_review',
+        updated_by: assignedBy,
+        updated_at: new Date().toISOString(),
+      });
 
       if (error) {
         logger.error('Error assigning aid request:', error);
@@ -252,21 +194,15 @@ class AidRequestsService {
   ): Promise<ApiResponse<AidRequest>> {
     try {
       const now = new Date().toISOString();
-      const { data, error } = await supabase
-        .from(TABLES.AID_REQUESTS)
-        .update({
-          status: 'approved',
-          approved_amount: approvedAmount,
-          approved_by: approvedBy,
-          approval_date: now.split('T')[0],
-          disbursement_method: disbursementMethod,
-          updated_by: approvedBy,
-          updated_at: now,
-        })
-        .eq('id', id)
-        .is('deleted_at', null)
-        .select()
-        .single();
+      const { data, error } = await db.update(collections.AID_APPLICATIONS, id, {
+        status: 'approved',
+        approved_amount: approvedAmount,
+        approved_by: approvedBy,
+        approval_date: now.split('T')[0],
+        disbursement_method: disbursementMethod,
+        updated_by: approvedBy,
+        updated_at: now,
+      });
 
       if (error) {
         logger.error('Error approving aid request:', error);
@@ -287,18 +223,12 @@ class AidRequestsService {
     reason?: string,
   ): Promise<ApiResponse<AidRequest>> {
     try {
-      const { data, error } = await supabase
-        .from(TABLES.AID_REQUESTS)
-        .update({
-          status: 'rejected',
-          internal_notes: reason,
-          updated_by: rejectedBy,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', id)
-        .is('deleted_at', null)
-        .select()
-        .single();
+      const { data, error } = await db.update(collections.AID_APPLICATIONS, id, {
+        status: 'rejected',
+        internal_notes: reason,
+        updated_by: rejectedBy,
+        updated_at: new Date().toISOString(),
+      });
 
       if (error) {
         logger.error('Error rejecting aid request:', error);
@@ -316,18 +246,12 @@ class AidRequestsService {
   async completeAidRequest(id: string, completedBy: string): Promise<ApiResponse<AidRequest>> {
     try {
       const now = new Date().toISOString();
-      const { data, error } = await supabase
-        .from(TABLES.AID_REQUESTS)
-        .update({
-          status: 'completed',
-          disbursement_date: now.split('T')[0],
-          updated_by: completedBy,
-          updated_at: now,
-        })
-        .eq('id', id)
-        .is('deleted_at', null)
-        .select()
-        .single();
+      const { data, error } = await db.update(collections.AID_APPLICATIONS, id, {
+        status: 'completed',
+        disbursement_date: now.split('T')[0],
+        updated_by: completedBy,
+        updated_at: now,
+      });
 
       if (error) {
         logger.error('Error completing aid request:', error);
@@ -344,29 +268,45 @@ class AidRequestsService {
   // Get aid request statistics - safe count-only approach
   async getAidRequestStats(): Promise<ApiResponse<AidRequestStats>> {
     try {
-      // Just get count to avoid column errors
-      const { count, error } = await supabase
-        .from(TABLES.AID_REQUESTS)
-        .select('*', { count: 'exact', head: true });
+      // Get all aid requests for statistics
+      const { data, error } = await db.list(collections.AID_APPLICATIONS, [
+        queryHelpers.select(['status', 'aid_type', 'urgency', 'requested_amount', 'approved_amount'])
+      ]);
 
       if (error) {
         logger.error('Error fetching aid request stats:', error);
         return { data: null, error: error.message };
       }
 
-      const total = count ?? 0;
+      const documents = data?.documents || [];
+      const total = documents.length;
+      
       const stats: AidRequestStats = {
         total,
-        pending: Math.round(total * 0.4), // Estimate 40% pending
-        underReview: Math.round(total * 0.3), // Estimate 30% under review
-        approved: Math.round(total * 0.2), // Estimate 20% approved
-        rejected: Math.round(total * 0.05), // Estimate 5% rejected
-        completed: Math.round(total * 0.05), // Estimate 5% completed
-        totalRequestedAmount: 0, // Will be populated when columns exist
-        totalApprovedAmount: 0, // Will be populated when columns exist
+        pending: documents.filter((d: any) => d.status === 'pending').length,
+        underReview: documents.filter((d: any) => d.status === 'under_review').length,
+        approved: documents.filter((d: any) => d.status === 'approved').length,
+        rejected: documents.filter((d: any) => d.status === 'rejected').length,
+        completed: documents.filter((d: any) => d.status === 'completed').length,
+        totalRequestedAmount: documents.reduce((sum: number, d: any) => sum + (d.requested_amount || 0), 0),
+        totalApprovedAmount: documents.reduce((sum: number, d: any) => sum + (d.approved_amount || 0), 0),
         byAidType: {},
         byUrgency: {},
       };
+
+      // Calculate by aid type
+      documents.forEach((d: any) => {
+        if (d.aid_type) {
+          stats.byAidType[d.aid_type] = (stats.byAidType[d.aid_type] || 0) + 1;
+        }
+      });
+
+      // Calculate by urgency
+      documents.forEach((d: any) => {
+        if (d.urgency) {
+          stats.byUrgency[d.urgency] = (stats.byUrgency[d.urgency] || 0) + 1;
+        }
+      });
 
       return { data: stats, error: null };
     } catch (error) {
@@ -378,27 +318,20 @@ class AidRequestsService {
   // Search aid requests
   async searchAidRequests(searchTerm: string, limit = 10): Promise<ApiResponse<AidRequest[]>> {
     try {
-      const { data, error } = await supabase
-        .from(TABLES.AID_REQUESTS)
-        .select('*')
-        .or(
-          `
-          applicant_name.ilike.%${searchTerm}%,
-          applicant_email.ilike.%${searchTerm}%,
-          applicant_phone.ilike.%${searchTerm}%,
-          description.ilike.%${searchTerm}%
-        `,
-        )
-        .is('deleted_at', null)
-        .order('created_at', { ascending: false })
-        .limit(limit);
+      // Note: Appwrite doesn't support complex OR queries like Supabase
+      // We'll search by applicant_name as the primary field
+      const { data, error } = await db.list(collections.AID_APPLICATIONS, [
+        queryHelpers.search('applicant_name', searchTerm),
+        queryHelpers.orderDesc('created_at'),
+        queryHelpers.limit(limit)
+      ]);
 
       if (error) {
         logger.error('Error searching aid requests:', error);
         return { data: null, error: error.message };
       }
 
-      return { data: data || [], error: null };
+      return { data: data?.documents || [], error: null };
     } catch (error) {
       logger.error('AidRequestsService.searchAidRequests error:', error);
       return { data: null, error: 'Search failed' };
@@ -408,19 +341,17 @@ class AidRequestsService {
   // Get aid requests assigned to user
   async getMyAidRequests(userId: string): Promise<ApiResponse<AidRequest[]>> {
     try {
-      const { data, error } = await supabase
-        .from(TABLES.AID_REQUESTS)
-        .select('*')
-        .eq('assigned_to', userId)
-        .is('deleted_at', null)
-        .order('created_at', { ascending: false });
+      const { data, error } = await db.list(collections.AID_APPLICATIONS, [
+        queryHelpers.equal('assigned_to', userId),
+        queryHelpers.orderDesc('created_at')
+      ]);
 
       if (error) {
         logger.error('Error fetching user aid requests:', error);
         return { data: null, error: error.message };
       }
 
-      return { data: data || [], error: null };
+      return { data: data?.documents || [], error: null };
     } catch (error) {
       logger.error('AidRequestsService.getMyAidRequests error:', error);
       return { data: null, error: 'My aid requests fetch failed' };
@@ -430,19 +361,17 @@ class AidRequestsService {
   // Get recent aid requests
   async getRecentAidRequests(limit = 5): Promise<ApiResponse<AidRequest[]>> {
     try {
-      const { data, error } = await supabase
-        .from(TABLES.AID_REQUESTS)
-        .select('*')
-        .is('deleted_at', null)
-        .order('created_at', { ascending: false })
-        .limit(limit);
+      const { data, error } = await db.list(collections.AID_APPLICATIONS, [
+        queryHelpers.orderDesc('created_at'),
+        queryHelpers.limit(limit)
+      ]);
 
       if (error) {
         logger.error('Error fetching recent aid requests:', error);
         return { data: null, error: error.message };
       }
 
-      return { data: data || [], error: null };
+      return { data: data?.documents || [], error: null };
     } catch (error) {
       logger.error('AidRequestsService.getRecentAidRequests error:', error);
       return { data: null, error: 'Recent aid requests fetch failed' };
@@ -452,13 +381,10 @@ class AidRequestsService {
   // Soft delete aid request
   async deleteAidRequest(id: string, deletedBy: string): Promise<ApiResponse<boolean>> {
     try {
-      const { error } = await supabase
-        .from(TABLES.AID_REQUESTS)
-        .update({
-          deleted_at: new Date().toISOString(),
-          updated_by: deletedBy,
-        })
-        .eq('id', id);
+      const { error } = await db.update(collections.AID_APPLICATIONS, id, {
+        deleted_at: new Date().toISOString(),
+        updated_by: deletedBy,
+      });
 
       if (error) {
         logger.error('Error deleting aid request:', error);
@@ -479,19 +405,21 @@ class AidRequestsService {
     updatedBy: string,
   ): Promise<ApiResponse<boolean>> {
     try {
-      const { error } = await supabase
-        .from(TABLES.AID_REQUESTS)
-        .update({
+      // Appwrite doesn't have bulk update, so we'll update each request individually
+      const updatePromises = requestIds.map(id => 
+        db.update(collections.AID_APPLICATIONS, id, {
           status,
           updated_by: updatedBy,
           updated_at: new Date().toISOString(),
         })
-        .in('id', requestIds)
-        .is('deleted_at', null);
+      );
 
-      if (error) {
-        logger.error('Error bulk updating aid request status:', error);
-        return { data: null, error: `Toplu güncelleme başarısız: ${error.message}` };
+      const results = await Promise.allSettled(updatePromises);
+      const errors = results.filter(result => result.status === 'rejected');
+
+      if (errors.length > 0) {
+        logger.error('Error bulk updating aid request status:', errors);
+        return { data: null, error: `Toplu güncelleme başarısız: ${errors.length} kayıt güncellenemedi` };
       }
 
       return { data: true, error: null };

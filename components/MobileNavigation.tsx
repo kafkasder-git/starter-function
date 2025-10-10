@@ -215,7 +215,7 @@ export function MobileNavigation({
               onClick={() => {
                 onModuleChange?.(module.id);
                 if (module.subPages.length === 1) {
-                  onSubPageChange?.(module.subPages[0].href);
+                  onSubPageChange?.(module.subPages[0]?.href || '');
                 }
               }}
               className={cn(

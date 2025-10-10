@@ -52,7 +52,7 @@ interface BeneficiaryDocumentsProps {
  */
 export function BeneficiaryDocuments({
   beneficiaryId,
-  documents = [],
+  documents: _documents = [],
   onDocumentUpload,
   onDocumentDelete,
 }: BeneficiaryDocumentsProps) {
@@ -73,7 +73,7 @@ export function BeneficiaryDocuments({
         if (response.data?.supporting_documents) {
           const docs = response.data.supporting_documents.map((url: string, index: number) => {
             // Parse URL to extract bucket, path, name, etc.
-            // Assuming URL format: https://project.supabase.co/storage/v1/object/public/bucket/path
+            // Assuming URL format: https://cloud.appwrite.io/v1/storage/buckets/bucketId/files/fileId/view
             const urlParts = url.split('/');
             const bucket = urlParts[urlParts.length - 2];
             const path = urlParts.slice(-2).join('/');
@@ -137,9 +137,9 @@ export function BeneficiaryDocuments({
       const newDocumentUrls = successfulUploads.map(result => result.url || '').filter(url => url);
       const newFiles = successfulUploads.map((result, index) => ({
         id: result.file?.id || `${Date.now()}-${index}`,
-        name: result.file?.name || files[index].name,
-        size: result.file?.size || files[index].size,
-        type: result.file?.type || files[index].type,
+        name: result.file?.name || files[index]?.name || 'unknown',
+        size: result.file?.size || files[index]?.size || 0,
+        type: result.file?.type || files[index]?.type || 'application/octet-stream',
         url: result.file?.url || '',
         uploadDate: new Date(),
         bucket: result.file?.bucket || 'documents',
@@ -211,6 +211,7 @@ export function BeneficiaryDocuments({
   const handleDownload = async (bucket: string, path: string) => {
     try {
       const blob = await fileStorageService.downloadFile(bucket, path);
+      if (!blob) return;
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;

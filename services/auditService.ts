@@ -5,7 +5,7 @@
  * @version 1.0.0
  */
 
-import { supabase } from '../lib/supabase';
+import { db, collections, queryHelpers } from '../lib/database';
 import { logger } from '../lib/logging/logger';
 
 /**
@@ -102,7 +102,7 @@ export interface AuditLogFilter {
  * Audit Service class
  */
 class AuditService {
-  private readonly tableName = 'audit_logs';
+  private readonly collectionName = collections.AUDIT_LOGS;
   private readonly retentionDays = 90; // Keep logs for 90 days
 
   /**
@@ -123,14 +123,12 @@ class AuditService {
         logger.info('Audit Log:', enrichedEntry);
       }
 
-      // Store in Supabase
-      const { error } = await supabase
-        .from(this.tableName)
-        .insert([enrichedEntry]);
+      // Store in Appwrite
+      const { error } = await db.create(this.collectionName, enrichedEntry);
 
       if (error) {
         logger.error('Failed to create audit log:', error);
-        // Fallback to local storage if Supabase fails
+        // Fallback to local storage if Appwrite fails
         this.logToLocalStorage(enrichedEntry);
       }
     } catch (error) {
@@ -293,51 +291,51 @@ class AuditService {
    */
   async getLogs(filter: AuditLogFilter = {}): Promise<AuditLog[]> {
     try {
-      let query = supabase
-        .from(this.tableName)
-        .select('*')
-        .order('created_at', { ascending: false });
+      const queries = [];
 
       if (filter.user_id) {
-        query = query.eq('user_id', filter.user_id);
+        queries.push(queryHelpers.equal('user_id', filter.user_id));
       }
 
       if (filter.event_type) {
-        query = query.eq('event_type', filter.event_type);
+        queries.push(queryHelpers.equal('event_type', filter.event_type));
       }
 
       if (filter.severity) {
-        query = query.eq('severity', filter.severity);
+        queries.push(queryHelpers.equal('severity', filter.severity));
       }
 
       if (filter.resource_type) {
-        query = query.eq('resource_type', filter.resource_type);
+        queries.push(queryHelpers.equal('resource_type', filter.resource_type));
       }
 
       if (filter.start_date) {
-        query = query.gte('created_at', filter.start_date.toISOString());
+        queries.push(queryHelpers.greaterThanEqualDate('created_at', filter.start_date.toISOString()));
       }
 
       if (filter.end_date) {
-        query = query.lte('created_at', filter.end_date.toISOString());
+        queries.push(queryHelpers.lessThanEqualDate('created_at', filter.end_date.toISOString()));
       }
 
       if (filter.limit) {
-        query = query.limit(filter.limit);
+        queries.push(queryHelpers.limit(filter.limit));
       }
 
       if (filter.offset) {
-        query = query.range(filter.offset, filter.offset + (filter.limit || 50) - 1);
+        queries.push(queryHelpers.offset(filter.offset));
       }
 
-      const { data, error } = await query;
+      // Order by created_at desc
+      queries.push(queryHelpers.orderDesc('created_at'));
+
+      const { data, error } = await db.list(this.collectionName, queries);
 
       if (error) {
         logger.error('Failed to fetch audit logs:', error);
         return [];
       }
 
-      return data || [];
+      return data?.documents || [];
     } catch (error) {
       logger.error('Error fetching audit logs:', error);
       return [];
@@ -378,15 +376,17 @@ class AuditService {
       const cutoffDate = new Date();
       cutoffDate.setDate(cutoffDate.getDate() - this.retentionDays);
 
-      const { error } = await supabase
-        .from(this.tableName)
-        .delete()
-        .lt('created_at', cutoffDate.toISOString());
+      // Get old logs first
+      const { data: oldLogs } = await db.list(this.collectionName, [
+        queryHelpers.lessThan('created_at', cutoffDate.toISOString())
+      ]);
 
-      if (error) {
-        logger.error('Failed to cleanup audit logs:', error);
-      } else {
-        logger.info(`Cleaned up audit logs older than ${this.retentionDays} days`);
+      if (oldLogs?.documents?.length) {
+        // Delete each old log individually (Appwrite doesn't support bulk delete)
+        for (const log of oldLogs.documents) {
+          await db.delete(this.collectionName, log.$id);
+        }
+        logger.info(`Cleaned up ${oldLogs.documents.length} audit logs older than ${this.retentionDays} days`);
       }
     } catch (error) {
       logger.error('Error cleaning up audit logs:', error);
@@ -394,7 +394,7 @@ class AuditService {
   }
 
   /**
-   * Fallback to local storage if Supabase fails
+   * Fallback to local storage if Appwrite fails
    */
   private logToLocalStorage(entry: any): void {
     try {

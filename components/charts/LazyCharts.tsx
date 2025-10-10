@@ -6,7 +6,7 @@
  */
 
 import React, { lazy, Suspense } from 'react';
-import { SkeletonLoader } from '../LoadingSpinner';
+import { SkeletonLoader } from '../shared/LoadingSpinner';
 
 // Lazy load chart components to reduce initial bundle size
 const InteractiveChart = lazy(() =>

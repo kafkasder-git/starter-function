@@ -3,7 +3,8 @@
  * @description TOTP-based 2FA for enhanced security
  */
 
-import { supabase } from '../supabase';
+import { db, collections, queryHelpers } from '../database';
+import { logger } from '../logging/logger';
 
 /**
  * Generate TOTP secret
@@ -95,11 +96,11 @@ export async function enable2FA(userId: string): Promise<{
 }> {
   try {
     // Get user email
-    const { data: user } = await supabase
-      .from('users')
-      .select('email')
-      .eq('id', userId)
-      .single();
+    const { data: userData } = await db.list('user_profiles', [
+      queryHelpers.equal('$id', userId)
+    ]);
+    
+    const user = userData?.documents?.[0];
 
     if (!user) {
       throw new Error('User not found');
@@ -115,15 +116,13 @@ export async function enable2FA(userId: string): Promise<{
     const backupCodes = generateBackupCodes();
     
     // Store in database (encrypted)
-    await supabase
-      .from('user_2fa')
-      .upsert({
-        user_id: userId,
-        secret, // Should be encrypted in production
-        backup_codes: backupCodes, // Should be hashed in production
-        enabled: false, // Will be enabled after verification
-        created_at: new Date().toISOString(),
-      });
+    await db.create('user_2fa', {
+      user_id: userId,
+      secret, // Should be encrypted in production
+      backup_codes: backupCodes, // Should be hashed in production
+      enabled: false, // Will be enabled after verification
+      $createdAt: new Date().toISOString(),
+    });
 
     return {
       secret,
@@ -131,7 +130,7 @@ export async function enable2FA(userId: string): Promise<{
       backupCodes,
     };
   } catch (error) {
-    console.error('Failed to enable 2FA:', error);
+    logger.error('Failed to enable 2FA:', error);
     throw error;
   }
 }
@@ -145,11 +144,11 @@ export async function verify2FASetup(
 ): Promise<boolean> {
   try {
     // Get user's 2FA secret
-    const { data: twoFA } = await supabase
-      .from('user_2fa')
-      .select('secret')
-      .eq('user_id', userId)
-      .single();
+    const { data: twoFAData } = await db.list('user_2fa', [
+      queryHelpers.equal('user_id', userId)
+    ]);
+    
+    const twoFA = twoFAData?.documents?.[0];
 
     if (!twoFA) {
       throw new Error('2FA not set up');
@@ -160,17 +159,14 @@ export async function verify2FASetup(
     
     if (isValid) {
       // Enable 2FA
-      await supabase
-        .from('user_2fa')
-        .update({ enabled: true })
-        .eq('user_id', userId);
+      await db.update('user_2fa', twoFA.$id, { enabled: true });
       
       return true;
     }
     
     return false;
   } catch (error) {
-    console.error('Failed to verify 2FA setup:', error);
+    logger.error('Failed to verify 2FA setup:', error);
     throw error;
   }
 }
@@ -184,11 +180,11 @@ export async function verify2FALogin(
 ): Promise<boolean> {
   try {
     // Get user's 2FA settings
-    const { data: twoFA } = await supabase
-      .from('user_2fa')
-      .select('secret, enabled, backup_codes')
-      .eq('user_id', userId)
-      .single();
+    const { data: twoFAData } = await db.list('user_2fa', [
+      queryHelpers.equal('user_id', userId)
+    ]);
+    
+    const twoFA = twoFAData?.documents?.[0];
 
     if (!twoFA?.enabled) {
       return true; // 2FA not enabled
@@ -198,10 +194,7 @@ export async function verify2FALogin(
     if (twoFA.backup_codes?.includes(code)) {
       // Remove used backup code
       const updatedCodes = twoFA.backup_codes.filter((c: string) => c !== code);
-      await supabase
-        .from('user_2fa')
-        .update({ backup_codes: updatedCodes })
-        .eq('user_id', userId);
+      await db.update('user_2fa', twoFA.$id, { backup_codes: updatedCodes });
       
       return true;
     }
@@ -209,7 +202,7 @@ export async function verify2FALogin(
     // Verify TOTP code
     return verifyTOTP(twoFA.secret, code);
   } catch (error) {
-    console.error('Failed to verify 2FA login:', error);
+    logger.error('Failed to verify 2FA login:', error);
     return false;
   }
 }
@@ -227,10 +220,7 @@ export async function disable2FA(userId: string, code: string): Promise<boolean>
     }
 
     // Disable 2FA
-    await supabase
-      .from('user_2fa')
-      .update({ enabled: false })
-      .eq('user_id', userId);
+    await db.update('user_2fa', twoFA.$id, { enabled: false });
 
     return true;
   } catch (error) {
@@ -258,11 +248,11 @@ export function generateBackupCodes(count = 10): string[] {
  */
 export async function is2FAEnabled(userId: string): Promise<boolean> {
   try {
-    const { data } = await supabase
-      .from('user_2fa')
-      .select('enabled')
-      .eq('user_id', userId)
-      .single();
+    const { data: twoFAData } = await db.list('user_2fa', [
+      queryHelpers.equal('user_id', userId)
+    ]);
+    
+    const data = twoFAData?.documents?.[0];
 
     return data?.enabled || false;
   } catch (error) {
@@ -275,11 +265,11 @@ export async function is2FAEnabled(userId: string): Promise<boolean> {
  */
 export async function getBackupCodesCount(userId: string): Promise<number> {
   try {
-    const { data } = await supabase
-      .from('user_2fa')
-      .select('backup_codes')
-      .eq('user_id', userId)
-      .single();
+    const { data: twoFAData } = await db.list('user_2fa', [
+      queryHelpers.equal('user_id', userId)
+    ]);
+    
+    const data = twoFAData?.documents?.[0];
 
     return data?.backup_codes?.length || 0;
   } catch (error) {
@@ -306,10 +296,7 @@ export async function regenerateBackupCodes(
     const backupCodes = generateBackupCodes();
     
     // Update in database
-    await supabase
-      .from('user_2fa')
-      .update({ backup_codes: backupCodes })
-      .eq('user_id', userId);
+    await db.update('user_2fa', twoFA.$id, { backup_codes: backupCodes });
 
     return backupCodes;
   } catch (error) {

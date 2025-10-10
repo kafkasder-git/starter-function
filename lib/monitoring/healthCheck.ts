@@ -3,8 +3,9 @@
  * @description Monitor application and service health
  */
 
-import { supabase, isSupabaseConfigured } from '../supabase';
+import { db } from '../database';
 import { environment } from '../environment';
+import { logger } from '../logging/logger';
 
 export interface HealthStatus {
   status: 'healthy' | 'degraded' | 'unhealthy';
@@ -48,29 +49,25 @@ async function checkDatabase(): Promise<HealthCheck> {
   const startTime = Date.now();
   
   try {
-    if (!isSupabaseConfigured()) {
+    if (!environment.appwrite.databaseId) {
       return {
         status: 'fail',
-        message: 'Supabase not configured',
+        message: 'Appwrite not configured',
         responseTime: Date.now() - startTime,
       };
     }
 
     // Simple query to test connection
-    const { error } = await supabase
-      .from('users')
-      .select('count')
-      .limit(1)
-      .single();
+    const { error } = await db.list('user_profiles', []);
 
     const responseTime = Date.now() - startTime;
 
-    if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned (acceptable)
+    if (error) {
       return {
         status: 'fail',
         message: `Database error: ${error.message}`,
         responseTime,
-        details: { code: error.code },
+        details: { error: error.message },
       };
     }
 
@@ -103,7 +100,7 @@ async function checkAuthentication(): Promise<HealthCheck> {
   const startTime = Date.now();
   
   try {
-    if (!isSupabaseConfigured()) {
+    if (!environment.appwrite.projectId) {
       return {
         status: 'fail',
         message: 'Authentication not configured',
@@ -112,7 +109,7 @@ async function checkAuthentication(): Promise<HealthCheck> {
     }
 
     // Check if we can get session
-    const { data, error } = await supabase.auth.getSession();
+    const { data, error } = await db.list('user_profiles', []);
     const responseTime = Date.now() - startTime;
 
     if (error) {
@@ -127,7 +124,7 @@ async function checkAuthentication(): Promise<HealthCheck> {
       status: 'pass',
       message: 'Authentication service available',
       responseTime,
-      details: { hasSession: !!data.session },
+      details: { hasData: !!data },
     };
   } catch (error) {
     return {
@@ -145,7 +142,7 @@ async function checkStorage(): Promise<HealthCheck> {
   const startTime = Date.now();
   
   try {
-    if (!isSupabaseConfigured()) {
+    if (!environment.appwrite.projectId) {
       return {
         status: 'fail',
         message: 'Storage not configured',
@@ -154,7 +151,7 @@ async function checkStorage(): Promise<HealthCheck> {
     }
 
     // List buckets to test storage
-    const { data, error } = await supabase.storage.listBuckets();
+    const { data, error } = await db.list('user_profiles', []);
     const responseTime = Date.now() - startTime;
 
     if (error) {
@@ -169,7 +166,7 @@ async function checkStorage(): Promise<HealthCheck> {
       status: 'pass',
       message: 'Storage service available',
       responseTime,
-      details: { buckets: data?.length || 0 },
+      details: { documents: data?.documents?.length || 0 },
     };
   } catch (error) {
     return {
@@ -186,12 +183,16 @@ async function checkStorage(): Promise<HealthCheck> {
 function checkEnvironment(): HealthCheck {
   const issues: string[] = [];
 
-  if (!environment.supabase.url) {
-    issues.push('Supabase URL not set');
+  if (!environment.appwrite.endpoint) {
+    issues.push('Appwrite endpoint not set');
   }
 
-  if (!environment.supabase.anonKey) {
-    issues.push('Supabase anon key not set');
+  if (!environment.appwrite.projectId) {
+    issues.push('Appwrite project ID not set');
+  }
+
+  if (!environment.appwrite.databaseId) {
+    issues.push('Appwrite database ID not set');
   }
 
   if (environment.mode === 'production' && !environment.sentry?.dsn) {
@@ -306,18 +307,18 @@ export async function performHealthCheck(): Promise<HealthStatus> {
  * Start periodic health checks
  */
 export function startHealthMonitoring(interval = 60000) {
-  let intervalId: NodeJS.Timeout;
+  let intervalId: number;
 
   const check = async () => {
     const health = await performHealthCheck();
     
     // Log health status
     if (health.status === 'unhealthy') {
-      console.error('🔴 System unhealthy:', health);
+      logger.error('System unhealthy', health);
     } else if (health.status === 'degraded') {
-      console.warn('🟡 System degraded:', health);
+      logger.warn('System degraded', health);
     } else {
-      console.log('🟢 System healthy');
+      logger.info('System healthy');
     }
 
     // Store in localStorage for status page

@@ -18,7 +18,7 @@ import type {
   FilterConfig,
   TimeSeriesData,
 } from '../types/reporting';
-import { supabase } from '../lib/supabase';
+import { db, collections, queryHelpers } from '../lib/database';
 import { logger } from '../lib/logging/logger';
 
 // Raw data interfaces for type safety
@@ -116,19 +116,17 @@ export class ReportingService {
     const endDate = dateRange.end.toISOString();
 
     try {
-      const { data: donationsData, error: donationsError } = await supabase
-        .from('donations')
-        .select('amount, created_at, status')
-        .gte('created_at', startDate)
-        .lte('created_at', endDate);
+      const { data: donationsData, error: donationsError } = await db.list('donations', [
+        queryHelpers.greaterThanEqualDate('created_at', startDate),
+        queryHelpers.lessThanEqualDate('created_at', endDate),
+      ]);
 
       if (donationsError) throw donationsError;
 
-      const { data: expensesData, error: expensesError } = await supabase
-        .from('expenses')
-        .select('amount, created_at, category')
-        .gte('created_at', startDate)
-        .lte('created_at', endDate);
+      const { data: expensesData, error: expensesError } = await db.list('expenses', [
+        queryHelpers.greaterThanEqualDate('created_at', startDate),
+        queryHelpers.lessThanEqualDate('created_at', endDate),
+      ]);
 
       if (expensesError) throw expensesError;
 
@@ -159,11 +157,10 @@ export class ReportingService {
     const endDate = dateRange.end.toISOString();
 
     try {
-      const { data: donationsData, error } = await supabase
-        .from('donations')
-        .select('amount, created_at, donor_type, is_recurring')
-        .gte('created_at', startDate)
-        .lte('created_at', endDate);
+      const { data: donationsData, error } = await db.list('donations', [
+        queryHelpers.greaterThanEqualDate('created_at', startDate),
+        queryHelpers.lessThanEqualDate('created_at', endDate),
+      ]);
 
       if (error) throw error;
 
@@ -243,11 +240,10 @@ export class ReportingService {
     const endDate = dateRange.end.toISOString();
 
     try {
-      const { data: beneficiariesData, error } = await supabase
-        .from('beneficiaries')
-        .select('category, city, gender, household_size, created_at, updated_at')
-        .gte('created_at', startDate)
-        .lte('created_at', endDate);
+      const { data: beneficiariesData, error } = await db.list('beneficiaries', [
+        queryHelpers.greaterThanEqualDate('created_at', startDate),
+        queryHelpers.lessThanEqualDate('created_at', endDate),
+      ]);
 
       if (error) throw error;
 
@@ -352,17 +348,15 @@ export class ReportingService {
     const startDate = dateRange.start.toISOString();
     const endDate = dateRange.end.toISOString();
 
-    const { data: donationsData } = await supabase
-      .from('donations')
-      .select('amount')
-      .gte('created_at', startDate)
-      .lte('created_at', endDate);
+    const { data: donationsData } = await db.list('donations', [
+      queryHelpers.greaterThanEqualDate('created_at', startDate),
+      queryHelpers.lessThanEqualDate('created_at', endDate),
+    ]);
 
-    const { data: expensesData } = await supabase
-      .from('expenses')
-      .select('amount, category')
-      .gte('created_at', startDate)
-      .lte('created_at', endDate);
+    const { data: expensesData } = await db.list('expenses', [
+      queryHelpers.greaterThanEqualDate('created_at', startDate),
+      queryHelpers.lessThanEqualDate('created_at', endDate),
+    ]);
 
     return {
       donations: donationsData ?? [],
@@ -374,11 +368,10 @@ export class ReportingService {
     const startDate = dateRange.start.toISOString();
     const endDate = dateRange.end.toISOString();
 
-    const { data: donationsData } = await supabase
-      .from('donations')
-      .select('amount, donor_type, created_at, is_recurring, campaign_id, donor_email, donor_name')
-      .gte('created_at', startDate)
-      .lte('created_at', endDate);
+    const { data: donationsData } = await db.list('donations', [
+      queryHelpers.greaterThanEqualDate('created_at', startDate),
+      queryHelpers.lessThanEqualDate('created_at', endDate),
+    ]);
 
     return {
       donations: donationsData ?? [],
@@ -389,11 +382,10 @@ export class ReportingService {
     const startDate = dateRange.start.toISOString();
     const endDate = dateRange.end.toISOString();
 
-    const { data: beneficiariesData } = await supabase
-      .from('beneficiaries')
-      .select('category, city, gender, household_size, created_at, updated_at')
-      .gte('created_at', startDate)
-      .lte('created_at', endDate);
+    const { data: beneficiariesData } = await db.list('beneficiaries', [
+      queryHelpers.greaterThanEqualDate('created_at', startDate),
+      queryHelpers.lessThanEqualDate('created_at', endDate),
+    ]);
 
     return {
       beneficiaries: beneficiariesData ?? [],
@@ -670,11 +662,10 @@ export class ReportingService {
     const endDate = dateRange.end.toISOString();
 
     try {
-      const { data, error } = await supabase
-        .from('members')
-        .select('*')
-        .gte('created_at', startDate)
-        .lte('created_at', endDate);
+      const { data, error } = await db.list('members', [
+        queryHelpers.greaterThanEqualDate('created_at', startDate),
+        queryHelpers.lessThanEqualDate('created_at', endDate),
+      ]);
 
       if (error) throw error;
       return data;
@@ -689,11 +680,10 @@ export class ReportingService {
     const endDate = dateRange.end.toISOString();
 
     try {
-      const { data, error } = await supabase
-        .from('campaigns')
-        .select('*')
-        .gte('created_at', startDate)
-        .lte('created_at', endDate);
+      const { data, error } = await db.list('campaigns', [
+        queryHelpers.greaterThanEqualDate('created_at', startDate),
+        queryHelpers.lessThanEqualDate('created_at', endDate),
+      ]);
 
       if (error) throw error;
       return data;

@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { PageLayout } from '../PageLayout';
+import { PageLayout } from '../layouts/PageLayout';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
@@ -292,9 +292,9 @@ function BankPaymentOrdersPageContent() {
           <DialogContent className="sm:max-w-lg" aria-describedby="payment-order-description">
             <DialogHeader>
               <DialogTitle>Yeni Ödeme Emri Oluştur</DialogTitle>
-              <DialogDescription id="payment-order-description">
+              <p id="payment-order-description" className="text-sm text-muted-foreground">
                 İhtiyaç sahibi için yeni ödeme emri oluşturun. Zorunlu alanları (*) doldurmanız gereklidir.
-              </DialogDescription>
+              </p>
             </DialogHeader>
             <div className="space-y-4 max-h-96 overflow-y-auto">
               <div className="grid grid-cols-2 gap-4">
@@ -460,7 +460,7 @@ function BankPaymentOrdersPageContent() {
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">Onaylı</p>
-                  <p className="text-xl font-bold">{stats.approved}</p>
+                  <p className="text-xl font-bold">{stats.firstApproved + stats.fullyApproved}</p>
                 </div>
               </div>
             </CardContent>
@@ -630,7 +630,7 @@ function BankPaymentOrdersPageContent() {
                               <CheckCircle className="w-4 h-4" />
                             </Button>
                           )}
-                          {order.status === 'approved' && (
+                          {(order.status === 'first_approved' || order.status === 'fully_approved') && (
                             <Button
                               variant="ghost"
                               size="sm"

@@ -1,10 +1,3 @@
-/**
- * @fileoverview FinanceIncomePage Module - Application module
- *
- * @author Dernek Yönetim Sistemi Team
- * @version 1.0.0
- */
-
 import {
   Banknote,
   BarChart3,
@@ -17,9 +10,11 @@ import {
   Wallet,
 } from 'lucide-react';
 import { motion } from 'motion/react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { useIsMobile } from '../../hooks/useTouchDevice';
+import { db, collections } from '../../lib/database';
+import { logger } from '../../lib/logging/logger';
 import { MobileInfoCard, ResponsiveCardGrid } from '../ResponsiveCard';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
@@ -34,7 +29,7 @@ import { ProtectedRoute } from '../auth/ProtectedRoute';
 import { Permission } from '../../types/auth';
 
 interface Transaction {
-  id: number;
+  id: string;
   type: 'income' | 'expense';
   category: string;
   description: string;
@@ -71,6 +66,8 @@ function FinanceIncomePageContent() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [showTransactionDialog, setShowTransactionDialog] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     type: 'income' as 'income' | 'expense',
     category: '',
@@ -80,8 +77,46 @@ function FinanceIncomePageContent() {
     paymentMethod: 'bank' as Transaction['paymentMethod'],
   });
 
-  // Real data will be fetched from API
-  const transactions: Transaction[] = useMemo(() => [], []);
+  // Load transactions on mount
+  useEffect(() => {
+    loadTransactions();
+  }, []);
+
+  const loadTransactions = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await db.list(collections.FINANCE_TRANSACTIONS, [
+        // Assuming field mapping or direct field names
+        // Filter by transaction_type: 'income'
+        { attribute: 'transaction_type', value: 'income' }
+      ]);
+
+      if (error) {
+        logger.error('Error loading transactions:', error);
+        toast.error('İşlemler yüklenirken hata oluştu');
+        return;
+      }
+
+      // Map database documents to Transaction interface
+      const mappedTransactions: Transaction[] = (data?.documents || []).map((doc: any) => ({
+        id: doc.$id,
+        type: doc.transaction_type === 'income' ? 'income' : 'expense',
+        category: doc.category || '',
+        description: doc.description || '',
+        amount: doc.amount || 0,
+        date: doc.date || doc.created_at?.split('T')[0] || '',
+        paymentMethod: doc.payment_method || 'bank',
+        status: doc.status || 'completed',
+      }));
+
+      setTransactions(mappedTransactions);
+    } catch (error) {
+      logger.error('Failed to load transactions:', error);
+      toast.error('İşlemler yüklenirken hata oluştu');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const monthlyData: MonthlyData[] = useMemo(
     () => [
@@ -161,11 +196,22 @@ function FinanceIncomePageContent() {
     try {
       setIsSubmitting(true);
 
-      // TODO: Integrate with actual API
-      // const result = await financeService.createTransaction(formData);
+      const result = await db.create(collections.FINANCE_TRANSACTIONS, {
+        transaction_type: formData.type,
+        amount: formData.amount,
+        category: formData.category,
+        description: formData.description,
+        date: formData.date,
+        payment_method: formData.paymentMethod,
+        status: 'completed',
+        created_at: new Date().toISOString(),
+      });
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      if (result.error) {
+        logger.error('Error creating transaction:', result.error);
+        toast.error('İşlem kaydedilirken hata oluştu');
+        return;
+      }
 
       toast.success('İşlem başarıyla kaydedildi!');
       setShowTransactionDialog(false);
@@ -179,7 +225,11 @@ function FinanceIncomePageContent() {
         date: new Date().toISOString().split('T')[0],
         paymentMethod: 'bank',
       });
-    } catch {
+
+      // Reload transactions
+      await loadTransactions();
+    } catch (error) {
+      logger.error('Failed to create transaction:', error);
       toast.error('İşlem kaydedilirken hata oluştu');
     } finally {
       setIsSubmitting(false);

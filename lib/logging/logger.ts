@@ -193,6 +193,12 @@ export const authLogger = {
   logout: (userId: string, ...args: unknown[]): void => {
     logger.log(LogLevel.INFO, 'INFO', `User logout: ${userId}`, ...args);
   },
+  info: (message: string, ...args: unknown[]): void => {
+    logger.log(LogLevel.INFO, 'INFO', `Auth: ${message}`, ...args);
+  },
+  warn: (message: string, ...args: unknown[]): void => {
+    logger.log(LogLevel.WARN, 'WARN', `Auth: ${message}`, ...args);
+  },
   error: (action: string, error: unknown, ...args: unknown[]): void => {
     logger.log(LogLevel.ERROR, 'ERROR', `Auth error on ${action}: ${String(error)}`, ...args);
   },

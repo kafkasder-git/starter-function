@@ -112,7 +112,7 @@ export function AppointmentSchedulingPage() {
             .toISOString()
             .split('T')[0];
           filtered = filtered.filter(
-            (appointment) => appointment.date >= today && appointment.date <= weekFromNow,
+            (appointment) => appointment.date >= (today || '') && appointment.date <= (weekFromNow || ''),
           );
           break;
       }

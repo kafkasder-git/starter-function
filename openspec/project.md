@@ -29,7 +29,7 @@ başvuruları, kumbara takibi ve raporlama özellikleri içerir.
 
 ### Backend & Database
 
-- **Supabase** - Backend-as-a-Service
+- **Appwrite** - Backend-as-a-Service
   - PostgreSQL database
   - Real-time subscriptions
   - Authentication
@@ -50,10 +50,6 @@ başvuruları, kumbara takibi ve raporlama özellikleri içerir.
 - **Prettier** - Code formatting
 - **TypeScript strict mode** - Type checking
 
-### Deployment
-
-- **Cloudflare Pages** - Hosting and CDN
-- **GitHub Actions** - CI/CD (planned)
 
 ## Project Conventions
 
@@ -83,7 +79,7 @@ başvuruları, kumbara takibi ve raporlama özellikleri içerir.
 
 - Tüm servisler functional pattern ile yazılıyor (class-based değil)
 - Her servis kendi domain'ini yönetir (beneficiaries, donations, members, etc.)
-- Supabase client'ı servisler içinde encapsulate edilir
+- Appwrite client'ı servisler içinde encapsulate edilir
 - Type-safe API responses
 
 #### Component Structure
@@ -132,7 +128,7 @@ başvuruları, kumbara takibi ve raporlama özellikleri içerir.
 #### Integration Tests
 
 - Component integration tests
-- Service layer tests with mock Supabase
+- Service layer tests with mock Appwrite
 
 #### E2E Tests (Playwright)
 
@@ -206,7 +202,7 @@ başvuruları, kumbara takibi ve raporlama özellikleri içerir.
 
 ### Technical Constraints
 
-- **Supabase Free Tier Limits**:
+- **Appwrite Free Tier Limits**:
   - Database: 500MB
   - Storage: 1GB
   - Bandwidth: 2GB/month
@@ -234,7 +230,7 @@ başvuruları, kumbara takibi ve raporlama özellikleri içerir.
 
 ### Primary Services
 
-- **Supabase** (supabase.co):
+- **Appwrite** (appwrite.io):
   - PostgreSQL database
   - Authentication (email/password, magic link)
   - Real-time subscriptions
@@ -252,9 +248,6 @@ başvuruları, kumbara takibi ve raporlama özellikleri içerir.
 
 ### Development Tools
 
-- **Cloudflare Pages**: Hosting and deployment
-- **GitHub**: Version control and collaboration
-- **Vercel** (optional): Alternative deployment
 - **Sentry** (planned): Error tracking
 - **PostHog** (planned): Analytics
 

@@ -5,7 +5,7 @@
  * @version 1.0.0
  */
 
-// Application Configuration with Supabase
+// Application Configuration with Appwrite
 export const APP_CONFIG = {
   name: 'Dernek Yönetim Sistemi',
   version: '1.0.0',
@@ -14,7 +14,7 @@ export const APP_CONFIG = {
   features: {
     auth: true,
     notifications: true,
-    supabase: true, // Added Supabase support
+    appwrite: true, // Added Appwrite support
     realtime: true, // Added realtime support
     localStorage: false, // Disabled localStorage for production
   },
@@ -22,11 +22,11 @@ export const APP_CONFIG = {
 
 import { environment } from './environment';
 
-// Supabase Configuration - Service role key removed for security
-export const SUPABASE_CONFIG = {
-  url: environment.supabase.url,
-  anonKey: environment.supabase.anonKey,
-  // serviceRoleKey removed - never expose in frontend for security
+// Appwrite Configuration
+export const APPWRITE_CONFIG = {
+  endpoint: environment.appwrite.endpoint,
+  projectId: environment.appwrite.projectId,
+  databaseId: environment.appwrite.databaseId,
 };
 
 // Environment check

@@ -14,24 +14,24 @@ export interface ErrorLog {
   level?: 'error' | 'warning' | 'info';
 }
 
-// MCP Types (placeholder definitions)
-export type MCPErrorType = 'connection' | 'timeout' | 'validation' | 'server' | 'unknown';
+// System Types (placeholder definitions)
+export type SystemErrorType = 'connection' | 'timeout' | 'validation' | 'server' | 'unknown';
 
-export interface MCPError {
-  type: MCPErrorType;
+export interface SystemError {
+  type: SystemErrorType;
   message: string;
   timestamp: Date;
   details?: unknown;
 }
 
-export interface MCPMetrics {
+export interface SystemMetrics {
   requestCount: number;
   errorCount: number;
   averageResponseTime: number;
   uptime: number;
 }
 
-export interface MCPHealthCheck {
+export interface SystemHealthCheck {
   status: 'healthy' | 'degraded' | 'unhealthy';
   timestamp: Date;
   checks: Record<string, boolean>;
@@ -65,11 +65,11 @@ export interface BaseAlerts {
   sslExpiry: boolean;
 }
 
-// MCP-specific monitoring types
-export interface MCPMonitoringConfig extends BaseMonitoringConfig {
-  mcpEndpoints: string[];
-  mcpMetricsInterval: number;
-  mcpAlertThresholds: {
+// System-specific monitoring types
+export interface SystemMonitoringConfig extends BaseMonitoringConfig {
+  systemEndpoints: string[];
+  systemMetricsInterval: number;
+  systemAlertThresholds: {
     errorRate: number;
     responseTime: number;
     authFailures: number;
@@ -78,12 +78,12 @@ export interface MCPMonitoringConfig extends BaseMonitoringConfig {
   };
 }
 
-export interface MCPMonitoringMetrics extends BaseMetrics {
-  mcp: MCPMetrics;
+export interface SystemMonitoringMetrics extends BaseMetrics {
+  system: SystemMetrics;
 }
 
-export interface MCPMonitoringAlerts extends BaseAlerts {
-  // MCP-specific alerts
+export interface SystemMonitoringAlerts extends BaseAlerts {
+  // System-specific alerts
   highErrorRate: boolean;
   slowResponse: boolean;
   authenticationFailures: boolean;
@@ -93,30 +93,30 @@ export interface MCPMonitoringAlerts extends BaseAlerts {
   circuitBreakerOpen: boolean;
 }
 
-export interface MCPAlert {
+export interface SystemAlert {
   id: string;
-  type: MCPAlertType;
+  type: SystemAlertType;
   severity: AlertSeverity;
   message: string;
   data: Record<string, any>;
   timestamp: string;
-  component: 'MCP' | 'Security' | 'Pagination' | 'ErrorHandler' | 'Cache';
+  component: 'System' | 'Security' | 'Pagination' | 'ErrorHandler' | 'Cache';
   resolved?: boolean;
   resolvedAt?: string;
   resolvedBy?: string;
 }
 
-export enum MCPAlertType {
-  HIGH_ERROR_RATE = 'mcp_high_error_rate',
-  SLOW_RESPONSE = 'mcp_slow_response',
-  AUTH_FAILURES = 'mcp_auth_failures',
-  RATE_LIMIT_EXCEEDED = 'mcp_rate_limit_exceeded',
-  LOW_CACHE_HIT_RATE = 'mcp_low_cache_hit_rate',
-  COMPONENT_DOWN = 'mcp_component_down',
-  CIRCUIT_BREAKER_OPEN = 'mcp_circuit_breaker_open',
-  SECURITY_BREACH = 'mcp_security_breach',
-  PERFORMANCE_DEGRADATION = 'mcp_performance_degradation',
-  RESOURCE_EXHAUSTION = 'mcp_resource_exhaustion',
+export enum SystemAlertType {
+  HIGH_ERROR_RATE = 'system_high_error_rate',
+  SLOW_RESPONSE = 'system_slow_response',
+  AUTH_FAILURES = 'system_auth_failures',
+  RATE_LIMIT_EXCEEDED = 'system_rate_limit_exceeded',
+  LOW_CACHE_HIT_RATE = 'system_low_cache_hit_rate',
+  COMPONENT_DOWN = 'system_component_down',
+  CIRCUIT_BREAKER_OPEN = 'system_circuit_breaker_open',
+  SECURITY_BREACH = 'system_security_breach',
+  PERFORMANCE_DEGRADATION = 'system_performance_degradation',
+  RESOURCE_EXHAUSTION = 'system_resource_exhaustion',
 }
 
 export enum AlertSeverity {
@@ -126,18 +126,18 @@ export enum AlertSeverity {
   CRITICAL = 'critical',
 }
 
-export interface MCPMonitoringHistory {
-  metrics: MCPMetricsSnapshot[];
-  alerts: MCPAlert[];
-  healthChecks: MCPHealthCheckSnapshot[];
+export interface SystemMonitoringHistory {
+  metrics: SystemMetricsSnapshot[];
+  alerts: SystemAlert[];
+  healthChecks: SystemHealthCheckSnapshot[];
 }
 
-export interface MCPMetricsSnapshot {
+export interface SystemMetricsSnapshot {
   timestamp: Date;
-  metrics: MCPMetrics;
+  metrics: SystemMetrics;
 }
 
-export interface MCPHealthCheckSnapshot {
+export interface SystemHealthCheckSnapshot {
   timestamp: Date;
   status: 'healthy' | 'degraded' | 'unhealthy';
   components: Record<string, 'up' | 'down' | 'degraded'>;
@@ -146,7 +146,7 @@ export interface MCPHealthCheckSnapshot {
 }
 
 // Real-time monitoring dashboard types
-export interface MCPDashboardData {
+export interface SystemDashboardData {
   overview: {
     status: 'healthy' | 'degraded' | 'unhealthy';
     uptime: number;
@@ -159,7 +159,7 @@ export interface MCPDashboardData {
     rateLimitHits: number;
     activeApiKeys: number;
     suspiciousActivities: number;
-    recentSecurityEvents: MCPSecurityEvent[];
+    recentSecurityEvents: SystemSecurityEvent[];
   };
   performance: {
     throughput: number;
@@ -170,19 +170,19 @@ export interface MCPDashboardData {
   };
   errors: {
     totalErrors: number;
-    errorsByType: Record<MCPErrorType, number>;
-    recentErrors: MCPError[];
+    errorsByType: Record<SystemErrorType, number>;
+    recentErrors: SystemError[];
     circuitBreakerStatus: Record<string, 'closed' | 'open' | 'half-open'>;
   };
   alerts: {
-    activeAlerts: MCPAlert[];
-    recentAlerts: MCPAlert[];
-    alertsByType: Record<MCPAlertType, number>;
+    activeAlerts: SystemAlert[];
+    recentAlerts: SystemAlert[];
+    alertsByType: Record<SystemAlertType, number>;
     alertsByComponent: Record<string, number>;
   };
 }
 
-export interface MCPSecurityEvent {
+export interface SystemSecurityEvent {
   id: string;
   type: 'authentication' | 'authorization' | 'rate_limit' | 'suspicious_activity';
   severity: AlertSeverity;
@@ -197,11 +197,11 @@ export interface MCPSecurityEvent {
 }
 
 // Monitoring configuration presets
-export const MCP_MONITORING_PRESETS = {
+export const SYSTEM_MONITORING_PRESETS = {
   development: {
     interval: 30000, // 30 seconds
-    mcpMetricsInterval: 15000, // 15 seconds
-    mcpAlertThresholds: {
+    systemMetricsInterval: 15000, // 15 seconds
+    systemAlertThresholds: {
       errorRate: 0.1, // 10%
       responseTime: 5000, // 5 seconds
       authFailures: 20,
@@ -211,8 +211,8 @@ export const MCP_MONITORING_PRESETS = {
   },
   staging: {
     interval: 60000, // 1 minute
-    mcpMetricsInterval: 30000, // 30 seconds
-    mcpAlertThresholds: {
+    systemMetricsInterval: 30000, // 30 seconds
+    systemAlertThresholds: {
       errorRate: 0.05, // 5%
       responseTime: 3000, // 3 seconds
       authFailures: 15,
@@ -222,8 +222,8 @@ export const MCP_MONITORING_PRESETS = {
   },
   production: {
     interval: 60000, // 1 minute
-    mcpMetricsInterval: 30000, // 30 seconds
-    mcpAlertThresholds: {
+    systemMetricsInterval: 30000, // 30 seconds
+    systemAlertThresholds: {
       errorRate: 0.02, // 2%
       responseTime: 2000, // 2 seconds
       authFailures: 10,
@@ -234,22 +234,22 @@ export const MCP_MONITORING_PRESETS = {
 } as const;
 
 // Monitoring utilities
-export interface MCPMonitoringUtils {
+export interface SystemMonitoringUtils {
   calculateUptime: (startTime: Date, downtime: number) => number;
   calculateErrorRate: (totalErrors: number, totalRequests: number) => number;
   calculateCacheHitRate: (hits: number, misses: number) => number;
   formatDuration: (milliseconds: number) => string;
   formatBytes: (bytes: number) => string;
   generateAlertId: () => string;
-  isAlertActive: (alert: MCPAlert) => boolean;
-  shouldSendAlert: (alertType: MCPAlertType, lastSent?: Date) => boolean;
+  isAlertActive: (alert: SystemAlert) => boolean;
+  shouldSendAlert: (alertType: SystemAlertType, lastSent?: Date) => boolean;
 }
 
 // Webhook and notification types
-export interface MCPWebhookPayload {
+export interface SystemWebhookPayload {
   event: 'alert' | 'health_check' | 'metrics_update';
   timestamp: string;
-  data: MCPAlert | MCPHealthCheck | MCPMetrics;
+  data: SystemAlert | SystemHealthCheck | SystemMetrics;
   metadata: {
     environment: string;
     version: string;
@@ -257,7 +257,7 @@ export interface MCPWebhookPayload {
   };
 }
 
-export interface MCPSlackAlert {
+export interface SystemSlackAlert {
   channel: string;
   username: string;
   icon_emoji: string;
@@ -274,7 +274,7 @@ export interface MCPSlackAlert {
   }[];
 }
 
-export interface MCPEmailAlert {
+export interface SystemEmailAlert {
   to: string[];
   cc?: string[];
   subject: string;
@@ -288,7 +288,7 @@ export interface MCPEmailAlert {
 }
 
 // Monitoring report types
-export interface MCPMonitoringReport {
+export interface SystemMonitoringReport {
   period: {
     start: Date;
     end: Date;
@@ -324,9 +324,9 @@ export interface MCPMonitoringReport {
   };
   errors: {
     totalErrors: number;
-    errorsByType: Record<MCPErrorType, number>;
+    errorsByType: Record<SystemErrorType, number>;
     topErrors: {
-      type: MCPErrorType;
+      type: SystemErrorType;
       count: number;
       percentage: number;
     }[];
@@ -334,7 +334,7 @@ export interface MCPMonitoringReport {
   };
   alerts: {
     totalAlerts: number;
-    alertsByType: Record<MCPAlertType, number>;
+    alertsByType: Record<SystemAlertType, number>;
     alertsBySeverity: Record<AlertSeverity, number>;
     meanTimeToResolution: number;
   };
@@ -342,19 +342,19 @@ export interface MCPMonitoringReport {
 }
 
 // Export default monitoring configuration
-export const DEFAULT_MCP_MONITORING_CONFIG: MCPMonitoringConfig = {
+export const DEFAULT_SYSTEM_MONITORING_CONFIG: SystemMonitoringConfig = {
   url: '',
   interval: 60000,
   timeout: 10000,
   retries: 3,
-  mcpEndpoints: [
-    '/api/mcp/health',
-    '/api/mcp/security/status',
-    '/api/mcp/pagination/stats',
-    '/api/mcp/errors/summary',
+  systemEndpoints: [
+    '/api/system/health',
+    '/api/system/security/status',
+    '/api/system/pagination/stats',
+    '/api/system/errors/summary',
   ],
-  mcpMetricsInterval: 30000,
-  mcpAlertThresholds: {
+  systemMetricsInterval: 30000,
+  systemAlertThresholds: {
     errorRate: 0.05,
     responseTime: 2000,
     authFailures: 10,

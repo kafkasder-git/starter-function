@@ -955,7 +955,7 @@ export type CampaignInsert = Database['public']['Tables']['campaigns']['Insert']
 export type CampaignUpdate = Database['public']['Tables']['campaigns']['Update'];
 
 // Note: Notifications table is defined in schema but may not exist in database yet
-// Run /supabase/migrations/001_create_notifications_table.sql to create the table
+// Run Appwrite migration to create the notifications collection
 export type Notification = Database['public']['Tables']['notifications']['Row'];
 export type NotificationInsert = Database['public']['Tables']['notifications']['Insert'];
 export type NotificationUpdate = Database['public']['Tables']['notifications']['Update'];

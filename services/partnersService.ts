@@ -5,7 +5,7 @@
  * @version 1.0.0
  */
 
-import { supabase, TABLES } from '../lib/supabase';
+import { db, collections, queryHelpers } from '../lib/database';
 import { logger } from '../lib/logging/logger';
 import { useAuthStore } from '../stores/authStore';
 
@@ -136,7 +136,7 @@ export interface SponsorOrganization {
 }
 
 // Module-level constants
-const tableName = TABLES.PARTNERS;
+const collectionName = collections.PARTNERS;
 
 // Helper functions
 /**
@@ -203,45 +203,43 @@ const partnersService = {
     try {
       logger.info('Fetching partners', { page, pageSize, filters });
 
-      let query = supabase
-        .from(tableName)
-        .select('*', { count: 'exact' })
-        .is('deleted_at', null)
-        .order('created_at', { ascending: false });
+      const queries = [];
 
       // Apply filters
       if (filters?.searchTerm) {
-        query = query.or(
-          `name.ilike.%${filters.searchTerm}%,contact_person.ilike.%${filters.searchTerm}%,email.ilike.%${filters.searchTerm}%,phone.ilike.%${filters.searchTerm}%`,
-        );
+        // Appwrite search is simpler - search by name only
+        queries.push(queryHelpers.search('name', filters.searchTerm));
       }
 
       if (filters?.partnerType) {
-        query = query.eq('partner_type', filters.partnerType);
+        queries.push(queryHelpers.equal('partner_type', filters.partnerType));
       }
 
       if (filters?.status) {
-        query = query.eq('status', filters.status);
+        queries.push(queryHelpers.equal('status', filters.status));
       }
 
       if (filters?.city) {
-        query = query.eq('city', filters.city);
+        queries.push(queryHelpers.equal('city', filters.city));
       }
 
       if (filters?.dateFrom) {
-        query = query.gte('created_at', filters.dateFrom);
+        queries.push(queryHelpers.greaterThanEqualDate('created_at', filters.dateFrom));
       }
 
       if (filters?.dateTo) {
-        query = query.lte('created_at', filters.dateTo);
+        queries.push(queryHelpers.lessThanEqualDate('created_at', filters.dateTo));
       }
 
       // Apply pagination
-      const from = (page - 1) * pageSize;
-      const to = from + pageSize - 1;
-      query = query.range(from, to);
+      const offset = (page - 1) * pageSize;
+      queries.push(queryHelpers.offset(offset));
+      queries.push(queryHelpers.limit(pageSize));
 
-      const { data, error, count } = await query;
+      // Order by created_at desc
+      queries.push(queryHelpers.orderDesc('created_at'));
+
+      const { data, error } = await db.list(collectionName, queries);
 
       if (error) {
         logger.error('Error fetching partners', error);
@@ -253,14 +251,14 @@ const partnersService = {
         };
       }
 
-      const totalPages = count ? Math.ceil(count / pageSize) : 0;
+      const totalPages = data?.total ? Math.ceil(data.total / pageSize) : 0;
 
-      logger.info('Successfully fetched partners', { count, totalPages });
+      logger.info('Successfully fetched partners', { count: data?.total, totalPages });
 
       return {
-        data: data as Partner[],
+        data: data?.documents || [],
         error: null,
-        count: count || 0,
+        count: data?.total || 0,
         totalPages,
       };
     } catch (error) {
@@ -325,12 +323,7 @@ const partnersService = {
     try {
       logger.info('Fetching partner by ID', { id });
 
-      const { data, error } = await supabase
-        .from(tableName)
-        .select('*')
-        .eq('id', id)
-        .is('deleted_at', null)
-        .single();
+      const { data, error } = await db.get(collectionName, id);
 
       if (error) {
         logger.error('Error fetching partner', error);
@@ -367,7 +360,7 @@ const partnersService = {
         status: partnerData.status || 'active',
       };
 
-      const { data, error } = await supabase.from(tableName).insert([insertData]).select().single();
+      const { data, error } = await db.create(collectionName, insertData);
 
       if (error) {
         logger.error('Error creating partner', error);
@@ -377,7 +370,7 @@ const partnersService = {
         };
       }
 
-      logger.info('Successfully created partner', { id: data.id, name: data.name });
+      logger.info('Successfully created partner', { id: data.$id, name: data.name });
 
       return {
         data: data as Partner,
@@ -406,12 +399,7 @@ const partnersService = {
         updated_by: user?.id || null,
       };
 
-      const { data, error } = await supabase
-        .from(tableName)
-        .update(updateData)
-        .eq('id', id)
-        .select()
-        .single();
+      const { data, error } = await db.update(collectionName, id, updateData);
 
       if (error) {
         logger.error('Error updating partner', error);
@@ -443,10 +431,9 @@ const partnersService = {
     try {
       logger.info('Deleting partner', { id });
 
-      const { error } = await supabase
-        .from(tableName)
-        .update({ deleted_at: new Date().toISOString() })
-        .eq('id', id);
+      const { error } = await db.update(collectionName, id, {
+        deleted_at: new Date().toISOString()
+      });
 
       if (error) {
         logger.error('Error deleting partner', error);
@@ -478,10 +465,9 @@ const partnersService = {
     try {
       logger.info('Fetching partner statistics');
 
-      const { data, error } = await supabase
-        .from(tableName)
-        .select('partner_type, status')
-        .is('deleted_at', null);
+      const { data, error } = await db.list(collectionName, [
+        queryHelpers.select(['partner_type', 'status'])
+      ]);
 
       if (error) {
         logger.error('Error fetching partner stats', error);
@@ -491,24 +477,24 @@ const partnersService = {
         };
       }
 
-      const partners = data as Partner[];
+      const partners = data?.documents || [];
       const total = partners.length;
 
       // Count by type
       const byType: Record<string, number> = {};
-      partners.forEach((partner) => {
+      partners.forEach((partner: any) => {
         byType[partner.partner_type] = (byType[partner.partner_type] || 0) + 1;
       });
 
       // Count by status
       const byStatus: Record<string, number> = {};
-      partners.forEach((partner) => {
+      partners.forEach((partner: any) => {
         byStatus[partner.status] = (byStatus[partner.status] || 0) + 1;
       });
 
       const totalSponsors = byType['sponsor'] || 0;
       const activeSponsors = partners.filter(
-        (p) => p.partner_type === 'sponsor' && p.status === 'active',
+        (p: any) => p.partner_type === 'sponsor' && p.status === 'active',
       ).length;
 
       const stats: PartnerStats = {
@@ -541,10 +527,9 @@ const partnersService = {
     try {
       logger.info('Fetching partner types');
 
-      const { data, error } = await supabase
-        .from(tableName)
-        .select('partner_type')
-        .is('deleted_at', null);
+      const { data, error } = await db.list(collectionName, [
+        queryHelpers.select(['partner_type'])
+      ]);
 
       if (error) {
         logger.error('Error fetching partner types', error);
@@ -554,7 +539,7 @@ const partnersService = {
         };
       }
 
-      const types = [...new Set(data.map((item: any) => item.partner_type as string))].sort();
+      const types = [...new Set(data?.documents?.map((item: any) => item.partner_type as string) || [])].sort();
 
       logger.info('Successfully fetched partner types', { types });
 

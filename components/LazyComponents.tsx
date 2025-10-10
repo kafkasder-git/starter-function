@@ -6,7 +6,7 @@
  */
 
 import React, { lazy, Suspense } from 'react';
-import { SkeletonLoader } from './LoadingSpinner';
+import { SkeletonLoader } from './shared/LoadingSpinner';
 // 🚀 LAZY LOADING OPTIMIZATION
 // Heavy components için performance optimization
 

@@ -1,9 +1,9 @@
 /**
  * @fileoverview Comprehensive File Storage Service
- * @description Centralized file management system with Supabase Storage integration
+ * @description Centralized file management system with Appwrite Storage integration
  */
 
-import { supabase } from '../lib/supabase';
+import { storage, ID, Query } from '../lib/appwrite';
 import { environment } from '../lib/environment';
 import { monitoring } from './monitoringService';
 import { logger } from '../lib/logging/logger';
@@ -156,30 +156,9 @@ export class FileStorageService {
    */
   private async initializeBuckets(): Promise<void> {
     try {
-      const { data: buckets, error } = await supabase.storage.listBuckets();
-
-      if (error) {
-        logger.error('Failed to list buckets:', error);
-        return;
-      }
-
-      const existingBuckets = buckets?.map((b: { name: any }) => b.name) || [];
-
-      for (const [_key, config] of Object.entries(this.config.buckets)) {
-        if (!existingBuckets.includes(config.name)) {
-          const { error: createError } = await supabase.storage.createBucket(config.name, {
-            public: config.isPublic,
-            allowedMimeTypes: config.allowedTypes,
-            fileSizeLimit: config.maxSize,
-          });
-
-          if (createError) {
-            logger.error(`Failed to create bucket ${config.name}:`, createError);
-          } else {
-            logger.info(`✅ Created bucket: ${config.name}`);
-          }
-        }
-      }
+      // Appwrite buckets are typically created via console or server-side
+      // For now, we'll just log that we're using Appwrite storage
+      logger.info('Using Appwrite Storage with buckets:', Object.keys(this.config.buckets));
 
       monitoring.trackEvent({
         type: 'file_storage_initialized',
@@ -228,15 +207,19 @@ export class FileStorageService {
 
       // Check if file already exists
       if (!options.overwrite) {
-        const { data: existingFiles } = await supabase.storage
-          .from(bucket)
-          .list(folder, { search: fileName });
-
-        if (existingFiles && existingFiles.length > 0) {
-          return {
-            success: false,
-            error: `File already exists: ${fileName}. Set overwrite=true to replace.`,
-          };
+        try {
+          const existingFiles = await storage.listFiles(bucket, []);
+          const fileExists = existingFiles.files?.some(file => file.name === fileName);
+          
+          if (fileExists) {
+            return {
+              success: false,
+              error: `File already exists: ${fileName}. Set overwrite=true to replace.`,
+            };
+          }
+        } catch (error) {
+          // If we can't check, proceed with upload
+          logger.warn('Could not check for existing file:', error);
         }
       }
 
@@ -259,54 +242,29 @@ export class FileStorageService {
 
       // Get current user info
       const currentUserId = this.getCurrentUserId();
-      const user = useAuthStore.getState().user;
 
-      // Upload to Supabase Storage
-      const { data, error } = await supabase.storage.from(bucket).upload(filePath, processedFile, {
-        cacheControl: '3600',
-        upsert: options.overwrite || false,
-        contentType: file.type,
-        metadata: {
-          originalName: file.name,
-          uploadedBy: currentUserId,
-          uploadedById: currentUserId,
-          uploadedByEmail: user?.email || '',
-          uploadedByName: user?.name || '',
-          description: options.description || '',
-          tags: JSON.stringify(options.tags || []),
-          ...options.metadata,
-        },
-      });
+      // Upload to Appwrite Storage
+      const fileInfo = await storage.createFile(bucket, ID.unique(), processedFile);
 
-      if (error) {
+      if (!fileInfo) {
         clearInterval(progressInterval);
-        throw error;
-      }
-
-      // Get file info
-      const { data: fileInfo } = await supabase.storage
-        .from(bucket)
-        .list(folder, { search: fileName });
-
-      if (!fileInfo || fileInfo.length === 0) {
-        clearInterval(progressInterval);
-        throw new Error('Failed to get uploaded file info');
+        throw new Error('Failed to upload file');
       }
 
       // Generate public URL
-      const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(filePath);
+      const urlData = storage.getFileView(bucket, fileInfo.$id);
 
       // Create file metadata
       const fileMetadata: FileMetadata = {
-        id: data?.path || filePath,
-        name: file.name,
-        size: file.size,
-        type: file.type,
+        id: fileInfo.$id,
+        name: fileInfo.name,
+        size: fileInfo.sizeOriginal,
+        type: fileInfo.mimeType,
         bucket,
         path: filePath,
-        url: urlData.publicUrl,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        url: urlData.toString(),
+        createdAt: new Date(fileInfo.$createdAt),
+        updatedAt: new Date(fileInfo.$updatedAt),
         uploadedBy: currentUserId,
         isPublic: options.isPublic || false,
         downloadCount: 0,
@@ -416,58 +374,41 @@ export class FileStorageService {
       const limit = options.limit || 50;
       const offset = options.offset || 0;
 
-      const query = supabase.storage.from(bucket).list(folder, {
-        limit,
-        offset,
-        sortBy: {
-          column: options.sortBy || 'name',
-          order: options.sortOrder || 'asc',
-        },
-      });
+      const data = await storage.listFiles(bucket, [
+        Query.limit(limit),
+        Query.offset(offset),
+        Query.orderAsc(options.sortBy || 'name'),
+      ]);
 
       // Apply filters
       if (options.search) {
-        // Note: Supabase Storage doesn't support search in list operation
+        // Note: Appwrite Storage doesn't support search in list operation
         // This would require a separate metadata table query
       }
 
-      const { data, error } = await query;
-
-      if (error) {
-        throw error;
-      }
-
       // Get total count (simplified - in real app, use metadata table)
-      const { data: allFiles } = await supabase.storage.from(bucket).list(folder, { limit: 1000 });
+      const allFiles = await storage.listFiles(bucket, [Query.limit(1000)]);
 
-      const total = allFiles?.length || 0;
+      const total = allFiles?.files?.length || 0;
       const hasMore = offset + limit < total;
 
       // Convert to FileMetadata objects
-      const files: FileMetadata[] = (data || []).map(
-        (file: {
-          id: any;
-          name: any;
-          metadata: { size: any; mimetype: any; uploadedBy: any; tags: string; description: any };
-          created_at: any;
-          updated_at: any;
-        }) => ({
-          id: file.id || file.name,
+      const files: FileMetadata[] = (data?.files || []).map(
+        (file: any) => ({
+          id: file.$id,
           name: file.name,
-          size: file.metadata?.size || 0,
-          type: file.metadata?.mimetype || 'application/octet-stream',
+          size: file.sizeOriginal,
+          type: file.mimeType,
           bucket,
           path: folder ? `${folder}/${file.name}` : file.name,
-          url: supabase.storage
-            .from(bucket)
-            .getPublicUrl(folder ? `${folder}/${file.name}` : file.name).data.publicUrl,
-          createdAt: new Date(file.created_at || ''),
-          updatedAt: new Date(file.updated_at || ''),
-          uploadedBy: file.metadata?.uploadedBy || this.getCurrentUserId(),
+          url: storage.getFileView(bucket, file.$id).toString(),
+          createdAt: new Date(file.$createdAt),
+          updatedAt: new Date(file.$updatedAt),
+          uploadedBy: file.uploadedBy || this.getCurrentUserId(),
           isPublic: this.config.buckets[bucket]?.isPublic || false,
           downloadCount: 0,
-          tags: file.metadata?.tags ? JSON.parse(file.metadata.tags) : [],
-          description: file.metadata?.description || '',
+          tags: file.tags ? JSON.parse(file.tags) : [],
+          description: file.description || '',
           metadata: file.metadata || {},
         }),
       );
@@ -515,35 +456,28 @@ export class FileStorageService {
     const startTime = Date.now();
 
     try {
-      const { data, error } = await supabase.storage.from(bucket).list('', { search: filePath });
+      const data = await storage.getFile(bucket, filePath);
 
-      if (error) {
-        throw error;
-      }
-
-      const file = data?.[0];
-      if (!file) {
+      if (!data) {
         return null;
       }
 
-      const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(filePath);
-
       const fileInfo: FileMetadata = {
-        id: file.id || file.name,
-        name: file.name,
-        size: file.metadata?.size || 0,
-        type: file.metadata?.mimetype || 'application/octet-stream',
+        id: data.$id,
+        name: data.name,
+        size: data.sizeOriginal,
+        type: data.mimeType,
         bucket,
         path: filePath,
-        url: urlData.publicUrl,
-        createdAt: new Date(file.created_at || ''),
-        updatedAt: new Date(file.updated_at || ''),
-        uploadedBy: file.metadata?.uploadedBy || this.getCurrentUserId(),
+        url: storage.getFileView(bucket, data.$id).toString(),
+        createdAt: new Date(data.$createdAt),
+        updatedAt: new Date(data.$updatedAt),
+        uploadedBy: (data as any).uploadedBy || this.getCurrentUserId(),
         isPublic: this.config.buckets[bucket]?.isPublic || false,
         downloadCount: 0,
-        tags: file.metadata?.tags ? JSON.parse(file.metadata.tags) : [],
-        description: file.metadata?.description || '',
-        metadata: file.metadata || {},
+        tags: (data as any).tags ? JSON.parse((data as any).tags) : [],
+        description: (data as any).description || '',
+        metadata: (data as any).metadata || {},
       };
 
       const processingTime = Date.now() - startTime;
@@ -584,10 +518,10 @@ export class FileStorageService {
     const startTime = Date.now();
 
     try {
-      const { data, error } = await supabase.storage.from(bucket).download(filePath);
+      const data = await storage.getFileDownload(bucket, filePath);
 
-      if (error) {
-        throw error;
+      if (!data) {
+        throw new Error('File not found');
       }
 
       // Update download count
@@ -599,10 +533,10 @@ export class FileStorageService {
       monitoring.trackApiCall('file_storage/download', 'GET', processingTime, 200, {
         bucket,
         filePath,
-        fileSize: data.size,
+        fileSize: typeof data === 'string' ? data.length : (data as Blob).size,
       });
 
-      return data;
+      return typeof data === 'string' ? new Blob([data]) : data;
     } catch (error) {
       const processingTime = Date.now() - startTime;
 
@@ -624,13 +558,10 @@ export class FileStorageService {
     const startTime = Date.now();
 
     try {
-      const { data, error } = await supabase.storage
-        .from(bucket)
-        .createSignedUrl(filePath, expiresIn);
-
-      if (error) {
-        throw error;
-      }
+      // Appwrite does not have a direct client-side signed URL equivalent for general files.
+      // For images, createFilePreview can be used. For general files, direct download with permissions.
+      // This will return a direct view URL for now.
+      const url = storage.getFileView(bucket, filePath).toString();
 
       const processingTime = Date.now() - startTime;
 
@@ -641,7 +572,7 @@ export class FileStorageService {
         expiresIn,
       });
 
-      return data.signedUrl;
+      return url;
     } catch (error) {
       const processingTime = Date.now() - startTime;
 
@@ -667,11 +598,7 @@ export class FileStorageService {
     const startTime = Date.now();
 
     try {
-      const { error } = await supabase.storage.from(bucket).remove([filePath]);
-
-      if (error) {
-        throw error;
-      }
+      await storage.deleteFile(bucket, filePath);
 
       // Delete metadata from database (in real app)
       await this.deleteFileMetadata(bucket, filePath);
@@ -711,29 +638,26 @@ export class FileStorageService {
     const startTime = Date.now();
 
     try {
-      // Get source file
-      const { data: sourceFile, error: downloadError } = await supabase.storage
-        .from(sourceBucket)
-        .download(sourcePath);
-
-      if (downloadError) {
-        throw downloadError;
+      // Appwrite does not have a direct copy operation in client SDK.
+      // Implement by downloading and re-uploading.
+      const sourceFileBlob = await storage.getFileDownload(sourceBucket, sourcePath);
+      if (!sourceFileBlob) {
+        throw new Error('Source file not found or could not be downloaded.');
       }
 
-      // Upload to target
-      const { data: _data, error: uploadError } = await supabase.storage
-        .from(targetBucket)
-        .upload(targetPath, sourceFile, {
-          cacheControl: '3600',
-          upsert: true,
-        });
+      const newFile = new File([sourceFileBlob], targetPath.split('/').pop() || 'copied_file', {
+        type: typeof sourceFileBlob === 'string' ? 'text/plain' : (sourceFileBlob as Blob).type,
+      });
 
-      if (uploadError) {
-        throw uploadError;
+      const uploadResult = await this.uploadFile(newFile, {
+        bucket: targetBucket,
+        folder: targetPath.substring(0, targetPath.lastIndexOf('/')),
+        overwrite: true, // Overwrite if target path exists
+      });
+
+      if (!uploadResult.success || !uploadResult.file) {
+        throw new Error(uploadResult.error || 'Failed to upload copied file.');
       }
-
-      // Get file info
-      const fileInfo = await this.getFileInfo(targetBucket, targetPath);
 
       const processingTime = Date.now() - startTime;
 
@@ -743,10 +667,10 @@ export class FileStorageService {
         sourcePath,
         targetBucket,
         targetPath,
-        fileSize: sourceFile.size,
+        fileSize: typeof sourceFileBlob === 'string' ? sourceFileBlob.length : (sourceFileBlob as Blob).size,
       });
 
-      return fileInfo;
+      return uploadResult.file;
     } catch (error) {
       const processingTime = Date.now() - startTime;
 
@@ -883,11 +807,11 @@ export class FileStorageService {
     // Get stats for each bucket
     for (const [_key, config] of Object.entries(this.config.buckets)) {
       try {
-        const { data: files } = await supabase.storage.from(config.name).list('', { limit: 1000 });
+        const { files } = await storage.listFiles(config.name);
 
         const bucketFiles = files || [];
         const bucketSize = bucketFiles.reduce(
-          (sum: any, file: { metadata: { size: any } }) => sum + (file.metadata?.size || 0),
+          (sum: any, file: any) => sum + (file.sizeOriginal || 0),
           0,
         );
 
@@ -919,11 +843,7 @@ export class FileStorageService {
       // Test bucket access
       for (const [_key, config] of Object.entries(this.config.buckets)) {
         try {
-          const { error } = await supabase.storage.from(config.name).list('', { limit: 1 });
-
-          if (error) {
-            errors.push(`Cannot access bucket ${config.name}: ${error.message}`);
-          }
+          await storage.listFiles(config.name, [Query.limit(1)]);
         } catch (error) {
           errors.push(`Failed to test bucket ${config.name}: ${(error as Error).message}`);
         }

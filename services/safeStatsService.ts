@@ -5,17 +5,17 @@
  * @version 1.0.0
  */
 
-import { supabase } from '../lib/supabase';
+import { db, collections, queryHelpers } from '../lib/database';
 import type { ApiResponse } from '../types/database';
 
 import { logger } from '../lib/logging/logger';
-// Table names constants
-const TABLES = {
-  BENEFICIARIES: 'beneficiaries',
-  MEMBERS: 'members',
-  DONATIONS: 'donations',
-  AID_REQUESTS: 'aid_requests',
-  CAMPAIGNS: 'campaigns',
+// Collection names constants
+const COLLECTIONS = {
+  BENEFICIARIES: collections.BENEFICIARIES,
+  MEMBERS: collections.USER_PROFILES,
+  DONATIONS: collections.DONATIONS,
+  AID_REQUESTS: collections.AID_APPLICATIONS,
+  CAMPAIGNS: collections.CAMPAIGNS,
 };
 
 // Safe stats that only check table existence and provide fallback data
@@ -89,9 +89,8 @@ class SafeStatsService {
   // Check if table exists and return basic stats - simplified version
   private async getTableCount(tableName: string): Promise<number> {
     try {
-      const { count, error } = await supabase
-        .from(tableName)
-        .select('*', { count: 'exact', head: true });
+      const { data, error } = await db.list(tableName, [queryHelpers.limit(1)]);
+      const count = data?.total || 0;
 
       if (error) {
         // Handle RLS infinite recursion specifically

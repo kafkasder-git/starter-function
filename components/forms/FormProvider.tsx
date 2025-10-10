@@ -137,7 +137,7 @@ export function FormProvider({
     if (validateOnChange) {
       validateField(fieldName, value).then(result => {
         if (result.errors.length > 0) {
-          formState.errors[fieldName] = result.errors[0].message;
+          formState.errors[fieldName] = result.errors[0]?.message || 'Validation error';
         } else {
           delete formState.errors[fieldName];
         }
@@ -153,7 +153,7 @@ export function FormProvider({
     if (validateOnBlur && touched) {
       validateField(fieldName, formState.values[fieldName]).then(result => {
         if (result.errors.length > 0) {
-          formState.errors[fieldName] = result.errors[0].message;
+          formState.errors[fieldName] = result.errors[0]?.message || 'Validation error';
         } else {
           delete formState.errors[fieldName];
         }

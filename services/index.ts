@@ -16,7 +16,7 @@ import monitoring from './monitoringService';
 import exportService from './exportService';
 // AI services removed
 import performanceMonitoringService from './performanceMonitoringService';
-import { enhancedSupabase } from './enhancedSupabaseService';
+import { enhancedAppwrite } from './enhancedAppwriteService';
 
 // =============================================================================
 // CORE SERVICES
@@ -48,13 +48,43 @@ export { default as statsService } from './safeStatsService';
 export { default as intelligentStatsService } from './intelligentStatsService';
 
 // =============================================================================
-// SUPABASE SERVICES
+// APPWRITE SERVICES
 // =============================================================================
 
-// Enhanced Supabase service - Recommended way to interact with Supabase
-// See documentation: c:/Users/isaha/Desktop/panel/docs/services/ENHANCED_SUPABASE_SERVICE.md
+// Enhanced Appwrite service - Recommended way to interact with Appwrite
+// See documentation: c:/Users/isaha/Desktop/panel/docs/services/ENHANCED_APPWRITE_SERVICE.md
 
-export { enhancedSupabase } from './enhancedSupabaseService';
+export { enhancedAppwrite } from './enhancedAppwriteService';
+
+// Core Appwrite services
+export { authService, AuthService } from '../lib/auth/authService';
+export { storageService, StorageService } from '../lib/storage/storageService';
+export { functionsService, FunctionsService } from '../lib/functions/functionsService';
+export { serviceManager, ServiceManager } from '../lib/services/serviceManager';
+
+// Service convenience functions
+export {
+  uploadFile,
+  uploadFiles,
+  listFiles,
+  getFileInfo,
+  downloadFile,
+  getFileUrl,
+  deleteFile,
+  copyFile,
+  getStorageStats,
+  testFileStorage,
+} from '../lib/storage/storageService';
+
+export {
+  executeFunction,
+  executeFunctionWithJson,
+  getExecutionResult,
+  listFunctions,
+  getFunction,
+  testFunctions,
+  waitForExecution,
+} from '../lib/functions/functionsService';
 
 // =============================================================================
 // COMMUNICATION SERVICES
@@ -189,12 +219,12 @@ export type {
 } from '../types/kumbara';
 
 export type {
-  // Supabase service types
-  SupabaseResponse,
-  SupabaseQueryOptions,
+  // Appwrite service types
+  AppwriteResponse,
+  AppwriteQueryOptions,
   ConnectionStatus,
   BatchOperationResult,
-} from './enhancedSupabaseService';
+} from './enhancedAppwriteService';
 
 // =============================================================================
 // SERVICE FACTORIES
@@ -205,7 +235,13 @@ export const createServices = () => {
   // TODO: Use _config parameter for service configuration
   // Return configured service instances
   return {
-    // Core services
+    // Core Appwrite services
+    auth: authService,
+    storage: storageService,
+    functions: functionsService,
+    serviceManager: serviceManager,
+
+    // Business logic services
     userManagement: userManagementService,
     members: membersService,
     donations: donationsService,
@@ -252,6 +288,12 @@ export const checkServiceHealth = async () => {
 
   // Check each service
   const servicesToCheck = [
+    // Core Appwrite services
+    { name: 'auth', service: authService, method: 'initialize' },
+    { name: 'storage', service: storageService, method: 'testStorage' },
+    { name: 'functions', service: functionsService, method: 'testFunctions' },
+    
+    // Business logic services
     { name: 'userManagement', service: userManagementService, method: 'getUsers' },
     { name: 'members', service: membersService, method: 'getMembers' },
     { name: 'donations', service: donationsService, method: 'getDonations' },

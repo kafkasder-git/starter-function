@@ -31,8 +31,9 @@ if (typeof import.meta === 'undefined') {
 }
 Object.defineProperty(import.meta, 'env', {
   value: {
-    VITE_SUPABASE_URL: 'https://test-project.supabase.co',
-    VITE_SUPABASE_ANON_KEY: 'test-anon-key',
+    VITE_APPWRITE_ENDPOINT: 'https://test-project.appwrite.io/v1',
+    VITE_APPWRITE_PROJECT_ID: 'test-project-id',
+    VITE_APPWRITE_DATABASE_ID: 'test-database-id',
     MODE: 'test',
     DEV: false,
     PROD: false,

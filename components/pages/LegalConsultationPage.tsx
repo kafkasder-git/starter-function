@@ -1,38 +1,14 @@
 /**
  * @fileoverview LegalConsultationPage Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
 
-
-
-
-
-
-interface LegalConsultation {
-  id: number;
-  clientName: string;
-  clientPhone: string;
-  clientEmail: string;
-  subject: string;
-  description: string;
-  category: 'medeni' | 'ceza' | 'is' | 'ticaret' | 'idare' | 'aile' | 'icra' | 'diger';
-  urgency: 'acil' | 'orta' | 'normal';
-  status: 'bekliyor' | 'incelemede' | 'atandi' | 'tamamlandi';
-  assignedLawyer?: string;
-  lawyerPhone?: string;
-  consultationDate?: string;
-  notes?: string;
-  createdDate: string;
-  expectedDate?: string;
-  rating?: number;
-}
-
-// Real data will be fetched from API
-
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useSearch } from '../../hooks/useSearch';
+import { legalConsultationsService } from '../../services/legalConsultationsService';
+import { logger } from '../../lib/logging/logger';
 import type { Consultation } from '../../types/consultation';
 import type { SearchConfig } from '../../types/search';
 
@@ -48,24 +24,43 @@ const CONSULTATION_SEARCH_CONFIG: SearchConfig = {
   debounceMs: 300,
 };
 
-// Consultation data will be fetched from API
-const getConsultations = async (): Promise<Consultation[]> => {
-  // TODO: Implement real API call to fetch consultations
-  return [];
-};
-
 /**
  * LegalConsultationPage function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
 export function LegalConsultationPage() {
+  const [consultations, setConsultations] = useState<Consultation[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedConsultation, setSelectedConsultation] = useState<Consultation | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('all');
 
-  // Use the optimized search hook
+  // Fetch consultations on mount
+  useEffect(() => {
+    const loadConsultations = async () => {
+      try {
+        setLoading(true);
+        const result = await legalConsultationsService.getConsultations(1, 100, {}); // Adjust pagination as needed
+        if (result.error) {
+          logger.error('Failed to load consultations:', result.error);
+          setError('Danışmalar yüklenirken hata oluştu');
+        } else {
+          setConsultations(result.data || []);
+        }
+      } catch (err) {
+        logger.error('Error loading consultations:', err);
+        setError('Danışmalar yüklenirken hata oluştu');
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadConsultations();
+  }, []);
+
+  // Use the optimized search hook with fetched data
   const {
     searchState,
     setQuery,
@@ -75,7 +70,7 @@ export function LegalConsultationPage() {
     isEmpty,
   } = useSearch<Consultation>({
     config: CONSULTATION_SEARCH_CONFIG,
-    data: [], // TODO: Replace with real data from getConsultations()
+    data: consultations,
     initialFilters: [],
   });
 
@@ -83,22 +78,22 @@ export function LegalConsultationPage() {
   const filterConfig = useMemo(() => ({
     tabs: {
       all: {},
-      pending: { status: 'pending' },
-      scheduled: { status: 'scheduled' },
-      completed: { status: 'completed' },
-      urgent: { priority: 'high' },
+      pending: { status: 'bekliyor' },
+      scheduled: { status: 'incelemede' },
+      completed: { status: 'tamamlandi' },
+      urgent: { urgency: 'acil' },
     },
   }), []);
 
   // Memoized filtered consultations based on active tab
   const filteredConsultations = useMemo(() => {
     const tabFilters = filterConfig.tabs[activeTab as keyof typeof filterConfig.tabs] || {};
-    
+
     return searchState.results.filter((consultation) => {
       // Apply tab-specific filters
       if (tabFilters.status && consultation.status !== tabFilters.status) return false;
-      if (tabFilters.priority && consultation.priority !== tabFilters.priority) return false;
-      
+      if (tabFilters.urgency && consultation.urgency !== tabFilters.urgency) return false;
+
       return true;
     });
   }, [searchState.results, activeTab, filterConfig.tabs]);
@@ -165,8 +160,10 @@ export function LegalConsultationPage() {
       </div>
 
       {/* Results */}
-      {searchState.isLoading ? (
+      {loading ? (
         <div>Yükleniyor...</div>
+      ) : error ? (
+        <div className="error">{error}</div>
       ) : isEmpty ? (
         <div>Sonuç bulunamadı</div>
       ) : (
