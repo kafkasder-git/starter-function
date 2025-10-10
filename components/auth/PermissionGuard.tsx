@@ -1,290 +1,123 @@
 /**
- * @fileoverview PermissionGuard Module - Application module
- * 
+ * @fileoverview PermissionGuard Component - Permission-based rendering guard
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
 
-import type { ReactNode } from 'react';
-import { Permission, UserRole } from '../../types/auth';
-import { usePermissions } from '../../hooks/usePermissions';
-import { UnauthorizedPage } from './UnauthorizedPage';
+import React from 'react';
+import { usePermission, useRole } from '../../hooks/usePermission';
 import { Alert, AlertDescription } from '../ui/alert';
-import { ShieldX } from 'lucide-react';
+import { Lock } from 'lucide-react';
 
 interface PermissionGuardProps {
-  children: ReactNode;
-  permission?: Permission;
-  role?: UserRole;
-  permissions?: Permission[];
-  roles?: UserRole[];
-  requireAll?: boolean; // true for AND, false for OR logic
-  fallback?: ReactNode;
-  showAlert?: boolean; // Show inline alert instead of full page
+  /** Resource to check permission for */
+  resource?: string;
+  /** Action to check permission for */
+  action?: string;
+  /** Alternative: specific role(s) required */
+  requireRole?: string | string[];
+  /** Content to show when permission granted */
+  children: React.ReactNode;
+  /** Content to show when permission denied (optional) */
+  fallback?: React.ReactNode;
+  /** Show default "access denied" message if no fallback provided */
+  showAccessDenied?: boolean;
 }
 
 /**
- * PermissionGuard function
- * 
- * @param {Object} params - Function parameters
- * @returns {void} Nothing
+ * Permission Guard Component
+ *
+ * Conditionally renders children based on user permissions or roles
+ *
+ * @example
+ * // Check permission
+ * <PermissionGuard resource="donations" action="approve">
+ *   <button>Onayla</button>
+ * </PermissionGuard>
+ *
+ * @example
+ * // Check role
+ * <PermissionGuard requireRole={['admin', 'yönetici']}>
+ *   <AdminPanel />
+ * </PermissionGuard>
+ *
+ * @example
+ * // With custom fallback
+ * <PermissionGuard
+ *   resource="settings"
+ *   action="write"
+ *   fallback={<div>Bu özellik sadece yöneticiler için</div>}
+ * >
+ *   <SettingsEditor />
+ * </PermissionGuard>
  */
-export function PermissionGuard({
+export const PermissionGuard: React.FC<PermissionGuardProps> = ({
+  resource,
+  action = 'read',
+  requireRole,
   children,
-  permission,
-  role,
-  permissions,
-  roles,
-  requireAll = true,
   fallback,
-  showAlert = false,
-}: PermissionGuardProps) {
-  const { checkPermission, hasRole, hasAllPermissions, hasAnyPermission, hasAnyRole } =
-    usePermissions();
+  showAccessDenied = false,
+}) => {
+  // Call hooks unconditionally at the top
+  const hasPermission = usePermission(resource || '', action);
+  const hasRole = useRole(requireRole || '');
 
-  // Check single permission
-  if (permission && !checkPermission(permission)) {
-    return (
-      fallback ??
-      (showAlert ? (
-        <PermissionAlert permission={permission} />
-      ) : (
-        <UnauthorizedPage requiredPermission={permission} />
-      ))
-    );
-  }
+  // Then do conditional logic based on whether resource/role was provided
+  const hasAccess = (resource ? hasPermission : true) && (requireRole ? hasRole : true);
 
-  // Check single role
-  if (role && !hasRole(role)) {
-    return (
-      fallback ?? (showAlert ? <RoleAlert role={role} /> : <UnauthorizedPage requiredRole={role} />)
-    );
-  }
+  if (!hasAccess) {
+    // Show custom fallback if provided
+    if (fallback) {
+      return <>{fallback}</>;
+    }
 
-  // Check multiple permissions
-  if (permissions && permissions.length > 0) {
-    const hasAccess = requireAll ? hasAllPermissions(permissions) : hasAnyPermission(permissions);
-
-    if (!hasAccess) {
+    // Show access denied message if enabled
+    if (showAccessDenied) {
       return (
-        fallback ??
-        (showAlert ? (
-          <PermissionsAlert permissions={permissions} requireAll={requireAll} />
-        ) : (
-          <UnauthorizedPage requiredPermission={permissions[0]} />
-        ))
+        <Alert variant="destructive" className="my-4">
+          <Lock className="h-4 w-4" />
+          <AlertDescription>
+            Bu işlem için yetkiniz bulunmamaktadır.
+            {resource && action && (
+              <span className="mt-1 block text-sm opacity-75">
+                Gerekli yetki: {resource}:{action}
+              </span>
+            )}
+          </AlertDescription>
+        </Alert>
       );
     }
+
+    // Default: render nothing
+    return null;
   }
 
-  // Check multiple roles
-  if (roles && roles.length > 0) {
-    const hasAccess = requireAll ? roles.every((r) => hasRole(r)) : hasAnyRole(roles);
+  // User has access, render children
+  return <>{children}</>;
+};
 
-    if (!hasAccess) {
-      return (
-        fallback ??
-        (showAlert ? (
-          <RolesAlert roles={roles} requireAll={requireAll} />
-        ) : (
-          <UnauthorizedPage requiredRole={roles[0]} />
-        ))
-      );
-    }
+/**
+ * Role Guard Component - Simpler version for role-only checks
+ *
+ * @example
+ * <RoleGuard roles="admin">
+ *   <AdminFeatures />
+ * </RoleGuard>
+ */
+export const RoleGuard: React.FC<{
+  roles: string | string[];
+  children: React.ReactNode;
+  fallback?: React.ReactNode;
+}> = ({ roles, children, fallback }) => {
+  const hasRole = useRole(roles);
+
+  if (!hasRole) {
+    return fallback ? <>{fallback}</> : null;
   }
 
   return <>{children}</>;
-}
+};
 
-// Inline alert components
-function PermissionAlert({ permission }: { permission: Permission }) {
-  return (
-    <Alert variant="destructive" className="m-4">
-      <ShieldX className="h-4 w-4" />
-      <AlertDescription>
-        Bu işlem için <strong>{getPermissionLabel(permission)}</strong> izni gerekli.
-      </AlertDescription>
-    </Alert>
-  );
-}
-
-function RoleAlert({ role }: { role: UserRole }) {
-  return (
-    <Alert variant="destructive" className="m-4">
-      <ShieldX className="h-4 w-4" />
-      <AlertDescription>
-        Bu işlem için <strong>{getRoleLabel(role)}</strong> rolü gerekli.
-      </AlertDescription>
-    </Alert>
-  );
-}
-
-function PermissionsAlert({
-  permissions,
-  requireAll,
-}: {
-  permissions: Permission[];
-  requireAll: boolean;
-}) {
-  return (
-    <Alert variant="destructive" className="m-4">
-      <ShieldX className="h-4 w-4" />
-      <AlertDescription>
-        Bu işlem için {requireAll ? 'tüm' : 'en az bir'} izin gerekli:
-        <ul className="mt-2 list-disc list-inside">
-          {permissions.map((p) => (
-            <li key={p} className="text-sm">
-              {getPermissionLabel(p)}
-            </li>
-          ))}
-        </ul>
-      </AlertDescription>
-    </Alert>
-  );
-}
-
-function RolesAlert({ roles, requireAll }: { roles: UserRole[]; requireAll: boolean }) {
-  return (
-    <Alert variant="destructive" className="m-4">
-      <ShieldX className="h-4 w-4" />
-      <AlertDescription>
-        Bu işlem için {requireAll ? 'tüm' : 'en az bir'} rol gerekli:
-        <ul className="mt-2 list-disc list-inside">
-          {roles.map((r) => (
-            <li key={r} className="text-sm">
-              {getRoleLabel(r)}
-            </li>
-          ))}
-        </ul>
-      </AlertDescription>
-    </Alert>
-  );
-}
-
-// Helper functions
-function getPermissionLabel(permission: Permission): string {
-  const labels: Record<Permission, string> = {
-    [Permission.VIEW_DASHBOARD]: 'Dashboard Görüntüleme',
-    [Permission.VIEW_DONATIONS]: 'Bağışları Görüntüleme',
-    [Permission.CREATE_DONATION]: 'Bağış Oluşturma',
-    [Permission.EDIT_DONATION]: 'Bağış Düzenleme',
-    [Permission.DELETE_DONATION]: 'Bağış Silme',
-    [Permission.VIEW_MEMBERS]: 'Üyeleri Görüntüleme',
-    [Permission.CREATE_MEMBER]: 'Üye Oluşturma',
-    [Permission.EDIT_MEMBER]: 'Üye Düzenleme',
-    [Permission.DELETE_MEMBER]: 'Üye Silme',
-    [Permission.VIEW_AID]: 'Yardımları Görüntüleme',
-    [Permission.CREATE_AID]: 'Yardım Oluşturma',
-    [Permission.EDIT_AID]: 'Yardım Düzenleme',
-    [Permission.DELETE_AID]: 'Yardım Silme',
-    [Permission.APPROVE_AID]: 'Yardım Onaylama',
-    [Permission.VIEW_FINANCE]: 'Finansı Görüntüleme',
-    [Permission.CREATE_FINANCE]: 'Finans Kaydı Oluşturma',
-    [Permission.EDIT_FINANCE]: 'Finans Düzenleme',
-    [Permission.DELETE_FINANCE]: 'Finans Silme',
-    [Permission.VIEW_MESSAGES]: 'Mesajları Görüntüleme',
-    [Permission.SEND_MESSAGES]: 'Mesaj Gönderme',
-    [Permission.VIEW_EVENTS]: 'Etkinlikleri Görüntüleme',
-    [Permission.CREATE_EVENT]: 'Etkinlik Oluşturma',
-    [Permission.EDIT_EVENT]: 'Etkinlik Düzenleme',
-    [Permission.DELETE_EVENT]: 'Etkinlik Silme',
-    [Permission.VIEW_SETTINGS]: 'Ayarları Görüntüleme',
-    [Permission.EDIT_SETTINGS]: 'Ayarları Düzenleme',
-    [Permission.VIEW_USERS]: 'Kullanıcıları Görüntüleme',
-    [Permission.CREATE_USER]: 'Kullanıcı Oluşturma',
-    [Permission.EDIT_USER]: 'Kullanıcı Düzenleme',
-    [Permission.DELETE_USER]: 'Kullanıcı Silme',
-    [Permission.VIEW_REPORTS]: 'Raporları Görüntüleme',
-    [Permission.EXPORT_REPORTS]: 'Rapor Dışa Aktarma',
-  };
-
-  return labels[permission] ?? permission;
-}
-
-function getRoleLabel(role: UserRole): string {
-  const labels: Record<UserRole, string> = {
-    [UserRole.ADMIN]: 'Sistem Yöneticisi',
-    [UserRole.MANAGER]: 'Dernek Müdürü',
-    [UserRole.OPERATOR]: 'Operatör',
-    [UserRole.VIEWER]: 'Görüntüleyici',
-  };
-
-  return labels[role] ?? role;
-}
-
-// Convenience components
-/**
- * AdminOnly function
- * 
- * @param {Object} params - Function parameters
- * @returns {void} Nothing
- */
-export function AdminOnly({
-  children,
-  fallback,
-  showAlert,
-}: {
-  children: ReactNode;
-  fallback?: ReactNode;
-  showAlert?: boolean;
-}) {
-  return (
-    <PermissionGuard role={UserRole.ADMIN} fallback={fallback} showAlert={showAlert}>
-      {children}
-    </PermissionGuard>
-  );
-}
-
-/**
- * ManagerOnly function
- * 
- * @param {Object} params - Function parameters
- * @returns {void} Nothing
- */
-export function ManagerOnly({
-  children,
-  fallback,
-  showAlert,
-}: {
-  children: ReactNode;
-  fallback?: ReactNode;
-  showAlert?: boolean;
-}) {
-  return (
-    <PermissionGuard
-      roles={[UserRole.ADMIN, UserRole.MANAGER]}
-      requireAll={false}
-      fallback={fallback}
-      showAlert={showAlert}
-    >
-      {children}
-    </PermissionGuard>
-  );
-}
-
-/**
- * OperatorOnly function
- * 
- * @param {Object} params - Function parameters
- * @returns {void} Nothing
- */
-export function OperatorOnly({
-  children,
-  fallback,
-  showAlert,
-}: {
-  children: ReactNode;
-  fallback?: ReactNode;
-  showAlert?: boolean;
-}) {
-  return (
-    <PermissionGuard
-      roles={[UserRole.ADMIN, UserRole.MANAGER, UserRole.OPERATOR]}
-      requireAll={false}
-      fallback={fallback}
-      showAlert={showAlert}
-    >
-      {children}
-    </PermissionGuard>
-  );
-}
+export default PermissionGuard;

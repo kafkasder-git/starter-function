@@ -1,71 +1,75 @@
 # Supabase Connection Audit Report
 
-**Date:** 2025-10-09  
-**Project:** Panel - Aid Management System  
-**Audit Scope:** All page components and their Supabase connection status
+**Date:** 2025-10-09 **Project:** Panel - Aid Management System **Audit Scope:**
+All page components and their Supabase connection status
 
 ---
 
 ## Executive Summary
 
-This audit documents the current state of Supabase database integration across the application's 31 page components.
+This audit documents the current state of Supabase database integration across
+the application's 31 page components.
 
 **Key Metrics:**
+
 - **Total pages audited:** 31
 - **Pages with real Supabase connections:** 4 (13%)
 - **Pages with mock/empty data:** 9+ confirmed (29%+)
 - **Pages requiring audit completion:** ~18 (58%)
 
-**Critical Finding:** The majority of the application is not yet connected to the Supabase database and relies on empty data arrays or mock data, limiting functionality and preventing real-world usage.
+**Critical Finding:** The majority of the application is not yet connected to
+the Supabase database and relies on empty data arrays or mock data, limiting
+functionality and preventing real-world usage.
 
 ---
 
 ## Detailed Page Inventory
 
-| Page Name | File Path | Connection Status | Service Used | Data Source | Priority | Notes |
-|-----------|-----------|-------------------|--------------|-------------|----------|-------|
-| BeneficiariesPageEnhanced | `components/pages/BeneficiariesPageEnhanced.tsx` | ✅ Real Supabase | beneficiariesService | beneficiaries table | High | Fully functional CRUD |
-| BeneficiaryDetailPageComprehensive | `components/pages/BeneficiaryDetailPageComprehensive.tsx` | ✅ Real Supabase | beneficiariesService | beneficiaries table | High | Full detail view with CRUD |
-| DonationsPage | `components/pages/DonationsPage.tsx` | ✅ Real Supabase | donationsService | donations table | High | Complex filtering & stats |
-| UserManagementPageReal | `components/pages/UserManagementPageReal.tsx` | ✅ Real Supabase | userManagementService | users table | High | User account management |
-| AidApplicationsPage | `components/pages/AidApplicationsPage.tsx` | ❌ Mock Data | None | Empty array (line 48) | High | Core operational page |
-| AidPage | `components/pages/AidPage.tsx` | ❌ Mock Data | None | Empty array (line 44) | High | Core operational page |
-| AllAidListPage | `components/pages/AllAidListPage.tsx` | ❌ Mock Data | None | Empty array (line 48) | High | Aid tracking page |
-| CampaignManagementPage | `components/pages/CampaignManagementPage.tsx` | ⚠️ Commented | None | Empty array (line 34) | High | Has commented Supabase code (lines 73-74) |
-| BursStudentsPage | `components/pages/BursStudentsPage.tsx` | ❌ Mock Data | None | Empty array (line 81) | Medium | Scholarship management |
-| BursApplicationsPage | `components/pages/BursApplicationsPage.tsx` | ❌ Mock Data | None | Empty array (line 78) | Medium | Scholarship applications |
-| DocumentManagementPage | `components/pages/DocumentManagementPage.tsx` | ❌ Mock Data | None | Empty array (line 61) | Medium | Sponsor tracking |
-| SystemSettingsPage | `components/pages/SystemSettingsPage.tsx` | ⚠️ Commented | None | Local state only | Low | Has commented Supabase code (lines 86-87) |
-| KumbaraPage | `components/pages/KumbaraPage.tsx` | ❌ Mock Data | None | Empty array (line 63) | Medium | Donation box tracking |
-| BankPaymentOrdersPage | `components/pages/BankPaymentOrdersPage.tsx` | ❓ Unknown | TBD | TBD | Medium | Requires audit |
-| AppointmentSchedulingPage | `components/pages/AppointmentSchedulingPage.tsx` | ❓ Unknown | TBD | TBD | Low | Requires audit |
-| CaseManagementPage | `components/pages/CaseManagementPage.tsx` | ❓ Unknown | TBD | TBD | Medium | Requires audit |
-| CashAidTransactionsPage | `components/pages/CashAidTransactionsPage.tsx` | ❓ Unknown | TBD | TBD | High | Requires audit |
-| ApplicationWorkflowPage | `components/pages/ApplicationWorkflowPage.tsx` | ❓ Unknown | TBD | TBD | Medium | Requires audit |
-| InKindAidTransactionsPage | `components/pages/InKindAidTransactionsPage.tsx` | ❓ Unknown | TBD | TBD | Medium | Requires audit |
-| InternalMessagingPage | `components/pages/InternalMessagingPage.tsx` | ❓ Unknown | TBD | TBD | Low | Requires audit |
-| HospitalReferralPage | `components/pages/HospitalReferralPage.tsx` | ❓ Unknown | TBD | TBD | Medium | Requires audit |
-| FinanceIncomePage | `components/pages/FinanceIncomePage.tsx` | ❓ Unknown | TBD | TBD | High | Requires audit |
-| EventsPage | `components/pages/EventsPage.tsx` | ❓ Unknown | TBD | TBD | Low | Requires audit |
-| DistributionTrackingPage | `components/pages/DistributionTrackingPage.tsx` | ❓ Unknown | TBD | TBD | Medium | Requires audit |
-| CashAidVaultPage | `components/pages/CashAidVaultPage.tsx` | ❓ Unknown | TBD | TBD | High | Requires audit |
-| InventoryManagementPage | `components/pages/InventoryManagementPage.tsx` | ❓ Unknown | TBD | TBD | Medium | Requires audit |
-| LawsuitTrackingPage | `components/pages/LawsuitTrackingPage.tsx` | ❓ Unknown | TBD | TBD | Low | Requires audit |
-| LawyerAssignmentsPage | `components/pages/LawyerAssignmentsPage.tsx` | ❓ Unknown | TBD | TBD | Low | Requires audit |
-| LegalConsultationPage | `components/pages/LegalConsultationPage.tsx` | ❓ Unknown | TBD | TBD | Low | Requires audit |
-| LegalDocumentsPage | `components/pages/LegalDocumentsPage.tsx` | ❓ Unknown | TBD | TBD | Low | Requires audit |
-| ProfilePage | `components/pages/ProfilePage.tsx` | ❓ Unknown | TBD | TBD | Low | Requires audit |
-| ServiceTrackingPage | `components/pages/ServiceTrackingPage.tsx` | ❓ Unknown | TBD | TBD | Medium | Requires audit |
+| Page Name                          | File Path                                                 | Connection Status | Service Used          | Data Source           | Priority | Notes                                     |
+| ---------------------------------- | --------------------------------------------------------- | ----------------- | --------------------- | --------------------- | -------- | ----------------------------------------- |
+| BeneficiariesPageEnhanced          | `components/pages/BeneficiariesPageEnhanced.tsx`          | ✅ Real Supabase  | beneficiariesService  | beneficiaries table   | High     | Fully functional CRUD                     |
+| BeneficiaryDetailPageComprehensive | `components/pages/BeneficiaryDetailPageComprehensive.tsx` | ✅ Real Supabase  | beneficiariesService  | beneficiaries table   | High     | Full detail view with CRUD                |
+| DonationsPage                      | `components/pages/DonationsPage.tsx`                      | ✅ Real Supabase  | donationsService      | donations table       | High     | Complex filtering & stats                 |
+| UserManagementPageReal             | `components/pages/UserManagementPageReal.tsx`             | ✅ Real Supabase  | userManagementService | users table           | High     | User account management                   |
+| AidApplicationsPage                | `components/pages/AidApplicationsPage.tsx`                | ❌ Mock Data      | None                  | Empty array (line 48) | High     | Core operational page                     |
+| AidPage                            | `components/pages/AidPage.tsx`                            | ❌ Mock Data      | None                  | Empty array (line 44) | High     | Core operational page                     |
+| AllAidListPage                     | `components/pages/AllAidListPage.tsx`                     | ❌ Mock Data      | None                  | Empty array (line 48) | High     | Aid tracking page                         |
+| CampaignManagementPage             | `components/pages/CampaignManagementPage.tsx`             | ⚠️ Commented      | None                  | Empty array (line 34) | High     | Has commented Supabase code (lines 73-74) |
+| BursStudentsPage                   | `components/pages/BursStudentsPage.tsx`                   | ❌ Mock Data      | None                  | Empty array (line 81) | Medium   | Scholarship management                    |
+| BursApplicationsPage               | `components/pages/BursApplicationsPage.tsx`               | ❌ Mock Data      | None                  | Empty array (line 78) | Medium   | Scholarship applications                  |
+| DocumentManagementPage             | `components/pages/DocumentManagementPage.tsx`             | ❌ Mock Data      | None                  | Empty array (line 61) | Medium   | Sponsor tracking                          |
+| SystemSettingsPage                 | `components/pages/SystemSettingsPage.tsx`                 | ⚠️ Commented      | None                  | Local state only      | Low      | Has commented Supabase code (lines 86-87) |
+| KumbaraPage                        | `components/pages/KumbaraPage.tsx`                        | ❌ Mock Data      | None                  | Empty array (line 63) | Medium   | Donation box tracking                     |
+| BankPaymentOrdersPage              | `components/pages/BankPaymentOrdersPage.tsx`              | ❓ Unknown        | TBD                   | TBD                   | Medium   | Requires audit                            |
+| AppointmentSchedulingPage          | `components/pages/AppointmentSchedulingPage.tsx`          | ❓ Unknown        | TBD                   | TBD                   | Low      | Requires audit                            |
+| CaseManagementPage                 | `components/pages/CaseManagementPage.tsx`                 | ❓ Unknown        | TBD                   | TBD                   | Medium   | Requires audit                            |
+| CashAidTransactionsPage            | `components/pages/CashAidTransactionsPage.tsx`            | ❓ Unknown        | TBD                   | TBD                   | High     | Requires audit                            |
+| ApplicationWorkflowPage            | `components/pages/ApplicationWorkflowPage.tsx`            | ❓ Unknown        | TBD                   | TBD                   | Medium   | Requires audit                            |
+| InKindAidTransactionsPage          | `components/pages/InKindAidTransactionsPage.tsx`          | ❓ Unknown        | TBD                   | TBD                   | Medium   | Requires audit                            |
+| InternalMessagingPage              | `components/pages/InternalMessagingPage.tsx`              | ❓ Unknown        | TBD                   | TBD                   | Low      | Requires audit                            |
+| HospitalReferralPage               | `components/pages/HospitalReferralPage.tsx`               | ❓ Unknown        | TBD                   | TBD                   | Medium   | Requires audit                            |
+| FinanceIncomePage                  | `components/pages/FinanceIncomePage.tsx`                  | ❓ Unknown        | TBD                   | TBD                   | High     | Requires audit                            |
+| EventsPage                         | `components/pages/EventsPage.tsx`                         | ❓ Unknown        | TBD                   | TBD                   | Low      | Requires audit                            |
+| DistributionTrackingPage           | `components/pages/DistributionTrackingPage.tsx`           | ❓ Unknown        | TBD                   | TBD                   | Medium   | Requires audit                            |
+| CashAidVaultPage                   | `components/pages/CashAidVaultPage.tsx`                   | ❓ Unknown        | TBD                   | TBD                   | High     | Requires audit                            |
+| InventoryManagementPage            | `components/pages/InventoryManagementPage.tsx`            | ❓ Unknown        | TBD                   | TBD                   | Medium   | Requires audit                            |
+| LawsuitTrackingPage                | `components/pages/LawsuitTrackingPage.tsx`                | ❓ Unknown        | TBD                   | TBD                   | Low      | Requires audit                            |
+| LawyerAssignmentsPage              | `components/pages/LawyerAssignmentsPage.tsx`              | ❓ Unknown        | TBD                   | TBD                   | Low      | Requires audit                            |
+| LegalConsultationPage              | `components/pages/LegalConsultationPage.tsx`              | ❓ Unknown        | TBD                   | TBD                   | Low      | Requires audit                            |
+| LegalDocumentsPage                 | `components/pages/LegalDocumentsPage.tsx`                 | ❓ Unknown        | TBD                   | TBD                   | Low      | Requires audit                            |
+| ProfilePage                        | `components/pages/ProfilePage.tsx`                        | ❓ Unknown        | TBD                   | TBD                   | Low      | Requires audit                            |
+| ServiceTrackingPage                | `components/pages/ServiceTrackingPage.tsx`                | ❓ Unknown        | TBD                   | TBD                   | Medium   | Requires audit                            |
 
 ---
 
 ## Pages with Real Supabase Connections
 
 ### 1. BeneficiariesPageEnhanced.tsx
+
 - **Service:** `beneficiariesService.ts`
 - **Table:** `beneficiaries`
 - **Operations:** Full CRUD (Create, Read, Update, Delete)
-- **Features:** 
+- **Features:**
   - List view with filtering
   - Search functionality
   - Pagination support
@@ -75,6 +79,7 @@ This audit documents the current state of Supabase database integration across t
 - **Status:** ✅ Fully functional
 
 ### 2. BeneficiaryDetailPageComprehensive.tsx
+
 - **Service:** `beneficiariesService.ts`
 - **Table:** `beneficiaries`
 - **Operations:** Read, Update
@@ -87,6 +92,7 @@ This audit documents the current state of Supabase database integration across t
 - **Status:** ✅ Fully functional
 
 ### 3. DonationsPage.tsx
+
 - **Service:** `donationsService.ts`
 - **Table:** `donations`
 - **Operations:** Full CRUD
@@ -99,6 +105,7 @@ This audit documents the current state of Supabase database integration across t
 - **Status:** ✅ Fully functional
 
 ### 4. UserManagementPageReal.tsx
+
 - **Service:** `userManagementService.ts`
 - **Table:** `users`
 - **Operations:** Full CRUD
@@ -115,6 +122,7 @@ This audit documents the current state of Supabase database integration across t
 ## Pages with Mock/Empty Data
 
 ### 1. AidApplicationsPage.tsx
+
 - **Line 48:** `initialApplications: AidApplication[] = []`
 - **Impact:** No aid applications can be submitted or tracked
 - **Required Service:** `aidApplicationsService.ts` (needs creation)
@@ -122,6 +130,7 @@ This audit documents the current state of Supabase database integration across t
 - **Priority:** 🔴 High - Core operational functionality
 
 ### 2. AidPage.tsx
+
 - **Line 44:** `initialAidRequests: AidRequest[] = []`
 - **Impact:** Aid requests cannot be processed
 - **Required Service:** `aidRequestsService.ts` (verify if exists)
@@ -129,6 +138,7 @@ This audit documents the current state of Supabase database integration across t
 - **Priority:** 🔴 High - Core operational functionality
 
 ### 3. AllAidListPage.tsx
+
 - **Line 48:** `initialAidRecords: AidRecord[] = []`
 - **Impact:** No historical aid delivery tracking
 - **Required Service:** `aidRecordsService.ts` (needs creation)
@@ -136,6 +146,7 @@ This audit documents the current state of Supabase database integration across t
 - **Priority:** 🔴 High - Critical for reporting
 
 ### 4. CampaignManagementPage.tsx
+
 - **Line 34:** `initialCampaigns: Campaign[] = []`
 - **Lines 73-74:** Has commented Supabase code
 - **Impact:** Fundraising campaigns cannot be managed
@@ -145,6 +156,7 @@ This audit documents the current state of Supabase database integration across t
 - **Note:** Partial implementation exists, needs completion
 
 ### 5. BursStudentsPage.tsx
+
 - **Line 81:** `students: Student[] = useMemo(() => [], [])`
 - **Impact:** Scholarship students cannot be tracked
 - **Required Service:** `scholarshipService.ts` or `bursStudentsService.ts`
@@ -152,6 +164,7 @@ This audit documents the current state of Supabase database integration across t
 - **Priority:** 🟡 Medium - Program management
 
 ### 6. BursApplicationsPage.tsx
+
 - **Line 78:** `applications: Application[] = useMemo(() => [], [])`
 - **Impact:** Scholarship applications cannot be processed
 - **Required Service:** `scholarshipApplicationsService.ts`
@@ -159,6 +172,7 @@ This audit documents the current state of Supabase database integration across t
 - **Priority:** 🟡 Medium - Program intake
 
 ### 7. DocumentManagementPage.tsx
+
 - **Line 61:** `sponsors: SponsorOrganization[] = []`
 - **Impact:** Sponsor relationships cannot be managed
 - **Required Service:** `sponsorsService.ts` (needs creation)
@@ -166,6 +180,7 @@ This audit documents the current state of Supabase database integration across t
 - **Priority:** 🟡 Medium - Relationship management
 
 ### 8. SystemSettingsPage.tsx
+
 - **Lines 86-87:** Has commented Supabase code
 - **Impact:** System settings are not persisted
 - **Required Service:** `systemSettingsService.ts`
@@ -174,6 +189,7 @@ This audit documents the current state of Supabase database integration across t
 - **Note:** Uses local state only, needs database persistence
 
 ### 9. KumbaraPage.tsx
+
 - **Line 63:** `kumbaralar: Kumbara[] = []`
 - **Impact:** Donation box tracking not functional
 - **Required Service:** Verify `kumbaraService.ts` exists
@@ -184,7 +200,8 @@ This audit documents the current state of Supabase database integration across t
 
 ## Pages Requiring Further Audit
 
-The following 18 pages need individual review to determine their Supabase connection status:
+The following 18 pages need individual review to determine their Supabase
+connection status:
 
 1. **BankPaymentOrdersPage.tsx** - Financial operations
 2. **AppointmentSchedulingPage.tsx** - Scheduling system
@@ -207,6 +224,7 @@ The following 18 pages need individual review to determine their Supabase connec
 19. **ServiceTrackingPage.tsx** - Service delivery tracking
 
 **Audit Action Items:**
+
 - Open each file and check for service imports
 - Verify data initialization patterns
 - Check for Supabase-related comments
@@ -219,6 +237,7 @@ The following 18 pages need individual review to determine their Supabase connec
 ### Services with Confirmed Real Supabase Connections
 
 #### ✅ beneficiariesService.ts
+
 - **Pattern:** Extends `BaseService`
 - **Table:** `TABLES.BENEFICIARIES`
 - **Features:**
@@ -233,6 +252,7 @@ The following 18 pages need individual review to determine their Supabase connec
 - **Status:** Production-ready
 
 #### ✅ donationsService.ts
+
 - **Pattern:** Direct Supabase client usage
 - **Table:** `donations`
 - **Features:**
@@ -246,6 +266,7 @@ The following 18 pages need individual review to determine their Supabase connec
 - **Status:** Production-ready
 
 #### ✅ userManagementService.ts
+
 - **Pattern:** Custom service implementation
 - **Table:** `users`
 - **Features:**
@@ -259,11 +280,13 @@ The following 18 pages need individual review to determine their Supabase connec
 
 ### Services Requiring Verification
 
-The following services exist in the codebase but require verification of their Supabase connection status:
+The following services exist in the codebase but require verification of their
+Supabase connection status:
 
 - ❓ **aidRequestsService.ts** - Check if has real Supabase connection
 - ❓ **kumbaraService.ts** - Exists but connection status unknown
-- ❓ **ihtiyacSahipleriService.ts** - Check connection status
+- ✅ **beneficiariesService.ts** - Replaces ihtiyacSahipleriService, uses TR DB
+  fields with EN types
 - ❓ **fileStorageService.ts** - Check Supabase Storage integration
 - ❓ **emailSMSService.ts** - Check if uses Supabase or external API
 - ❓ **notificationService.ts** - Check data persistence method
@@ -310,6 +333,7 @@ File upload functionality requires a separate detailed audit. Initial findings:
 ### Expected Integration Pattern
 
 File uploads should follow this pattern:
+
 1. Upload file to Supabase Storage bucket
 2. Store file metadata in database table
 3. Generate public/signed URL for access
@@ -322,6 +346,7 @@ File uploads should follow this pattern:
 ## Common Patterns Identified
 
 ### Pattern 1: Connected Pages
+
 ```typescript
 // Import service
 import { serviceNameService } from '../../services/serviceNameService';
@@ -341,6 +366,7 @@ useEffect(() => {
 ```
 
 ### Pattern 2: Services Extending BaseService
+
 ```typescript
 import { BaseService } from './baseService';
 import { supabase, TABLES } from '../lib/supabase';
@@ -353,6 +379,7 @@ export class EntityService extends BaseService<Entity, Insert, Update> {
 ```
 
 ### Pattern 3: Services with Direct Client Usage
+
 ```typescript
 import { supabase } from '../lib/supabase';
 import { logger } from '../lib/logging/logger';
@@ -372,6 +399,7 @@ export class EntityService {
 ```
 
 ### Pattern 4: Mock Data Pages
+
 ```typescript
 // Typical mock data initialization
 const [data] = useState<Type[]>([]);
@@ -382,6 +410,7 @@ const initialData: Type[] = [];
 ```
 
 ### Pattern 5: Commented Supabase Code
+
 ```typescript
 // Example from CampaignManagementPage.tsx lines 73-74
 // const { data, error } = await supabase.from('campaigns').select('*');
@@ -389,10 +418,12 @@ const initialData: Type[] = [];
 ```
 
 **Insights:**
+
 - Pages with TODO comments often indicate planned Supabase integration
 - Mock data pages typically show empty array initialization
 - Connected pages always import a service from `services/` directory
-- Error handling and loading states are consistently implemented in connected pages
+- Error handling and loading states are consistently implemented in connected
+  pages
 
 ---
 
@@ -400,11 +431,11 @@ const initialData: Type[] = [];
 
 ### Existing Tables (Confirmed in Use)
 
-| Table Name | Status | Used By | Columns (Key Fields) |
-|------------|--------|---------|---------------------|
-| `beneficiaries` | ✅ Active | BeneficiariesPageEnhanced, BeneficiaryDetailPageComprehensive | id, name, status, created_at, updated_at |
-| `donations` | ✅ Active | DonationsPage | id, donor_name, amount, campaign_id, status, donation_date |
-| `users` | ✅ Active | UserManagementPageReal | id, email, role, status, created_at |
+| Table Name      | Status    | Used By                                                       | Columns (Key Fields)                                       |
+| --------------- | --------- | ------------------------------------------------------------- | ---------------------------------------------------------- |
+| `beneficiaries` | ✅ Active | BeneficiariesPageEnhanced, BeneficiaryDetailPageComprehensive | id, name, status, created_at, updated_at                   |
+| `donations`     | ✅ Active | DonationsPage                                                 | id, donor_name, amount, campaign_id, status, donation_date |
+| `users`         | ✅ Active | UserManagementPageReal                                        | id, email, role, status, created_at                        |
 
 ### Required Tables (Not Yet Created)
 
@@ -412,22 +443,28 @@ const initialData: Type[] = [];
 
 1. **aid_applications**
    - Purpose: Track aid application requests
-   - Key Fields: id, applicant_name, applicant_id (FK to beneficiaries), application_date, aid_type, requested_amount, status, priority, description, phone, address, created_at, updated_at
+   - Key Fields: id, applicant_name, applicant_id (FK to beneficiaries),
+     application_date, aid_type, requested_amount, status, priority,
+     description, phone, address, created_at, updated_at
    - Required For: AidApplicationsPage.tsx
 
 2. **aid_requests**
    - Purpose: General aid request management
-   - Key Fields: id, applicant, phone, email, request_type, status, priority, amount, description, submit_date, assigned_to, created_at, updated_at
+   - Key Fields: id, applicant, phone, email, request_type, status, priority,
+     amount, description, submit_date, assigned_to, created_at, updated_at
    - Required For: AidPage.tsx
 
 3. **aid_records**
    - Purpose: Historical delivered aid tracking
-   - Key Fields: id, recipient_name, recipient_id (FK to beneficiaries), aid_type, category, amount, delivery_date, status, delivery_method, approved_by, description, document_number, created_at, updated_at
+   - Key Fields: id, recipient_name, recipient_id (FK to beneficiaries),
+     aid_type, category, amount, delivery_date, status, delivery_method,
+     approved_by, description, document_number, created_at, updated_at
    - Required For: AllAidListPage.tsx
 
 4. **campaigns**
    - Purpose: Fundraising campaign management
-   - Key Fields: id, name, description, goal_amount, current_amount, start_date, end_date, status, category, donor_count, created_at, updated_at
+   - Key Fields: id, name, description, goal_amount, current_amount, start_date,
+     end_date, status, category, donor_count, created_at, updated_at
    - Required For: CampaignManagementPage.tsx
    - Relationships: Links to donations table
 
@@ -435,29 +472,39 @@ const initialData: Type[] = [];
 
 5. **scholarship_students** (or `burs_students`)
    - Purpose: Track scholarship recipients
-   - Key Fields: id, name, email, phone, school, grade, program, scholarship_amount, status, start_date, gpa, avatar, created_at, updated_at
+   - Key Fields: id, name, email, phone, school, grade, program,
+     scholarship_amount, status, start_date, gpa, avatar, created_at, updated_at
    - Required For: BursStudentsPage.tsx
 
 6. **scholarship_applications** (or `burs_applications`)
    - Purpose: Process scholarship applications
-   - Key Fields: id, applicant_name, email, phone, school, program, grade, requested_amount, family_income, gpa, status, application_date, documents, priority, created_at, updated_at
+   - Key Fields: id, applicant_name, email, phone, school, program, grade,
+     requested_amount, family_income, gpa, status, application_date, documents,
+     priority, created_at, updated_at
    - Required For: BursApplicationsPage.tsx
 
 7. **kumbara**
    - Purpose: Donation box tracking
-   - Key Fields: id, code, name, location, address, status, install_date, last_collection, total_amount, monthly_average, qr_code, contact_person, phone, notes, created_at, updated_at
+   - Key Fields: id, code, name, location, address, status, install_date,
+     last_collection, total_amount, monthly_average, qr_code, contact_person,
+     phone, notes, created_at, updated_at
    - Required For: KumbaraPage.tsx
 
 8. **sponsors**
    - Purpose: Sponsor organization management
-   - Key Fields: id, name, type, sponsorship_type, contact_person, phone, email, address, status, total_sponsorship, current_projects, completed_projects, last_sponsorship_date, contract_start, contract_end, sponsorship_areas, rating, website, tax_number, description, logo, tags, created_at, updated_at
+   - Key Fields: id, name, type, sponsorship_type, contact_person, phone, email,
+     address, status, total_sponsorship, current_projects, completed_projects,
+     last_sponsorship_date, contract_start, contract_end, sponsorship_areas,
+     rating, website, tax_number, description, logo, tags, created_at,
+     updated_at
    - Required For: DocumentManagementPage.tsx
 
 #### Low Priority Tables
 
 9. **system_settings**
    - Purpose: Application configuration storage
-   - Key Fields: id, category, settings_json (JSONB), updated_by, created_at, updated_at
+   - Key Fields: id, category, settings_json (JSONB), updated_by, created_at,
+     updated_at
    - Required For: SystemSettingsPage.tsx
 
 10. **Additional Tables**
@@ -550,8 +597,10 @@ const initialData: Type[] = [];
 
 ### Best Practices Going Forward
 
-- **Follow Established Patterns:** Use BaseService extension or direct client usage
-- **Error Handling:** Always implement try-catch blocks and user-friendly error messages
+- **Follow Established Patterns:** Use BaseService extension or direct client
+  usage
+- **Error Handling:** Always implement try-catch blocks and user-friendly error
+  messages
 - **Loading States:** Show loading indicators during data fetching
 - **Logger Integration:** Use logger for debugging and error tracking
 - **Type Safety:** Define proper TypeScript interfaces for all entities
@@ -562,9 +611,12 @@ const initialData: Type[] = [];
 
 ## Conclusion
 
-The Supabase integration in the application is **13% complete** with only 4 of 31 pages fully connected to the database. The majority of pages use mock data or empty arrays, preventing real-world usage.
+The Supabase integration in the application is **13% complete** with only 4 of
+31 pages fully connected to the database. The majority of pages use mock data or
+empty arrays, preventing real-world usage.
 
 **Critical Path:**
+
 1. Complete audit of remaining 18 pages (Week 1)
 2. Connect core aid management pages (Weeks 2-3)
 3. Create missing services and database tables (Weeks 2-4)
@@ -574,6 +626,7 @@ The Supabase integration in the application is **13% complete** with only 4 of 3
 **Estimated Total Effort:** 8-10 weeks for full Supabase integration
 
 **Next Steps:**
+
 1. Review and approve this audit report
 2. Prioritize pages for integration based on business needs
 3. Begin Phase 1 of integration roadmap
@@ -581,6 +634,5 @@ The Supabase integration in the application is **13% complete** with only 4 of 3
 
 ---
 
-**Document Version:** 1.0  
-**Last Updated:** 2025-10-09  
-**Next Review:** After completing remaining page audits
+**Document Version:** 1.0 **Last Updated:** 2025-10-09 **Next Review:** After
+completing remaining page audits

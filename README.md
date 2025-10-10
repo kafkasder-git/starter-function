@@ -73,6 +73,32 @@ src/
 └── scripts/            # Build and utility scripts
 ```
 
+## 🎨 UI Components
+
+### Table Components
+
+The project uses base table primitives from `components/ui/table.tsx` for
+maximum flexibility. Wrapper components (`EnhancedTable`, `ResponsiveTable`,
+`DesktopTable`, `MobileResponsiveTable`, `DataTable`) have been removed as they
+were unused.
+
+**Resources:**
+
+- 📘 **Usage Guide:** See `docs/components/TABLE_USAGE_GUIDE.md` for detailed
+  patterns and best practices
+- 🔧 **Optional Helpers:** `components/ui/table-helpers.tsx` provides optional
+  utilities for common patterns like loading states and empty states
+- 🎯 **Examples:** Check `components/pages/DonationsPage.tsx` and
+  `components/pages/AidApplicationsPage.tsx` for real-world implementations
+
+**Key Features:**
+
+- Flexible primitives for custom table implementations
+- Built-in XSS protection through automatic sanitization
+- Responsive column patterns with Tailwind utilities
+- Accessibility features (ARIA attributes, keyboard navigation)
+- Loading states, empty states, and action button patterns
+
 ## 🎯 Ana Özellikler
 
 ### 👥 Üye Yönetimi
@@ -142,40 +168,78 @@ Bu proje GitHub Copilot ile optimize edilmiştir. Detaylı kullanım için:
 
 ## 🚀 Deployment
 
-### Netlify (Önerilen)
+### Cloudflare Pages (Önerilen)
+
+Proje Cloudflare Pages için optimize edilmiştir. 3 farklı deployment yöntemi:
+
+#### Yöntem 1: Git Integration (Önerilen)
 
 ```bash
-# 1. Environment variables ayarla (Netlify Dashboard'da)
-VITE_SUPABASE_URL=your_supabase_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-
-# 2. Netlify CLI ile deploy
-npm i -g netlify-cli
-netlify login
-netlify deploy --prod
-
-# 3. GitHub Integration ile otomatik
+# GitHub'a push
 git push origin main
+
+# Cloudflare otomatik deploy eder
 ```
 
-**⚠️ ÖNEMLİ:** `.env` dosyalarını repository'ye commit etmeyin! Environment variables'ları Netlify Dashboard'da ayarlayın.
+**Setup:**
 
-**Detaylı Netlify deployment rehberi:** [NETLIFY_DEPLOYMENT.md](./NETLIFY_DEPLOYMENT.md)
+1. [Cloudflare Pages](https://dash.cloudflare.com/pages) > Create a project
+2. GitHub repository bağlayın
+3. Build ayarları: `npm run build`, output: `dist/`
+4. Environment variables ekleyin (Dashboard'dan)
+
+#### Yöntem 2: Wrangler CLI
+
+```bash
+# API token ayarla
+export CLOUDFLARE_API_TOKEN="your_token"
+
+# Deploy
+npm run deploy:prod
+```
+
+#### Yöntem 3: Drag & Drop
+
+```bash
+# Build yap
+npm run build
+
+# dist/ klasörünü Cloudflare Dashboard'a yükle
+```
+
+**Deployment URL:** `https://kafkasder-panel.pages.dev`
+
+**⚠️ ÖNEMLİ:** `.env` dosyalarını repository'ye commit etmeyin! Environment
+variables'ları Cloudflare Dashboard'da ayarlayın.
+
+**Detaylı deployment rehberi:**
+[Cloudflare Deployment Rehberi](./docs/deployment/QUICK_DEPLOY_GUIDE.md)
 
 ### Environment Variables
 
+**Cloudflare Pages'de Ayarlama:**
+
+1. Dashboard > Workers & Pages > Your Project > Settings > Environment variables
+2. Production environment için aşağıdaki variables'ları ekleyin
+
 ```env
-# Supabase
+# Supabase (Zorunlu)
 VITE_SUPABASE_URL=your_supabase_url
 VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 
-# AI Services
-VITE_OPENROUTER_API_KEY=your_openrouter_key
-
-# Other
+# Application
 VITE_APP_NAME=Dernek Yönetim Sistemi
 VITE_APP_VERSION=1.0.0
+VITE_APP_DEBUG=false
+
+# Feature Flags
+VITE_ENABLE_OCR=true
+VITE_ENABLE_PWA=true
+VITE_ENABLE_ANALYTICS=true
 ```
+
+**Not:** Vite environment variables build-time'da değerlendirilir. Değişiklik
+sonrası yeniden deploy gereklidir.
 
 ## 📊 Performans
 
@@ -309,10 +373,8 @@ docs/
 
 ### 🚀 Deployment Dokümantasyonları
 
-- [Cloudflare Deployment](./docs/deployment/CLOUDFLARE_DEPLOYMENT.md) - Cloudflare deployment rehberi
-- [Manual Deploy](./docs/deployment/CLOUDFLARE_MANUAL_DEPLOY.md) - Manuel deployment
-- [Quick Deploy Guide](./docs/deployment/QUICK_DEPLOY_GUIDE.md) - Hızlı deployment
-- [Deployment Quickstart](./docs/deployment/DEPLOYMENT_QUICKSTART.md) - Deployment başlangıç rehberi
+- [Cloudflare Pages Deployment Rehberi](./docs/deployment/QUICK_DEPLOY_GUIDE.md) -
+  Kapsamlı deployment rehberi (Git, Wrangler CLI, Drag & Drop)
 
 ### ⚙️ Setup ve Konfigürasyon
 
@@ -323,13 +385,17 @@ docs/
 
 ### 📊 Raporlar ve Teknik Dokümantasyon
 
-- [Technical Documentation](./docs/reports/TECHNICAL_DOCUMENTATION.md) - Teknik dokümantasyon
-- [TestSprite Progress Report](./docs/reports/TESTSPRITE_PROGRESS_REPORT.md) - TestSprite ilerleme raporu
-- [TestSprite Fixes Progress](./docs/reports/TESTSPRITE_FIXES_PROGRESS.md) - TestSprite düzeltme ilerlemesi
+- [Technical Documentation](./docs/reports/TECHNICAL_DOCUMENTATION.md) - Teknik
+  dokümantasyon
+- [TestSprite Progress Report](./docs/reports/TESTSPRITE_PROGRESS_REPORT.md) -
+  TestSprite ilerleme raporu
+- [TestSprite Fixes Progress](./docs/reports/TESTSPRITE_FIXES_PROGRESS.md) -
+  TestSprite düzeltme ilerlemesi
 
 ### 🔒 Güvenlik
 
-- [Security Audit Report](./docs/security/security-audit-report-20251007_202150.txt) - Güvenlik denetim raporu
+- [Security Audit Report](./docs/security/security-audit-report-20251007_202150.txt) -
+  Güvenlik denetim raporu
 
 ### 📖 Diğer Dokümantasyonlar
 
@@ -401,6 +467,4 @@ dosyasına bakın.
 
 ---
 
-**Versiyon:** 1.0.0  
-**Son Güncelleme:** $(date)  
-**Durum:** Production Ready ✅
+**Versiyon:** 1.0.0 **Son Güncelleme:** $(date) **Durum:** Production Ready ✅

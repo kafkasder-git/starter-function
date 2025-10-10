@@ -3,15 +3,17 @@
  */
 
 import { PermissionManager, AuditLogger, type Permission } from './PermissionManager';
-import { InputSanitizer, CSRFProtection, RateLimiter } from './InputSanitizer';
+import { InputSanitizer } from './InputSanitizer';
+import { CSRFProtection } from './csrf';
+import { RateLimiter } from './rateLimit';
 
 import { logger } from './logging/logger';
 // API Security Wrapper
 /**
  * SecureAPIClient Service
- * 
+ *
  * Service class for handling secureapiclient operations
- * 
+ *
  * @class SecureAPIClient
  */
 export class SecureAPIClient {
@@ -147,9 +149,9 @@ export class SecureAPIClient {
 // Security Context Provider
 /**
  * SecurityContext Service
- * 
+ *
  * Service class for handling securitycontext operations
- * 
+ *
  * @class SecurityContext
  */
 export class SecurityContext {
@@ -182,7 +184,7 @@ export class SecurityContext {
 
 /**
  * SecurityConfig Interface
- * 
+ *
  * @interface SecurityConfig
  */
 export interface SecurityConfig {
@@ -213,9 +215,9 @@ export const DEFAULT_SECURITY_CONFIG: SecurityConfig = {
 // Security monitoring
 /**
  * SecurityMonitor Service
- * 
+ *
  * Service class for handling securitymonitor operations
- * 
+ *
  * @class SecurityMonitor
  */
 export class SecurityMonitor {
@@ -271,7 +273,7 @@ export class SecurityMonitor {
 
 /**
  * SecurityThreat Interface
- * 
+ *
  * @interface SecurityThreat
  */
 export interface SecurityThreat {

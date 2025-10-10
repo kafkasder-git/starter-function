@@ -22,7 +22,7 @@ import { Skeleton } from '../ui/skeleton';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { useFormValidation } from '../../hooks/useFormValidation';
-import { VALIDATION_SCHEMAS } from '../../lib/validation';
+import { VALIDATION_SCHEMAS } from '../../lib/security/validation';
 import {
   donationsService,
   type Donation,
@@ -177,16 +177,16 @@ export function DonationsPage() {
         label: 'Beklemede',
         variant: 'warning' as const,
       },
-      approved: { 
-        label: 'Onaylandı', 
+      approved: {
+        label: 'Onaylandı',
         variant: 'success' as const,
       },
-      rejected: { 
-        label: 'Reddedildi', 
+      rejected: {
+        label: 'Reddedildi',
         variant: 'destructive' as const,
       },
-      processing: { 
-        label: 'İşleniyor', 
+      processing: {
+        label: 'İşleniyor',
         variant: 'info' as const,
       },
       completed: {
@@ -618,7 +618,9 @@ export function DonationsPage() {
             <CardContent className="p-3 sm:p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-lg font-semibold text-blue-600 sm:text-xl lg:text-2xl">{stats.total ?? 0}</div>
+                  <div className="text-lg font-semibold text-blue-600 sm:text-xl lg:text-2xl">
+                    {stats.total ?? 0}
+                  </div>
                   <p className="text-xs font-medium text-gray-600 sm:text-sm">Toplam İşlem</p>
                 </div>
                 <TrendingUp className="h-8 w-8 text-blue-500 opacity-80" />
@@ -630,7 +632,9 @@ export function DonationsPage() {
             <CardContent className="p-3 sm:p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-lg font-semibold text-yellow-600 sm:text-xl lg:text-2xl">{stats.pending ?? 0}</div>
+                  <div className="text-lg font-semibold text-yellow-600 sm:text-xl lg:text-2xl">
+                    {stats.pending ?? 0}
+                  </div>
                   <p className="text-xs font-medium text-gray-600 sm:text-sm">Bekleyen</p>
                 </div>
                 <Clock className="h-8 w-8 text-yellow-500 opacity-80" />

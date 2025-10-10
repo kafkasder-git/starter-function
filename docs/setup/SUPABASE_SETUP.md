@@ -82,19 +82,19 @@ VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 3. Dosyayı kaydedin
 
-### Production Deployment (Netlify/Vercel)
+### Production Deployment (Cloudflare Pages)
 
-**Netlify:**
+**Cloudflare Pages:**
 
-1. Site Settings > Build & deploy > Environment sayfasına gidin
-2. Environment variables ekleyin:
+1. Cloudflare Dashboard > Workers & Pages > Your Project > Settings >
+   Environment variables
+2. Production environment için environment variables ekleyin:
    - `VITE_SUPABASE_URL`: Proje URL'niz
    - `VITE_SUPABASE_ANON_KEY`: Anon key'iniz
+3. Save ve yeniden deploy edin
 
-**Vercel:**
-
-1. Project Settings > Environment Variables sayfasına gidin
-2. Aynı environment variables'ları ekleyin
+**Detaylı talimatlar:**
+[Cloudflare Deployment Rehberi](../deployment/QUICK_DEPLOY_GUIDE.md)
 
 ## 5. Database Schema Kurulumu
 
@@ -437,5 +437,4 @@ Sorun yaşıyorsanız:
 
 ---
 
-**Son Güncelleme:** Ekim 2025  
-**Versiyon:** 1.0.0
+**Son Güncelleme:** Ekim 2025 **Versiyon:** 1.0.0

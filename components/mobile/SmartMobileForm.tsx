@@ -1,6 +1,6 @@
 /**
  * @fileoverview SmartMobileForm Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -68,7 +68,7 @@ const fieldIcons = {
 
 /**
  * SmartMobileForm function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -97,7 +97,10 @@ export function SmartMobileForm({
   const [focusedField, setFocusedField] = useState<string | null>(null);
 
   const { triggerHapticFeedback, deviceInfo } = useAdvancedMobile();
-  const { adjustViewportForKeyboard, enableFormOptimizations, preventZoom } = useMobileForm();
+  const { adjustViewportForKeyboard, enableFormOptimizations, preventZoom } = useMobileForm({
+    enableHapticFeedback: true,
+    enableKeyboardDetection: true,
+  });
 
   const formRef = useRef<HTMLDivElement>(null);
   const fieldRefs = useRef<Record<string, HTMLElement>>({});
@@ -129,7 +132,8 @@ export function SmartMobileForm({
 
       // Grup tamamlandı mı kontrol et
       if (
-        currentGroup.length >= 2 ?? field.type === 'textarea' ||
+        currentGroup.length >= 2 ||
+        field.type === 'textarea' ||
         field.type === 'file' ||
         index === fields.length - 1
       ) {
@@ -245,29 +249,26 @@ export function SmartMobileForm({
         exit={{ opacity: 0, y: -20 }}
         transition={{ duration: 0.3 }}
       >
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="mb-1 block text-sm font-medium text-gray-700">
           {field.label}
-          {field.required && <span className="text-red-500 ml-1">*</span>}
+          {field.required && <span className="ml-1 text-red-500">*</span>}
         </label>
 
         <div className="relative">
           <div
-            className={`
-            flex items-center rounded-lg border-2 transition-all duration-200
-            ${
+            className={`flex items-center rounded-lg border-2 transition-all duration-200 ${
               hasError
                 ? 'border-red-300 bg-red-50'
                 : isFocused
                   ? 'border-blue-500 bg-blue-50/30 shadow-lg shadow-blue-500/10'
                   : 'border-gray-200 bg-white'
-            }
-          `}
+            } `}
           >
             {IconComponent && (
               <div
                 className={`pl-3 ${hasError ? 'text-red-400' : isFocused ? 'text-blue-500' : 'text-gray-400'}`}
               >
-                <IconComponent className="w-5 h-5" />
+                <IconComponent className="h-5 w-5" />
               </div>
             )}
 
@@ -277,7 +278,7 @@ export function SmartMobileForm({
                 ref={(el) => {
                   if (el) fieldRefs.current[field.name] = el;
                 }}
-                className="w-full p-4 text-base bg-transparent border-none outline-none appearance-none"
+                className="w-full appearance-none border-none bg-transparent p-4 text-base outline-none"
                 onFocus={() => {
                   handleFieldFocus(field.name);
                 }}
@@ -297,7 +298,7 @@ export function SmartMobileForm({
                   if (el) fieldRefs.current[field.name] = el;
                 }}
                 placeholder={field.placeholder}
-                className="w-full p-4 text-base bg-transparent border-none outline-none resize-none min-h-[100px]"
+                className="min-h-[100px] w-full resize-none border-none bg-transparent p-4 text-base outline-none"
                 onFocus={() => {
                   handleFieldFocus(field.name);
                 }}
@@ -312,7 +313,7 @@ export function SmartMobileForm({
                   }}
                   type="file"
                   accept="image/*"
-                  className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                  className="w-full text-sm text-gray-500 file:mr-4 file:rounded-full file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-blue-700 hover:file:bg-blue-100"
                   onFocus={() => {
                     handleFieldFocus(field.name);
                   }}
@@ -332,7 +333,7 @@ export function SmartMobileForm({
                 pattern={field.pattern}
                 minLength={field.minLength}
                 maxLength={field.maxLength}
-                className="w-full p-4 text-base bg-transparent border-none outline-none"
+                className="w-full border-none bg-transparent p-4 text-base outline-none"
                 onFocus={() => {
                   handleFieldFocus(field.name);
                 }}
@@ -352,9 +353,9 @@ export function SmartMobileForm({
                 }}
               >
                 {showPassword[field.name] ? (
-                  <EyeOff className="w-5 h-5" />
+                  <EyeOff className="h-5 w-5" />
                 ) : (
-                  <Eye className="w-5 h-5" />
+                  <Eye className="h-5 w-5" />
                 )}
               </button>
             )}
@@ -365,7 +366,7 @@ export function SmartMobileForm({
                 animate={{ scale: 1 }}
                 className="pr-3 text-green-500"
               >
-                <CheckCircle className="w-5 h-5" />
+                <CheckCircle className="h-5 w-5" />
               </motion.div>
             )}
           </div>
@@ -374,9 +375,9 @@ export function SmartMobileForm({
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex items-center gap-2 mt-1 text-red-600"
+              className="mt-1 flex items-center gap-2 text-red-600"
             >
-              <AlertCircle className="w-4 h-4" />
+              <AlertCircle className="h-4 w-4" />
               <span className="text-sm">{errors[field.name]?.message}</span>
             </motion.div>
           )}
@@ -390,15 +391,15 @@ export function SmartMobileForm({
       <motion.div
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="flex flex-col items-center justify-center p-8 space-y-4"
+        className="flex flex-col items-center justify-center space-y-4 p-8"
       >
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
-          className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center"
+          className="flex h-16 w-16 items-center justify-center rounded-full bg-green-100"
         >
-          <CheckCircle className="w-8 h-8 text-green-600" />
+          <CheckCircle className="h-8 w-8 text-green-600" />
         </motion.div>
         <motion.h3
           initial={{ opacity: 0, y: 20 }}
@@ -421,11 +422,11 @@ export function SmartMobileForm({
   }
 
   return (
-    <div className={`w-full max-w-md mx-auto ${className}`} ref={formRef}>
-      <Card className="shadow-xl border-0 bg-white/95 backdrop-blur-sm">
+    <div className={`mx-auto w-full max-w-md ${className}`} ref={formRef}>
+      <Card className="border-0 bg-white/95 shadow-xl backdrop-blur-sm">
         <CardHeader className="pb-4">
-          <CardTitle className="text-xl font-semibold text-gray-900 text-center">{title}</CardTitle>
-          {description && <p className="text-sm text-gray-600 text-center">{description}</p>}
+          <CardTitle className="text-center text-xl font-semibold text-gray-900">{title}</CardTitle>
+          {description && <p className="text-center text-sm text-gray-600">{description}</p>}
 
           {showProgress && totalSteps > 1 && (
             <div className="space-y-2 pt-4">
@@ -435,9 +436,9 @@ export function SmartMobileForm({
                 </span>
                 <span>{Math.round(progress)}%</span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
+              <div className="h-2 w-full rounded-full bg-gray-200">
                 <motion.div
-                  className="bg-blue-600 h-2 rounded-full"
+                  className="h-2 rounded-full bg-blue-600"
                   initial={{ width: 0 }}
                   animate={{ width: `${progress}%` }}
                   transition={{ duration: 0.5 }}
@@ -471,7 +472,7 @@ export function SmartMobileForm({
                   type="button"
                   variant="outline"
                   onClick={handlePrevStep}
-                  className="flex-1 h-12 text-base font-medium"
+                  className="h-12 flex-1 text-base font-medium"
                 >
                   Geri
                 </Button>
@@ -482,7 +483,7 @@ export function SmartMobileForm({
                 <Button
                   type="button"
                   onClick={handleNextStep}
-                  className="flex-1 h-12 text-base font-medium bg-blue-600 hover:bg-blue-700"
+                  className="h-12 flex-1 bg-blue-600 text-base font-medium hover:bg-blue-700"
                 >
                   İleri
                 </Button>
@@ -490,11 +491,11 @@ export function SmartMobileForm({
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex-1 h-12 text-base font-medium bg-green-600 hover:bg-green-700 disabled:opacity-50"
+                  className="h-12 flex-1 bg-green-600 text-base font-medium hover:bg-green-700 disabled:opacity-50"
                 >
                   {isSubmitting ? (
                     <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                       Gönderiliyor...
                     </div>
                   ) : (

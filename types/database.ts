@@ -1048,3 +1048,15 @@ export interface SubscriptionConfig {
   schema?: string;
   filter?: string;
 }
+
+export interface DonationFilters {
+  status?: string;
+  type?: string;
+  dateFrom?: string;
+  dateTo?: string;
+  category?: string;
+  minAmount?: number;
+  maxAmount?: number;
+  donorName?: string;
+  paymentMethod?: string;
+}

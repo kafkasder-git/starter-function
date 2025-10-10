@@ -440,3 +440,28 @@ export type KumbaraActionType =
   | 'generate_qr'
   | 'export'
   | 'import';
+
+// Hook types
+export interface UseKumbaraOptions {
+  kumbaraId?: string;
+  autoRefresh?: boolean;
+  refreshInterval?: number;
+}
+
+export interface UseKumbaraReturn {
+  kumbara: Kumbara | null;
+  transactions: KumbaraTransaction[];
+  loading: boolean;
+  error: string | null;
+  refresh: () => Promise<void>;
+}
+
+export interface KumbaraTransaction {
+  id: string;
+  kumbaraId: string;
+  amount: number;
+  date: string;
+  type: 'deposit' | 'withdrawal';
+  description?: string;
+  collectorName?: string;
+}

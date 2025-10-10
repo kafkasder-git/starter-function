@@ -7,7 +7,7 @@
 
 import { createClient } from '@supabase/supabase-js';
 import { environment } from './environment';
-
+import type { Database } from '../types/supabase';
 import { logger } from './logging/logger';
 // Shared table name constants for hooks/services
 export const TABLES = {
@@ -18,6 +18,13 @@ export const TABLES = {
   CAMPAIGNS: 'campaigns',
   PARTNERS: 'partners',
   SYSTEM_SETTINGS: 'system_settings',
+  AID_APPLICATIONS: 'aid_applications',
+  NEW_AID_APPLICATIONS: 'new_aid_applications',
+  FINANCE_TRANSACTIONS: 'finance_transactions',
+  LEGAL_CONSULTATIONS: 'legal_consultations',
+  EVENTS: 'events',
+  TASKS: 'tasks',
+  INVENTORY_ITEMS: 'inventory_items',
 } as const;
 
 // Supabase configuration using centralized environment management
@@ -32,10 +39,7 @@ logger.info('Supabase Configuration Debug:', {
   supabaseUrlValid: supabaseUrl?.startsWith('http'),
   importMetaEnv: {
     VITE_SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL,
-    VITE_SUPABASE_ANON_KEY:
-      import.meta.env.VITE_SUPABASE_ANON_KEY
-        ? 'SET'
-        : 'NOT_SET',
+    VITE_SUPABASE_ANON_KEY: import.meta.env.VITE_SUPABASE_ANON_KEY ? 'SET' : 'NOT_SET',
   },
   environment: {
     url: environment.supabase.url,
@@ -47,8 +51,7 @@ logger.info('Supabase Configuration Debug:', {
       : [],
   rawImportMetaEnv: {
     VITE_SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL,
-    VITE_SUPABASE_ANON_KEY:
-      import.meta.env.VITE_SUPABASE_ANON_KEY,
+    VITE_SUPABASE_ANON_KEY: import.meta.env.VITE_SUPABASE_ANON_KEY,
   },
 });
 
@@ -86,7 +89,7 @@ export const supabase = (() => {
     return (window as any).__supabaseInstance;
   }
 
-  supabaseInstance = createClient(safeSupabaseUrl, safeSupabaseKey, {
+  supabaseInstance = createClient<Database>(safeSupabaseUrl, safeSupabaseKey, {
     auth: {
       autoRefreshToken: true,
       persistSession: true,
@@ -120,46 +123,8 @@ export const supabase = (() => {
 // If admin operations are needed, implement them in a backend API
 // export const supabaseAdmin = createClient(...) // REMOVED FOR SECURITY
 
-// Type definitions for TypeScript
-/**
- * Database Interface
- *
- * @interface Database
- */
-export interface Database {
-  public: {
-    Tables: {
-      users: {
-        Row: {
-          id: string;
-          email: string;
-          name: string;
-          role: string;
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: {
-          id?: string;
-          email: string;
-          name: string;
-          role?: string;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Update: {
-          id?: string;
-          email?: string;
-          name?: string;
-          role?: string;
-          updated_at?: string;
-        };
-      };
-    };
-  };
-}
-
-// Typed supabase client
-export type SupabaseClient = typeof supabase;
+// Typed supabase client - using generated types from types/supabase.ts
+export type SupabaseClient = ReturnType<typeof createClient<Database>>;
 
 // Helper function to check if Supabase is properly configured
 export const isSupabaseConfigured = (): boolean => {

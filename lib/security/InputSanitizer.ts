@@ -1,267 +1,48 @@
 /**
  * Comprehensive Input Sanitization and Security System
  * Protects against XSS, SQL Injection, and other security threats
+ *
+ * @deprecated This file is being refactored. Use individual modules from lib/security/ instead.
+ *
+ * @version 2.0.0
  */
 
+import { XSSProtection } from './xss';
+import { SQLInjectionProtection } from './sqlInjection';
+import { CSRFProtection } from './csrf';
+import { RateLimiter } from './rateLimit';
+import { SecurityHeaders } from './headers';
 
-// Optimized HTML escape map using a Map for O(1) lookup
-const HTML_ESCAPE_MAP = new Map([
-  ['&', '&amp;'],
-  ['<', '&lt;'],
-  ['>', '&gt;'],
-  ['"', '&quot;'],
-  ["'", '&#x27;'],
-  ['/', '&#x2F;'],
-]);
+// XSS Protection - now imported from './xss'
+export { XSSProtection } from './xss';
 
-// Safe dangerous patterns using simple RegExp
-const DANGEROUS_PATTERNS = new RegExp([
-  '<script[^>]*>[^<]*(?:</script>)?',
-  '<iframe[^>]*>[^<]*(?:</iframe>)?',
-  '<object[^>]*>[^<]*(?:</object>)?',
-  '<embed[^>]*>[^<]*(?:</embed>)?',
-  '<link[^>]*>[^<]*(?:</link>)?',
-  '<meta[^>]*>[^<]*(?:</meta>)?',
-  'javascript:',
-  'vbscript:',
-  'data:text/html',
-  'on\\w+\\s*=',
-].join('|'), 'gi');
+// SQL Injection Protection - now imported from './sqlInjection'
+export { SQLInjectionProtection } from './sqlInjection';
 
-// Optimized SQL injection patterns using a single RegExp
-const SQL_INJECTION_PATTERNS = new RegExp([
-  '\\bUNION\\b|\\bSELECT\\b|\\bINSERT\\b|\\bUPDATE\\b|\\bDELETE\\b|\\bDROP\\b|\\bCREATE\\b|\\bALTER\\b',
-  "['\"\\\\]",
-  '--',
-  '/\\*|\\*/',
-].join('|'), 'gi');
+// CSRF Protection - now imported from './csrf'
+export { CSRFProtection } from './csrf';
 
-// XSS Protection
-/**
- * XSSProtection Service
- * 
- * Service class for handling xssprotection operations
- * 
- * @class XSSProtection
- */
-export class XSSProtection {
-  private static readonly ALLOWED_TAGS = new Set([
-    'b', 'i', 'u', 'strong', 'em', 'p', 'br', 'span', 'div'
-  ]);
-
-  static sanitizeHTML(input: string): string {
-    if (!input) return '';
-
-    // Remove dangerous patterns first
-    let sanitized = input.replace(DANGEROUS_PATTERNS, '');
-    
-    // Remove script tags and content
-    sanitized = sanitized.replace(/<script[^>]*>.*?<\/script>/gi, '');
-    sanitized = sanitized.replace(/<script[^>]*>/gi, '');
-    
-    // Remove iframe tags and content
-    sanitized = sanitized.replace(/<iframe[^>]*>.*?<\/iframe>/gi, '');
-    sanitized = sanitized.replace(/<iframe[^>]*>/gi, '');
-    
-    // Remove event handlers
-    sanitized = sanitized.replace(/on\w+\s*=\s*["'][^"']*["']/gi, '');
-    
-    // Remove javascript: protocols
-    sanitized = sanitized.replace(/javascript:/gi, '');
-    
-    // Encode remaining HTML tags and special characters (avoid double encoding)
-    sanitized = sanitized.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    sanitized = sanitized.replace(/"/g, '&quot;').replace(/'/g, '&#x27;');
-    sanitized = sanitized.replace(/\//g, '&#x2F;');
-    
-    return sanitized;
-  }
-
-  static sanitizeText(input: string): string {
-    if (!input) return '';
-    return input
-      .replace(/</g, '')
-      .replace(/>/g, '')
-      .replace(/javascript:/gi, '')
-      .replace(/vbscript:/gi, '')
-      .replace(/on\w+\s*=/gi, '');
-  }
-
-  static sanitizeURL(input: string): string {
-    if (!input) return '';
-    const dangerous = ['javascript:', 'vbscript:', 'data:text/html'];
-    for (const pattern of dangerous) {
-      if (input.toLowerCase().includes(pattern)) {
-        return '';
-      }
-    }
-    return input;
-  }
-
-  static escapeHTML(input: string): string {
-    return input.replace(/[&<>"'/]/g, char => HTML_ESCAPE_MAP.get(char) || char);
-  }
-
-  static hasDangerousContent(input: string): boolean {
-    return DANGEROUS_PATTERNS.test(input);
-  }
-}
-
-// SQL Injection Protection
-/**
- * SQLInjectionProtection Service
- * 
- * Service class for handling sqlinjectionprotection operations
- * 
- * @class SQLInjectionProtection
- */
-export class SQLInjectionProtection {
-  static validate(input: string): boolean {
-    if (!input) return true;
-    // More aggressive validation - reject any input with SQL keywords
-    const hasSQLKeywords = /(\bUNION\b|\bSELECT\b|\bINSERT\b|\bUPDATE\b|\bDELETE\b|\bDROP\b|\bCREATE\b|\bALTER\b)/i.test(input);
-    const hasSQLOperators = /(\bOR\b|\bAND\b).*\d+\s*=\s*\d+/i.test(input);
-    const hasSQLComments = /(--|\/\*|\*\/)/.test(input);
-    const hasSQLQuotes = /['";\\]/.test(input);
-    
-    // Return false if any SQL-related suspicious pattern is present
-    return !(hasSQLKeywords || hasSQLOperators || hasSQLComments || hasSQLQuotes);
-  }
-
-  static sanitize(input: string): string {
-    if (typeof input !== 'string') return '';
-    // More aggressive sanitization - remove all dangerous patterns
-    return input
-      .replace(/(\bUNION\b|\bSELECT\b|\bINSERT\b|\bUPDATE\b|\bDELETE\b|\bDROP\b|\bCREATE\b|\bALTER\b)/gi, '')
-      .replace(/['";\\]/g, '')
-      .replace(/--/g, '')
-      .replace(/\/\*|\*\//g, '')
-      .replace(/OR\s+\d+\s*=\s*\d+/gi, '')
-      .replace(/AND\s+\d+\s*=\s*\d+/gi, '')
-      .replace(/=\s*\d+/g, '')
-      .trim();
-  }
-}
-
-// CSRF Protection
-/**
- * CSRFProtection Service
- * 
- * Service class for handling csrfprotection operations
- * 
- * @class CSRFProtection
- */
-export class CSRFProtection {
-  private static readonly tokens = new Map<string, { token: string; expires: number }>();
-  private static readonly TOKEN_LENGTH = 32;
-  private static readonly TOKEN_EXPIRY = 30 * 60 * 1000; // 30 minutes
-
-  static generateToken(sessionId?: string): string {
-    const token = Array.from({ length: this.TOKEN_LENGTH }, () => 
-      Math.random().toString(36).charAt(2)
-    ).join('');
-    
-    const expires = Date.now() + this.TOKEN_EXPIRY;
-    this.tokens.set(token, { token, expires });
-    
-    return token;
-  }
-
-  static validateToken(sessionId: string, token: string): boolean {
-    const tokenData = this.tokens.get(token);
-    if (!tokenData) return false;
-    
-    if (Date.now() > tokenData.expires) {
-      this.tokens.delete(token);
-      return false;
-    }
-    
-    return true;
-  }
-
-  static cleanExpiredTokens(): void {
-    const now = Date.now();
-    for (const [token, data] of this.tokens.entries()) {
-      if (now > data.expires) {
-        this.tokens.delete(token);
-      }
-    }
-  }
-}
-
-// Rate Limiter
-/**
- * RateLimiter Service
- * 
- * Service class for handling ratelimiter operations
- * 
- * @class RateLimiter
- */
-export class RateLimiter {
-  private static readonly attempts = new Map<string, { count: number; resetTime: number }>();
-  private static readonly MAX_ATTEMPTS = 5;
-  private static readonly WINDOW_MS = 15 * 60 * 1000; // 15 minutes
-
-  static isAllowed(identifier: string): boolean {
-    const now = Date.now();
-    const attempt = this.attempts.get(identifier);
-    
-    if (!attempt || now > attempt.resetTime) {
-      this.attempts.set(identifier, { count: 1, resetTime: now + this.WINDOW_MS });
-      return true;
-    }
-    
-    if (attempt.count >= this.MAX_ATTEMPTS) {
-      return false;
-    }
-    
-    attempt.count++;
-    return true;
-  }
-
-  static checkLimit(identifier: string, maxAttempts: number, windowMs: number): boolean {
-    const now = Date.now();
-    const attempt = this.attempts.get(identifier);
-    
-    if (!attempt || now > attempt.resetTime) {
-      this.attempts.set(identifier, { count: 1, resetTime: now + windowMs });
-      return true;
-    }
-    
-    if (attempt.count >= maxAttempts) {
-      return false;
-    }
-    
-    attempt.count++;
-    return true;
-  }
-
-  static getRemainingTime(identifier: string): number {
-    const attempt = this.attempts.get(identifier);
-    if (!attempt) return 0;
-    
-    return Math.max(0, attempt.resetTime - Date.now());
-  }
-
-  static resetAttempts(identifier: string): void {
-    this.attempts.delete(identifier);
-  }
-}
+// Rate Limiter - now imported from './rateLimit'
+export { RateLimiter } from './rateLimit';
 
 // Input Sanitizer
 /**
  * InputSanitizer Service
- * 
- * Service class for handling inputsanitizer operations
- * 
+ * High-level wrapper for convenience
+ *
+ * @deprecated Consider using specific sanitization functions from './sanitization' module
+ *
  * @class InputSanitizer
  */
 export class InputSanitizer {
-  static sanitize(input: unknown, type: 'text' | 'html' | 'sql' | 'email' | 'phone' | 'url' | 'filepath' = 'text'): string {
+  static sanitize(
+    input: unknown,
+    type: 'text' | 'html' | 'sql' | 'email' | 'phone' | 'url' | 'filepath' = 'text',
+  ): string {
     if (input === null || input === undefined) return '';
-    
+
     const stringInput = typeof input === 'string' ? input : String(input);
-    
+
     switch (type) {
       case 'html':
         return XSSProtection.sanitizeHTML(stringInput);
@@ -281,10 +62,7 @@ export class InputSanitizer {
   }
 
   static sanitizeText(input: string): string {
-    return input
-      .trim()
-      .replace(/[<>"'&]/g, char => HTML_ESCAPE_MAP.get(char) || char)
-      .replace(/[\x00-\x1F\x7F]/g, ''); // Remove control characters
+    return XSSProtection.sanitizeText(input);
   }
 
   static sanitizeEmail(input: string): string {
@@ -295,18 +73,11 @@ export class InputSanitizer {
   }
 
   static sanitizePhone(input: string): string {
-    return input
-      .replace(/[^\d+]/g, '')
-      .slice(0, 15); // Maximum length for international numbers
+    return input.replace(/[^\d+]/g, '').slice(0, 15); // Maximum length for international numbers
   }
 
   static sanitizeURL(input: string): string {
-    try {
-      const url = new URL(input.trim());
-      return ['http:', 'https:'].includes(url.protocol) ? url.toString() : '';
-    } catch {
-      return '';
-    }
+    return XSSProtection.sanitizeURL(input);
   }
 
   static sanitizeFilePath(input: string): string {
@@ -341,7 +112,7 @@ export class InputSanitizer {
       } else if (typeof value === 'object' && !Array.isArray(value) && value !== null) {
         result[key] = this.sanitizeFormData(value as Record<string, unknown>);
       } else if (Array.isArray(value)) {
-        result[key] = value.map(item => {
+        result[key] = value.map((item) => {
           if (typeof item === 'object' && item !== null) {
             return this.sanitizeFormData(item);
           }
@@ -350,8 +121,7 @@ export class InputSanitizer {
           }
           return item;
         });
-      }
-      else if (typeof value === 'string') {
+      } else if (typeof value === 'string') {
         // Determine field type based on key name
         if (key.toLowerCase().includes('email')) {
           result[key] = this.sanitizeEmail(value);
@@ -371,65 +141,5 @@ export class InputSanitizer {
   }
 }
 
-// Security validation rules
-export const SecurityValidationRules = {
-  noScriptTags: {
-    validate: (input: string) => ({
-      isValid: !XSSProtection.hasDangerousContent(input),
-      message: 'Script etiketleri izin verilmez',
-      severity: 'error' as const,
-    }),
-  },
-
-  noSQLInjection: {
-    validate: (input: string) => ({
-      isValid: SQLInjectionProtection.validate(input),
-      message: 'Geçersiz karakterler tespit edildi',
-      severity: 'error' as const,
-    }),
-  },
-
-  maxLength: (max: number) => ({
-    validate: (input: string) => ({
-      isValid: input.length <= max,
-      message: `Maksimum ${max} karakter olmalıdır`,
-      severity: 'error' as const,
-    }),
-  }),
-
-  noSpecialChars: {
-    validate: (input: string) => ({
-      isValid: /^[a-zA-ZçğıöşüÇĞIİÖŞÜ0-9\s._-]*$/.test(input),
-      message: 'Özel karakterler izin verilmez',
-      severity: 'warning' as const,
-    }),
-  },
-};
-
-// Security headers helper
-export const SecurityHeaders = {
-  getCSPHeader(): string {
-    return [
-      "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
-      "style-src 'self' 'unsafe-inline'",
-      "img-src 'self' data: https:",
-      "font-src 'self' data:",
-      "connect-src 'self' https://*.supabase.co",
-      "frame-ancestors 'none'",
-      "base-uri 'self'",
-      "form-action 'self'",
-    ].join('; ');
-  },
-
-  getSecurityHeaders(): Record<string, string> {
-    return {
-      'Content-Security-Policy': this.getCSPHeader(),
-      'X-Frame-Options': 'DENY',
-      'X-Content-Type-Options': 'nosniff',
-      'X-XSS-Protection': '1; mode=block',
-      'Referrer-Policy': 'strict-origin-when-cross-origin',
-      'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
-    };
-  },
-};
+// Security Headers - now imported from './headers'
+export { SecurityHeaders } from './headers';

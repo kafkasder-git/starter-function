@@ -1,6 +1,6 @@
 /**
  * @fileoverview BeneficiariesPageEnhanced Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -20,10 +20,8 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 // Note: useSupabaseAuth removed as authentication is handled at app level
-import {
-  ihtiyacSahipleriService,
-  type IhtiyacSahibi,
-} from '../../services/ihtiyacSahipleriService';
+import { beneficiariesService } from '../../services/beneficiariesService';
+import type { Beneficiary } from '../../types/beneficiary';
 import { PageLoading } from '../LoadingSpinner';
 // OCR Scanner removed
 import { PageLayout } from '../PageLayout';
@@ -46,12 +44,31 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 
 import { logger } from '../../lib/logging/logger';
 // İhtiyaç sahipleri için display tipi
-interface IhtiyacSahibiDisplay extends IhtiyacSahibi {
+interface BeneficiaryDisplay extends Beneficiary {
   display_id?: number; // 1'den başlayan sıralı ID
   formatted_phone?: string;
   formatted_registration_date?: string;
-  status?: 'active' | 'passive' | 'suspended' | 'under_evaluation';
   priority_level?: 'low' | 'medium' | 'high';
+  // Backward compatibility fields for display
+  ad_soyad?: string;
+  kimlik_no?: string;
+  telefon_no?: string;
+  sehri?: string;
+  adres?: string;
+  uyruk?: string;
+  ulkesi?: string;
+  yerlesimi?: string;
+  mahalle?: string;
+  kategori?: string;
+  tur?: string;
+  Kategori?: string;
+  Tur?: string;
+  Kimlik_No?: string;
+  Telefon_No?: string;
+  Uyruk?: string;
+  Yerlesimi?: string;
+  Mahalle?: string;
+  Adres?: string;
 }
 
 // Status mapping for beneficiaries - Using Badge variants
@@ -68,11 +85,11 @@ const statusMapping = {
     variant: 'destructive' as const,
     className: 'bg-red-50 text-red-700 border-red-200',
   },
-  passive: { 
-    label: 'Pasif', 
-    key: 'passive', 
+  passive: {
+    label: 'Pasif',
+    key: 'passive',
     variant: 'destructive' as const,
-    className: 'bg-red-50 text-red-700 border-red-200' 
+    className: 'bg-red-50 text-red-700 border-red-200',
   },
   suspended: {
     label: 'Askıda',
@@ -113,7 +130,7 @@ interface BeneficiariesPageProps {
 
 /**
  * BeneficiariesPageEnhanced function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -125,7 +142,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
   // Note: statusFilter removed as status field doesn't exist in database
   const [cityFilter, setCityFilter] = useState('all');
   const [sortBy, setSortBy] = useState('name-asc');
-  const [beneficiaries, setBeneficiaries] = useState<IhtiyacSahibiDisplay[]>([]);
+  const [beneficiaries, setBeneficiaries] = useState<BeneficiaryDisplay[]>([]);
   const [cities, setCities] = useState<string[]>([]);
   const [, setTotalCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
@@ -177,7 +194,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
         searchTerm: searchTerm.trim() ?? undefined,
       };
 
-      const result = await ihtiyacSahipleriService.getIhtiyacSahipleri(currentPage, pageSize, {
+      const result = await beneficiariesService.getBeneficiaries(currentPage, pageSize, {
         searchTerm: filters.searchTerm,
         sehir: filters.city,
         sortBy,
@@ -191,43 +208,49 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
       }
 
       // Transform data to include display fields with proper fallbacks
-      const transformedData = (result.data || []).map((item: IhtiyacSahibi) => ({
+      const transformedData = (result.data || []).map((item: Beneficiary) => ({
         ...item,
         // Migration sonrası gerçek ID'ler 1'den başlayacak, display_id gerekli değil
         display_id: item.id, // Gerçek ID'yi kullan
-        
-        // Phone formatting with multiple fallbacks
-        formatted_phone: item.telefon_no ?? item.Telefon_No ?? 'Telefon bilgisi yok',
-        
-        // Registration date with proper formatting
-        formatted_registration_date: item.kayit_tarihi ?? item.Kayit_Tarihi ?? new Date().toISOString().split('T')[0],
-        
-        // Name with fallback
-        ad_soyad: item.ad_soyad ?? 'Ad Soyad bilgisi yok',
-        
-        // Identity number with fallback
-        kimlik_no: item.kimlik_no ?? item.Kimlik_No ?? 'TC No bilgisi yok',
-        
-        // City with fallback
-        sehri: item.sehri ?? 'Şehir bilgisi yok',
-        
-        // Address with fallback
-        adres: item.adres ?? item.Adres ?? 'Adres bilgisi yok',
-        
-        // Category and type with fallbacks
-        kategori: item.kategori ?? item.Kategori ?? 'Kategori belirtilmemiş',
-        tur: item.tur ?? item.Tur ?? 'Tür belirtilmemiş',
-        
+
+        // Phone formatting - English field names from mapping
+        formatted_phone: item.phone ?? 'Telefon bilgisi yok',
+
+        // Registration date with proper formatting - English field names
+        formatted_registration_date:
+          item.application_date ?? item.created_at ?? new Date().toISOString().split('T')[0],
+
+        // Note: Beneficiary already has full_name, name, surname from mapping
+        // Keep ad_soyad for backward compatibility in display
+        ad_soyad: item.full_name ?? 'Ad Soyad bilgisi yok',
+
+        // Identity number - Use English field name
+        kimlik_no: item.identity_number ?? 'TC No bilgisi yok',
+
+        // City - Use English field name
+        sehri: item.city ?? 'Şehir bilgisi yok',
+
+        // Address - Use English field name
+        adres: item.address ?? 'Adres bilgisi yok',
+
+        // Category and type - Use mapped English field names
+        kategori: item.description ?? 'Kategori belirtilmemiş',
+        tur: item.notes ?? 'Tür belirtilmemiş',
+
         // IBAN with fallback
         iban: item.iban ?? 'IBAN bilgisi yok',
-        
+
+        // Nationality and country
+        uyruk: item.nationality ?? 'Belirtilmemiş',
+        ulkesi: item.country ?? 'Türkiye',
+
         // Status and priority with defaults
-        status: (item.status as any) ?? 'active' as const,
-        priority_level: 'medium' as const,
+        status: (item.status as any) ?? ('active' as const),
+        priority_level: item.priority ?? ('medium' as const),
       }));
 
       setBeneficiaries(transformedData);
-      setTotalCount(result.count ?? 0);
+      setTotalCount(result.total ?? 0);
     } catch (error) {
       logger.error('Error loading beneficiaries:', error);
       setBeneficiaries([]);
@@ -269,8 +292,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
       const bakimYukumluCount = data
         .map((item) => (item.tur || '').toString())
         .filter(
-          (key) =>
-            key.toLowerCase().includes('bakmakla') || key.toLowerCase().includes('yükümlü'),
+          (key) => key.toLowerCase().includes('bakmakla') || key.toLowerCase().includes('yükümlü'),
         ).length;
 
       setStats({
@@ -299,7 +321,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
   // Load cities for filter
   const loadCities = useCallback(async () => {
     try {
-      const result = await ihtiyacSahipleriService.getSehirler();
+      const result = await beneficiariesService.getCities();
       if (result.data) {
         setCities(result.data);
       }
@@ -311,7 +333,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
   // Test Supabase connection first
   useEffect(() => {
     const testConnection = async () => {
-      const result = await ihtiyacSahipleriService.testConnection();
+      const result = await beneficiariesService.testConnection();
       logger.info('🔗 Connection test result:', result);
     };
     testConnection();
@@ -360,8 +382,8 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
         variant={isNewCategory ? 'default' : 'outline'}
         className={
           isNewCategory
-            ? 'bg-purple-100 text-purple-800 border-purple-200'
-            : categoryInfo?.color ?? ''
+            ? 'border-purple-200 bg-purple-100 text-purple-800'
+            : (categoryInfo?.color ?? '')
         }
       >
         {categoryInfo?.icon && `${categoryInfo.icon} `}
@@ -399,7 +421,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
         iban: newBeneficiary.iban?.trim() ?? null,
       };
 
-      const { data, error } = await ihtiyacSahipleriService.createIhtiyacSahibi(ihtiyacSahibiData);
+      const { data, error } = await beneficiariesService.create(ihtiyacSahibiData as any);
 
       if (error || !data) {
         throw new Error(error ?? 'Kayıt oluşturulamadı');
@@ -461,10 +483,10 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
         'Tür',
         'IBAN',
         'Durum',
-        'Kayıt Tarihi'
+        'Kayıt Tarihi',
       ];
-      
-      const csvData = beneficiaries.map(beneficiary => [
+
+      const csvData = beneficiaries.map((beneficiary) => [
         beneficiary.ad_soyad,
         beneficiary.kimlik_no,
         beneficiary.telefon_no,
@@ -476,43 +498,21 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
         beneficiary.tur,
         beneficiary.iban,
         beneficiary.durum,
-        new Date(beneficiary.created_at).toLocaleDateString('tr-TR')
+        new Date(beneficiary.created_at).toLocaleDateString('tr-TR'),
       ]);
 
-      const csv = [headers, ...csvData].map(row => row.join(',')).join('\n');
+      const csv = [headers, ...csvData].map((row) => row.join(',')).join('\n');
       const blob = new Blob([`\ufeff${csv}`], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
       link.download = `ihtiyac_sahipleri_${new Date().toISOString().split('T')[0]}.csv`;
       link.click();
-      
+
       toast.success('Veriler başarıyla dışa aktarıldı');
-    } catch (error) {
+    } catch {
       toast.error('Dışa aktarma sırasında bir hata oluştu');
-      console.error('Export error:', error);
     }
   };
-
-  // Delete beneficiary function
-  const handleDeleteBeneficiary = useCallback(async (beneficiaryId: string) => {
-    try {
-      setSaving(true);
-      const result = await ihtiyacSahipleriService.deleteIhtiyacSahibi(beneficiaryId);
-      
-      if (result.error) {
-        toast.error(result.error);
-        return;
-      }
-      
-      setBeneficiaries(prev => prev.filter(b => String(b.id) !== beneficiaryId));
-      toast.success('İhtiyaç sahibi başarıyla silindi');
-    } catch (error) {
-      console.error('Delete error:', error);
-      toast.error('Silme işlemi sırasında bir hata oluştu');
-    } finally {
-      setSaving(false);
-    }
-  }, []);
 
   // OCR Scanner removed
 
@@ -527,15 +527,15 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
         subtitle="Dernek yardımlarından faydalanan kişileri yönetin"
         className="min-h-screen"
         actions={
-          <div className="flex gap-3 flex-wrap items-center justify-end w-full sm:w-auto p-2 sm:p-0">
+          <div className="flex w-full flex-wrap items-center justify-end gap-3 p-2 sm:w-auto sm:p-0">
             {/* Export Button */}
             <Button
               variant="outline"
               size="sm"
-              className="min-h-[44px] min-w-[44px] px-3 border-gray-300 hover:border-gray-400 order-2 sm:order-1 sm:px-4 professional-card hover:shadow-md transition-shadow"
+              className="professional-card order-2 min-h-[44px] min-w-[44px] border-gray-300 px-3 transition-shadow hover:border-gray-400 hover:shadow-md sm:order-1 sm:px-4"
               onClick={handleExport}
             >
-              <Download className="w-4 h-4 mr-1 sm:mr-2" />
+              <Download className="mr-1 h-4 w-4 sm:mr-2" />
               <span className="hidden sm:inline">Dışa Aktar</span>
               <span className="sm:hidden">Dışa Aktar</span>
             </Button>
@@ -545,25 +545,25 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
               <DialogTrigger asChild>
                 <Button
                   size="sm"
-                  className="min-h-[44px] min-w-[44px] px-3 py-3 corporate-gradient text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 order-1 sm:order-2 flex-shrink-0 micro-interaction sm:px-6"
+                  className="corporate-gradient micro-interaction order-1 min-h-[44px] min-w-[44px] flex-shrink-0 border-0 px-3 py-3 text-white shadow-lg transition-all duration-300 hover:shadow-xl sm:order-2 sm:px-6"
                   type="button"
                   data-testid="new-beneficiary-btn"
                   aria-label="Yeni İhtiyaç Sahibi Ekle"
                 >
-                  <UserPlus className="w-4 h-4 mr-1 sm:mr-2 flex-shrink-0" />
-                  <span className="hidden sm:inline whitespace-nowrap">
+                  <UserPlus className="mr-1 h-4 w-4 flex-shrink-0 sm:mr-2" />
+                  <span className="hidden whitespace-nowrap sm:inline">
                     Yeni İhtiyaç Sahibi Ekle
                   </span>
                   <span className="sm:hidden">Yeni Ekle</span>
                 </Button>
               </DialogTrigger>
               <DialogContent
-                className="sm:max-w-lg max-w-[95vw] max-h-[90vh] overflow-y-auto professional-card"
+                className="professional-card max-h-[90vh] max-w-[95vw] overflow-y-auto sm:max-w-lg"
                 aria-describedby="dialog-description"
               >
                 <DialogHeader className="pb-4">
                   <DialogTitle className="flex items-center gap-2">
-                    <UserPlus className="w-6 h-6 text-primary" />
+                    <UserPlus className="text-primary h-6 w-6" />
                     Yeni İhtiyaç Sahibi Kaydı
                   </DialogTitle>
                   <DialogDescription id="dialog-description" className="text-muted-foreground mt-1">
@@ -582,7 +582,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
                         setNewBeneficiary({ ...newBeneficiary, ad_soyad: e.target.value });
                       }}
                       placeholder="İhtiyaç sahibinin tam adını giriniz"
-                      className="min-h-[44px] focus-corporate"
+                      className="focus-corporate min-h-[44px]"
                       disabled={saving}
                     />
                   </div>
@@ -599,7 +599,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
                         setNewBeneficiary({ ...newBeneficiary, kimlik_no: e.target.value });
                       }}
                       placeholder="Kimlik numarası (TC, Pasaport vb.)"
-                      className="min-h-[44px] focus-corporate"
+                      className="focus-corporate min-h-[44px]"
                       disabled={saving}
                     />
                     {/* OCR Scanner help text removed */}
@@ -615,13 +615,13 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
                         setNewBeneficiary({ ...newBeneficiary, telefon_no: e.target.value });
                       }}
                       placeholder="İhtiyaç sahibinin telefon numarası"
-                      className="min-h-[44px] focus-corporate"
+                      className="focus-corporate min-h-[44px]"
                       inputMode="tel"
                       disabled={saving}
                     />
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div className="space-y-2">
                       <Label htmlFor="sehri">Şehir</Label>
                       <Input
@@ -631,7 +631,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
                           setNewBeneficiary({ ...newBeneficiary, sehri: e.target.value });
                         }}
                         placeholder="İhtiyaç sahibinin yaşadığı şehir"
-                        className="min-h-[44px] focus-corporate"
+                        className="focus-corporate min-h-[44px]"
                         disabled={saving}
                       />
                     </div>
@@ -644,7 +644,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
                           setNewBeneficiary({ ...newBeneficiary, uyruk: e.target.value });
                         }}
                         placeholder="Uyruğu (ör: Türkiye, Suriye)"
-                        className="min-h-[44px] focus-corporate"
+                        className="focus-corporate min-h-[44px]"
                         disabled={saving}
                       />
                     </div>
@@ -659,12 +659,12 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
                         setNewBeneficiary({ ...newBeneficiary, adres: e.target.value });
                       }}
                       placeholder="İhtiyaç sahibinin adresi"
-                      className="min-h-[44px] focus-corporate"
+                      className="focus-corporate min-h-[44px]"
                       disabled={saving}
                     />
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div className="space-y-2">
                       <Label htmlFor="kategori">Kategori</Label>
                       <Input
@@ -674,7 +674,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
                           setNewBeneficiary({ ...newBeneficiary, kategori: e.target.value });
                         }}
                         placeholder="Yardım kategorisi"
-                        className="min-h-[44px] focus-corporate"
+                        className="focus-corporate min-h-[44px]"
                         disabled={saving}
                       />
                     </div>
@@ -687,7 +687,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
                           setNewBeneficiary({ ...newBeneficiary, tur: e.target.value });
                         }}
                         placeholder="İhtiyaç sahibi türü"
-                        className="min-h-[44px] focus-corporate"
+                        className="focus-corporate min-h-[44px]"
                         disabled={saving}
                       />
                     </div>
@@ -702,13 +702,13 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
                         setNewBeneficiary({ ...newBeneficiary, iban: e.target.value });
                       }}
                       placeholder="Banka IBAN numarası (isteğe bağlı)"
-                      className="min-h-[44px] focus-corporate"
+                      className="focus-corporate min-h-[44px]"
                       disabled={saving}
                     />
                   </div>
                 </div>
 
-                <div className="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t">
+                <div className="flex flex-col justify-end gap-3 border-t pt-6 sm:flex-row">
                   <Button
                     variant="outline"
                     onClick={() => {
@@ -721,17 +721,17 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
                   </Button>
                   <Button
                     onClick={handleCreateBeneficiary}
-                    className="min-h-[44px] px-6 corporate-gradient shadow-md hover:shadow-lg"
+                    className="corporate-gradient min-h-[44px] px-6 shadow-md hover:shadow-lg"
                     disabled={saving}
                   >
                     {saving ? (
                       <>
-                        <Loader2 className="animate-spin h-4 w-4 mr-2" />
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         Kaydediliyor...
                       </>
                     ) : (
                       <>
-                        <UserPlus className="w-4 h-4 mr-2" />
+                        <UserPlus className="mr-2 h-4 w-4" />
                         Kaydet ve Devam Et
                       </>
                     )}
@@ -742,15 +742,15 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
           </div>
         }
       >
-        <div className="p-3 sm:p-6 space-y-4 sm:space-y-6">
+        <div className="space-y-4 p-3 sm:space-y-6 sm:p-6">
           {/* Enhanced Summary Cards */}
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-3 sm:gap-4">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-5">
             <Card className="professional-card micro-interaction">
               <CardContent className="p-3 sm:p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="text-xl sm:text-2xl text-blue-600">{stats.total ?? 0}</div>
-                    <p className="text-xs sm:text-sm text-gray-600">Toplam Kayıt</p>
+                    <div className="text-xl text-blue-600 sm:text-2xl">{stats.total ?? 0}</div>
+                    <p className="text-xs text-gray-600 sm:text-sm">Toplam Kayıt</p>
                   </div>
                   <Users className="h-8 w-8 text-blue-500 opacity-80" />
                 </div>
@@ -760,8 +760,8 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
               <CardContent className="p-3 sm:p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="text-xl sm:text-2xl text-green-600">{stats.active ?? 0}</div>
-                    <p className="text-xs sm:text-sm text-gray-600">Aktif</p>
+                    <div className="text-xl text-green-600 sm:text-2xl">{stats.active ?? 0}</div>
+                    <p className="text-xs text-gray-600 sm:text-sm">Aktif</p>
                   </div>
                   <CheckCircle className="h-8 w-8 text-green-500 opacity-80" />
                 </div>
@@ -771,10 +771,10 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
               <CardContent className="p-3 sm:p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="text-xl sm:text-2xl text-orange-600">
+                    <div className="text-xl text-orange-600 sm:text-2xl">
                       {stats.underEvaluation ?? 0}
                     </div>
-                    <p className="text-xs sm:text-sm text-gray-600">Değerlendirmede</p>
+                    <p className="text-xs text-gray-600 sm:text-sm">Değerlendirmede</p>
                   </div>
                   <Clock className="h-8 w-8 text-orange-500 opacity-80" />
                 </div>
@@ -784,10 +784,10 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
               <CardContent className="p-3 sm:p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="text-xl sm:text-2xl text-purple-600">
+                    <div className="text-xl text-purple-600 sm:text-2xl">
                       {stats.bakimYukumluCount ?? 0}
                     </div>
-                    <p className="text-xs sm:text-sm text-gray-600">Bakmakla Yükümlü</p>
+                    <p className="text-xs text-gray-600 sm:text-sm">Bakmakla Yükümlü</p>
                   </div>
                   <AlertCircle className="h-8 w-8 text-purple-500 opacity-80" />
                 </div>
@@ -797,10 +797,10 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
               <CardContent className="p-3 sm:p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="text-lg sm:text-2xl text-emerald-600">
+                    <div className="text-lg text-emerald-600 sm:text-2xl">
                       ₺{(stats.totalAidAmount ?? 0).toLocaleString()}
                     </div>
-                    <p className="text-xs sm:text-sm text-gray-600">Toplam Yardım</p>
+                    <p className="text-xs text-gray-600 sm:text-sm">Toplam Yardım</p>
                   </div>
                   <TrendingUp className="h-8 w-8 text-emerald-500 opacity-80" />
                 </div>
@@ -812,28 +812,28 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
           <Card className="professional-card">
             <CardHeader className="pb-4">
               <CardTitle className="flex items-center gap-2">
-                <Users className="w-5 h-5 text-primary" />
+                <Users className="text-primary h-5 w-5" />
                 İhtiyaç Sahibi Listesi
               </CardTitle>
             </CardHeader>
             <CardContent>
               {/* Enhanced Filters with Category Filter */}
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-6">
+              <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:gap-4">
                 <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                  <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
                   <Input
                     placeholder="Ad, soyad veya TC kimlik no ile ara..."
                     value={searchTerm}
                     onChange={(e) => {
                       setSearchTerm(e.target.value);
                     }}
-                    className="pl-10 min-h-[44px] focus-corporate text-sm sm:text-base"
+                    className="focus-corporate min-h-[44px] pl-10 text-sm sm:text-base"
                   />
                 </div>
-                <div className="grid grid-cols-1 gap-2 sm:gap-3 sm:flex">
+                <div className="grid grid-cols-1 gap-2 sm:flex sm:gap-3">
                   {/* Status filter removed as status field doesn't exist in database */}
                   <Select value={cityFilter} onValueChange={setCityFilter}>
-                    <SelectTrigger className="min-w-[120px] min-h-[44px] focus-corporate text-sm sm:text-base">
+                    <SelectTrigger className="focus-corporate min-h-[44px] min-w-[120px] text-sm sm:text-base">
                       <SelectValue placeholder="Tüm Şehirler" />
                     </SelectTrigger>
                     <SelectContent>
@@ -846,7 +846,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
                     </SelectContent>
                   </Select>
                   <Select value={sortBy} onValueChange={setSortBy}>
-                    <SelectTrigger className="min-w-[140px] min-h-[44px] focus-corporate text-sm sm:text-base">
+                    <SelectTrigger className="focus-corporate min-h-[44px] min-w-[140px] text-sm sm:text-base">
                       <SelectValue placeholder="Sıralama" />
                     </SelectTrigger>
                     <SelectContent>
@@ -861,125 +861,174 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
                 </div>
               </div>
 
-              {/* Enhanced Table - Original Structure Preserved */}
-              <div className="overflow-x-auto -mx-3 sm:-mx-6">
-                <div className="inline-block min-w-full align-middle">
-                  <Table className="min-w-max text-xs sm:text-sm">
+              {/* Responsive View: Mobile Cards / Desktop Table */}
+
+              {/* Mobile Card View - Hidden on md and up */}
+              <div className="block space-y-3 md:hidden">
+                {beneficiaries.length === 0 ? (
+                  <div className="py-12 text-center text-gray-500">
+                    <UserPlus className="mx-auto mb-4 h-12 w-12 text-gray-300" />
+                    <p>Henüz hiç ihtiyaç sahibi kaydı yok.</p>
+                    <p className="mt-1 text-sm text-gray-400">
+                      İlk kayıt için &ldquo;Yeni İhtiyaç Sahibi Ekle&rdquo; butonunu kullanın
+                    </p>
+                  </div>
+                ) : (
+                  beneficiaries.map((beneficiary, index) => (
+                    <Card
+                      key={beneficiary.id}
+                      className="cursor-pointer transition-shadow hover:shadow-md"
+                      onClick={() => onNavigateToDetail?.(String(beneficiary.id))}
+                    >
+                      <CardContent className="p-4">
+                        <div className="mb-3 flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="mb-1 text-base font-semibold">
+                              {beneficiary.ad_soyad}
+                            </div>
+                            <div className="text-sm text-gray-600">
+                              #{index + 1 + (currentPage - 1) * pageSize}
+                            </div>
+                          </div>
+                          {getCategoryBadge(beneficiary.kategori ?? 'Genel')}
+                        </div>
+
+                        <div className="space-y-2 text-sm">
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Telefon:</span>
+                            <span className="font-medium">{beneficiary.formatted_phone}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Şehir:</span>
+                            <span className="font-medium">{beneficiary.sehri}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Tür:</span>
+                            <span className="font-medium">
+                              {beneficiary.tur ?? 'Belirtilmemiş'}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-gray-600">Durum:</span>
+                            {getStatusBadge((beneficiary.status as any) ?? 'active')}
+                          </div>
+                        </div>
+
+                        <div className="mt-4 flex gap-2 border-t pt-3">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="flex-1"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onNavigateToDetail?.(String(beneficiary.id));
+                            }}
+                          >
+                            Detay
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDelete(String(beneficiary.id));
+                            }}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))
+                )}
+              </div>
+
+              {/* Desktop Table View - Hidden on mobile, shown on md and up */}
+              <div className="hidden overflow-x-auto md:block">
+                <Table className="min-w-full text-sm">
                   <TableHeader>
                     <TableRow className="bg-gray-50/50">
-                      <TableHead className="min-w-[50px] font-medium text-center text-xs sm:text-sm">#</TableHead>
-                      <TableHead className="min-w-[100px] font-medium text-xs sm:text-sm">Tür</TableHead>
-                      <TableHead className="min-w-[140px] font-medium text-xs sm:text-sm">İsim</TableHead>
-                      <TableHead className="min-w-[120px] font-medium text-xs sm:text-sm">Kategori</TableHead>
-                      <TableHead className="min-w-[50px] font-medium text-center text-xs sm:text-sm">Yaş</TableHead>
-                      <TableHead className="min-w-[70px] font-medium text-xs sm:text-sm">Uyruk</TableHead>
-                      <TableHead className="min-w-[110px] font-medium text-xs sm:text-sm">Kimlik No</TableHead>
-                      <TableHead className="min-w-[110px] font-medium text-xs sm:text-sm">Cep Telefonu</TableHead>
-                      <TableHead className="min-w-[70px] font-medium text-xs sm:text-sm">Ülke</TableHead>
-                      <TableHead className="min-w-[110px] font-medium text-xs sm:text-sm">Şehir</TableHead>
-                      <TableHead className="min-w-[90px] font-medium text-xs sm:text-sm">Yerleşim</TableHead>
-                      <TableHead className="min-w-[150px] font-medium text-xs sm:text-sm">Adres</TableHead>
-                      <TableHead className="min-w-[100px] font-medium text-xs sm:text-sm text-center">İşlemler</TableHead>
+                      <TableHead className="w-[60px] text-center font-medium">#</TableHead>
+                      <TableHead className="font-medium">İsim</TableHead>
+                      <TableHead className="font-medium">Kategori</TableHead>
+                      <TableHead className="font-medium">Telefon</TableHead>
+                      <TableHead className="font-medium">Şehir</TableHead>
+                      <TableHead className="font-medium">Kimlik No</TableHead>
+                      <TableHead className="text-center font-medium">İşlemler</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {beneficiaries.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={13} className="text-center py-8 text-gray-500">
-                          <UserPlus className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                        <TableCell colSpan={7} className="py-8 text-center text-gray-500">
+                          <UserPlus className="mx-auto mb-4 h-12 w-12 text-gray-300" />
                           <p>Henüz hiç ihtiyaç sahibi kaydı yok.</p>
-                          <p className="text-sm text-gray-400 mt-1">
+                          <p className="mt-1 text-sm text-gray-400">
                             İlk kayıt için &quot;Yeni İhtiyaç Sahibi Ekle&quot; butonunu kullanın
                           </p>
                         </TableCell>
                       </TableRow>
                     ) : (
-                      beneficiaries.map((beneficiary) => (
+                      beneficiaries.map((beneficiary, index) => (
                         <TableRow
                           key={beneficiary.id}
-                          className="hover:bg-blue-50/30 transition-colors cursor-pointer border-b border-gray-100"
+                          className="cursor-pointer transition-colors hover:bg-blue-50/30"
                           onClick={() => onNavigateToDetail?.(String(beneficiary.id))}
                         >
-                          <TableCell className="py-1.5 px-2 text-center">
-                            <div className="flex items-center justify-center">
-                              <span className="text-xs font-medium text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded-full min-w-[28px]">
-                                {beneficiary.display_id}
-                              </span>
-                            </div>
-                          </TableCell>
-                          <TableCell className="py-1.5 px-2">
-                            <div className="flex items-center gap-1.5">
-                              <Search className="w-2.5 h-2.5 text-gray-400" />
-                              <span
-                                className="truncate max-w-[120px]"
-                                title={beneficiary.tur ?? beneficiary.Tur ?? 'İhtiyaç Sahibi'}
-                              >
-                                {beneficiary.tur ?? beneficiary.Tur ?? 'İhtiyaç Sahibi'}
-                              </span>
-                            </div>
-                          </TableCell>
-                          <TableCell className="py-1.5 px-2">
-                            <div className="flex flex-col">
-                              <span className={`font-medium ${beneficiary.ad_soyad === 'Ad Soyad bilgisi yok' ? 'text-gray-400 italic' : 'text-gray-900'}`}>
-                                {beneficiary.ad_soyad}
-                              </span>
-                            </div>
-                          </TableCell>
-                          <TableCell className="py-1.5 px-2">
-                            {getCategoryBadge(
-                              beneficiary.kategori ?? beneficiary.Kategori ?? 'Genel',
-                            )}
-                          </TableCell>
-                          <TableCell className="py-1.5 px-2 text-center">-</TableCell>
-                          <TableCell className="py-1.5 px-2">
-                            {beneficiary.uyruk ?? beneficiary.Uyruk ?? 'TR'}
-                          </TableCell>
-                          <TableCell className="py-1.5 px-2 font-mono">
-                            <span className={beneficiary.kimlik_no === 'TC No bilgisi yok' ? 'text-gray-400 italic' : ''}>
-                              {beneficiary.kimlik_no ?? beneficiary.Kimlik_No ?? '-'}
+                          <TableCell className="text-center">
+                            <span className="text-sm font-medium text-gray-600">
+                              {index + 1 + (currentPage - 1) * pageSize}
                             </span>
                           </TableCell>
-                          <TableCell className="py-1.5 px-2">
-                            {beneficiary.formatted_phone && beneficiary.formatted_phone !== 'Telefon bilgisi yok' ? (
-                              <span className="text-blue-600">{beneficiary.formatted_phone}</span>
+                          <TableCell>
+                            <div className="font-medium text-gray-900">{beneficiary.ad_soyad}</div>
+                            <div className="mt-0.5 text-xs text-gray-500">
+                              {beneficiary.uyruk ?? 'TR'}
+                            </div>
+                          </TableCell>
+                          <TableCell>{getCategoryBadge(beneficiary.kategori ?? 'Genel')}</TableCell>
+                          <TableCell>
+                            <span className="text-blue-600">
+                              {beneficiary.formatted_phone !== 'Telefon bilgisi yok' ? (
+                                beneficiary.formatted_phone
+                              ) : (
+                                <span className="text-gray-400">-</span>
+                              )}
+                            </span>
+                          </TableCell>
+                          <TableCell>{beneficiary.sehri}</TableCell>
+                          <TableCell className="font-mono text-xs">
+                            {beneficiary.kimlik_no !== 'TC No bilgisi yok' ? (
+                              beneficiary.kimlik_no
                             ) : (
-                              <span className="text-gray-400 italic">Telefon bilgisi yok</span>
+                              <span className="text-gray-400">-</span>
                             )}
                           </TableCell>
-                          <TableCell className="py-1.5 px-2">{beneficiary.ulkesi ?? 'Türkiye'}</TableCell>
-                          <TableCell className="py-1.5 px-2">
-                            <span
-                              className={`truncate max-w-[100px] ${beneficiary.sehri === 'Şehir bilgisi yok' ? 'text-gray-400 italic' : ''}`}
-                              title={beneficiary.sehri ?? undefined}
-                            >
-                              {beneficiary.sehri ?? '-'}
-                            </span>
-                          </TableCell>
-                          <TableCell className="py-1.5 px-2">
-                            {beneficiary.yerlesimi ?? beneficiary.Yerlesimi ?? '-'}
-                          </TableCell>
-                          <TableCell className="py-1.5 px-2">
-                            <span
-                              className={`truncate max-w-[150px] ${beneficiary.adres === 'Adres bilgisi yok' ? 'text-gray-400 italic' : ''}`}
-                              title={beneficiary.adres ?? beneficiary.Adres ?? undefined}
-                            >
-                              {beneficiary.adres ?? beneficiary.Adres ?? '-'}
-                            </span>
-                          </TableCell>
-                          <TableCell className="py-1.5 px-2 text-center">
+                          <TableCell className="text-center">
                             <div className="flex items-center justify-center gap-1">
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="h-7 w-7 p-0 text-red-600 hover:bg-red-50 hover:text-red-700"
+                                className="h-8 w-8 p-0"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  handleDeleteBeneficiary(String(beneficiary.id));
+                                  onNavigateToDetail?.(String(beneficiary.id));
                                 }}
-                                aria-label="İhtiyaç sahibini sil"
-                                disabled={saving}
+                                title="Detayları Görüntüle"
                               >
-                                <Trash2 className="h-3.5 w-3.5" />
+                                👁️
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 w-8 p-0 text-red-600 hover:bg-red-50 hover:text-red-700"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDelete(String(beneficiary.id));
+                                }}
+                                title="Sil"
+                              >
+                                <Trash2 className="h-4 w-4" />
                               </Button>
                             </div>
                           </TableCell>
@@ -987,8 +1036,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
                       ))
                     )}
                   </TableBody>
-                  </Table>
-                </div>
+                </Table>
               </div>
             </CardContent>
           </Card>

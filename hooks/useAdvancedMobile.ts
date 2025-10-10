@@ -1,6 +1,6 @@
 /**
  * @fileoverview useAdvancedMobile Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -15,7 +15,7 @@ import { logger } from '../lib/logging/logger';
  */
 /**
  * useAdvancedMobile function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -41,7 +41,7 @@ export function useAdvancedMobile() {
   // Device detection and capabilities
   useEffect(() => {
     const updateDeviceInfo = () => {
-      const {userAgent} = navigator;
+      const { userAgent } = navigator;
       const isMobile = /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(
         userAgent,
       );
@@ -298,7 +298,7 @@ export function useAdvancedMobile() {
       recognition.interimResults = false;
 
       recognition.onresult = (event: any) => {
-        const {transcript} = event.results[0][0];
+        const { transcript } = event.results[0][0];
         triggerHapticFeedback('success');
         resolve(transcript);
       };
@@ -324,7 +324,7 @@ export function useAdvancedMobile() {
       await new Promise((resolve) => setTimeout(resolve, 1000));
       triggerHapticFeedback('success');
       return true;
-    } catch (_error) {
+    } catch {
       triggerHapticFeedback('error');
       return false;
     }
@@ -376,7 +376,7 @@ export function useAdvancedMobile() {
 
         triggerHapticFeedback('success');
         return true;
-      } catch (_error) {
+      } catch {
         triggerHapticFeedback('error');
         return false;
       }
@@ -409,95 +409,5 @@ export function useAdvancedMobile() {
     requestBiometricAuth,
     shareFile,
     copyToClipboard,
-  };
-}
-
-/**
- * Enhanced mobile form optimization hook
- */
-/**
- * useMobileFormOptimization function
- * 
- * @param {Object} params - Function parameters
- * @returns {void} Nothing
- */
-export function useMobileFormOptimization() {
-  const { deviceInfo, optimizedSettings, triggerHapticFeedback } = useAdvancedMobile();
-  const [keyboardHeight, setKeyboardHeight] = useState(0);
-  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
-
-  // Virtual keyboard detection
-  useEffect(() => {
-    if (!deviceInfo.isMobile) return;
-
-    const initialViewportHeight = window.visualViewport?.height ?? window.innerHeight;
-
-    const handleViewportChange = () => {
-      const currentHeight = window.visualViewport?.height ?? window.innerHeight;
-      const heightDiff = initialViewportHeight - currentHeight;
-
-      setKeyboardHeight(Math.max(0, heightDiff));
-      setIsKeyboardOpen(heightDiff > 150); // Keyboard is likely open if height diff > 150px
-    };
-
-    if (window.visualViewport) {
-      window.visualViewport.addEventListener('resize', handleViewportChange);
-      return () => window.visualViewport?.removeEventListener('resize', handleViewportChange);
-    } 
-      window.addEventListener('resize', handleViewportChange);
-      return () => {
-        window.removeEventListener('resize', handleViewportChange);
-      };
-    
-  }, [deviceInfo.isMobile]);
-
-  // Input focus optimization
-  const optimizeInputFocus = useCallback(
-    (element: HTMLInputElement | HTMLTextAreaElement) => {
-      if (!deviceInfo.isMobile) return;
-
-      // Prevent zoom on iOS
-      if (deviceInfo.isIOS) {
-        const originalFontSize = element.style.fontSize;
-        element.style.fontSize = '16px';
-
-        // Restore original font size after blur
-        const handleBlur = () => {
-          element.style.fontSize = originalFontSize;
-          element.removeEventListener('blur', handleBlur);
-        };
-        element.addEventListener('blur', handleBlur);
-      }
-
-      // Scroll into view with keyboard compensation
-      if (isKeyboardOpen) {
-        setTimeout(() => {
-          element.scrollIntoView({
-            behavior: 'smooth',
-            block: 'center',
-            inline: 'nearest',
-          });
-        }, 100);
-      }
-
-      // Haptic feedback
-      triggerHapticFeedback('light');
-    },
-    [deviceInfo.isMobile, deviceInfo.isIOS, isKeyboardOpen, triggerHapticFeedback],
-  );
-
-  return {
-    keyboardHeight,
-    isKeyboardOpen,
-    optimizeInputFocus,
-    shouldAdjustForKeyboard: deviceInfo.isMobile && isKeyboardOpen,
-    keyboardCompensationStyle: isKeyboardOpen
-      ? {
-          paddingBottom: `${keyboardHeight}px`,
-          transition: optimizedSettings.enableAnimations
-            ? `padding-bottom ${optimizedSettings.animationDuration}s ease-out`
-            : 'none',
-        }
-      : {},
   };
 }

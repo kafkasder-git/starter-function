@@ -4,6 +4,14 @@ export interface ValidationResult {
   warnings?: ValidationWarning[];
 }
 
+export type ValidationRule = {
+  rule: 'required' | 'email' | 'min' | 'max' | 'pattern';
+  value?: any;
+  message: string;
+};
+
+export type ValidatorFunction = (value: any) => boolean | string;
+
 export interface ValidationError {
   field: string;
   message: string;
@@ -33,6 +41,9 @@ export interface FieldValidationRule {
 }
 
 export type FormValidationSchema = Record<string, FieldValidationRule>;
+
+// Alias for consistency with types/index.ts exports
+export type ValidationSchema = FormValidationSchema;
 
 export interface FormFieldState {
   value: any;

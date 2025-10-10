@@ -4,7 +4,6 @@
  */
 
 import emailSMSService from './emailSMSService';
-import indexManagementService from './indexManagementService';
 import nativeFeaturesService from './nativeFeaturesService';
 import userManagementService from './userManagementService';
 import membersService from './membersService';
@@ -16,9 +15,6 @@ import fileStorageService from './fileStorageService';
 import monitoring from './monitoringService';
 import exportService from './exportService';
 // AI services removed
-import queryOptimizationService from './queryOptimizationService';
-import connectionPoolingService from './connectionPoolingService';
-import cachingService from './cachingService';
 import performanceMonitoringService from './performanceMonitoringService';
 import { enhancedSupabase, EnhancedSupabaseService } from './enhancedSupabaseService';
 
@@ -103,80 +99,21 @@ export {
 } from './fileStorageService';
 
 // =============================================================================
-// DATABASE OPTIMIZATION SERVICES
+// PERFORMANCE SERVICES
 // =============================================================================
 
-// Query optimization service
-export {
-  queryOptimizationService,
-  executeOptimizedQuery,
-  executePreparedStatement,
-  getQueryAnalytics,
-  suggestIndexOptimizations,
-  type QueryMetrics,
-  type QueryAnalysis,
-  type PreparedStatement,
-  type QueryOptimizationConfig,
-} from './queryOptimizationService';
+// =============================================================================
+// CACHING
+// =============================================================================
 
-// Index management service
-export {
-  indexManagementService,
-  getDatabaseIndexes,
-  getTableIndexes,
-  analyzeIndexUsage,
-  suggestMissingIndexes,
-  createIndex,
-  dropIndex,
-  rebuildIndex,
-  analyzeTable,
-  vacuumTable,
-  getMaintenanceRecommendations,
-  type DatabaseIndex,
-  type IndexSuggestion,
-  type IndexAnalysis,
-} from './indexManagementService';
-
-// Connection pooling service
-export {
-  connectionPoolingService,
-  executeQuery,
-  executeSupabaseQuery,
-  executeRawSQL,
-  getConnectionStats,
-  getConnectionHealth,
-  getConnectionMetrics,
-  optimizeConnectionPool,
-  testConnectionQuality,
-  refreshConnections,
-  type ConnectionStats,
-  type ConnectionHealth,
-  type ConnectionConfig,
-  type QueryResult,
-  type ConnectionMetrics,
-} from './connectionPoolingService';
-
-// Caching service
-export {
-  cachingService,
-  cacheSet,
-  cacheGet,
-  cacheHas,
-  cacheDelete,
-  cacheClear,
-  cacheClearByTags,
-  getCacheStats,
-  getCacheStrategies,
-  getReactQueryConfig,
-  getQueryOptions,
-  getMutationOptions,
-  getCacheOptimizationRecommendations,
-  type CacheEntry,
-  type CacheConfig,
-  type CacheStats,
-  type CacheStrategy,
-  type ReactQueryConfig,
-} from './cachingService';
+// Note: For caching needs, use React Query (@tanstack/react-query)
+// React Query is already installed but not yet configured.
+// See: https://tanstack.com/query/latest/docs/react/overview
+//
+// To set up React Query:
+// 1. Create QueryClient in main.tsx or App.tsx
+// 2. Wrap app with QueryClientProvider
+// 3. Use useQuery/useMutation hooks in components
 
 // Performance monitoring service
 export {
@@ -219,13 +156,6 @@ export { default as exportService } from './exportService';
 
 // Native device features
 export { default as nativeFeaturesService } from './nativeFeaturesService';
-
-// =============================================================================
-// LEGACY SERVICES (TO BE REPLACED)
-// =============================================================================
-
-// These services will be replaced by the new comprehensive services above
-export { default as ihtiyacSahipleriService } from './ihtiyacSahipleriService';
 
 // =============================================================================
 // TYPE DEFINITIONS
@@ -329,11 +259,6 @@ export const checkServiceHealth = async () => {
     { name: 'emailSMS', service: emailSMSService, method: 'testConfiguration' },
     { name: 'files', service: fileStorageService, method: 'testStorage' },
     { name: 'monitoring', service: monitoring, method: 'trackEvent' },
-    // Database Optimization Services
-    { name: 'queryOptimization', service: queryOptimizationService, method: 'getQueryAnalytics' },
-    { name: 'indexManagement', service: indexManagementService, method: 'getDatabaseIndexes' },
-    { name: 'connectionPooling', service: connectionPoolingService, method: 'getConnectionStats' },
-    { name: 'caching', service: cachingService, method: 'getStats' },
     {
       name: 'performanceMonitoring',
       service: performanceMonitoringService,
@@ -350,9 +275,6 @@ export const checkServiceHealth = async () => {
         (service as unknown as ServiceWithMethod)[method]('health_check', { service: name });
       } else if (method === 'testConfiguration' || method === 'testStorage') {
         await (service as unknown as ServiceWithMethod)[method]();
-      } else if (method === 'getDatabaseIndexes') {
-        // Call with empty string for schema to test basic functionality
-        await (service as unknown as ServiceWithMethod)[method]('');
       } else {
         // For data services, just check if method exists and call it
         if (typeof (service as unknown as ServiceWithMethod)[method] === 'function') {

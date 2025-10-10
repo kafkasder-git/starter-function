@@ -1,6 +1,6 @@
 /**
  * @fileoverview useSearch Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -10,25 +10,16 @@ import { useDebounce } from './useDebounce';
 import {
   TURKISH_CHAR_MAP,
   type SearchState,
-  type SearchConfig,
   type FilterValue,
   type SortConfig,
   type SearchResult,
+  type UseSearchProps,
 } from '../types/search';
 
 import { logger } from '../lib/logging/logger';
-interface UseSearchProps<T = unknown> {
-  config: SearchConfig;
-  data?: T[];
-  onSearch?: (
-    query: string,
-    filters: FilterValue[],
-    sort: SortConfig,
-  ) => Promise<SearchResult<T>> | SearchResult<T>;
-  initialQuery?: string;
-  initialFilters?: FilterValue[];
-  initialSort?: SortConfig;
-}
+
+// Re-export types for backward compatibility
+export type { UseSearchProps } from '../types/search';
 
 // Filter operator functions map for better performance and maintainability
 const filterOperators = new Map<string, (value: any, filterValue: any) => boolean>([
@@ -38,20 +29,33 @@ const filterOperators = new Map<string, (value: any, filterValue: any) => boolea
   ['gte', (value, filterValue) => Number(value) >= Number(filterValue)],
   ['lt', (value, filterValue) => Number(value) < Number(filterValue)],
   ['lte', (value, filterValue) => Number(value) <= Number(filterValue)],
-  ['contains', (value, filterValue) => String(value).toLowerCase().includes(String(filterValue).toLowerCase())],
-  ['startsWith', (value, filterValue) => String(value).toLowerCase().startsWith(String(filterValue).toLowerCase())],
-  ['endsWith', (value, filterValue) => String(value).toLowerCase().endsWith(String(filterValue).toLowerCase())],
+  [
+    'contains',
+    (value, filterValue) => String(value).toLowerCase().includes(String(filterValue).toLowerCase()),
+  ],
+  [
+    'startsWith',
+    (value, filterValue) =>
+      String(value).toLowerCase().startsWith(String(filterValue).toLowerCase()),
+  ],
+  [
+    'endsWith',
+    (value, filterValue) => String(value).toLowerCase().endsWith(String(filterValue).toLowerCase()),
+  ],
   ['in', (value, filterValue) => Array.isArray(filterValue) && filterValue.includes(value)],
-  ['between', (value, filterValue) => {
-    if (!Array.isArray(filterValue) || filterValue.length !== 2) return false;
-    const numValue = Number(value);
-    return numValue >= Number(filterValue[0]) && numValue <= Number(filterValue[1]);
-  }],
+  [
+    'between',
+    (value, filterValue) => {
+      if (!Array.isArray(filterValue) || filterValue.length !== 2) return false;
+      const numValue = Number(value);
+      return numValue >= Number(filterValue[0]) && numValue <= Number(filterValue[1]);
+    },
+  ],
 ]);
 
 /**
  * useSearch function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -66,7 +70,7 @@ export function useSearch<T = unknown>({
   const [searchState, setSearchState] = useState<SearchState>({
     query: initialQuery,
     filters: initialFilters,
-      sort: initialSort ?? (config.defaultSort || { field: 'id', direction: 'desc' }),
+    sort: initialSort ?? (config.defaultSort || { field: 'id', direction: 'desc' }),
     currentPage: 1,
     totalPages: 1,
     totalItems: 0,
@@ -130,28 +134,32 @@ export function useSearch<T = unknown>({
   }, []);
 
   // Optimized sort function
-  const sortItems = useCallback((items: T[], sort: SortConfig) => {
-    if (!sort.field) return items;
+  const sortItems = useCallback(
+    (items: T[], sort: SortConfig) => {
+      if (!sort.field) return items;
 
-    return [...items].sort((a, b) => {
-      const aValue = getNestedValue(a, sort.field);
-      const bValue = getNestedValue(b, sort.field);
+      return [...items].sort((a, b) => {
+        const aValue = getNestedValue(a, sort.field);
+        const bValue = getNestedValue(b, sort.field);
 
         if (aValue == null || bValue == null) {
-        return (aValue == null ? 1 : 0) - (bValue == null ? 1 : 0);
-      }
+          return (aValue == null ? 1 : 0) - (bValue == null ? 1 : 0);
+        }
 
-      const comparison = typeof aValue === 'string' && typeof bValue === 'string'
-        ? aValue.localeCompare(bValue, 'tr')
-        : typeof aValue === 'number' && typeof bValue === 'number'
-        ? aValue - bValue
-        : aValue instanceof Date && bValue instanceof Date
-        ? aValue.getTime() - bValue.getTime()
-        : String(aValue).localeCompare(String(bValue), 'tr');
+        const comparison =
+          typeof aValue === 'string' && typeof bValue === 'string'
+            ? aValue.localeCompare(bValue, 'tr')
+            : typeof aValue === 'number' && typeof bValue === 'number'
+              ? aValue - bValue
+              : aValue instanceof Date && bValue instanceof Date
+                ? aValue.getTime() - bValue.getTime()
+                : String(aValue).localeCompare(String(bValue), 'tr');
 
-      return sort.direction === 'desc' ? -comparison : comparison;
-    });
-  }, [getNestedValue]);
+        return sort.direction === 'desc' ? -comparison : comparison;
+      });
+    },
+    [getNestedValue],
+  );
 
   // Local search implementation
   const performLocalSearch = useCallback(
@@ -164,14 +172,14 @@ export function useSearch<T = unknown>({
             config.searchableFields.some((field) => {
               const value = getNestedValue(item, field);
               return value != null && fuzzyMatch(query, String(value));
-            })
+            }),
           )
         : data;
 
       // Apply filters
       const filtered = filters.length
         ? textFiltered.filter((item) =>
-            filters.every((filter) => applyFilter(getNestedValue(item, filter.field), filter))
+            filters.every((filter) => applyFilter(getNestedValue(item, filter.field), filter)),
           )
         : textFiltered;
 
@@ -249,7 +257,14 @@ export function useSearch<T = unknown>({
         throw error;
       }
     },
-    [searchState.query, searchState.filters, searchState.sort, searchState.itemsPerPage, onSearch, performLocalSearch],
+    [
+      searchState.query,
+      searchState.filters,
+      searchState.sort,
+      searchState.itemsPerPage,
+      onSearch,
+      performLocalSearch,
+    ],
   );
 
   // Optimized state update functions
@@ -264,9 +279,10 @@ export function useSearch<T = unknown>({
   const addFilter = useCallback((filter: FilterValue) => {
     setSearchState((prev) => {
       const existingIndex = prev.filters.findIndex((f) => f.field === filter.field);
-      const newFilters = existingIndex >= 0
-        ? prev.filters.map((f, i) => (i === existingIndex ? filter : f))
-        : [...prev.filters, filter];
+      const newFilters =
+        existingIndex >= 0
+          ? prev.filters.map((f, i) => (i === existingIndex ? filter : f))
+          : [...prev.filters, filter];
       return { ...prev, filters: newFilters, currentPage: 1 };
     });
   }, []);
@@ -288,7 +304,7 @@ export function useSearch<T = unknown>({
   }, []);
 
   const loadMore = useCallback(() => {
-      if (!searchState.hasMore || searchState.isLoading) return;
+    if (!searchState.hasMore || searchState.isLoading) return;
     executeSearch(
       searchState.query,
       searchState.filters,
@@ -340,9 +356,18 @@ export function useSearch<T = unknown>({
     () => ({
       hasActiveFilters: searchState.filters.length > 0,
       hasResults: searchState.results.length > 0,
-      isEmpty: Boolean(!searchState.isLoading && searchState.results.length === 0 && (searchState.query ?? searchState.filters.length > 0)),
+      isEmpty: Boolean(
+        !searchState.isLoading &&
+          searchState.results.length === 0 &&
+          (searchState.query ?? searchState.filters.length > 0),
+      ),
     }),
-    [searchState.filters.length, searchState.results.length, searchState.isLoading, searchState.query],
+    [
+      searchState.filters.length,
+      searchState.results.length,
+      searchState.isLoading,
+      searchState.query,
+    ],
   );
 
   return {

@@ -68,68 +68,30 @@ vi.mock('../connectionPoolingService', () => ({
   },
 }));
 
-vi.mock('../cachingService', () => ({
-  cachingService: {
-    getStats: vi.fn(() => ({
-      totalEntries: 50,
-      totalSize: 2048000,
-      hitRate: 85,
-      missRate: 15,
-      evictions: 2,
-      hits: 850,
-      misses: 150,
-      avgAccessTime: 5,
-      oldestEntry: Date.now() - 3600000,
-      newestEntry: Date.now(),
-    })),
-    set: vi.fn(),
-    get: vi.fn(),
-    has: vi.fn(() => true),
-  },
-}));
-
 vi.mock('../performanceMonitoringService', () => ({
   performanceMonitoringService: {
-    getActiveAlerts: vi.fn(() => []),
-    generateReport: vi.fn(() =>
+    getActiveAlerts: vi.fn(() => Promise.resolve([])),
+    getPerformanceReport: vi.fn(() =>
       Promise.resolve({
-        period: { start: new Date(), end: new Date(), duration: 24 },
-        summary: { overallHealth: 'good', score: 75, totalAlerts: 0, activeAlerts: 0 },
         metrics: {
-          database: {
-            activeConnections: 3,
-            totalConnections: 5,
-            connectionUtilization: 0.6,
-            avgQueryTime: 150,
-            slowQueries: 5,
-            deadlockCount: 0,
-            cacheHitRatio: 0.9,
-            indexUsage: 0.8,
-          },
-          application: {
-            responseTime: 800,
-            throughput: 50,
-            errorRate: 0.02,
-            memoryUsage: 0.6,
-            cpuUsage: 0.4,
-            activeUsers: 10,
-          },
-          cache: {
-            hitRate: 0.85,
-            missRate: 0.15,
-            evictionRate: 0.04,
-            totalSize: 2048000,
-            entriesCount: 50,
-          },
+          lcp: 1500,
+          fid: 50,
+          cls: 0.05,
+          memoryUsage: 45,
+          renderTime: 12,
+          score: 95,
+          rating: 'good',
         },
+        generatedAt: new Date().toISOString(),
         alerts: [],
-        recommendations: { immediate: [], shortTerm: [], longTerm: [] },
-        trends: {
-          database: { queryTime: 'stable', connectionUsage: 'stable', cacheEfficiency: 'stable' },
-          application: { responseTime: 'stable', errorRate: 'stable', throughput: 'stable' },
+        summary: {
+          rating: 'good',
+          issues: 0,
+          recommendations: ['Performance is good! Keep monitoring metrics regularly.'],
         },
       }),
     ),
+    getMetricsHistory: vi.fn(() => Promise.resolve([])),
   },
 }));
 
@@ -141,7 +103,6 @@ describe('Database Optimization Services Integration', () => {
       queryOptimization: (await import('../queryOptimizationService')).queryOptimizationService,
       indexManagement: (await import('../indexManagementService')).indexManagementService,
       connectionPooling: (await import('../connectionPoolingService')).connectionPoolingService,
-      caching: (await import('../cachingService')).cachingService,
       performanceMonitoring: (await import('../performanceMonitoringService'))
         .performanceMonitoringService,
     };
@@ -156,7 +117,6 @@ describe('Database Optimization Services Integration', () => {
       expect(mockServices.queryOptimization).toBeDefined();
       expect(mockServices.indexManagement).toBeDefined();
       expect(mockServices.connectionPooling).toBeDefined();
-      expect(mockServices.caching).toBeDefined();
       expect(mockServices.performanceMonitoring).toBeDefined();
     });
 
@@ -174,15 +134,9 @@ describe('Database Optimization Services Integration', () => {
       expect(typeof mockServices.connectionPooling.getConnectionStats).toBe('function');
       expect(typeof mockServices.connectionPooling.getConnectionHealth).toBe('function');
 
-      // Caching Service
-      expect(typeof mockServices.caching.getStats).toBe('function');
-      expect(typeof mockServices.caching.set).toBe('function');
-      expect(typeof mockServices.caching.get).toBe('function');
-      expect(typeof mockServices.caching.has).toBe('function');
-
       // Performance Monitoring Service
       expect(typeof mockServices.performanceMonitoring.getActiveAlerts).toBe('function');
-      expect(typeof mockServices.performanceMonitoring.generateReport).toBe('function');
+      expect(typeof mockServices.performanceMonitoring.getPerformanceReport).toBe('function');
     });
   });
 
@@ -239,55 +193,41 @@ describe('Database Optimization Services Integration', () => {
       expect(['healthy', 'degraded', 'unhealthy']).toContain(health.status);
     });
 
-    it('should get cache statistics', () => {
-      const stats = mockServices.caching.getStats();
-
-      expect(stats).toHaveProperty('totalEntries');
-      expect(stats).toHaveProperty('totalSize');
-      expect(stats).toHaveProperty('hitRate');
-      expect(stats).toHaveProperty('missRate');
-      expect(stats).toHaveProperty('evictions');
-      expect(stats).toHaveProperty('hits');
-      expect(stats).toHaveProperty('misses');
-
-      expect(typeof stats.hitRate).toBe('number');
-      expect(typeof stats.totalSize).toBe('number');
-    });
-
     it('should generate performance report', async () => {
-      const report = await mockServices.performanceMonitoring.generateReport(24);
+      const report = await mockServices.performanceMonitoring.getPerformanceReport();
 
-      expect(report).toHaveProperty('period');
+      expect(report).toHaveProperty('generatedAt');
       expect(report).toHaveProperty('summary');
       expect(report).toHaveProperty('metrics');
       expect(report).toHaveProperty('alerts');
-      expect(report).toHaveProperty('recommendations');
-      expect(report).toHaveProperty('trends');
 
-      expect(report.summary).toHaveProperty('overallHealth');
-      expect(report.summary).toHaveProperty('score');
-      expect(report.metrics).toHaveProperty('database');
-      expect(report.metrics).toHaveProperty('application');
-      expect(report.metrics).toHaveProperty('cache');
+      expect(report.summary).toHaveProperty('rating');
+      expect(report.summary).toHaveProperty('issues');
+      expect(report.summary).toHaveProperty('recommendations');
+      expect(report.metrics).toHaveProperty('lcp');
+      expect(report.metrics).toHaveProperty('fid');
+      expect(report.metrics).toHaveProperty('cls');
+      expect(report.metrics).toHaveProperty('memoryUsage');
+      expect(report.metrics).toHaveProperty('score');
     });
 
     it('should have realistic performance metrics', async () => {
-      const report = await mockServices.performanceMonitoring.generateReport();
+      const report = await mockServices.performanceMonitoring.getPerformanceReport();
 
-      // Check database metrics
-      expect(report.metrics.database.avgQueryTime).toBeGreaterThan(0);
-      expect(report.metrics.database.connectionUtilization).toBeGreaterThanOrEqual(0);
-      expect(report.metrics.database.connectionUtilization).toBeLessThanOrEqual(1);
+      // Check Core Web Vitals metrics
+      expect(report.metrics.lcp).toBeGreaterThanOrEqual(0);
+      expect(report.metrics.fid).toBeGreaterThanOrEqual(0);
+      expect(report.metrics.cls).toBeGreaterThanOrEqual(0);
 
-      // Check application metrics
-      expect(report.metrics.application.responseTime).toBeGreaterThan(0);
-      expect(report.metrics.application.errorRate).toBeGreaterThanOrEqual(0);
-      expect(report.metrics.application.errorRate).toBeLessThanOrEqual(1);
+      // Check memory and performance
+      expect(report.metrics.memoryUsage).toBeGreaterThanOrEqual(0);
+      expect(report.metrics.memoryUsage).toBeLessThanOrEqual(100);
+      expect(report.metrics.renderTime).toBeGreaterThanOrEqual(0);
 
-      // Check cache metrics
-      expect(report.metrics.cache.hitRate).toBeGreaterThanOrEqual(0);
-      expect(report.metrics.cache.hitRate).toBeLessThanOrEqual(1);
-      expect(report.metrics.cache.totalSize).toBeGreaterThanOrEqual(0);
+      // Check score and rating
+      expect(report.metrics.score).toBeGreaterThanOrEqual(0);
+      expect(report.metrics.score).toBeLessThanOrEqual(100);
+      expect(['good', 'needs-improvement', 'poor']).toContain(report.metrics.rating);
     });
   });
 
@@ -300,40 +240,17 @@ describe('Database Optimization Services Integration', () => {
     });
 
     it('should provide performance insights', async () => {
-      const report = await mockServices.performanceMonitoring.generateReport();
+      const report = await mockServices.performanceMonitoring.getPerformanceReport();
 
       // Should have meaningful health assessment
-      expect(['excellent', 'good', 'fair', 'poor', 'critical']).toContain(
-        report.summary.overallHealth,
-      );
-      expect(report.summary.score).toBeGreaterThanOrEqual(0);
-      expect(report.summary.score).toBeLessThanOrEqual(100);
+      expect(['good', 'needs-improvement', 'poor']).toContain(report.summary.rating);
+      expect(report.summary.issues).toBeGreaterThanOrEqual(0);
+      expect(Array.isArray(report.summary.recommendations)).toBe(true);
+      expect(report.summary.recommendations.length).toBeGreaterThan(0);
     });
   });
 
   describe('Optimization Capabilities', () => {
-    it('should support cache operations', () => {
-      // Test basic cache operations
-      mockServices.caching.set('test_key', { value: 'test' });
-      expect(mockServices.caching.set).toHaveBeenCalledWith('test_key', { value: 'test' });
-
-      mockServices.caching.get('test_key');
-      expect(mockServices.caching.get).toHaveBeenCalledWith('test_key');
-
-      const hasKey = mockServices.caching.has('test_key');
-      expect(mockServices.caching.has).toHaveBeenCalledWith('test_key');
-      expect(hasKey).toBe(true);
-    });
-
-    it('should provide cache statistics', () => {
-      const stats = mockServices.caching.getStats();
-
-      expect(stats.hitRate).toBeGreaterThanOrEqual(0);
-      expect(stats.hitRate).toBeLessThanOrEqual(100);
-      expect(stats.totalEntries).toBeGreaterThanOrEqual(0);
-      expect(stats.totalSize).toBeGreaterThanOrEqual(0);
-    });
-
     it('should support query optimization', async () => {
       const analytics = mockServices.queryOptimization.getQueryAnalytics();
 
@@ -358,7 +275,7 @@ describe('Database Optimization Services Integration', () => {
       const promises = [
         mockServices.connectionPooling.getConnectionStats(),
         mockServices.indexManagement.analyzeIndexUsage(),
-        mockServices.performanceMonitoring.generateReport(1),
+        mockServices.performanceMonitoring.getPerformanceReport(),
       ];
 
       const results = await Promise.all(promises);
@@ -369,32 +286,22 @@ describe('Database Optimization Services Integration', () => {
       expect(results[2]).toHaveProperty('summary');
     });
 
-    it('should maintain service consistency', () => {
-      // Test that services maintain consistent state
-      const cacheStats1 = mockServices.caching.getStats();
-      const cacheStats2 = mockServices.caching.getStats();
-
-      expect(cacheStats1.totalEntries).toBe(cacheStats2.totalEntries);
-      expect(cacheStats1.hitRate).toBe(cacheStats2.hitRate);
-    });
-
     it('should provide actionable insights', async () => {
-      const report = await mockServices.performanceMonitoring.generateReport();
+      const report = await mockServices.performanceMonitoring.getPerformanceReport();
 
-      // Should have recommendations structure
-      expect(report.recommendations).toHaveProperty('immediate');
-      expect(report.recommendations).toHaveProperty('shortTerm');
-      expect(report.recommendations).toHaveProperty('longTerm');
+      // Should have recommendations
+      expect(Array.isArray(report.summary.recommendations)).toBe(true);
+      expect(report.summary.recommendations.length).toBeGreaterThan(0);
 
-      // Should have trends
-      expect(report.trends).toHaveProperty('database');
-      expect(report.trends).toHaveProperty('application');
+      // Should have alerts array
+      expect(Array.isArray(report.alerts)).toBe(true);
 
-      // Trends should have valid values
-      expect(['improving', 'stable', 'degrading']).toContain(report.trends.database.queryTime);
-      expect(['improving', 'stable', 'degrading']).toContain(
-        report.trends.application.responseTime,
-      );
+      // Should have rating
+      expect(['good', 'needs-improvement', 'poor']).toContain(report.summary.rating);
+
+      // Should have issues count
+      expect(typeof report.summary.issues).toBe('number');
+      expect(report.summary.issues).toBeGreaterThanOrEqual(0);
     });
   });
 });

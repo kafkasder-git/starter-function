@@ -1,6 +1,6 @@
 /**
  * @fileoverview index Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -9,7 +9,6 @@
 export { SearchProvider, useSearchContext, useQuickSearch } from './SearchProvider';
 export { EnhancedSearchInput } from './EnhancedSearchInput';
 export { FilterPanel } from './FilterPanel';
-export { DataTable } from './DataTable';
 // export { SearchExample } from './SearchExample'; // File doesn't exist
 
 // Hooks

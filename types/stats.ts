@@ -1,4 +1,24 @@
 // Stats types for frontend
+export interface StatsData {
+  total: number;
+  active: number;
+  inactive: number;
+  trend: TrendData[];
+}
+
+export interface StatsFilters {
+  period?: 'day' | 'week' | 'month' | 'year';
+  category?: string;
+  dateFrom?: string;
+  dateTo?: string;
+}
+
+export interface TrendData {
+  date: string;
+  value: number;
+  label?: string;
+}
+
 export interface SafeStats {
   beneficiaries: {
     total: number;

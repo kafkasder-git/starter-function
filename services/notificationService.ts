@@ -1,40 +1,16 @@
 /**
  * @fileoverview notificationService Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
 
 // Notification Service - Handles notification statistics and management
 import { logger } from '../lib/logging';
+import type { NotificationStats } from '../types/notification';
 
-interface NotificationStats {
-  total: number;
-  unread: number;
-  byType: {
-    info: number;
-    success: number;
-    warning: number;
-    error: number;
-  };
-  byCategory: {
-    system: number;
-    donation: number;
-    member: number;
-    aid: number;
-    finance: number;
-  };
-  recent: {
-    id: string;
-    type: 'info' | 'success' | 'warning' | 'error';
-    category: string;
-    title: string;
-    message: string;
-    timestamp: Date;
-    read: boolean;
-    priority?: 'low' | 'medium' | 'high' | 'urgent';
-  }[];
-}
+// Re-export types for backward compatibility
+export type { NotificationStats } from '../types/notification';
 
 class NotificationService {
   // Real notifications from API

@@ -1,6 +1,6 @@
 /**
  * @fileoverview Beneficiary Types - İhtiyaç sahipleri tip tanımları
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -20,15 +20,15 @@ export type BeneficiaryPriority = 'low' | 'medium' | 'high' | 'urgent';
 /**
  * İhtiyaç türleri
  */
-export type NeedType = 
-  | 'food'           // Gıda
-  | 'clothing'       // Giyim
-  | 'shelter'        // Barınma
-  | 'medical'        // Tıbbi
-  | 'education'      // Eğitim
+export type NeedType =
+  | 'food' // Gıda
+  | 'clothing' // Giyim
+  | 'shelter' // Barınma
+  | 'medical' // Tıbbi
+  | 'education' // Eğitim
   | 'transportation' // Ulaşım
-  | 'utilities'      // Faturalar
-  | 'other';         // Diğer
+  | 'utilities' // Faturalar
+  | 'other'; // Diğer
 
 /**
  * Aile durumu
@@ -63,6 +63,16 @@ export interface Beneficiary extends BaseEntity {
   district?: string;
   /** Posta kodu */
   postal_code?: string;
+  /** Uyruk/Milliyet */
+  nationality?: string;
+  /** Ülke */
+  country?: string;
+  /** Yerleşim */
+  settlement?: string;
+  /** Mahalle/Semt */
+  neighborhood?: string;
+  /** IBAN */
+  iban?: string;
   /** Aile durumu */
   family_status?: FamilyStatus;
   /** Çocuk sayısı */
@@ -173,7 +183,8 @@ export interface BeneficiaryInsert extends Omit<Beneficiary, 'id' | 'created_at'
 /**
  * İhtiyaç sahibi güncelleme için interface
  */
-export interface BeneficiaryUpdate extends Partial<Omit<Beneficiary, 'id' | 'created_at' | 'updated_at'>> {
+export interface BeneficiaryUpdate
+  extends Partial<Omit<Beneficiary, 'id' | 'created_at' | 'updated_at'>> {
   /** ID değiştirilemez */
   id?: never;
   /** Oluşturma tarihi değiştirilemez */
@@ -365,4 +376,132 @@ export interface BeneficiaryReport {
   size: number;
   /** İndirme linki */
   downloadUrl?: string;
+}
+
+// =============================================================================
+// DATABASE FIELD MAPPING (Türkçe DB ↔ İngilizce App)
+// =============================================================================
+
+/**
+ * Database field names (Turkish)
+ * Maps to the actual ihtiyac_sahipleri table structure
+ */
+export interface BeneficiaryDBFields {
+  id: number | string;
+  ad_soyad: string;
+  kimlik_no?: string;
+  uyruk?: string;
+  ulkesi?: string;
+  sehri?: string;
+  yerlesimi?: string;
+  mahalle?: string;
+  adres?: string;
+  ailedeki_kisi_sayisi?: number;
+  bagli_yetim?: string;
+  bagli_kart?: string;
+  telefon_no?: string;
+  kayit_tarihi?: string;
+  kaydi_acan_birim?: string;
+  kategori?: string;
+  tur?: string;
+  fon_bolgesi?: string;
+  toplam_tutar?: number;
+  iban?: string;
+  status?: 'active' | 'inactive' | 'suspended';
+  created_at?: string;
+  updated_at?: string;
+  created_by?: string;
+  updated_by?: string;
+}
+
+/**
+ * Maps database fields (Turkish) to application model (English)
+ * @param dbData - Data from ihtiyac_sahipleri table
+ * @returns Beneficiary object with English field names
+ */
+export function mapDBToBeneficiary(dbData: BeneficiaryDBFields): Beneficiary {
+  const nameParts = dbData.ad_soyad?.split(' ') || [];
+  const name = nameParts[0] || '';
+  const surname = nameParts.slice(1).join(' ') || '';
+
+  return {
+    id: String(dbData.id),
+    name,
+    surname,
+    full_name: dbData.ad_soyad,
+    phone: dbData.telefon_no || '',
+    identity_number: dbData.kimlik_no,
+    address: dbData.adres || '',
+    city: dbData.sehri || '',
+    district: dbData.yerlesimi, // yerlesimi -> district
+    postal_code: undefined,
+    nationality: dbData.uyruk,
+    country: dbData.ulkesi,
+    settlement: dbData.yerlesimi,
+    neighborhood: dbData.mahalle, // mahalle -> neighborhood
+    iban: dbData.iban,
+    family_members_count: dbData.ailedeki_kisi_sayisi,
+    monthly_income: dbData.toplam_tutar,
+    need_types: [], // DB'de array yok, kategori var
+    priority: 'medium', // Default priority
+    status:
+      dbData.status === 'active'
+        ? 'active'
+        : dbData.status === 'inactive'
+          ? 'suspended'
+          : 'suspended',
+    description: dbData.kategori,
+    notes: dbData.tur,
+    application_date: dbData.kayit_tarihi || dbData.created_at || new Date().toISOString(),
+    created_at: dbData.created_at || undefined,
+    updated_at: dbData.updated_at || undefined,
+    created_by: dbData.created_by || undefined,
+    updated_by: dbData.updated_by || undefined,
+  };
+}
+
+/**
+ * Maps application model (English) to database fields (Turkish)
+ * @param beneficiary - Beneficiary object with English field names
+ * @returns Data for ihtiyac_sahipleri table with Turkish field names
+ */
+export function mapBeneficiaryToDB(
+  beneficiary: Partial<Beneficiary>,
+): Partial<BeneficiaryDBFields> {
+  const dbData: Partial<BeneficiaryDBFields> = {};
+
+  // Map name fields
+  if (beneficiary.full_name) {
+    dbData.ad_soyad = beneficiary.full_name;
+  } else if (beneficiary.name || beneficiary.surname) {
+    dbData.ad_soyad = `${beneficiary.name || ''} ${beneficiary.surname || ''}`.trim();
+  }
+
+  // Map other fields
+  if (beneficiary.identity_number !== undefined) dbData.kimlik_no = beneficiary.identity_number;
+  if (beneficiary.phone !== undefined) dbData.telefon_no = beneficiary.phone;
+  if (beneficiary.city !== undefined) dbData.sehri = beneficiary.city;
+  if (beneficiary.district !== undefined) dbData.yerlesimi = beneficiary.district;
+  if (beneficiary.neighborhood !== undefined) dbData.mahalle = beneficiary.neighborhood;
+  if (beneficiary.address !== undefined) dbData.adres = beneficiary.address;
+  if (beneficiary.nationality !== undefined) dbData.uyruk = beneficiary.nationality;
+  if (beneficiary.country !== undefined) dbData.ulkesi = beneficiary.country;
+  if (beneficiary.settlement !== undefined) dbData.yerlesimi = beneficiary.settlement;
+  if (beneficiary.iban !== undefined) dbData.iban = beneficiary.iban;
+  if (beneficiary.family_members_count !== undefined)
+    dbData.ailedeki_kisi_sayisi = beneficiary.family_members_count;
+  if (beneficiary.monthly_income !== undefined) dbData.toplam_tutar = beneficiary.monthly_income;
+  if (beneficiary.description !== undefined) dbData.kategori = beneficiary.description;
+  if (beneficiary.notes !== undefined) dbData.tur = beneficiary.notes;
+  if (beneficiary.application_date !== undefined)
+    dbData.kayit_tarihi = beneficiary.application_date;
+
+  // Map status
+  if (beneficiary.status !== undefined) {
+    if (beneficiary.status === 'active') dbData.status = 'active';
+    else if (beneficiary.status === 'completed') dbData.status = 'inactive';
+    else dbData.status = 'suspended';
+  }
+
+  return dbData;
 }

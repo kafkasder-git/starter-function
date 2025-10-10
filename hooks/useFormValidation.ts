@@ -1,68 +1,29 @@
 /**
  * @fileoverview useFormValidation Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
 
 import { useCallback, useState } from 'react';
 import { logger } from '../lib/logging/logger';
-import {
-  validateField,
-  validateForm,
-  type ValidationResult,
-  type ValidationSchema,
-} from '../lib/validation';
+import { validateField, validateForm, type ValidationResult } from '../lib/security/validation';
+import type {
+  UseFormValidationOptions,
+  FormValidationState,
+  FormValidationActions,
+} from '../types/form';
 
-/**
- * UseFormValidationOptions Interface
- * 
- * @interface UseFormValidationOptions
- */
-export interface UseFormValidationOptions<T> {
-  schema: ValidationSchema;
-  initialValues: T;
-  onSubmit?: (values: T) => void | Promise<void>;
-  validateOnChange?: boolean;
-  validateOnBlur?: boolean;
-}
-
-/**
- * FormValidationState Interface
- * 
- * @interface FormValidationState
- */
-export interface FormValidationState<T> {
-  values: T;
-  errors: Record<keyof T, string>;
-  touched: Record<keyof T, boolean>;
-  isValid: boolean;
-  isSubmitting: boolean;
-  submitCount: number;
-}
-
-/**
- * FormValidationActions Interface
- * 
- * @interface FormValidationActions
- */
-export interface FormValidationActions<T> {
-  setValue: (field: keyof T, value: string | number | boolean) => void;
-  setValues: (values: Partial<T>) => void;
-  setError: (field: keyof T, error: string) => void;
-  setTouched: (field: keyof T, touched?: boolean) => void;
-  setFieldError: (field: keyof T, error?: string) => void;
-  validateField: (field: keyof T) => boolean;
-  validateForm: () => ValidationResult;
-  reset: () => void;
-  handleSubmit: (e?: React.FormEvent) => Promise<void>;
-  handleBlur: (field: keyof T) => void;
-  handleChange: (field: keyof T, value: string | number | boolean) => void;
-}
+// Re-export types for backward compatibility
+export type {
+  UseFormValidationOptions,
+  FormValidationState,
+  FormValidationActions,
+} from '../types/form';
 
 /**
  * useFormValidation function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -193,7 +154,7 @@ export function useFormValidation<T extends Record<string, string | number | boo
       if (fieldSchema.custom) {
         const result = fieldSchema.custom(sanitizedValue);
         if (!result.isValid) {
-          setError(field, result.error!);
+          setError(field, result.error);
           return false;
         }
       }

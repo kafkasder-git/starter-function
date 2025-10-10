@@ -38,21 +38,27 @@ import {
 import React, { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 // Removed direct supabase import - using service layer instead
-import { ihtiyacSahipleriService } from '../../services/ihtiyacSahipleriService';
+import { beneficiariesService } from '../../services/beneficiariesService';
 // supabaseAdmin removed for security - use regular supabase client with RLS
 import { supabase } from '../../lib/supabase';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Checkbox } from '../ui/checkbox';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '../ui/dialog';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Textarea } from '../ui/textarea';
 import { Skeleton } from '../ui/skeleton';
-import { Drawer } from '../ui/Drawer';
 import { Alert, AlertDescription } from '../ui/alert';
 import { ContextEmptyState } from '../ui/ContextEmptyState';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
@@ -71,7 +77,7 @@ const connectedRecords: string[] = [
   'Sponsorlar',
   'Yardım Talepleri',
   'Yapılan Yardımlar',
-  'Rıza Beyanları'
+  'Rıza Beyanları',
 ];
 
 interface BeneficiaryDetailPageComprehensiveProps {
@@ -94,58 +100,7 @@ export function BeneficiaryDetailPageComprehensive({
   const [beneficiaryData, setBeneficiaryData] = useState<Record<string, unknown> | null>(null);
   const [editableData, setEditableData] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(true);
-
-  // Form Validation States
-  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
-  const [isValidating, setIsValidating] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
-
-  // Validation Functions
-  const validateField = (fieldName: string, value: string): string => {
-    switch (fieldName) {
-      case 'tc_kimlik_no':
-        if (!value) return 'TC Kimlik No gereklidir';
-        if (!/^\d{11}$/.test(value)) return 'TC Kimlik No 11 haneli olmalıdır';
-        return '';
-      case 'iban':
-        if (!value) return 'IBAN gereklidir';
-        if (!/^TR\d{2}\s?\d{4}\s?\d{4}\s?\d{4}\s?\d{4}\s?\d{4}\s?\d{2}$/.test(value.replace(/\s/g, ''))) {
-          return 'Geçerli bir IBAN giriniz';
-        }
-        return '';
-      case 'phone':
-        if (!value) return 'Telefon numarası gereklidir';
-        if (!/^(\+90|0)?[5][0-9]{9}$/.test(value.replace(/\s/g, ''))) {
-          return 'Geçerli bir telefon numarası giriniz';
-        }
-        return '';
-      case 'email':
-        if (value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-          return 'Geçerli bir e-posta adresi giriniz';
-        }
-        return '';
-      default:
-        return '';
-    }
-  };
-
-  const validateForm = (): boolean => {
-    const errors: Record<string, string> = {};
-    let isValid = true;
-
-    if (editableData) {
-      Object.keys(editableData).forEach((key) => {
-        const error = validateField(key, String(editableData[key] || ''));
-        if (error) {
-          errors[key] = error;
-          isValid = false;
-        }
-      });
-    }
-
-    setFormErrors(errors);
-    return isValid;
-  };
 
   // Bank Account Modal States
   const [isBankAccountModalOpen, setIsBankAccountModalOpen] = useState(false);
@@ -310,31 +265,34 @@ export function BeneficiaryDetailPageComprehensive({
 
       try {
         setLoading(true);
-        const result = await ihtiyacSahipleriService.getIhtiyacSahibi(parseInt(beneficiaryId));
+        const result = await beneficiariesService.getById(beneficiaryId);
 
         if (result.data) {
-          // ad_soyad'ı ad ve soyad olarak ayır
-          const fullName = result.data.ad_soyad ?? '';
-          const nameParts = fullName.trim().split(' ');
-          const firstName = nameParts[0] || '';
-          const lastName = nameParts.slice(1).join(' ') || '';
+          // Data is already mapped to English field names by mapDBToBeneficiary in the service
+          const beneficiary = result.data;
 
           const transformedData = {
-            ...result.data,
-            name: firstName,
-            surname: lastName,
-            full_name: fullName,
-            id_number: result.data.kimlik_no ?? result.data.Kimlik_No ?? '',
-            phone: result.data.telefon_no ?? result.data.Telefon_No ?? '',
-            city: result.data.sehri ?? '',
-            address: result.data.adres ?? result.data.Adres ?? '',
-            nationality: result.data.uyruk ?? result.data.Uyruk ?? '',
-            country: result.data.ulkesi ?? 'Türkiye',
-            settlement: result.data.yerlesimi ?? result.data.Yerlesimi ?? '',
-            neighborhood: result.data.mahalle ?? result.data.Mahalle ?? '',
-            category: result.data.kategori ?? result.data.Kategori ?? '',
-            aid_type: result.data.tur ?? result.data.Tur ?? '',
-            iban: result.data.iban ?? '',
+            ...beneficiary,
+            // Use English field names from the mapped Beneficiary object
+            name: beneficiary.name,
+            surname: beneficiary.surname,
+            full_name: beneficiary.full_name,
+            id_number: beneficiary.identity_number ?? '',
+            phone: beneficiary.phone ?? '',
+            city: beneficiary.city ?? '',
+            address: beneficiary.address ?? '',
+            nationality: beneficiary.nationality ?? '',
+            country: beneficiary.country ?? 'Türkiye',
+            settlement: beneficiary.settlement ?? '',
+            neighborhood: beneficiary.district ?? '',
+            category: beneficiary.description ?? '',
+            aid_type: beneficiary.notes ?? '',
+            iban: beneficiary.iban ?? '',
+            // Add other mapped fields
+            family_members_count: beneficiary.family_members_count,
+            monthly_income: beneficiary.monthly_income,
+            status: beneficiary.status,
+            priority: beneficiary.priority,
           };
 
           setBeneficiaryData(transformedData);
@@ -379,10 +337,7 @@ export function BeneficiaryDetailPageComprehensive({
         iban: (editableData.iban as string) || null,
       };
 
-      const result = await ihtiyacSahipleriService.updateIhtiyacSahibi(
-        parseInt(beneficiaryId),
-        updateData,
-      );
+      const result = await beneficiariesService.update(beneficiaryId, updateData as any);
 
       if (result.error) {
         toast.error(`Güncelleme sırasında hata: ${result.error}`);
@@ -393,7 +348,9 @@ export function BeneficiaryDetailPageComprehensive({
       setBeneficiaryData(editableData);
       toast.success('İhtiyaç sahibi bilgileri başarıyla güncellendi');
       setSaveSuccess(true);
-      setTimeout(() => setSaveSuccess(false), 2000);
+      setTimeout(() => {
+        setSaveSuccess(false);
+      }, 2000);
       setEditMode(false);
     } catch (error: any) {
       logger.error('❌ Error updating beneficiary:', error);
@@ -589,10 +546,9 @@ export function BeneficiaryDetailPageComprehensive({
 
     try {
       // IBAN'ı ihtiyac_sahipleri tablosuna kaydet
-      const result = await ihtiyacSahipleriService.updateIhtiyacSahibi(
-        parseInt(beneficiaryId ?? '0'),
-        { iban: iban.trim() },
-      );
+      const result = await beneficiariesService.update(beneficiaryId ?? '0', {
+        iban: iban.trim(),
+      } as any);
 
       if (result.error) {
         toast.error(`IBAN kaydedilirken hata: ${result.error}`);
@@ -654,36 +610,9 @@ export function BeneficiaryDetailPageComprehensive({
   // family_relationships tablosu için gerekli policy'leri oluştur
   const ensureFamilyRelationshipsPolicies = async () => {
     try {
-      // Policy'leri admin client ile oluştur
-      const policies = [
-        {
-          name: 'FamilyRelationships insert',
-          sql: 'CREATE POLICY "FamilyRelationships insert" ON "public"."family_relationships" FOR INSERT TO authenticated WITH CHECK (true);',
-        },
-        {
-          name: 'FamilyRelationships update',
-          sql: 'CREATE POLICY "FamilyRelationships update" ON "public"."family_relationships" FOR UPDATE TO authenticated USING (true) WITH CHECK (true);',
-        },
-        {
-          name: 'FamilyRelationships delete',
-          sql: 'CREATE POLICY "FamilyRelationships delete" ON "public"."family_relationships" FOR DELETE TO authenticated USING (true);',
-        },
-      ];
-
       // TODO: Database policies should be created through migrations, not client-side code
       // The exec_sql RPC function doesn't exist and poses security risks
       logger.info('ℹ️ Skipping policy creation - should be handled by database migrations');
-      /*
-      for (const policy of policies) {
-        try {
-          await supabase.rpc('exec_sql', { sql: policy.sql });
-          logger.info('✅ Policy created:', policy.name);
-        } catch {
-          // Policy zaten varsa hata verebilir, bu normal
-          logger.info('ℹ️ Policy might already exist:', policy.name);
-        }
-      }
-      */
     } catch (error: any) {
       logger.warn('⚠️ Could not create policies (might already exist):', error.message);
     }
@@ -722,7 +651,7 @@ export function BeneficiaryDetailPageComprehensive({
         for (const rel of relationships) {
           // UUID'yi integer'a çevir
           const memberId = parseInt(rel.family_member_id.split('-').pop() || '0');
-          const personResult = await ihtiyacSahipleriService.getIhtiyacSahibi(memberId);
+          const personResult = await beneficiariesService.getById(memberId.toString());
 
           if (personResult.data) {
             // Enum değerlerini Türkçe'ye çevir
@@ -781,7 +710,7 @@ export function BeneficiaryDetailPageComprehensive({
     setIsLoadingDependents(true);
     try {
       // Tüm kişileri getir (bağlantı kurabilmek için)
-      const result = await ihtiyacSahipleriService.getIhtiyacSahipleri(
+      const result = await beneficiariesService.getBeneficiaries(
         1, // page
         500, // pageSize - çok daha fazla kayıt getir
         {}, // Tür filtresi yok - tüm kişiler
@@ -1085,7 +1014,7 @@ export function BeneficiaryDetailPageComprehensive({
                       </div>
                     </div>
                   </div>
-                  
+
                   {/* Form Fields Skeleton */}
                   <div className="col-span-12 grid grid-cols-1 gap-4 sm:col-span-9 sm:grid-cols-2 lg:grid-cols-3">
                     {Array.from({ length: 6 }).map((_, i) => (
@@ -1194,8 +1123,8 @@ export function BeneficiaryDetailPageComprehensive({
                   onClick={handleSave}
                   ripple={true}
                   className={`rounded-md px-4 py-2 text-sm font-medium text-white transition-all duration-300 ${
-                    saveSuccess 
-                      ? 'bg-green-600 hover:bg-green-700 scale-105' 
+                    saveSuccess
+                      ? 'scale-105 bg-green-600 hover:bg-green-700'
                       : 'bg-emerald-600 hover:bg-emerald-700'
                   }`}
                 >
@@ -2150,117 +2079,119 @@ export function BeneficiaryDetailPageComprehensive({
               </AccordionTrigger>
               <AccordionContent>
                 <CardContent>
-              <div className="grid grid-cols-12 gap-4">
-                <div className="col-span-12 grid grid-cols-2 gap-3 lg:col-span-4">
-                  <div className="space-y-1">
-                    <Label className="text-xs font-medium text-gray-700">Kan Grubu</Label>
-                    <Select disabled={!editMode}>
-                      <SelectTrigger className="h-9 border border-gray-300 text-sm focus:border-blue-500">
-                        <SelectValue placeholder="—" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="a+">A Rh+</SelectItem>
-                        <SelectItem value="a-">A Rh-</SelectItem>
-                        <SelectItem value="b+">B Rh+</SelectItem>
-                        <SelectItem value="b-">B Rh-</SelectItem>
-                        <SelectItem value="ab+">AB Rh+</SelectItem>
-                        <SelectItem value="ab-">AB Rh-</SelectItem>
-                        <SelectItem value="o+">0 Rh+</SelectItem>
-                        <SelectItem value="o-">0 Rh-</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-xs font-medium text-gray-700">Sigara Kullanımı</Label>
-                    <Select disabled={!editMode}>
-                      <SelectTrigger className="h-9 border border-gray-300 text-sm focus:border-blue-500">
-                        <SelectValue placeholder="—" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="none">Kullanmıyor</SelectItem>
-                        <SelectItem value="occasional">Ara sıra</SelectItem>
-                        <SelectItem value="regular">Düzenli</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="col-span-2 space-y-1">
-                    <Label className="text-xs font-medium text-gray-700">Engel Durumu</Label>
-                    <Select disabled={!editMode}>
-                      <SelectTrigger className="h-9 border border-gray-300 text-sm focus:border-blue-500">
-                        <SelectValue placeholder="—" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="none">Yok</SelectItem>
-                        <SelectItem value="physical">Fiziksel</SelectItem>
-                        <SelectItem value="mental">Zihinsel</SelectItem>
-                        <SelectItem value="visual">Görme</SelectItem>
-                        <SelectItem value="hearing">İşitme</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="col-span-2 space-y-1">
-                    <Label className="text-xs font-medium text-gray-700">
-                      Kullanılan Protezler
-                    </Label>
-                    <Input
-                      className="h-9 border border-gray-300 text-sm focus:border-blue-500"
-                      readOnly={!editMode}
-                    />
-                  </div>
-                  <div className="col-span-2 space-y-1">
-                    <Label className="text-xs font-medium text-gray-700">
-                      Düzenli Kullanılan İlaçlar
-                    </Label>
-                    <Input
-                      className="h-9 border border-gray-300 text-sm focus:border-blue-500"
-                      readOnly={!editMode}
-                    />
-                  </div>
-                  <div className="col-span-2 space-y-1">
-                    <Label className="text-xs font-medium text-gray-700">
-                      Geçirilen Ameliyatlar
-                    </Label>
-                    <Input
-                      className="h-9 border border-gray-300 text-sm focus:border-blue-500"
-                      readOnly={!editMode}
-                    />
-                  </div>
-                  <div className="col-span-2 space-y-1">
-                    <Label className="text-xs font-medium text-gray-700">
-                      İlgili Notlar/Açıklamalar
-                    </Label>
-                    <Textarea
-                      className="resize-none border border-gray-300 text-sm focus:border-blue-500"
-                      rows={3}
-                      readOnly={!editMode}
-                    />
-                  </div>
-                </div>
-
-                {/* Health Conditions */}
-                <div className="col-span-12 lg:col-span-8">
-                  <div className="health-conditions-grid">
-                    {healthConditions.map((condition) => (
-                      <div key={condition} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={`health-${condition}`}
-                          checked={healthConditionsState[condition] ?? false}
-                          onCheckedChange={(checked: boolean) => {
-                            handleHealthConditionChange(condition, checked);
-                          }}
-                          disabled={!editMode}
-                        />
-                        <Label
-                          htmlFor={`health-${condition}`}
-                          className="cursor-pointer text-xs font-normal"
-                        >
-                          {condition}
-                        </Label>
+                  <div className="grid grid-cols-12 gap-4">
+                    <div className="col-span-12 grid grid-cols-2 gap-3 lg:col-span-4">
+                      <div className="space-y-1">
+                        <Label className="text-xs font-medium text-gray-700">Kan Grubu</Label>
+                        <Select disabled={!editMode}>
+                          <SelectTrigger className="h-9 border border-gray-300 text-sm focus:border-blue-500">
+                            <SelectValue placeholder="—" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="a+">A Rh+</SelectItem>
+                            <SelectItem value="a-">A Rh-</SelectItem>
+                            <SelectItem value="b+">B Rh+</SelectItem>
+                            <SelectItem value="b-">B Rh-</SelectItem>
+                            <SelectItem value="ab+">AB Rh+</SelectItem>
+                            <SelectItem value="ab-">AB Rh-</SelectItem>
+                            <SelectItem value="o+">0 Rh+</SelectItem>
+                            <SelectItem value="o-">0 Rh-</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
-                    ))}
+                      <div className="space-y-1">
+                        <Label className="text-xs font-medium text-gray-700">
+                          Sigara Kullanımı
+                        </Label>
+                        <Select disabled={!editMode}>
+                          <SelectTrigger className="h-9 border border-gray-300 text-sm focus:border-blue-500">
+                            <SelectValue placeholder="—" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="none">Kullanmıyor</SelectItem>
+                            <SelectItem value="occasional">Ara sıra</SelectItem>
+                            <SelectItem value="regular">Düzenli</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="col-span-2 space-y-1">
+                        <Label className="text-xs font-medium text-gray-700">Engel Durumu</Label>
+                        <Select disabled={!editMode}>
+                          <SelectTrigger className="h-9 border border-gray-300 text-sm focus:border-blue-500">
+                            <SelectValue placeholder="—" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="none">Yok</SelectItem>
+                            <SelectItem value="physical">Fiziksel</SelectItem>
+                            <SelectItem value="mental">Zihinsel</SelectItem>
+                            <SelectItem value="visual">Görme</SelectItem>
+                            <SelectItem value="hearing">İşitme</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="col-span-2 space-y-1">
+                        <Label className="text-xs font-medium text-gray-700">
+                          Kullanılan Protezler
+                        </Label>
+                        <Input
+                          className="h-9 border border-gray-300 text-sm focus:border-blue-500"
+                          readOnly={!editMode}
+                        />
+                      </div>
+                      <div className="col-span-2 space-y-1">
+                        <Label className="text-xs font-medium text-gray-700">
+                          Düzenli Kullanılan İlaçlar
+                        </Label>
+                        <Input
+                          className="h-9 border border-gray-300 text-sm focus:border-blue-500"
+                          readOnly={!editMode}
+                        />
+                      </div>
+                      <div className="col-span-2 space-y-1">
+                        <Label className="text-xs font-medium text-gray-700">
+                          Geçirilen Ameliyatlar
+                        </Label>
+                        <Input
+                          className="h-9 border border-gray-300 text-sm focus:border-blue-500"
+                          readOnly={!editMode}
+                        />
+                      </div>
+                      <div className="col-span-2 space-y-1">
+                        <Label className="text-xs font-medium text-gray-700">
+                          İlgili Notlar/Açıklamalar
+                        </Label>
+                        <Textarea
+                          className="resize-none border border-gray-300 text-sm focus:border-blue-500"
+                          rows={3}
+                          readOnly={!editMode}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Health Conditions */}
+                    <div className="col-span-12 lg:col-span-8">
+                      <div className="health-conditions-grid">
+                        {healthConditions.map((condition) => (
+                          <div key={condition} className="flex items-center space-x-2">
+                            <Checkbox
+                              id={`health-${condition}`}
+                              checked={healthConditionsState[condition] ?? false}
+                              onCheckedChange={(checked: boolean) => {
+                                handleHealthConditionChange(condition, checked);
+                              }}
+                              disabled={!editMode}
+                            />
+                            <Label
+                              htmlFor={`health-${condition}`}
+                              className="cursor-pointer text-xs font-normal"
+                            >
+                              {condition}
+                            </Label>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
                 </CardContent>
               </AccordionContent>
             </AccordionItem>
@@ -2474,9 +2405,7 @@ export function BeneficiaryDetailPageComprehensive({
         <aside className="col-span-12 lg:col-span-3">
           <Card className="h-fit border-0 bg-white shadow-sm">
             <CardHeader className="pb-4">
-              <CardTitle className="text-sm font-semibold">
-                Bağlantılı Kayıtlar
-              </CardTitle>
+              <CardTitle className="text-sm font-semibold">Bağlantılı Kayıtlar</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="connected-records-grid">
@@ -2606,13 +2535,16 @@ export function BeneficiaryDetailPageComprehensive({
 
       {/* Document Management Modal */}
       <Dialog open={isDocumentModalOpen} onOpenChange={setIsDocumentModalOpen}>
-        <DialogContent 
+        <DialogContent
           className="max-h-[80vh] overflow-hidden sm:max-w-[900px] md:max-w-[900px] lg:max-w-[900px]"
           aria-labelledby="document-modal-title"
           aria-describedby="document-modal-description"
         >
           <DialogHeader>
-            <DialogTitle id="document-modal-title" className="flex items-center gap-2 text-lg font-semibold">
+            <DialogTitle
+              id="document-modal-title"
+              className="flex items-center gap-2 text-lg font-semibold"
+            >
               <FileIcon className="h-5 w-5" />
               Doküman Yönetimi
             </DialogTitle>
@@ -2640,24 +2572,24 @@ export function BeneficiaryDetailPageComprehensive({
                 </div>
               </div>
             )}
-            
+
             {/* Upload Error Display */}
             {uploadError && (
               <Alert className="border-red-200 bg-red-50">
-                <AlertDescription className="text-red-600 text-sm">
-                  {uploadError}
-                </AlertDescription>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
+                <AlertDescription className="text-sm text-red-600">{uploadError}</AlertDescription>
+                <Button
+                  variant="outline"
+                  size="sm"
                   className="mt-2"
-                  onClick={() => setUploadError(null)}
+                  onClick={() => {
+                    setUploadError(null);
+                  }}
                 >
                   Tekrar Dene
                 </Button>
               </Alert>
             )}
-            
+
             {/* File Upload Section */}
             <div className="space-y-4">
               <div className="rounded-lg border-2 border-dashed border-gray-300 p-8 text-center transition-colors hover:border-gray-400">
@@ -2736,18 +2668,22 @@ export function BeneficiaryDetailPageComprehensive({
             {/* Files List */}
             <div className="max-h-60 space-y-2 overflow-y-auto">
               {filteredFiles?.length === 0 ? (
-                <ContextEmptyState 
+                <ContextEmptyState
                   type="documents"
                   title="Henüz doküman eklenmemiş"
                   description="İhtiyaç sahibi için doküman yükleyin"
-                  actions={[{
-                    label: 'Doküman Yükle',
-                    onClick: () => {
-                      const fileInput = document.getElementById('file-upload') as HTMLInputElement;
-                      fileInput?.click();
+                  actions={[
+                    {
+                      label: 'Doküman Yükle',
+                      onClick: () => {
+                        const fileInput = document.getElementById(
+                          'file-upload',
+                        ) as HTMLInputElement;
+                        fileInput?.click();
+                      },
+                      icon: <Upload className="h-4 w-4" />,
                     },
-                    icon: <Upload className="h-4 w-4" />
-                  }]}
+                  ]}
                 />
               ) : (
                 filteredFiles?.map((file) => (
@@ -2827,7 +2763,10 @@ export function BeneficiaryDetailPageComprehensive({
 
       {/* File Preview Modal */}
       <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
-        <DialogContent className="max-h-[80vh] sm:max-w-[700px]" aria-describedby="file-preview-description">
+        <DialogContent
+          className="max-h-[80vh] sm:max-w-[700px]"
+          aria-describedby="file-preview-description"
+        >
           <DialogHeader>
             <DialogTitle className="text-lg font-semibold">{previewFile?.name}</DialogTitle>
             <DialogDescription id="file-preview-description">
@@ -2893,7 +2832,10 @@ export function BeneficiaryDetailPageComprehensive({
 
       {/* Dependent Person Modal */}
       <Dialog open={isDependentPersonModalOpen} onOpenChange={setIsDependentPersonModalOpen}>
-        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[800px]" aria-describedby="dependent-person-description">
+        <DialogContent
+          className="max-h-[90vh] overflow-y-auto sm:max-w-[800px]"
+          aria-describedby="dependent-person-description"
+        >
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-lg font-semibold">
               <Users className="h-5 w-5" />
@@ -2971,15 +2913,17 @@ export function BeneficiaryDetailPageComprehensive({
                 {/* Connected Dependents List */}
                 <div className="max-h-96 space-y-3 overflow-y-auto">
                   {connectedDependents.length === 0 ? (
-                    <ContextEmptyState 
+                    <ContextEmptyState
                       type="people"
                       title="Henüz bağlı kişi yok"
                       description="Bu kişiyle ilişkili herhangi bir kayıt bulunmuyor. Yeni kişi ekleyebilir veya mevcut kayıtlardan birini bağlayabilirsiniz."
                       actions={[
                         {
                           label: 'Yeni Kişi Ekle',
-                          onClick: () => setModalMode('create'),
-                          icon: <Plus className="h-4 w-4" />
+                          onClick: () => {
+                            setModalMode('create');
+                          },
+                          icon: <Plus className="h-4 w-4" />,
                         },
                         {
                           label: 'Mevcut Kişi Bağla',
@@ -2987,8 +2931,8 @@ export function BeneficiaryDetailPageComprehensive({
                             setModalMode('select');
                             loadExistingDependents();
                           },
-                          icon: <Search className="h-4 w-4" />
-                        }
+                          icon: <Search className="h-4 w-4" />,
+                        },
                       ]}
                     />
                   ) : (
@@ -3121,12 +3065,12 @@ export function BeneficiaryDetailPageComprehensive({
                     className={`h-10 ${formErrors.id_number ? 'border-red-500 focus:border-red-500' : ''}`}
                     maxLength={11}
                     aria-label="TC Kimlik No"
-                    aria-describedby={formErrors.id_number ? "id-error" : undefined}
+                    aria-describedby={formErrors.id_number ? 'id-error' : undefined}
                     aria-invalid={!!formErrors.id_number}
                   />
                   {formErrors.id_number && (
                     <Alert className="border-red-200 bg-red-50" id="id-error">
-                      <AlertDescription className="text-red-600 text-sm">
+                      <AlertDescription className="text-sm text-red-600">
                         {formErrors.id_number}
                       </AlertDescription>
                     </Alert>
@@ -3432,7 +3376,10 @@ export function BeneficiaryDetailPageComprehensive({
 
       {/* Photos Modal */}
       <Dialog open={isPhotosModalOpen} onOpenChange={setIsPhotosModalOpen}>
-        <DialogContent className="max-h-[80vh] overflow-hidden sm:max-w-[900px] md:max-w-[900px] lg:max-w-[900px]" aria-describedby="photos-description">
+        <DialogContent
+          className="max-h-[80vh] overflow-hidden sm:max-w-[900px] md:max-w-[900px] lg:max-w-[900px]"
+          aria-describedby="photos-description"
+        >
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-lg font-semibold">
               <Camera className="h-5 w-5" />
@@ -3465,7 +3412,7 @@ export function BeneficiaryDetailPageComprehensive({
                 </div>
               </div>
             )}
-            
+
             {/* Photo Upload Section */}
             <div className="space-y-4">
               <div className="rounded-lg border-2 border-dashed border-gray-300 p-8 text-center transition-colors hover:border-gray-400">
@@ -3519,18 +3466,22 @@ export function BeneficiaryDetailPageComprehensive({
               </div>
 
               {photos?.length === 0 ? (
-                <ContextEmptyState 
+                <ContextEmptyState
                   type="photos"
                   title="Henüz fotoğraf eklenmemiş"
                   description="İhtiyaç sahibi için fotoğraf yükleyin"
-                  actions={[{
-                    label: 'Fotoğraf Yükle',
-                    onClick: () => {
-                      const fileInput = document.getElementById('photo-upload') as HTMLInputElement;
-                      fileInput?.click();
+                  actions={[
+                    {
+                      label: 'Fotoğraf Yükle',
+                      onClick: () => {
+                        const fileInput = document.getElementById(
+                          'photo-upload',
+                        ) as HTMLInputElement;
+                        fileInput?.click();
+                      },
+                      icon: <Camera className="h-4 w-4" />,
                     },
-                    icon: <Camera className="h-4 w-4" />
-                  }]}
+                  ]}
                 />
               ) : (
                 <div className="grid max-h-96 grid-cols-2 gap-4 overflow-y-auto md:grid-cols-3 lg:grid-cols-4">
@@ -3593,7 +3544,10 @@ export function BeneficiaryDetailPageComprehensive({
 
       {/* Photo Preview Modal */}
       <Dialog open={isPhotoPreviewOpen} onOpenChange={setIsPhotoPreviewOpen}>
-        <DialogContent className="max-h-[90vh] sm:max-w-[800px]" aria-describedby="photo-preview-description">
+        <DialogContent
+          className="max-h-[90vh] sm:max-w-[800px]"
+          aria-describedby="photo-preview-description"
+        >
           <DialogHeader>
             <DialogTitle className="text-lg font-semibold">{selectedPhoto?.name}</DialogTitle>
             <DialogDescription id="photo-preview-description">
@@ -3645,7 +3599,10 @@ export function BeneficiaryDetailPageComprehensive({
 
       {/* Donors Modal */}
       <Dialog open={isDonorsModalOpen} onOpenChange={setIsDonorsModalOpen}>
-        <DialogContent className="max-h-[80vh] overflow-hidden sm:max-w-[1000px]" aria-describedby="donors-description">
+        <DialogContent
+          className="max-h-[80vh] overflow-hidden sm:max-w-[1000px]"
+          aria-describedby="donors-description"
+        >
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-lg font-semibold">
               <Heart className="h-5 w-5" />
@@ -3776,7 +3733,10 @@ export function BeneficiaryDetailPageComprehensive({
 
       {/* Sponsors Modal */}
       <Dialog open={isSponsorsModalOpen} onOpenChange={setIsSponsorsModalOpen}>
-        <DialogContent className="max-h-[80vh] overflow-hidden sm:max-w-[1000px]" aria-describedby="sponsors-description">
+        <DialogContent
+          className="max-h-[80vh] overflow-hidden sm:max-w-[1000px]"
+          aria-describedby="sponsors-description"
+        >
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-lg font-semibold">
               <Shield className="h-5 w-5" />
@@ -3917,7 +3877,10 @@ export function BeneficiaryDetailPageComprehensive({
 
       {/* Help Requests Modal */}
       <Dialog open={isHelpRequestsModalOpen} onOpenChange={setIsHelpRequestsModalOpen}>
-        <DialogContent className="max-h-[80vh] overflow-hidden sm:max-w-[1000px]" aria-describedby="help-requests-description">
+        <DialogContent
+          className="max-h-[80vh] overflow-hidden sm:max-w-[1000px]"
+          aria-describedby="help-requests-description"
+        >
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-lg font-semibold">
               <AlertTriangle className="h-5 w-5" />
@@ -4064,7 +4027,10 @@ export function BeneficiaryDetailPageComprehensive({
 
       {/* Completed Aids Modal */}
       <Dialog open={isCompletedAidsModalOpen} onOpenChange={setIsCompletedAidsModalOpen}>
-        <DialogContent className="max-h-[80vh] overflow-hidden sm:max-w-[1000px]" aria-describedby="completed-aids-description">
+        <DialogContent
+          className="max-h-[80vh] overflow-hidden sm:max-w-[1000px]"
+          aria-describedby="completed-aids-description"
+        >
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-lg font-semibold">
               <Heart className="h-5 w-5" />
@@ -4202,11 +4168,14 @@ export function BeneficiaryDetailPageComprehensive({
       </Dialog>
 
       {/* Consent Declarations Modal */}
-      <Dialog 
-        open={isConsentDeclarationsModalOpen} 
+      <Dialog
+        open={isConsentDeclarationsModalOpen}
         onOpenChange={setIsConsentDeclarationsModalOpen}
       >
-        <DialogContent className="max-h-[80vh] overflow-hidden sm:max-w-[900px]" aria-describedby="consent-declarations-description">
+        <DialogContent
+          className="max-h-[80vh] overflow-hidden sm:max-w-[900px]"
+          aria-describedby="consent-declarations-description"
+        >
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-lg font-semibold">
               <Shield className="h-5 w-5" />

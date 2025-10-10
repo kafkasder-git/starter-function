@@ -1,6 +1,6 @@
 /**
  * @fileoverview MobileNavigation Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -46,13 +46,13 @@ const modules: Module[] = [
   {
     id: 'genel',
     name: 'Ana Sayfa',
-    icon: <Home className="w-5 h-5" />,
+    icon: <Home className="h-5 w-5" />,
     subPages: [{ name: 'Dashboard', href: '/dashboard' }],
   },
   {
     id: 'bagis',
     name: 'Bağışlar',
-    icon: <Heart className="w-5 h-5" />,
+    icon: <Heart className="h-5 w-5" />,
     subPages: [
       { name: 'Bağış Listesi', href: '/bagis/liste' },
       { name: 'Bağış Raporları', href: '/bagis/raporlar' },
@@ -62,7 +62,7 @@ const modules: Module[] = [
   {
     id: 'yardim',
     name: 'Yardım',
-    icon: <HelpingHand className="w-5 h-5" />,
+    icon: <HelpingHand className="h-5 w-5" />,
     subPages: [
       { name: 'İhtiyaç Sahipleri', href: '/yardim/ihtiyac-sahipleri' },
       { name: 'Başvurular', href: '/yardim/basvurular' },
@@ -78,7 +78,7 @@ const modules: Module[] = [
   {
     id: 'burs',
     name: 'Burs',
-    icon: <GraduationCap className="w-5 h-5" />,
+    icon: <GraduationCap className="h-5 w-5" />,
     subPages: [
       { name: 'Öğrenci Listesi', href: '/burs/ogrenciler' },
       { name: 'Burs Başvuruları', href: '/burs/basvurular' },
@@ -87,7 +87,7 @@ const modules: Module[] = [
   {
     id: 'fon',
     name: 'Fon',
-    icon: <Wallet className="w-5 h-5" />,
+    icon: <Wallet className="h-5 w-5" />,
     subPages: [
       { name: 'Gelir Gider', href: '/fon/gelir-gider' },
       { name: 'Raporlar', href: '/fon/raporlar' },
@@ -96,7 +96,7 @@ const modules: Module[] = [
   {
     id: 'mesaj',
     name: 'Mesaj',
-    icon: <MessageSquare className="w-5 h-5" />,
+    icon: <MessageSquare className="h-5 w-5" />,
     subPages: [
       { name: 'Toplu Mesaj', href: '/mesaj/toplu' },
       { name: 'Kurum İçi Mesajlaşma', href: '/mesaj/kurum-ici' },
@@ -105,7 +105,7 @@ const modules: Module[] = [
   {
     id: 'is',
     name: 'İş',
-    icon: <Calendar className="w-5 h-5" />,
+    icon: <Calendar className="h-5 w-5" />,
     subPages: [
       { name: 'Etkinlikler', href: '/is/etkinlikler' },
       { name: 'Toplantılar', href: '/is/toplantilar' },
@@ -115,7 +115,7 @@ const modules: Module[] = [
   {
     id: 'partner',
     name: 'Partner Yönetimi',
-    icon: <Building2 className="w-5 h-5" />,
+    icon: <Building2 className="h-5 w-5" />,
     subPages: [
       { name: 'Tüm Partnerler', href: '/partner/liste' },
       { name: 'Bağışçı Kurumlar', href: '/partner/bagiscilar' },
@@ -129,7 +129,7 @@ const modules: Module[] = [
   {
     id: 'hukuki',
     name: 'Hukuki Yardım',
-    icon: <Scale className="w-5 h-5" />,
+    icon: <Scale className="h-5 w-5" />,
     subPages: [
       { name: 'Hukuki Danışmanlık', href: '/hukuki/danismanlik' },
       { name: 'Avukat Atamaları', href: '/hukuki/avukatlar' },
@@ -141,22 +141,11 @@ const modules: Module[] = [
   {
     id: 'user-management',
     name: 'Kullanıcı Yönetimi',
-    icon: <Shield className="w-5 h-5" />,
+    icon: <Shield className="h-5 w-5" />,
     subPages: [
       { name: 'Kullanıcılar', href: '/user-management/users' },
       { name: 'Roller', href: '/user-management/roles' },
       { name: 'İzinler', href: '/user-management/permissions' },
-    ],
-  },
-  {
-    id: 'security',
-    name: 'Güvenlik & Doküman',
-    icon: <Shield className="w-5 h-5" />,
-    subPages: [
-      { name: 'Güvenlik Merkezi', href: '/security/dashboard' },
-      { name: 'Doküman Yönetimi', href: '/security/documents' },
-      { name: 'Erişim Kontrolü', href: '/security/access-control' },
-      { name: 'Audit Günlükleri', href: '/security/audit-log' },
     ],
   },
 ];
@@ -169,7 +158,7 @@ interface MobileNavigationProps {
 
 /**
  * MobileNavigation function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -217,8 +206,8 @@ export function MobileNavigation({
   return (
     <>
       {/* Mobile Bottom Navigation - Always visible on mobile */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-40">
-        <div className="grid grid-cols-5 h-16">
+      <div className="fixed right-0 bottom-0 left-0 z-40 border-t border-slate-200 bg-white md:hidden">
+        <div className="grid h-16 grid-cols-5">
           {/* Primary modules for quick access */}
           {filteredModules.slice(0, 4).map((module) => (
             <button
@@ -230,16 +219,16 @@ export function MobileNavigation({
                 }
               }}
               className={cn(
-                'flex flex-col items-center justify-center p-2 transition-all duration-200 relative',
+                'relative flex flex-col items-center justify-center p-2 transition-all duration-200',
                 activeModule === module.id
                   ? 'text-primary bg-primary/5'
-                  : 'text-slate-500 hover:text-primary hover:bg-slate-50',
+                  : 'hover:text-primary text-slate-500 hover:bg-slate-50',
               )}
             >
               <div className="relative">{module.icon}</div>
-              <span className="text-xs mt-1 font-medium leading-none">{module.name}</span>
+              <span className="mt-1 text-xs leading-none font-medium">{module.name}</span>
               {activeModule === module.id && (
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-1 bg-primary rounded-b-full" />
+                <div className="bg-primary absolute top-0 left-1/2 h-1 w-8 -translate-x-1/2 rounded-b-full" />
               )}
             </button>
           ))}
@@ -247,21 +236,21 @@ export function MobileNavigation({
           {/* Menu button for all modules */}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
-              <button className="flex flex-col items-center justify-center p-2 text-slate-500 hover:text-primary hover:bg-slate-50 transition-all duration-200">
-                <Menu className="w-5 h-5" />
-                <span className="text-xs mt-1 font-medium leading-none">Menü</span>
+              <button className="hover:text-primary flex flex-col items-center justify-center p-2 text-slate-500 transition-all duration-200 hover:bg-slate-50">
+                <Menu className="h-5 w-5" />
+                <span className="mt-1 text-xs leading-none font-medium">Menü</span>
               </button>
             </SheetTrigger>
             <SheetContent side="bottom" className="h-[85vh] p-0">
-              <SheetHeader className="p-4 pb-2 border-b border-slate-100">
+              <SheetHeader className="border-b border-slate-100 p-4 pb-2">
                 <SheetTitle className="text-left">Navigasyon Menüsü</SheetTitle>
                 <SheetDescription className="text-left text-sm text-slate-600">
                   Tüm modüllere ve alt sayfalara buradan erişebilirsiniz
                 </SheetDescription>
               </SheetHeader>
 
-              <div className="overflow-y-auto h-full pb-20">
-                <div className="p-4 space-y-2">
+              <div className="h-full overflow-y-auto pb-20">
+                <div className="space-y-2 p-4">
                   {filteredModules.map((module, index) => (
                     <motion.div
                       key={module.id}
@@ -276,10 +265,10 @@ export function MobileNavigation({
                           handleModuleClick(module.id);
                         }}
                         className={cn(
-                          'w-full flex items-center justify-between p-4 rounded-xl transition-all duration-200 group',
+                          'group flex w-full items-center justify-between rounded-xl p-4 transition-all duration-200',
                           activeModule === module.id
                             ? 'bg-primary text-white shadow-lg'
-                            : 'bg-slate-50 hover:bg-slate-100 text-slate-700 hover:text-slate-900',
+                            : 'bg-slate-50 text-slate-700 hover:bg-slate-100 hover:text-slate-900',
                         )}
                       >
                         <div className="flex items-center gap-3">
@@ -291,7 +280,7 @@ export function MobileNavigation({
                           transition={{ duration: 0.2 }}
                         >
                           <svg
-                            className="w-4 h-4"
+                            className="h-4 w-4"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -326,9 +315,9 @@ export function MobileNavigation({
                                   onClick={() => {
                                     handleSubPageClick(subPage.href, module.id);
                                   }}
-                                  className="w-full text-left p-3 text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-all duration-200 flex items-center gap-2"
+                                  className="flex w-full items-center gap-2 rounded-lg p-3 text-left text-sm text-slate-600 transition-all duration-200 hover:bg-slate-100 hover:text-slate-900"
                                 >
-                                  <div className="w-1.5 h-1.5 rounded-full bg-slate-400" />
+                                  <div className="h-1.5 w-1.5 rounded-full bg-slate-400" />
                                   {subPage.name}
                                 </motion.button>
                               ))}
@@ -346,7 +335,7 @@ export function MobileNavigation({
       </div>
 
       {/* Spacer for bottom navigation */}
-      <div className="md:hidden h-16" />
+      <div className="h-16 md:hidden" />
     </>
   );
 }

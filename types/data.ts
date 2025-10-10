@@ -1,5 +1,9 @@
+export type ExportFormat = 'csv' | 'excel' | 'pdf' | 'json';
+
+export type DataTransformer<T = any> = (data: T[]) => any[];
+
 export interface ExportConfig {
-  format: 'csv' | 'excel' | 'pdf' | 'json';
+  format: ExportFormat;
   filename?: string;
   fields?: string[];
   filters?: Record<string, string | number | boolean | Date>;
@@ -64,7 +68,6 @@ export interface ImportWarning {
   message: string;
   code: string;
 }
-
 
 export interface DataSyncConfig {
   endpoint: string;
@@ -249,7 +252,6 @@ export const IMPORT_VALIDATION_RULES = {
     date: ['applicationDate'],
   },
 };
-
 
 // Data formatting utilities
 export const DATA_FORMATTERS = {

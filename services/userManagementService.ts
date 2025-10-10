@@ -1,101 +1,28 @@
 /**
  * @fileoverview userManagementService Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
 
-// User management types
-/**
- * ManagedUser Interface
- * 
- * @interface ManagedUser
- */
-export interface ManagedUser {
-  id: string;
-  email: string;
-  name: string;
-  role: 'admin' | 'manager' | 'operator' | 'viewer';
-  phone?: string;
-  department?: string;
-  notes?: string;
-  sendInvitation: boolean;
-  createdAt: string;
-  updatedAt: string;
-  lastLoginAt?: string;
-  isActive: boolean;
-}
+import type {
+  ManagedUser,
+  CreateUserRequest,
+  UpdateUserRequest,
+  UserFilters,
+  UserListResponse,
+  UserActivity,
+} from '../types/user';
 
-/**
- * CreateUserRequest Interface
- * 
- * @interface CreateUserRequest
- */
-export interface CreateUserRequest {
-  email: string;
-  name: string;
-  role: 'admin' | 'manager' | 'operator' | 'viewer';
-  phone?: string;
-  department?: string;
-  notes?: string;
-  sendInvitation: boolean;
-}
-
-/**
- * UpdateUserRequest Interface
- * 
- * @interface UpdateUserRequest
- */
-export interface UpdateUserRequest {
-  email?: string;
-  name?: string;
-  role?: 'admin' | 'manager' | 'operator' | 'viewer';
-  phone?: string;
-  department?: string;
-  notes?: string;
-  isActive?: boolean;
-}
-
-/**
- * UserFilters Interface
- * 
- * @interface UserFilters
- */
-export interface UserFilters {
-  search?: string;
-  role?: string;
-  isActive?: boolean;
-  department?: string;
-  page?: number;
-  limit?: number;
-}
-
-/**
- * UserListResponse Interface
- * 
- * @interface UserListResponse
- */
-export interface UserListResponse {
-  users: ManagedUser[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
-}
-
-/**
- * UserActivity Interface
- * 
- * @interface UserActivity
- */
-export interface UserActivity {
-  id: string;
-  userId: string;
-  action: string;
-  description: string;
-  timestamp: string;
-  metadata?: Record<string, unknown>;
-}
+// Re-export types for backward compatibility
+export type {
+  ManagedUser,
+  CreateUserRequest,
+  UpdateUserRequest,
+  UserFilters,
+  UserListResponse,
+  UserActivity,
+} from '../types/user';
 
 // Placeholder service for user management
 const userManagementService = {

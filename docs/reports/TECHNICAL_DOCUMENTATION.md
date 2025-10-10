@@ -2,9 +2,7 @@
 
 ## Kafkasder Management System
 
-**Version:** 1.0.0  
-**Last Updated:** October 6, 2025  
-**License:** MIT
+**Version:** 1.0.0 **Last Updated:** October 6, 2025 **License:** MIT
 
 ---
 
@@ -1250,17 +1248,15 @@ User Action → Local Storage → Background Sync Queue → Sync on Reconnect �
 
 **Performance Services:**
 
-- **[`services/cachingService.ts`](services/cachingService.ts:1)** - Caching
-  layer
-  - In-memory caching
-  - Cache invalidation
-  - TTL management
-
 - **[`services/performanceMonitoringService.ts`](services/performanceMonitoringService.ts:1)** -
   Performance tracking
   - Metrics collection
   - Performance analysis
   - Bottleneck detection
+
+> **Note:** For caching needs, use React Query (@tanstack/react-query). React
+> Query is already installed but not yet configured. See:
+> https://tanstack.com/query/latest/docs/react/overview
 
 - **[`services/backgroundSyncService.ts`](services/backgroundSyncService.ts:1)** -
   Offline sync
@@ -1300,10 +1296,8 @@ User Action → Local Storage → Background Sync Queue → Sync on Reconnect �
 
 - **[`hooks/useFormValidation.ts`](hooks/useFormValidation.ts:1)** - Form
   validation logic
-- **[`hooks/useMobileForm.ts`](hooks/useMobileForm.ts:1)** - Mobile-optimized
-  forms
-- **[`hooks/useMobileFormOptimized.ts`](hooks/useMobileFormOptimized.ts:1)** -
-  Enhanced mobile forms
+- **[`hooks/useMobileForm.ts`](hooks/useMobileForm.ts:1)** - Unified mobile form
+  hook with viewport, keyboard detection, and mobile optimizations
 
 **UI Hooks:**
 
@@ -1328,11 +1322,10 @@ User Action → Local Storage → Background Sync Queue → Sync on Reconnect �
 **Mobile Hooks:**
 
 - **[`hooks/useAdvancedMobile.ts`](hooks/useAdvancedMobile.ts:1)** - Advanced
-  mobile features
+  mobile features, device detection, touch gestures, haptic feedback, and native
+  features
 - **[`hooks/useMobilePerformance.ts`](hooks/useMobilePerformance.ts:1)** -
   Mobile performance
-- **[`hooks/useSafeMobile.ts`](hooks/useSafeMobile.ts:1)** - Safe mobile
-  operations
 - **[`hooks/useTouchDevice.ts`](hooks/useTouchDevice.ts:1)** - Touch device
   detection
 

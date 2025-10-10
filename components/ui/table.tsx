@@ -1,8 +1,95 @@
 /**
- * @fileoverview table Module - Application module
- * 
+ * @fileoverview table Module - Base table primitives for building flexible, accessible data tables
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
+ *
+ * ## Table Usage Guide
+ *
+ * This module provides base table primitives rather than wrapper components.
+ * This approach provides maximum flexibility for different use cases while maintaining consistency.
+ *
+ * ### Common Patterns
+ *
+ * #### 1. Loading State Pattern
+ * ```tsx
+ * <TableBody>
+ *   {loading ? (
+ *     Array.from({ length: 5 }).map((_, i) => (
+ *       <TableRow key={i}>
+ *         <TableCell><Skeleton className="h-4 w-32" /></TableCell>
+ *         <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+ *       </TableRow>
+ *     ))
+ *   ) : (
+ *     // Actual data rows
+ *   )}
+ * </TableBody>
+ * ```
+ *
+ * #### 2. Empty State Pattern
+ * ```tsx
+ * <TableBody>
+ *   {data.length === 0 && (
+ *     <TableRow>
+ *       <TableCell colSpan={7} className="py-8 text-center text-gray-500">
+ *         <Icon className="mx-auto mb-4 h-12 w-12 text-gray-300" />
+ *         <p className="mb-2 text-gray-600">No data found</p>
+ *         <p className="text-sm text-gray-400">Description text</p>
+ *       </TableCell>
+ *     </TableRow>
+ *   )}
+ * </TableBody>
+ * ```
+ *
+ * #### 3. Responsive Columns Pattern
+ * Hide columns on smaller screens:
+ * ```tsx
+ * <TableHead className="hidden lg:table-cell">Desktop Only</TableHead>
+ * <TableCell className="hidden lg:table-cell">{data}</TableCell>
+ * ```
+ * Show on specific breakpoints: `hidden sm:table-cell`, `hidden md:table-cell`
+ *
+ * #### 4. Action Buttons Pattern
+ * Icon-only buttons in the last column:
+ * ```tsx
+ * <TableCell className="text-center">
+ *   <div className="flex items-center justify-center gap-2">
+ *     <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={handleEdit}>
+ *       <Edit className="h-4 w-4" />
+ *     </Button>
+ *     <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={handleDelete}>
+ *       <Trash2 className="h-4 w-4" />
+ *     </Button>
+ *   </div>
+ * </TableCell>
+ * ```
+ *
+ * #### 5. Status Badge Pattern
+ * Render status indicators:
+ * ```tsx
+ * <TableCell>
+ *   <Badge variant={status === 'active' ? 'default' : 'secondary'}>
+ *     {status}
+ *   </Badge>
+ * </TableCell>
+ * ```
+ *
+ * #### 6. Row Click Handlers
+ * ```tsx
+ * <TableRow
+ *   className="cursor-pointer hover:bg-gray-50"
+ *   onClick={() => navigate(`/detail/${id}`)}
+ * >
+ * ```
+ *
+ * ### Security
+ * TableCell automatically sanitizes string children to prevent XSS attacks.
+ *
+ * ### Accessibility
+ * Built-in ARIA attributes: role="table", aria-label, aria-busy for loading states.
+ *
+ * For more detailed examples, see: docs/components/TABLE_USAGE_GUIDE.md
  */
 
 'use client';
@@ -11,7 +98,7 @@ import * as React from 'react';
 import { Loader2 } from 'lucide-react';
 
 import { cn } from './utils';
-import { sanitizeUserInput } from '../../lib/sanitization';
+import { sanitizeUserInput } from '../../lib/security/sanitization';
 
 export interface TableProps extends React.ComponentProps<'table'> {
   stickyHeader?: boolean;
@@ -25,25 +112,18 @@ export interface TableProps extends React.ComponentProps<'table'> {
   onFilter?: (filters: Record<string, any>) => void;
 }
 
-function Table({ 
-  className, 
+function Table({
+  className,
   stickyHeader = false,
   loading = false,
-  emptyState,
-  striped = false,
-  hoverable = true,
   children,
-  ...props 
+  ...props
 }: TableProps) {
   return (
-    <div data-slot="table-container" className="relative w-full overflow-x-auto scrollbar-thin">
+    <div data-slot="table-container" className="scrollbar-thin relative w-full overflow-x-auto">
       <table
         data-slot="table"
-        className={cn(
-          'w-full caption-bottom text-sm',
-          stickyHeader && 'sticky-header',
-          className
-        )}
+        className={cn('w-full caption-bottom text-sm', stickyHeader && 'sticky-header', className)}
         role="table"
         aria-label={props['aria-label'] || 'Data table'}
         aria-busy={loading}
@@ -51,10 +131,10 @@ function Table({
       >
         {children}
       </table>
-      
+
       {loading && (
-        <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-10">
-          <div className="flex items-center gap-2 text-muted-foreground">
+        <div className="bg-background/80 absolute inset-0 z-10 flex items-center justify-center backdrop-blur-sm">
+          <div className="text-muted-foreground flex items-center gap-2">
             <Loader2 className="h-4 w-4 animate-spin" />
             <span>Yükleniyor...</span>
           </div>
@@ -66,14 +146,14 @@ function Table({
 
 function TableHeader({ className, ...props }: React.ComponentProps<'thead'>) {
   return (
-    <thead 
-      data-slot="table-header" 
+    <thead
+      data-slot="table-header"
       className={cn(
         '[&_tr]:border-b',
-        'sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60',
-        className
-      )} 
-      {...props} 
+        'bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-10 backdrop-blur',
+        className,
+      )}
+      {...props}
     />
   );
 }
@@ -104,12 +184,12 @@ export interface TableRowProps extends React.ComponentProps<'tr'> {
   onRowSelect?: (selected: boolean) => void;
 }
 
-function TableRow({ 
-  className, 
+function TableRow({
+  className,
   selected = false,
   selectable = false,
   onRowSelect,
-  ...props 
+  ...props
 }: TableRowProps) {
   return (
     <tr
@@ -125,12 +205,16 @@ function TableRow({
       role="row"
       aria-selected={selectable ? selected : undefined}
       tabIndex={selectable ? 0 : undefined}
-      onKeyDown={selectable ? (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          onRowSelect?.(!selected);
-        }
-      } : undefined}
+      onKeyDown={
+        selectable
+          ? (e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onRowSelect?.(!selected);
+              }
+            }
+          : undefined
+      }
       {...props}
     />
   );
@@ -191,18 +275,11 @@ function TableCaption({ className, ...props }: React.ComponentProps<'caption'>) 
 }
 
 // Empty State Component
-function TableEmptyState({ 
-  children, 
-  className,
-  ...props 
-}: React.ComponentProps<'div'>) {
+function TableEmptyState({ children, className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot="table-empty"
-      className={cn(
-        'flex flex-col items-center justify-center py-12 text-center',
-        className
-      )}
+      className={cn('flex flex-col items-center justify-center py-12 text-center', className)}
       {...props}
     >
       {children}
@@ -210,14 +287,14 @@ function TableEmptyState({
   );
 }
 
-export { 
-  Table, 
-  TableHeader, 
-  TableBody, 
-  TableFooter, 
-  TableHead, 
-  TableRow, 
-  TableCell, 
+export {
+  Table,
+  TableHeader,
+  TableBody,
+  TableFooter,
+  TableHead,
+  TableRow,
+  TableCell,
   TableCaption,
-  TableEmptyState 
+  TableEmptyState,
 };

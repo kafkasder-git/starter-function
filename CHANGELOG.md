@@ -170,5 +170,5 @@ Thank you to all contributors who helped make this project possible!
 - [GitHub Repository](https://github.com/kafkasder/panel)
 - [Documentation](./README.md)
 - [Issue Tracker](https://github.com/kafkasder/panel/issues)
-- [Deployment Guide](./DEPLOYMENT.md)
+- [Deployment Guide](./docs/deployment/QUICK_DEPLOY_GUIDE.md)
 - [Contributing Guide](./CONTRIBUTING.md)

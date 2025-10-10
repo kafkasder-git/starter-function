@@ -1,25 +1,19 @@
 /**
  * @fileoverview usePagination Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
 
 import { useState, useMemo, useCallback } from 'react';
+import type { UsePaginationProps } from '../types/pagination';
 
-interface UsePaginationProps {
-  totalItems: number;
-  itemsPerPage?: number;
-  initialPage?: number;
-  maxPageNumbers?: number;
-  boundaryCount?: number;
-  siblingCount?: number;
-  onPageChange?: (page: number) => void;
-}
+// Re-export types for backward compatibility
+export type { UsePaginationProps } from '../types/pagination';
 
 /**
  * usePagination function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */

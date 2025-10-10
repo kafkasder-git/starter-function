@@ -31,6 +31,24 @@ export interface FilterOption {
   color?: string;
 }
 
+export interface SearchFilters {
+  query?: string;
+  category?: string;
+  status?: string;
+  dateFrom?: string;
+  dateTo?: string;
+  [key: string]: any;
+}
+
+export interface SearchOptions {
+  limit?: number;
+  offset?: number;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+  page?: number;
+  pageSize?: number;
+}
+
 export interface FilterValue {
   field: string;
   value: any;
@@ -237,3 +255,23 @@ export const SEARCH_SUGGESTIONS = {
     'Nakit yardım başvuruları',
   ],
 };
+
+// =============================================================================
+// HOOK TYPES
+// =============================================================================
+
+/**
+ * Hook props for useSearch
+ */
+export interface UseSearchProps<T = unknown> {
+  config: SearchConfig;
+  data?: T[];
+  onSearch?: (
+    query: string,
+    filters: FilterValue[],
+    sort: SortConfig,
+  ) => Promise<SearchResult<T>> | SearchResult<T>;
+  initialQuery?: string;
+  initialFilters?: FilterValue[];
+  initialSort?: SortConfig;
+}

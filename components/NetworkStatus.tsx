@@ -8,18 +8,21 @@ import { Alert, AlertDescription } from './ui/alert';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
-import { 
-  Wifi, 
-  WifiOff, 
-  AlertTriangle, 
-  CheckCircle, 
-  XCircle, 
+import {
+  Wifi,
+  WifiOff,
+  AlertTriangle,
+  CheckCircle,
+  XCircle,
   RefreshCw,
   Server,
-  Globe
+  Globe,
 } from 'lucide-react';
-import { NetworkManager } from '../lib/networkDiagnostics';
-import type { NetworkDiagnostics, NetworkError } from '../lib/networkDiagnostics';
+import {
+  NetworkManager,
+  type NetworkDiagnostics,
+  type NetworkError,
+} from '../lib/networkDiagnostics';
 
 interface NetworkStatusProps {
   showDetails?: boolean;
@@ -27,16 +30,16 @@ interface NetworkStatusProps {
   onStatusChange?: (diagnostics: NetworkDiagnostics) => void;
 }
 
-export function NetworkStatus({ 
-  showDetails = false, 
+export function NetworkStatus({
+  showDetails = false,
   compact = false,
-  onStatusChange 
+  onStatusChange,
 }: NetworkStatusProps) {
   const [diagnostics, setDiagnostics] = useState<NetworkDiagnostics>({
     isOnline: navigator.onLine,
     canReachSupabase: false,
     canReachInternet: false,
-    connectionQuality: 'offline'
+    connectionQuality: 'offline',
   });
   const [isChecking, setIsChecking] = useState(false);
   const [lastCheck, setLastCheck] = useState<Date>(new Date());
@@ -69,17 +72,17 @@ export function NetworkStatus({
 
     // Listen for online/offline events
     const handleOnline = () => {
-      setDiagnostics(prev => ({ ...prev, isOnline: true }));
+      setDiagnostics((prev) => ({ ...prev, isOnline: true }));
       checkConnectivity();
     };
 
     const handleOffline = () => {
-      setDiagnostics(prev => ({ 
-        ...prev, 
+      setDiagnostics((prev) => ({
+        ...prev,
         isOnline: false,
         canReachSupabase: false,
         canReachInternet: false,
-        connectionQuality: 'offline'
+        connectionQuality: 'offline',
       }));
     };
 
@@ -174,7 +177,7 @@ export function NetworkStatus({
   return (
     <Card className="mb-4">
       <CardHeader className="pb-3">
-        <CardTitle className="text-lg flex items-center gap-2">
+        <CardTitle className="flex items-center gap-2 text-lg">
           <Wifi className="h-5 w-5" />
           Ağ Durumu
           <Button
@@ -182,14 +185,12 @@ export function NetworkStatus({
             variant="ghost"
             onClick={checkConnectivity}
             disabled={isChecking}
-            className="h-6 w-6 p-0 ml-auto"
+            className="ml-auto h-6 w-6 p-0"
           >
             <RefreshCw className={`h-3 w-3 ${isChecking ? 'animate-spin' : ''}`} />
           </Button>
         </CardTitle>
-        <CardDescription>
-          Son kontrol: {lastCheck.toLocaleTimeString('tr-TR')}
-        </CardDescription>
+        <CardDescription>Son kontrol: {lastCheck.toLocaleTimeString('tr-TR')}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
         {/* Overall Status */}
@@ -197,9 +198,7 @@ export function NetworkStatus({
           <span className="font-medium">Genel Durum:</span>
           <div className="flex items-center gap-2">
             {getStatusIcon()}
-            <Badge className={getStatusColor()}>
-              {getStatusText()}
-            </Badge>
+            <Badge className={getStatusColor()}>{getStatusText()}</Badge>
           </div>
         </div>
 
@@ -212,9 +211,7 @@ export function NetworkStatus({
             ) : (
               <XCircle className="h-4 w-4 text-red-500" />
             )}
-            <span className="text-sm">
-              {diagnostics.isOnline ? 'Bağlı' : 'Bağlantı Yok'}
-            </span>
+            <span className="text-sm">{diagnostics.isOnline ? 'Bağlı' : 'Bağlantı Yok'}</span>
           </div>
         </div>
 
@@ -250,7 +247,7 @@ export function NetworkStatus({
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription>
               <div className="font-medium">Son Hata:</div>
-              <div className="text-sm mt-1">{error.message}</div>
+              <div className="mt-1 text-sm">{error.message}</div>
             </AlertDescription>
           </Alert>
         )}
@@ -261,7 +258,7 @@ export function NetworkStatus({
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription>
               <div className="font-medium">Çözüm Önerileri:</div>
-              <ul className="text-sm mt-1 list-disc list-inside space-y-1">
+              <ul className="mt-1 list-inside list-disc space-y-1 text-sm">
                 <li>İnternet bağlantınızı kontrol edin</li>
                 <li>Wi-Fi bağlantısını yeniden başlatın</li>
                 <li>Mobil veri kullanmayı deneyin</li>

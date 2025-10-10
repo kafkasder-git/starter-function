@@ -11,11 +11,17 @@ vi.mock('../../lib/supabase', () => ({
 vi.mock('../../lib/networkDiagnostics', () => ({
   NetworkManager: {
     getInstance: vi.fn(() => ({
-      testConnectivity: vi.fn(),
+      testConnectivity: vi.fn().mockResolvedValue({
+        isOnline: true,
+        canReachSupabase: true,
+        canReachInternet: true,
+        connectionQuality: 'excellent',
+      }),
       getDiagnostics: vi.fn(),
     })),
   },
-  getUserFriendlyErrorMessage: vi.fn(),
+  getUserFriendlyErrorMessage: vi.fn((error) => error.message || 'Unknown error'),
+  isRetryableError: vi.fn(() => true),
 }));
 
 vi.mock('../../lib/logging/logger', () => ({
@@ -28,7 +34,11 @@ vi.mock('../../lib/logging/logger', () => ({
 
 // Import mocked modules
 import { supabase } from '../../lib/supabase';
-import { NetworkManager, getUserFriendlyErrorMessage } from '../../lib/networkDiagnostics';
+import {
+  NetworkManager,
+  getUserFriendlyErrorMessage,
+  isRetryableError,
+} from '../../lib/networkDiagnostics';
 import { logger } from '../../lib/logging/logger';
 
 // Mock data factories

@@ -19,7 +19,6 @@ import { useCallback, useEffect, useState, memo, useMemo } from 'react';
 
 // Core System Imports
 import { ErrorBoundary } from './components/ErrorBoundary';
-import { NetworkErrorBoundary } from './components/NetworkErrorBoundary';
 import { NetworkStatus } from './components/NetworkStatus';
 import { ToastProvider } from './components/ToastProvider';
 import { useAuthStore } from './stores/authStore';
@@ -178,14 +177,14 @@ const AppContent = memo(() => {
   }
 
   return (
-    <NetworkErrorBoundary>
+    <ErrorBoundary type="network">
       <ProtectedRoute requireAuth={true}>
         <div className="flex h-screen flex-col overflow-hidden bg-gradient-to-br from-slate-50 via-gray-50 to-slate-100">
           {/* Network Status */}
           <div className="relative z-50">
             <NetworkStatus compact={true} />
           </div>
-          
+
           {/* Header */}
           <div className="relative z-40 shadow-lg" data-testid="header" data-onboarding="header">
             <Header
@@ -201,57 +200,61 @@ const AppContent = memo(() => {
             />
           </div>
 
-        {/* Main Layout */}
-        <div className="relative flex flex-1 overflow-hidden">
-          {/* Sidebar */}
-          <div className="relative z-30 shadow-lg" data-testid="sidebar" data-onboarding="sidebar">
-            <Sidebar
-              activeModule={navigation.activeModule}
-              onModuleChange={navigation.moduleChange}
-              onSubPageChange={navigation.subPageChange}
-              onNavigateToProfile={navigation.navigateToProfile}
-              onNavigateToSettings={navigation.navigateToSettings}
-              onNavigateToUserManagement={navigation.navigateToUserManagement}
-              isMobileOpen={isMobileSidebarOpen}
-              onMobileToggle={() => {
-                setIsMobileSidebarOpen(!isMobileSidebarOpen);
-              }}
-            />
-          </div>
-
-          {/* Main Content */}
-          <main
-            className="relative flex-1 bg-white/50 backdrop-blur-sm"
-            data-onboarding="main-content"
-          >
-            <div className="scrollbar-thin h-full overflow-auto">
-              <div
-                className="relative z-10 p-6"
-                data-testid="dashboard"
-                data-onboarding="dashboard"
-              >
-                <PageRenderer onQuickAction={handleQuickAction} />
-              </div>
+          {/* Main Layout */}
+          <div className="relative flex flex-1 overflow-hidden">
+            {/* Sidebar */}
+            <div
+              className="relative z-30 shadow-lg"
+              data-testid="sidebar"
+              data-onboarding="sidebar"
+            >
+              <Sidebar
+                activeModule={navigation.activeModule}
+                onModuleChange={navigation.moduleChange}
+                onSubPageChange={navigation.subPageChange}
+                onNavigateToProfile={navigation.navigateToProfile}
+                onNavigateToSettings={navigation.navigateToSettings}
+                onNavigateToUserManagement={navigation.navigateToUserManagement}
+                isMobileOpen={isMobileSidebarOpen}
+                onMobileToggle={() => {
+                  setIsMobileSidebarOpen(!isMobileSidebarOpen);
+                }}
+              />
             </div>
-          </main>
-        </div>
 
-        {/* Accessibility Components */}
-        <SkipLinks />
-        <KeyboardShortcuts isOpen={isShortcutsOpen} onClose={closeShortcuts} />
-
-        {/* Offline indicator */}
-        {!isOnline && (
-          <div className="fixed top-4 right-4 z-50 rounded-lg bg-amber-500 px-3 py-2 text-sm text-white">
-            📱 Çevrimdışı Modu
+            {/* Main Content */}
+            <main
+              className="relative flex-1 bg-white/50 backdrop-blur-sm"
+              data-onboarding="main-content"
+            >
+              <div className="scrollbar-thin h-full overflow-auto">
+                <div
+                  className="relative z-10 p-6"
+                  data-testid="dashboard"
+                  data-onboarding="dashboard"
+                >
+                  <PageRenderer onQuickAction={handleQuickAction} />
+                </div>
+              </div>
+            </main>
           </div>
-        )}
 
-        {/* Notification Center */}
-        {/* NotificationCenter removed - using SmartNotificationCenter in Header */}
+          {/* Accessibility Components */}
+          <SkipLinks />
+          <KeyboardShortcuts isOpen={isShortcutsOpen} onClose={closeShortcuts} />
+
+          {/* Offline indicator */}
+          {!isOnline && (
+            <div className="fixed top-4 right-4 z-50 rounded-lg bg-amber-500 px-3 py-2 text-sm text-white">
+              📱 Çevrimdışı Modu
+            </div>
+          )}
+
+          {/* Notification Center */}
+          {/* NotificationCenter removed - using SmartNotificationCenter in Header */}
         </div>
       </ProtectedRoute>
-    </NetworkErrorBoundary>
+    </ErrorBoundary>
   );
 });
 

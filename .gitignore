@@ -93,3 +93,23 @@ tmp/
 venv/
 env/
 .venv/
+
+# Project Specific
+# Test Reports
+testsprite_tests/
+*.test-report.html
+*.test-report.md
+test-report-*.json
+standard_prd.json
+
+# Lint Output
+lint-output.txt
+lint-output-*.txt
+eslint-output.txt
+*.lint.txt
+
+# Temporary Documentation
+*_SUMMARY.md
+*_STATUS.md
+*_COMPLETE.md
+INTEGRATION_*.md

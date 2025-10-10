@@ -5,6 +5,27 @@ export interface DateRange {
   end: Date;
 }
 
+export interface ReportConfig {
+  format: 'pdf' | 'excel' | 'csv' | 'json';
+  filters?: any;
+  columns?: string[];
+  title?: string;
+  dateRange?: DateRange;
+}
+
+export interface ReportData {
+  data: any[];
+  metadata: any;
+  totalRecords?: number;
+  generatedAt?: Date;
+}
+
+export interface ChartData {
+  labels: string[];
+  datasets: any[];
+  options?: any;
+}
+
 // Validation constraints
 export interface DateRangeConstraints {
   maxDays?: number;

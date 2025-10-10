@@ -1,6 +1,52 @@
 # API Security and Monitoring System
 
-This comprehensive API security and monitoring system provides enterprise-grade protection and observability for the reporting system APIs.
+This comprehensive API security and monitoring system provides enterprise-grade
+protection and observability for the reporting system APIs.
+
+## Security Architecture
+
+This `lib/security/` module is the centralized security layer for the
+application. It provides:
+
+### Client-Side Security
+
+- **Input Sanitization** (`sanitization.ts`) - XSS prevention, HTML sanitization
+- **Validation** (`validation.ts`) - Form validation, data validation
+- **CSRF Protection** (`csrf.ts`) - Token generation and validation
+- **Rate Limiting** (`rateLimit.ts`) - Client-side rate limiting
+- **XSS Protection** (`xss.ts`) - Cross-site scripting prevention
+- **SQL Injection Prevention** (`sqlInjection.ts`) - Query sanitization
+- **Security Headers** (`headers.ts`) - CSP, HSTS, etc.
+
+### Server-Side Security (Provided by Infrastructure)
+
+- **Supabase:** Row Level Security (RLS), JWT authentication, audit logging
+- **Cloudflare:** DDoS protection, bot management, WAF, rate limiting
+
+### Removed Features
+
+The following features were removed from `advancedSecurityService.ts` as they
+were:
+
+- Over-engineered and unused
+- Incorrectly implemented client-side (should be server-side)
+- Already provided by Cloudflare/Supabase
+- Privacy concerns (user behavior tracking)
+
+## Usage
+
+Import security functions from this module:
+
+```typescript
+import {
+  sanitizeUserInput,
+  validateField,
+  generateCSRFToken,
+} from '@/lib/security';
+```
+
+For security monitoring and audit logs, use Supabase's `audit_logs` table
+directly.
 
 ## Features
 
@@ -125,7 +171,10 @@ Main security middleware for request validation.
 
 ```typescript
 class APISecurityMiddleware {
-  async checkSecurity(context: SecurityContext, requestData?: any): Promise<SecurityResult>;
+  async checkSecurity(
+    context: SecurityContext,
+    requestData?: any,
+  ): Promise<SecurityResult>;
   generateCSRFToken(sessionId: string): string;
   getSecurityHeaders(): Record<string, string>;
 }
@@ -173,7 +222,9 @@ class APIMonitoringService {
     endpoint?: string,
     method?: string,
   ): Promise<ApiResponse<PerformanceMetrics[]>>;
-  async performHealthCheck(serviceName: string): Promise<ApiResponse<HealthCheckResult>>;
+  async performHealthCheck(
+    serviceName: string,
+  ): Promise<ApiResponse<HealthCheckResult>>;
 }
 ```
 
@@ -284,10 +335,18 @@ const securityContext = {
 
 ```typescript
 try {
-  const result = await securityService.validateRequest(endpoint, method, data, context);
+  const result = await securityService.validateRequest(
+    endpoint,
+    method,
+    data,
+    context,
+  );
   if (result.error) {
     // Log security violation
-    logger.warn('Security validation failed', { endpoint, error: result.error });
+    logger.warn('Security validation failed', {
+      endpoint,
+      error: result.error,
+    });
     throw new SecurityError(result.error);
   }
 } catch (error) {
@@ -361,4 +420,5 @@ When contributing to the security system:
 
 ## License
 
-This security system is part of the larger reporting system and follows the same license terms.
+This security system is part of the larger reporting system and follows the same
+license terms.

@@ -1,5 +1,19 @@
 // Monitoring Types - Integration with existing monitoring system
 
+export interface MonitoringEvent {
+  type: string;
+  timestamp: Date;
+  data: any;
+  severity?: 'low' | 'medium' | 'high' | 'critical';
+}
+
+export interface ErrorLog {
+  message: string;
+  stack?: string;
+  timestamp: Date;
+  level?: 'error' | 'warning' | 'info';
+}
+
 // MCP Types (placeholder definitions)
 export type MCPErrorType = 'connection' | 'timeout' | 'validation' | 'server' | 'unknown';
 

@@ -1,23 +1,15 @@
 /**
  * @fileoverview pushNotificationService Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
 
 // Simple in-browser push notification service stub
+import type { NotificationPayload } from '../types/notification';
 
-/**
- * NotificationPayload Interface
- * 
- * @interface NotificationPayload
- */
-export interface NotificationPayload {
-  title: string;
-  body?: string;
-  icon?: string;
-  url?: string;
-}
+// Re-export types for backward compatibility
+export type { NotificationPayload } from '../types/notification';
 
 class PushNotificationService {
   private subscribed = false;
@@ -28,7 +20,7 @@ class PushNotificationService {
 
   isSubscribed(): boolean {
     return this.subscribed;
-    }
+  }
 
   getPermissionStatus(): NotificationPermission {
     return typeof Notification !== 'undefined' ? Notification.permission : 'default';
@@ -46,9 +38,9 @@ class PushNotificationService {
 
   async showNotification(payload: NotificationPayload): Promise<void> {
     if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
-      new Notification(payload.title, { 
-        body: payload.body || '', 
-        icon: payload.icon || '' 
+      new Notification(payload.title, {
+        body: payload.body || '',
+        icon: payload.icon || '',
       });
     }
   }
@@ -64,4 +56,3 @@ class PushNotificationService {
 
 export const pushNotificationService = new PushNotificationService();
 export default pushNotificationService;
-

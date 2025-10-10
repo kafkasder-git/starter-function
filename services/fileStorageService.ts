@@ -8,113 +8,26 @@ import { environment } from '../lib/environment';
 import { monitoring } from './monitoringService';
 import { logger } from '../lib/logging/logger';
 import { useAuthStore } from '../stores/authStore';
+import type {
+  FileMetadata,
+  FileUploadOptions,
+  FileUploadResult,
+  FileListOptions,
+  FileListResult,
+  FileDownloadOptions,
+  StorageConfig,
+} from '../types/file';
 
-// =============================================================================
-// TYPES AND INTERFACES
-// =============================================================================
-
-/**
- * File metadata containing comprehensive information about stored files
- * @property uploadedBy - ID of the authenticated user who uploaded the file, or 'system' for anonymous/system uploads
- */
-export interface FileMetadata {
-  id: string;
-  name: string;
-  size: number;
-  type: string;
-  bucket: string;
-  path: string;
-  url: string;
-  createdAt: Date;
-  updatedAt: Date;
-  uploadedBy: string;
-  tags?: string[];
-  description?: string;
-  isPublic: boolean;
-  downloadCount: number;
-  lastDownloaded?: Date;
-  checksum?: string;
-  version?: number;
-  metadata?: Record<string, any>;
-}
-
-export interface FileUploadOptions {
-  bucket?: string;
-  folder?: string;
-  isPublic?: boolean;
-  overwrite?: boolean;
-  metadata?: Record<string, any>;
-  tags?: string[];
-  description?: string;
-  maxSize?: number; // bytes
-  allowedTypes?: string[];
-  generateThumbnail?: boolean;
-  compress?: boolean;
-  onProgress?: (progress: number) => void;
-}
-
-export interface FileUploadResult {
-  success: boolean;
-  file?: FileMetadata;
-  error?: string;
-  url?: string;
-  path?: string;
-}
-
-export interface FileListOptions {
-  bucket?: string;
-  folder?: string;
-  limit?: number;
-  offset?: number;
-  sortBy?: 'name' | 'size' | 'createdAt' | 'updatedAt';
-  sortOrder?: 'asc' | 'desc';
-  search?: string;
-  tags?: string[];
-  type?: string;
-  uploadedBy?: string;
-}
-
-export interface FileListResult {
-  files: FileMetadata[];
-  total: number;
-  hasMore: boolean;
-  nextOffset?: number;
-}
-
-export interface FileDownloadOptions {
-  download?: boolean;
-  filename?: string;
-  disposition?: 'inline' | 'attachment';
-}
-
-export interface StorageConfig {
-  buckets: Record<
-    string,
-    {
-      name: string;
-      isPublic: boolean;
-      allowedTypes: string[];
-      maxSize: number; // bytes
-      retention?: number; // days
-      versioning: boolean;
-      encryption: boolean;
-      compression: boolean;
-    }
-  >;
-  defaultBucket: string;
-  uploadLimits: {
-    maxFileSize: number; // bytes
-    maxFilesPerUpload: number;
-    allowedMimeTypes: string[];
-  };
-  security: {
-    enableVirusScan: boolean;
-    enableContentModeration: boolean;
-    enableWatermarking: boolean;
-    enableEncryption: boolean;
-  };
-  allowAnonymousUploads?: boolean;
-}
+// Re-export types for backward compatibility
+export type {
+  FileMetadata,
+  FileUploadOptions,
+  FileUploadResult,
+  FileListOptions,
+  FileListResult,
+  FileDownloadOptions,
+  StorageConfig,
+} from '../types/file';
 
 // =============================================================================
 // STORAGE CONFIGURATION
@@ -250,7 +163,7 @@ export class FileStorageService {
         return;
       }
 
-      const existingBuckets = buckets?.map((b: { name: any; }) => b.name) || [];
+      const existingBuckets = buckets?.map((b: { name: any }) => b.name) || [];
 
       for (const [_key, config] of Object.entries(this.config.buckets)) {
         if (!existingBuckets.includes(config.name)) {
@@ -531,25 +444,33 @@ export class FileStorageService {
       const hasMore = offset + limit < total;
 
       // Convert to FileMetadata objects
-      const files: FileMetadata[] = (data || []).map((file: { id: any; name: any; metadata: { size: any; mimetype: any; uploadedBy: any; tags: string; description: any; }; created_at: any; updated_at: any; }) => ({
-        id: file.id || file.name,
-        name: file.name,
-        size: file.metadata?.size || 0,
-        type: file.metadata?.mimetype || 'application/octet-stream',
-        bucket,
-        path: folder ? `${folder}/${file.name}` : file.name,
-        url: supabase.storage
-          .from(bucket)
-          .getPublicUrl(folder ? `${folder}/${file.name}` : file.name).data.publicUrl,
-        createdAt: new Date(file.created_at || ''),
-        updatedAt: new Date(file.updated_at || ''),
-        uploadedBy: file.metadata?.uploadedBy || this.getCurrentUserId(),
-        isPublic: this.config.buckets[bucket]?.isPublic || false,
-        downloadCount: 0,
-        tags: file.metadata?.tags ? JSON.parse(file.metadata.tags) : [],
-        description: file.metadata?.description || '',
-        metadata: file.metadata || {},
-      }));
+      const files: FileMetadata[] = (data || []).map(
+        (file: {
+          id: any;
+          name: any;
+          metadata: { size: any; mimetype: any; uploadedBy: any; tags: string; description: any };
+          created_at: any;
+          updated_at: any;
+        }) => ({
+          id: file.id || file.name,
+          name: file.name,
+          size: file.metadata?.size || 0,
+          type: file.metadata?.mimetype || 'application/octet-stream',
+          bucket,
+          path: folder ? `${folder}/${file.name}` : file.name,
+          url: supabase.storage
+            .from(bucket)
+            .getPublicUrl(folder ? `${folder}/${file.name}` : file.name).data.publicUrl,
+          createdAt: new Date(file.created_at || ''),
+          updatedAt: new Date(file.updated_at || ''),
+          uploadedBy: file.metadata?.uploadedBy || this.getCurrentUserId(),
+          isPublic: this.config.buckets[bucket]?.isPublic || false,
+          downloadCount: 0,
+          tags: file.metadata?.tags ? JSON.parse(file.metadata.tags) : [],
+          description: file.metadata?.description || '',
+          metadata: file.metadata || {},
+        }),
+      );
 
       const processingTime = Date.now() - startTime;
       const result: FileListResult = {
@@ -899,7 +820,9 @@ export class FileStorageService {
     } else if (typeof window !== 'undefined' && window.crypto && window.crypto.getRandomValues) {
       const array = new Uint8Array(9);
       window.crypto.getRandomValues(array);
-      random = Array.from(array, byte => byte.toString(36)).join('').substring(0, 9);
+      random = Array.from(array, (byte) => byte.toString(36))
+        .join('')
+        .substring(0, 9);
     } else {
       random = Math.random().toString(36).substr(2, 9);
     }
@@ -963,7 +886,10 @@ export class FileStorageService {
         const { data: files } = await supabase.storage.from(config.name).list('', { limit: 1000 });
 
         const bucketFiles = files || [];
-        const bucketSize = bucketFiles.reduce((sum: any, file: { metadata: { size: any; }; }) => sum + (file.metadata?.size || 0), 0);
+        const bucketSize = bucketFiles.reduce(
+          (sum: any, file: { metadata: { size: any } }) => sum + (file.metadata?.size || 0),
+          0,
+        );
 
         stats.bucketStats[config.name] = {
           files: bucketFiles.length,
