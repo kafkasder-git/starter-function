@@ -1,6 +1,6 @@
 /**
  * @fileoverview campaignsService Module - Campaign management service
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -85,32 +85,35 @@ export interface CampaignsApiResponse<T> {
   totalPages?: number;
 }
 
-/**
- * Campaign management service class
- */
-export class CampaignsService {
-  private tableName = TABLES.CAMPAIGNS;
+// Module-level constants
+const tableName = TABLES.CAMPAIGNS;
 
+/**
+ * Campaign management service
+ */
+const campaignsService = {
   /**
    * Fetch paginated campaigns with filtering support
    */
   async getCampaigns(
     page: number = 1,
     pageSize: number = 10,
-    filters?: CampaignsFilters
+    filters?: CampaignsFilters,
   ): Promise<CampaignsApiResponse<Campaign[]>> {
     try {
       logger.info('Fetching campaigns', { page, pageSize, filters });
 
       let query = supabase
-        .from(this.tableName)
+        .from(tableName)
         .select('*', { count: 'exact' })
         .is('deleted_at', null)
         .order('created_at', { ascending: false });
 
       // Apply filters
       if (filters?.searchTerm) {
-        query = query.or(`name.ilike.%${filters.searchTerm}%,description.ilike.%${filters.searchTerm}%`);
+        query = query.or(
+          `name.ilike.%${filters.searchTerm}%,description.ilike.%${filters.searchTerm}%`,
+        );
       }
 
       if (filters?.status) {
@@ -142,7 +145,7 @@ export class CampaignsService {
           data: null,
           error: 'Kampanyalar yüklenirken bir hata oluştu',
           count: 0,
-          totalPages: 0
+          totalPages: 0,
         };
       }
 
@@ -154,7 +157,7 @@ export class CampaignsService {
         data: data as Campaign[],
         error: null,
         count: count || 0,
-        totalPages
+        totalPages,
       };
     } catch (error) {
       logger.error('Unexpected error fetching campaigns', error);
@@ -162,10 +165,10 @@ export class CampaignsService {
         data: null,
         error: 'Beklenmeyen bir hata oluştu',
         count: 0,
-        totalPages: 0
+        totalPages: 0,
       };
     }
-  }
+  },
 
   /**
    * Fetch single campaign by ID
@@ -175,7 +178,7 @@ export class CampaignsService {
       logger.info('Fetching campaign by ID', { id });
 
       const { data, error } = await supabase
-        .from(this.tableName)
+        .from(tableName)
         .select('*')
         .eq('id', id)
         .is('deleted_at', null)
@@ -185,7 +188,7 @@ export class CampaignsService {
         logger.error('Error fetching campaign', error);
         return {
           data: null,
-          error: 'Kampanya bulunamadı'
+          error: 'Kampanya bulunamadı',
         };
       }
 
@@ -193,16 +196,16 @@ export class CampaignsService {
 
       return {
         data: data as Campaign,
-        error: null
+        error: null,
       };
     } catch (error) {
       logger.error('Unexpected error fetching campaign', error);
       return {
         data: null,
-        error: 'Beklenmeyen bir hata oluştu'
+        error: 'Beklenmeyen bir hata oluştu',
       };
     }
-  }
+  },
 
   /**
    * Create new campaign
@@ -216,20 +219,16 @@ export class CampaignsService {
         currency: campaignData.currency || 'TRY',
         current_amount: campaignData.current_amount || 0,
         status: campaignData.status || 'draft',
-        featured: campaignData.featured || false
+        featured: campaignData.featured || false,
       };
 
-      const { data, error } = await supabase
-        .from(this.tableName)
-        .insert([insertData])
-        .select()
-        .single();
+      const { data, error } = await supabase.from(tableName).insert([insertData]).select().single();
 
       if (error) {
         logger.error('Error creating campaign', error);
         return {
           data: null,
-          error: 'Kampanya oluşturulurken bir hata oluştu'
+          error: 'Kampanya oluşturulurken bir hata oluştu',
         };
       }
 
@@ -237,21 +236,24 @@ export class CampaignsService {
 
       return {
         data: data as Campaign,
-        error: null
+        error: null,
       };
     } catch (error) {
       logger.error('Unexpected error creating campaign', error);
       return {
         data: null,
-        error: 'Beklenmeyen bir hata oluştu'
+        error: 'Beklenmeyen bir hata oluştu',
       };
     }
-  }
+  },
 
   /**
    * Update existing campaign
    */
-  async updateCampaign(id: string, updates: CampaignUpdate): Promise<CampaignsApiResponse<Campaign>> {
+  async updateCampaign(
+    id: string,
+    updates: CampaignUpdate,
+  ): Promise<CampaignsApiResponse<Campaign>> {
     try {
       logger.info('Updating campaign', { id });
 
@@ -259,11 +261,11 @@ export class CampaignsService {
       const updateData = {
         ...updates,
         updated_at: new Date().toISOString(),
-        updated_by: user?.id || null
+        updated_by: user?.id || null,
       };
 
       const { data, error } = await supabase
-        .from(this.tableName)
+        .from(tableName)
         .update(updateData)
         .eq('id', id)
         .select()
@@ -273,7 +275,7 @@ export class CampaignsService {
         logger.error('Error updating campaign', error);
         return {
           data: null,
-          error: 'Kampanya güncellenirken bir hata oluştu'
+          error: 'Kampanya güncellenirken bir hata oluştu',
         };
       }
 
@@ -281,16 +283,16 @@ export class CampaignsService {
 
       return {
         data: data as Campaign,
-        error: null
+        error: null,
       };
     } catch (error) {
       logger.error('Unexpected error updating campaign', error);
       return {
         data: null,
-        error: 'Beklenmeyen bir hata oluştu'
+        error: 'Beklenmeyen bir hata oluştu',
       };
     }
-  }
+  },
 
   /**
    * Soft delete campaign
@@ -300,7 +302,7 @@ export class CampaignsService {
       logger.info('Deleting campaign', { id });
 
       const { error } = await supabase
-        .from(this.tableName)
+        .from(tableName)
         .update({ deleted_at: new Date().toISOString() })
         .eq('id', id);
 
@@ -308,7 +310,7 @@ export class CampaignsService {
         logger.error('Error deleting campaign', error);
         return {
           data: null,
-          error: 'Kampanya silinirken bir hata oluştu'
+          error: 'Kampanya silinirken bir hata oluştu',
         };
       }
 
@@ -316,16 +318,16 @@ export class CampaignsService {
 
       return {
         data: true,
-        error: null
+        error: null,
       };
     } catch (error) {
       logger.error('Unexpected error deleting campaign', error);
       return {
         data: null,
-        error: 'Beklenmeyen bir hata oluştu'
+        error: 'Beklenmeyen bir hata oluştu',
       };
     }
-  }
+  },
 
   /**
    * Get campaign statistics
@@ -335,7 +337,7 @@ export class CampaignsService {
       logger.info('Fetching campaign statistics');
 
       const { data, error } = await supabase
-        .from(this.tableName)
+        .from(tableName)
         .select('status, goal_amount, current_amount')
         .is('deleted_at', null);
 
@@ -343,20 +345,21 @@ export class CampaignsService {
         logger.error('Error fetching campaign stats', error);
         return {
           data: null,
-          error: 'İstatistikler yüklenirken bir hata oluştu'
+          error: 'İstatistikler yüklenirken bir hata oluştu',
         };
       }
 
       const campaigns = data as Campaign[];
       const total = campaigns.length;
-      const active = campaigns.filter(c => c.status === 'active').length;
-      const completed = campaigns.filter(c => c.status === 'completed').length;
-      const draft = campaigns.filter(c => c.status === 'draft').length;
-      const paused = campaigns.filter(c => c.status === 'paused').length;
-      
+      const active = campaigns.filter((c) => c.status === 'active').length;
+      const completed = campaigns.filter((c) => c.status === 'completed').length;
+      const draft = campaigns.filter((c) => c.status === 'draft').length;
+      const paused = campaigns.filter((c) => c.status === 'paused').length;
+
       const totalGoalAmount = campaigns.reduce((sum, c) => sum + (c.goal_amount || 0), 0);
       const totalCurrentAmount = campaigns.reduce((sum, c) => sum + (c.current_amount || 0), 0);
-      const averageProgress = totalGoalAmount > 0 ? (totalCurrentAmount / totalGoalAmount) * 100 : 0;
+      const averageProgress =
+        totalGoalAmount > 0 ? (totalCurrentAmount / totalGoalAmount) * 100 : 0;
 
       const stats: CampaignStats = {
         total,
@@ -366,23 +369,23 @@ export class CampaignsService {
         paused,
         totalGoalAmount,
         totalCurrentAmount,
-        averageProgress: Math.round(averageProgress * 100) / 100
+        averageProgress: Math.round(averageProgress * 100) / 100,
       };
 
       logger.info('Successfully calculated campaign stats', stats);
 
       return {
         data: stats,
-        error: null
+        error: null,
       };
     } catch (error) {
       logger.error('Unexpected error calculating campaign stats', error);
       return {
         data: null,
-        error: 'Beklenmeyen bir hata oluştu'
+        error: 'Beklenmeyen bir hata oluştu',
       };
     }
-  }
+  },
 
   /**
    * Update campaign amount (used when donations are linked)
@@ -392,10 +395,10 @@ export class CampaignsService {
       logger.info('Updating campaign amount', { id, amount });
 
       const { data, error } = await supabase
-        .from(this.tableName)
-        .update({ 
+        .from(tableName)
+        .update({
           current_amount: amount,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         })
         .eq('id', id)
         .select()
@@ -405,7 +408,7 @@ export class CampaignsService {
         logger.error('Error updating campaign amount', error);
         return {
           data: null,
-          error: 'Kampanya tutarı güncellenirken bir hata oluştu'
+          error: 'Kampanya tutarı güncellenirken bir hata oluştu',
         };
       }
 
@@ -413,18 +416,18 @@ export class CampaignsService {
 
       return {
         data: data as Campaign,
-        error: null
+        error: null,
       };
     } catch (error) {
       logger.error('Unexpected error updating campaign amount', error);
       return {
         data: null,
-        error: 'Beklenmeyen bir hata oluştu'
+        error: 'Beklenmeyen bir hata oluştu',
       };
     }
-  }
-}
+  },
+};
 
-// Export singleton instance
-export const campaignsService = new CampaignsService();
+// Export the service
+export { campaignsService };
 export default campaignsService;

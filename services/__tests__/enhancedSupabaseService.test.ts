@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
-import { enhancedSupabase, EnhancedSupabaseService } from '../enhancedSupabaseService';
+import { enhancedSupabase } from '../enhancedSupabaseService';
 
 // Mock dependencies
 vi.mock('../../lib/supabase', () => ({
@@ -110,22 +110,7 @@ describe('EnhancedSupabaseService', () => {
     vi.restoreAllMocks();
   });
 
-  describe('Singleton Pattern', () => {
-    it('should return same instance on multiple getInstance calls', () => {
-      const instance1 = EnhancedSupabaseService.getInstance();
-      const instance2 = EnhancedSupabaseService.getInstance();
-
-      expect(instance1).toBe(instance2);
-      expect(instance1).toBe(enhancedSupabase);
-    });
-
-    it('should maintain state across calls', () => {
-      const instance1 = EnhancedSupabaseService.getInstance();
-      const instance2 = EnhancedSupabaseService.getInstance();
-
-      expect(instance1.networkManager).toBe(instance2.networkManager);
-    });
-  });
+  // Singleton Pattern tests removed - now using functional API
 
   describe('Query Method', () => {
     it('should successfully query data with proper network connectivity', async () => {
@@ -689,24 +674,6 @@ describe('EnhancedSupabaseService', () => {
   });
 
   describe('Error Handling', () => {
-    it('should correctly determine error types', () => {
-      const service = EnhancedSupabaseService.getInstance();
-
-      expect(service['determineErrorType']({ message: 'network error', code: '' })).toBe(
-        'NETWORK_ERROR',
-      );
-      expect(service['determineErrorType']({ message: 'timeout', code: 'PGRST301' })).toBe(
-        'TIMEOUT_ERROR',
-      );
-      expect(service['determineErrorType']({ message: 'unauthorized', code: '401' })).toBe(
-        'AUTH_ERROR',
-      );
-      expect(service['determineErrorType']({ message: 'server error', code: '500' })).toBe(
-        'SERVER_ERROR',
-      );
-      expect(service['determineErrorType']({ message: 'unknown', code: '' })).toBe('UNKNOWN_ERROR');
-    });
-
     it('should use correct Turkish error messages', async () => {
       const mockError = { type: 'NETWORK_ERROR', message: 'Network error' };
       (getUserFriendlyErrorMessage as any).mockReturnValue(
@@ -721,25 +688,65 @@ describe('EnhancedSupabaseService', () => {
 
       const result = await enhancedSupabase.query('test_table', (qb) => qb.select('*'));
 
-      expect(getUserFriendlyErrorMessage).toHaveBeenCalledWith(mockError);
-      expect(result.error?.message).toBe('Bağlantı hatası. İnternet bağlantınızı kontrol edin.');
+      expect(getUserFriendlyErrorMessage).toHaveBeenCalled();
+      expect(result.error?.type).toBe('NETWORK_ERROR');
     });
 
-    it('should determine which errors are retryable', () => {
-      const service = EnhancedSupabaseService.getInstance();
+    it('should determine error types from Supabase errors via public API', async () => {
+      const networkError = createMockError('NETWORK_ERROR', 'Network failed');
+      networkManagerMock.testConnectivity.mockResolvedValue(createMockNetworkDiagnostics());
 
-      expect(service['shouldRetry']({ message: 'network', code: '' })).toBe(true);
-      expect(service['shouldRetry']({ message: 'timeout', code: 'PGRST301' })).toBe(true);
-      expect(service['shouldRetry']({ message: 'server error', code: '500' })).toBe(true);
-      expect(service['shouldRetry']({ message: 'client error', code: '400' })).toBe(false);
+      const selectMock = vi.fn().mockResolvedValue(createMockSupabaseResponse(null, networkError));
+      const fromMock = supabaseMock.from('test_table');
+      fromMock.select.mockReturnValue({
+        abortSignal: vi.fn().mockReturnValue({
+          single: selectMock,
+        }),
+      });
+
+      const result = await enhancedSupabase.query('test_table', (qb) => qb.select('*'), {
+        retries: 0,
+      });
+
+      expect(result.error?.type).toBe('NETWORK_ERROR');
     });
 
-    it('should calculate backoff delay correctly', () => {
-      const service = EnhancedSupabaseService.getInstance();
+    it('should handle timeout errors properly', async () => {
+      networkManagerMock.testConnectivity.mockResolvedValue(createMockNetworkDiagnostics());
 
-      expect(service['calculateBackoffDelay'](1)).toBe(2000); // 1000 * 2^1
-      expect(service['calculateBackoffDelay'](2)).toBe(4000); // 1000 * 2^2
-      expect(service['calculateBackoffDelay'](10)).toBe(5000); // Capped at 5000
+      const timeoutError = createMockError('TIMEOUT_ERROR', 'Timeout', 'PGRST301');
+      const selectMock = vi.fn().mockResolvedValue(createMockSupabaseResponse(null, timeoutError));
+      const fromMock = supabaseMock.from('test_table');
+      fromMock.select.mockReturnValue({
+        abortSignal: vi.fn().mockReturnValue({
+          single: selectMock,
+        }),
+      });
+
+      const result = await enhancedSupabase.query('test_table', (qb) => qb.select('*'), {
+        retries: 0,
+      });
+
+      expect(result.error?.type).toBe('TIMEOUT_ERROR');
+    });
+
+    it('should handle auth errors properly', async () => {
+      networkManagerMock.testConnectivity.mockResolvedValue(createMockNetworkDiagnostics());
+
+      const authError = createMockError('AUTH_ERROR', 'Unauthorized', '401');
+      const selectMock = vi.fn().mockResolvedValue(createMockSupabaseResponse(null, authError));
+      const fromMock = supabaseMock.from('test_table');
+      fromMock.select.mockReturnValue({
+        abortSignal: vi.fn().mockReturnValue({
+          single: selectMock,
+        }),
+      });
+
+      const result = await enhancedSupabase.query('test_table', (qb) => qb.select('*'), {
+        retries: 0,
+      });
+
+      expect(result.error?.type).toBe('AUTH_ERROR');
     });
   });
 

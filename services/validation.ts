@@ -1,6 +1,6 @@
 /**
  * @fileoverview validation Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -85,14 +85,12 @@ export const beneficiarySchemas = {
 };
 
 /**
- * ValidationService Service
- * 
- * Service class for handling validationservice operations
- * 
- * @class ValidationService
+ * Validation Service
+ *
+ * Service for handling validation operations
  */
-export class ValidationService {
-  static validate<T>(schema: z.ZodSchema<T>, data: unknown): T {
+const validationService = {
+  validate<T>(schema: z.ZodSchema<T>, data: unknown): T {
     try {
       return schema.parse(data);
     } catch (error) {
@@ -106,18 +104,18 @@ export class ValidationService {
       }
       throw error;
     }
-  }
+  },
 
-  static validateAsync<T>(schema: z.ZodSchema<T>, data: unknown): Promise<T> {
-    return Promise.resolve(this.validate(schema, data));
-  }
+  validateAsync<T>(schema: z.ZodSchema<T>, data: unknown): Promise<T> {
+    return Promise.resolve(validationService.validate(schema, data));
+  },
 
-  static safeValidate<T>(
+  safeValidate<T>(
     schema: z.ZodSchema<T>,
     data: unknown,
   ): { success: true; data: T } | { success: false; errors: string[] } {
     try {
-      const result = this.validate(schema, data);
+      const result = validationService.validate(schema, data);
       return { success: true, data: result };
     } catch (error) {
       if (error instanceof ServiceError) {
@@ -125,9 +123,9 @@ export class ValidationService {
       }
       return { success: false, errors: ['Validation failed'] };
     }
-  }
+  },
 
-  static validateField<T>(
+  validateField<T>(
     schema: z.ZodSchema<T>,
     fieldName: string,
     value: unknown,
@@ -142,13 +140,13 @@ export class ValidationService {
       }
       return { isValid: false, error: `${fieldName}: Validation failed` };
     }
-  }
-}
+  },
+};
 
 // Helper functions for backward compatibility
 /**
  * validateWithSchema function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -157,7 +155,7 @@ export function validateWithSchema<T>(
   data: unknown,
 ): { isValid: boolean; errors: string[] } {
   try {
-    ValidationService.validate(schema, data);
+    validationService.validate(schema, data);
     return { isValid: true, errors: [] };
   } catch (error) {
     if (error instanceof ServiceError) {
@@ -170,7 +168,7 @@ export function validateWithSchema<T>(
 // Specific validation functions
 /**
  * isValidBeneficiary function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -180,7 +178,7 @@ export function isValidBeneficiary(data: unknown): boolean {
 
 /**
  * isValidMember function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -190,7 +188,7 @@ export function isValidMember(data: unknown): boolean {
 
 /**
  * isValidDonation function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -202,3 +200,7 @@ export function isValidDonation(data: unknown): boolean {
 export const BeneficiarySchema = beneficiarySchemas.create;
 export const MemberSchema = memberSchemas.create;
 export const DonationSchema = donationSchemas.create;
+
+// Export validation service
+export { validationService };
+export default validationService;

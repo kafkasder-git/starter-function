@@ -16,55 +16,84 @@ import type {
   KumbaraUpdate,
 } from '../types/kumbara';
 
+// Helper functions
+
+/**
+ * Generate unique kumbara code
+ */
+function generateKumbaraCode(): string {
+  const prefix = 'KMB';
+  const timestamp = Date.now().toString().slice(-6);
+  const random = Math.floor(Math.random() * 100)
+    .toString()
+    .padStart(2, '0');
+  return `${prefix}-${timestamp}-${random}`;
+}
+
+/**
+ * Generate QR code string
+ */
+function generateQRCode(code: string): string {
+  return `QR-${code}-${new Date().getFullYear()}`;
+}
+
+/**
+ * Generate unique ID
+ */
+function generateId(): string {
+  return Math.random().toString(36).substr(2, 9);
+}
+
+/**
+ * Validate phone number
+ */
+function isValidPhone(phone: string): boolean {
+  const phoneRegex = /^(\+90|0)?[5][0-9]{9}$/;
+  return phoneRegex.test(phone.replace(/\s/g, ''));
+}
+
+/**
+ * Generate CSV content
+ */
+function generateCSV(kumbaras: Kumbara[]): string {
+  const headers = [
+    'Kod',
+    'İsim',
+    'Lokasyon',
+    'Adres',
+    'Durum',
+    'Kurulum Tarihi',
+    'Son Toplama',
+    'Toplam Tutar',
+    'Aylık Ortalama',
+    'İletişim Kişisi',
+    'Telefon',
+    'Notlar',
+  ];
+
+  const rows = kumbaras.map((k) => [
+    k.code,
+    k.name,
+    k.location,
+    k.address,
+    k.status,
+    k.installDate,
+    k.lastCollection || '',
+    k.totalAmount.toString(),
+    k.monthlyAverage.toString(),
+    k.contactPerson || '',
+    k.phone || '',
+    k.notes || '',
+  ]);
+
+  return [headers, ...rows].map((row) => row.map((cell) => `"${cell}"`).join(',')).join('\n');
+}
+
 /**
  * Enhanced Kumbara Service with modern TypeScript patterns
  * Implements comprehensive error handling and type safety
  */
-class KumbaraService {
-  private readonly baseUrl: string;
-  private readonly apiKey: string;
-  private readonly defaultHeaders: HeadersInit;
-
-  constructor() {
-    this.baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
-    this.apiKey = import.meta.env.VITE_API_KEY || '';
-    this.defaultHeaders = {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-      ...(this.apiKey && { Authorization: `Bearer ${this.apiKey}` }),
-    };
-  }
-
-  /**
-   * Enhanced error handling with proper typing
-   */
-  private handleError(error: unknown, operation: string): never {
-    const errorMessage = error instanceof Error ? error.message : 'Bilinmeyen bir hata oluştu';
-
-    logger.error(`KumbaraService.${operation} error:`, error);
-    throw new Error(`${operation} işlemi başarısız: ${errorMessage}`);
-  }
-
-  /**
-   * Type-safe API request helper
-   */
-  private async makeRequest<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-    try {
-      const response = await fetch(`${this.baseUrl}${endpoint}`, {
-        headers: this.defaultHeaders,
-        ...options,
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-
-      return (await response.json()) as T;
-    } catch (error) {
-      this.handleError(error, 'API Request');
-    }
-  }
-
+const kumbaraService = {
   // ==========================================
   // KUMBARA CRUD OPERATIONS
   // ==========================================
@@ -149,7 +178,7 @@ class KumbaraService {
       logger.error('Error fetching kumbaras:', error);
       throw new Error('Kumbara listesi alınamadı');
     }
-  }
+  },
 
   /**
    * Get single kumbara by ID
@@ -157,7 +186,7 @@ class KumbaraService {
   async getKumbara(id: string): Promise<Kumbara> {
     try {
       // Implementation - uses API endpoints
-      const kumbaras = await this.getKumbaras();
+      const kumbaras = await kumbaraService.getKumbaras();
       const kumbara = kumbaras.kumbaras.find((k) => k.id === id);
 
       if (!kumbara) {
@@ -169,7 +198,7 @@ class KumbaraService {
       logger.error('Error fetching kumbara:', error);
       throw new Error('Kumbara bilgileri alınamadı');
     }
-  }
+  },
 
   /**
    * Create new kumbara
@@ -177,10 +206,10 @@ class KumbaraService {
   async createKumbara(data: KumbaraInsert): Promise<Kumbara> {
     try {
       // Generate unique code if not provided
-      const code = data.code || this.generateKumbaraCode();
+      const code = data.code || generateKumbaraCode();
 
       const newKumbara: Kumbara = {
-        id: this.generateId(),
+        id: generateId(),
         code,
         name: data.name,
         location: data.location,
@@ -190,7 +219,7 @@ class KumbaraService {
         lastCollection: null,
         totalAmount: 0,
         monthlyAverage: 0,
-        qrCode: this.generateQRCode(code),
+        qrCode: generateQRCode(code),
         contactPerson: data.contactPerson,
         phone: data.phone,
         notes: data.notes,
@@ -206,14 +235,14 @@ class KumbaraService {
       logger.error('Error creating kumbara:', error);
       throw new Error('Kumbara oluşturulamadı');
     }
-  }
+  },
 
   /**
    * Update existing kumbara
    */
   async updateKumbara(id: string, data: KumbaraUpdate): Promise<Kumbara> {
     try {
-      const existingKumbara = await this.getKumbara(id);
+      const existingKumbara = await kumbaraService.getKumbara(id);
 
       const updatedKumbara: Kumbara = {
         ...existingKumbara,
@@ -227,7 +256,7 @@ class KumbaraService {
       logger.error('Error updating kumbara:', error);
       throw new Error('Kumbara güncellenemedi');
     }
-  }
+  },
 
   /**
    * Delete kumbara (soft delete)
@@ -240,7 +269,7 @@ class KumbaraService {
       logger.error('Error deleting kumbara:', error);
       throw new Error('Kumbara silinemedi');
     }
-  }
+  },
 
   // ==========================================
   // COLLECTION OPERATIONS
@@ -252,7 +281,7 @@ class KumbaraService {
   async recordCollection(data: KumbaraCollectionInsert): Promise<KumbaraCollection> {
     try {
       const newCollection: KumbaraCollection = {
-        id: this.generateId(),
+        id: generateId(),
         kumbara_id: data.kumbara_id,
         collection_date: data.collection_date || new Date().toISOString(),
         amount: data.amount,
@@ -276,7 +305,7 @@ class KumbaraService {
       logger.error('Error recording collection:', error);
       throw new Error('Toplama kaydı oluşturulamadı');
     }
-  }
+  },
 
   /**
    * Get collections for a kumbara
@@ -289,7 +318,7 @@ class KumbaraService {
       logger.error('Error fetching collections:', error);
       throw new Error('Toplama kayıtları alınamadı');
     }
-  }
+  },
 
   // ==========================================
   // DASHBOARD AND ANALYTICS
@@ -300,7 +329,7 @@ class KumbaraService {
    */
   async getDashboardStats(): Promise<KumbaraDashboardStats> {
     try {
-      const kumbaras = await this.getKumbaras();
+      const kumbaras = await kumbaraService.getKumbaras();
 
       const stats: KumbaraDashboardStats = {
         total_kumbaras: kumbaras.kumbaras.length,
@@ -342,7 +371,7 @@ class KumbaraService {
       logger.error('Error fetching dashboard stats:', error);
       throw new Error('Dashboard istatistikleri alınamadı');
     }
-  }
+  },
 
   /**
    * Get analytics for a specific kumbara
@@ -378,7 +407,7 @@ class KumbaraService {
       logger.error('Error fetching kumbara analytics:', error);
       throw new Error('Kumbara analitikleri alınamadı');
     }
-  }
+  },
 
   // ==========================================
   // QR CODE OPERATIONS
@@ -405,13 +434,13 @@ class KumbaraService {
         version: '1.0',
       },
     };
-  }
+  },
 
   /**
    * Generate printable QR code HTML
    */
   generatePrintableQR(kumbara: Kumbara): string {
-    const _qrData = this.generateQRData(kumbara);
+    const _qrData = kumbaraService.generateQRData(kumbara);
 
     return `
       <html>
@@ -419,9 +448,9 @@ class KumbaraService {
           <title>Kumbara QR Kod - ${kumbara.code}</title>
           <style>
             @page { size: 40mm 30mm; margin: 2mm; }
-            body { 
-              font-family: Arial, sans-serif; 
-              margin: 0; 
+            body {
+              font-family: Arial, sans-serif;
+              margin: 0;
               padding: 0;
               display: flex;
               flex-direction: column;
@@ -468,37 +497,11 @@ class KumbaraService {
         </body>
       </html>
     `;
-  }
+  },
 
   // ==========================================
   // UTILITY METHODS
   // ==========================================
-
-  /**
-   * Generate unique kumbara code
-   */
-  private generateKumbaraCode(): string {
-    const prefix = 'KMB';
-    const timestamp = Date.now().toString().slice(-6);
-    const random = Math.floor(Math.random() * 100)
-      .toString()
-      .padStart(2, '0');
-    return `${prefix}-${timestamp}-${random}`;
-  }
-
-  /**
-   * Generate QR code string
-   */
-  private generateQRCode(code: string): string {
-    return `QR-${code}-${new Date().getFullYear()}`;
-  }
-
-  /**
-   * Generate unique ID
-   */
-  private generateId(): string {
-    return Math.random().toString(36).substr(2, 9);
-  }
 
   /**
    * Validate kumbara data
@@ -518,7 +521,7 @@ class KumbaraService {
       errors.push('Adres en az 10 karakter olmalıdır');
     }
 
-    if (data.phone && !this.isValidPhone(data.phone)) {
+    if (data.phone && !isValidPhone(data.phone)) {
       errors.push('Geçerli bir telefon numarası giriniz');
     }
 
@@ -526,25 +529,17 @@ class KumbaraService {
       isValid: errors.length === 0,
       errors,
     };
-  }
-
-  /**
-   * Validate phone number
-   */
-  private isValidPhone(phone: string): boolean {
-    const phoneRegex = /^(\+90|0)?[5][0-9]{9}$/;
-    return phoneRegex.test(phone.replace(/\s/g, ''));
-  }
+  },
 
   /**
    * Export kumbara data
    */
   async exportKumbaras(format: 'csv' | 'excel' | 'pdf' = 'csv'): Promise<Blob> {
     try {
-      const kumbaras = await this.getKumbaras();
+      const kumbaras = await kumbaraService.getKumbaras();
 
       if (format === 'csv') {
-        const csvContent = this.generateCSV(kumbaras.kumbaras);
+        const csvContent = generateCSV(kumbaras.kumbaras);
         return new Blob([csvContent], { type: 'text/csv' });
       }
 
@@ -554,44 +549,7 @@ class KumbaraService {
       logger.error('Error exporting kumbaras:', error);
       throw new Error('Kumbara verileri dışa aktarılamadı');
     }
-  }
-
-  /**
-   * Generate CSV content
-   */
-  private generateCSV(kumbaras: Kumbara[]): string {
-    const headers = [
-      'Kod',
-      'İsim',
-      'Lokasyon',
-      'Adres',
-      'Durum',
-      'Kurulum Tarihi',
-      'Son Toplama',
-      'Toplam Tutar',
-      'Aylık Ortalama',
-      'İletişim Kişisi',
-      'Telefon',
-      'Notlar',
-    ];
-
-    const rows = kumbaras.map((k) => [
-      k.code,
-      k.name,
-      k.location,
-      k.address,
-      k.status,
-      k.installDate,
-      k.lastCollection || '',
-      k.totalAmount.toString(),
-      k.monthlyAverage.toString(),
-      k.contactPerson || '',
-      k.phone || '',
-      k.notes || '',
-    ]);
-
-    return [headers, ...rows].map((row) => row.map((cell) => `"${cell}"`).join(',')).join('\n');
-  }
+  },
 
   // ==========================================
   // ALERT AND NOTIFICATION METHODS
@@ -624,7 +582,7 @@ class KumbaraService {
       logger.error('Error fetching kumbara alerts:', error);
       throw new Error('Kumbara uyarıları alınamadı');
     }
-  }
+  },
 
   /**
    * Acknowledge alert
@@ -637,9 +595,9 @@ class KumbaraService {
       logger.error('Error acknowledging alert:', error);
       throw new Error('Uyarı onaylanamadı');
     }
-  }
-}
+  },
+};
 
 // Export singleton instance
-export const kumbaraService = new KumbaraService();
+export { kumbaraService };
 export default kumbaraService;

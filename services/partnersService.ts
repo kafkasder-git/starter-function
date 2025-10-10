@@ -1,6 +1,6 @@
 /**
  * @fileoverview partnersService Module - Partners/Sponsors management service
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -135,16 +135,32 @@ export interface SponsorOrganization {
   donorCount: number;
 }
 
-/**
- * Partners management service class
- */
-export class PartnersService {
-  private tableName = TABLES.PARTNERS;
+// Module-level constants
+const tableName = TABLES.PARTNERS;
 
+// Helper functions
+/**
+ * Map Partner to SponsorOrganization interface
+ */
+function mapPartnerToSponsor(partner: Partner): SponsorOrganization {
+  return {
+    id: partner.id,
+    name: partner.name,
+    description: partner.notes || '',
+    logo: partner.website || '',
+    tags: partner.services_provided || [],
+    donorCount: 0, // This would need to be calculated from donations
+  };
+}
+
+/**
+ * Partners management service
+ */
+const partnersService = {
   /**
-   * Map Partner to SponsorOrganization interface
+   * Map Partner to SponsorOrganization interface (compatibility method)
    */
-  private mapPartnerToSponsor(partner: Partner): SponsorOrganization {
+  mapPartnerToSponsor(partner: Partner): SponsorOrganization {
     return {
       id: partner.id,
       name: partner.name,
@@ -153,7 +169,12 @@ export class PartnersService {
       phone: partner.phone || '',
       email: partner.email || '',
       address: partner.address || '',
-      status: partner.status === 'active' ? 'Aktif' : partner.status === 'inactive' ? 'Pasif' : partner.status,
+      status:
+        partner.status === 'active'
+          ? 'Aktif'
+          : partner.status === 'inactive'
+            ? 'Pasif'
+            : partner.status,
       totalSponsorship: 0, // TODO: Calculate from donations table
       currentProjects: 0, // TODO: Calculate from projects table
       completedProjects: 0, // TODO: Calculate from projects table
@@ -167,9 +188,9 @@ export class PartnersService {
       description: partner.notes || '',
       logo: '', // TODO: Add logo field to partners table
       tags: [], // TODO: Add tags field to partners table
-      donorCount: 0 // TODO: Calculate from donations table
+      donorCount: 0, // TODO: Calculate from donations table
     };
-  }
+  },
 
   /**
    * Fetch paginated partners with filtering
@@ -177,20 +198,22 @@ export class PartnersService {
   async getPartners(
     page: number = 1,
     pageSize: number = 10,
-    filters?: PartnersFilters
+    filters?: PartnersFilters,
   ): Promise<PartnersApiResponse<Partner[]>> {
     try {
       logger.info('Fetching partners', { page, pageSize, filters });
 
       let query = supabase
-        .from(this.tableName)
+        .from(tableName)
         .select('*', { count: 'exact' })
         .is('deleted_at', null)
         .order('created_at', { ascending: false });
 
       // Apply filters
       if (filters?.searchTerm) {
-        query = query.or(`name.ilike.%${filters.searchTerm}%,contact_person.ilike.%${filters.searchTerm}%,email.ilike.%${filters.searchTerm}%,phone.ilike.%${filters.searchTerm}%`);
+        query = query.or(
+          `name.ilike.%${filters.searchTerm}%,contact_person.ilike.%${filters.searchTerm}%,email.ilike.%${filters.searchTerm}%,phone.ilike.%${filters.searchTerm}%`,
+        );
       }
 
       if (filters?.partnerType) {
@@ -226,7 +249,7 @@ export class PartnersService {
           data: null,
           error: 'Ortaklar yüklenirken bir hata oluştu',
           count: 0,
-          totalPages: 0
+          totalPages: 0,
         };
       }
 
@@ -238,7 +261,7 @@ export class PartnersService {
         data: data as Partner[],
         error: null,
         count: count || 0,
-        totalPages
+        totalPages,
       };
     } catch (error) {
       logger.error('Unexpected error fetching partners', error);
@@ -246,10 +269,10 @@ export class PartnersService {
         data: null,
         error: 'Beklenmeyen bir hata oluştu',
         count: 0,
-        totalPages: 0
+        totalPages: 0,
       };
     }
-  }
+  },
 
   /**
    * Fetch sponsors (partners with type 'sponsor')
@@ -257,12 +280,12 @@ export class PartnersService {
   async getSponsors(
     page: number = 1,
     pageSize: number = 10,
-    filters?: PartnersFilters
+    filters?: PartnersFilters,
   ): Promise<PartnersApiResponse<SponsorOrganization[]>> {
     try {
       const sponsorFilters = {
         ...filters,
-        partnerType: 'sponsor'
+        partnerType: 'sponsor',
       };
 
       const result = await this.getPartners(page, pageSize, sponsorFilters);
@@ -272,17 +295,17 @@ export class PartnersService {
           data: null,
           error: result.error,
           count: result.count,
-          totalPages: result.totalPages
+          totalPages: result.totalPages,
         };
       }
 
-      const sponsors = result.data.map(partner => this.mapPartnerToSponsor(partner));
+      const sponsors = result.data.map((partner) => this.mapPartnerToSponsor(partner));
 
       return {
         data: sponsors,
         error: null,
         count: result.count,
-        totalPages: result.totalPages
+        totalPages: result.totalPages,
       };
     } catch (error) {
       logger.error('Unexpected error fetching sponsors', error);
@@ -290,10 +313,10 @@ export class PartnersService {
         data: null,
         error: 'Beklenmeyen bir hata oluştu',
         count: 0,
-        totalPages: 0
+        totalPages: 0,
       };
     }
-  }
+  },
 
   /**
    * Fetch single partner by ID
@@ -303,7 +326,7 @@ export class PartnersService {
       logger.info('Fetching partner by ID', { id });
 
       const { data, error } = await supabase
-        .from(this.tableName)
+        .from(tableName)
         .select('*')
         .eq('id', id)
         .is('deleted_at', null)
@@ -313,7 +336,7 @@ export class PartnersService {
         logger.error('Error fetching partner', error);
         return {
           data: null,
-          error: 'Ortak bulunamadı'
+          error: 'Ortak bulunamadı',
         };
       }
 
@@ -321,16 +344,16 @@ export class PartnersService {
 
       return {
         data: data as Partner,
-        error: null
+        error: null,
       };
     } catch (error) {
       logger.error('Unexpected error fetching partner', error);
       return {
         data: null,
-        error: 'Beklenmeyen bir hata oluştu'
+        error: 'Beklenmeyen bir hata oluştu',
       };
     }
-  }
+  },
 
   /**
    * Create new partner
@@ -341,20 +364,16 @@ export class PartnersService {
 
       const insertData = {
         ...partnerData,
-        status: partnerData.status || 'active'
+        status: partnerData.status || 'active',
       };
 
-      const { data, error } = await supabase
-        .from(this.tableName)
-        .insert([insertData])
-        .select()
-        .single();
+      const { data, error } = await supabase.from(tableName).insert([insertData]).select().single();
 
       if (error) {
         logger.error('Error creating partner', error);
         return {
           data: null,
-          error: 'Ortak oluşturulurken bir hata oluştu'
+          error: 'Ortak oluşturulurken bir hata oluştu',
         };
       }
 
@@ -362,16 +381,16 @@ export class PartnersService {
 
       return {
         data: data as Partner,
-        error: null
+        error: null,
       };
     } catch (error) {
       logger.error('Unexpected error creating partner', error);
       return {
         data: null,
-        error: 'Beklenmeyen bir hata oluştu'
+        error: 'Beklenmeyen bir hata oluştu',
       };
     }
-  }
+  },
 
   /**
    * Update existing partner
@@ -384,11 +403,11 @@ export class PartnersService {
       const updateData = {
         ...updates,
         updated_at: new Date().toISOString(),
-        updated_by: user?.id || null
+        updated_by: user?.id || null,
       };
 
       const { data, error } = await supabase
-        .from(this.tableName)
+        .from(tableName)
         .update(updateData)
         .eq('id', id)
         .select()
@@ -398,7 +417,7 @@ export class PartnersService {
         logger.error('Error updating partner', error);
         return {
           data: null,
-          error: 'Ortak güncellenirken bir hata oluştu'
+          error: 'Ortak güncellenirken bir hata oluştu',
         };
       }
 
@@ -406,16 +425,16 @@ export class PartnersService {
 
       return {
         data: data as Partner,
-        error: null
+        error: null,
       };
     } catch (error) {
       logger.error('Unexpected error updating partner', error);
       return {
         data: null,
-        error: 'Beklenmeyen bir hata oluştu'
+        error: 'Beklenmeyen bir hata oluştu',
       };
     }
-  }
+  },
 
   /**
    * Soft delete partner
@@ -425,7 +444,7 @@ export class PartnersService {
       logger.info('Deleting partner', { id });
 
       const { error } = await supabase
-        .from(this.tableName)
+        .from(tableName)
         .update({ deleted_at: new Date().toISOString() })
         .eq('id', id);
 
@@ -433,7 +452,7 @@ export class PartnersService {
         logger.error('Error deleting partner', error);
         return {
           data: null,
-          error: 'Ortak silinirken bir hata oluştu'
+          error: 'Ortak silinirken bir hata oluştu',
         };
       }
 
@@ -441,16 +460,16 @@ export class PartnersService {
 
       return {
         data: true,
-        error: null
+        error: null,
       };
     } catch (error) {
       logger.error('Unexpected error deleting partner', error);
       return {
         data: null,
-        error: 'Beklenmeyen bir hata oluştu'
+        error: 'Beklenmeyen bir hata oluştu',
       };
     }
-  }
+  },
 
   /**
    * Get partner statistics
@@ -460,7 +479,7 @@ export class PartnersService {
       logger.info('Fetching partner statistics');
 
       const { data, error } = await supabase
-        .from(this.tableName)
+        .from(tableName)
         .select('partner_type, status')
         .is('deleted_at', null);
 
@@ -468,50 +487,52 @@ export class PartnersService {
         logger.error('Error fetching partner stats', error);
         return {
           data: null,
-          error: 'İstatistikler yüklenirken bir hata oluştu'
+          error: 'İstatistikler yüklenirken bir hata oluştu',
         };
       }
 
       const partners = data as Partner[];
       const total = partners.length;
-      
+
       // Count by type
       const byType: Record<string, number> = {};
-      partners.forEach(partner => {
+      partners.forEach((partner) => {
         byType[partner.partner_type] = (byType[partner.partner_type] || 0) + 1;
       });
 
       // Count by status
       const byStatus: Record<string, number> = {};
-      partners.forEach(partner => {
+      partners.forEach((partner) => {
         byStatus[partner.status] = (byStatus[partner.status] || 0) + 1;
       });
 
       const totalSponsors = byType['sponsor'] || 0;
-      const activeSponsors = partners.filter(p => p.partner_type === 'sponsor' && p.status === 'active').length;
+      const activeSponsors = partners.filter(
+        (p) => p.partner_type === 'sponsor' && p.status === 'active',
+      ).length;
 
       const stats: PartnerStats = {
         total,
         byType,
         byStatus,
         totalSponsors,
-        activeSponsors
+        activeSponsors,
       };
 
       logger.info('Successfully calculated partner stats', stats);
 
       return {
         data: stats,
-        error: null
+        error: null,
       };
     } catch (error) {
       logger.error('Unexpected error calculating partner stats', error);
       return {
         data: null,
-        error: 'Beklenmeyen bir hata oluştu'
+        error: 'Beklenmeyen bir hata oluştu',
       };
     }
-  }
+  },
 
   /**
    * Get unique partner types for filter dropdown
@@ -521,7 +542,7 @@ export class PartnersService {
       logger.info('Fetching partner types');
 
       const { data, error } = await supabase
-        .from(this.tableName)
+        .from(tableName)
         .select('partner_type')
         .is('deleted_at', null);
 
@@ -529,7 +550,7 @@ export class PartnersService {
         logger.error('Error fetching partner types', error);
         return {
           data: null,
-          error: 'Ortak türleri yüklenirken bir hata oluştu'
+          error: 'Ortak türleri yüklenirken bir hata oluştu',
         };
       }
 
@@ -539,18 +560,18 @@ export class PartnersService {
 
       return {
         data: types as string[],
-        error: null
+        error: null,
       };
     } catch (error) {
       logger.error('Unexpected error fetching partner types', error);
       return {
         data: null,
-        error: 'Beklenmeyen bir hata oluştu'
+        error: 'Beklenmeyen bir hata oluştu',
       };
     }
-  }
-}
+  },
+};
 
-// Export singleton instance
-export const partnersService = new PartnersService();
+// Export the service
+export { partnersService };
 export default partnersService;

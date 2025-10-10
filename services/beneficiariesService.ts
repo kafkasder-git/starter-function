@@ -15,33 +15,21 @@ import type {
 } from '../types/beneficiary';
 import { mapDBToBeneficiary, mapBeneficiaryToDB } from '../types/beneficiary';
 import type { ApiResponse } from './config';
-import { BaseService } from './baseService';
+
+// Module-level constants
+const tableName = 'ihtiyac_sahipleri';
 
 /**
- * BeneficiariesService sınıfı - İhtiyaç sahipleri için CRUD operasyonları
- *
- * @class BeneficiariesService
- * @extends BaseService
+ * BeneficiariesService - İhtiyaç sahipleri için CRUD operasyonları
  */
-export class BeneficiariesService extends BaseService<
-  Beneficiary,
-  BeneficiaryInsert,
-  BeneficiaryUpdate
-> {
-  // Use Turkish database table name
-  private readonly tableName = 'ihtiyac_sahipleri';
-
-  constructor() {
-    super(TABLES.BENEFICIARIES);
-  }
-
+const beneficiariesService = {
   /**
    * Override getAll to use Turkish DB fields with mapping
    */
   async getAll(): Promise<ApiResponse<Beneficiary[]>> {
     try {
       const { data, error } = await supabase
-        .from(this.tableName)
+        .from(tableName)
         .select('*')
         .order('created_at', { ascending: false });
 
@@ -56,14 +44,14 @@ export class BeneficiariesService extends BaseService<
       logger.error('Unexpected error in getAll', error);
       return { data: null, error: 'Beklenmeyen bir hata oluştu' };
     }
-  }
+  },
 
   /**
    * Override getById to use Turkish DB fields with mapping
    */
   async getById(id: string): Promise<ApiResponse<Beneficiary>> {
     try {
-      const { data, error } = await supabase.from(this.tableName).select('*').eq('id', id).single();
+      const { data, error } = await supabase.from(tableName).select('*').eq('id', id).single();
 
       if (error) {
         logger.error('Error fetching beneficiary by ID', error);
@@ -76,7 +64,7 @@ export class BeneficiariesService extends BaseService<
       logger.error('Unexpected error in getById', error);
       return { data: null, error: 'Beklenmeyen bir hata oluştu' };
     }
-  }
+  },
 
   /**
    * Override create to use Turkish DB fields with mapping
@@ -87,7 +75,7 @@ export class BeneficiariesService extends BaseService<
       const dbData = mapBeneficiaryToDB(data as Partial<Beneficiary>);
 
       const { data: result, error } = await supabase
-        .from(this.tableName)
+        .from(tableName)
         .insert(dbData)
         .select()
         .single();
@@ -103,7 +91,7 @@ export class BeneficiariesService extends BaseService<
       logger.error('Unexpected error in create', error);
       return { data: null, error: 'Beklenmeyen bir hata oluştu' };
     }
-  }
+  },
 
   /**
    * Override update to use Turkish DB fields with mapping
@@ -114,7 +102,7 @@ export class BeneficiariesService extends BaseService<
       const dbData = mapBeneficiaryToDB(data as Partial<Beneficiary>);
 
       const { data: result, error } = await supabase
-        .from(this.tableName)
+        .from(tableName)
         .update(dbData)
         .eq('id', id)
         .select()
@@ -131,14 +119,14 @@ export class BeneficiariesService extends BaseService<
       logger.error('Unexpected error in update', error);
       return { data: null, error: 'Beklenmeyen bir hata oluştu' };
     }
-  }
+  },
 
   /**
    * Override delete to use Turkish table name
    */
   async delete(id: string): Promise<ApiResponse<boolean>> {
     try {
-      const { error } = await supabase.from(this.tableName).delete().eq('id', id);
+      const { error } = await supabase.from(tableName).delete().eq('id', id);
 
       if (error) {
         logger.error('Error deleting beneficiary', error);
@@ -150,7 +138,7 @@ export class BeneficiariesService extends BaseService<
       logger.error('Unexpected error in delete', error);
       return { data: null, error: 'Beklenmeyen bir hata oluştu' };
     }
-  }
+  },
 
   /**
    * Aktif ihtiyaç sahiplerini getirir
@@ -162,7 +150,7 @@ export class BeneficiariesService extends BaseService<
       logger.info('Fetching active beneficiaries');
 
       const { data, error } = await supabase
-        .from(this.tableName)
+        .from(tableName)
         .select('*')
         .eq('status', 'active')
         .order('created_at', { ascending: false });
@@ -181,7 +169,7 @@ export class BeneficiariesService extends BaseService<
       logger.error('Unexpected error in getActiveBeneficiaries', error);
       return { data: null, error: 'Beklenmeyen bir hata oluştu' };
     }
-  }
+  },
 
   /**
    * Şehre göre ihtiyaç sahiplerini getirir
@@ -194,7 +182,7 @@ export class BeneficiariesService extends BaseService<
       logger.info('Fetching beneficiaries by city', { city });
 
       const { data, error } = await supabase
-        .from(this.tableName)
+        .from(tableName)
         .select('*')
         .eq('sehri', city) // Use Turkish DB field name
         .eq('status', 'active')
@@ -214,7 +202,7 @@ export class BeneficiariesService extends BaseService<
       logger.error('Unexpected error in getBeneficiariesByCity', error);
       return { data: null, error: 'Beklenmeyen bir hata oluştu' };
     }
-  }
+  },
 
   /**
    * İhtiyaç türüne göre ihtiyaç sahiplerini getirir
@@ -228,7 +216,7 @@ export class BeneficiariesService extends BaseService<
 
       // Note: DB uses 'kategori' field instead of need_types array
       const { data, error } = await supabase
-        .from(this.tableName)
+        .from(tableName)
         .select('*')
         .eq('kategori', needType) // Use Turkish DB field name
         .eq('status', 'active')
@@ -248,7 +236,7 @@ export class BeneficiariesService extends BaseService<
       logger.error('Unexpected error in getBeneficiariesByNeedType', error);
       return { data: null, error: 'Beklenmeyen bir hata oluştu' };
     }
-  }
+  },
 
   /**
    * Acil durumdaki ihtiyaç sahiplerini getirir
@@ -261,7 +249,7 @@ export class BeneficiariesService extends BaseService<
 
       // Note: DB doesn't have priority field, return all active
       const { data, error } = await supabase
-        .from(this.tableName)
+        .from(tableName)
         .select('*')
         .eq('status', 'active')
         .order('created_at', { ascending: false })
@@ -281,7 +269,7 @@ export class BeneficiariesService extends BaseService<
       logger.error('Unexpected error in getUrgentBeneficiaries', error);
       return { data: null, error: 'Beklenmeyen bir hata oluştu' };
     }
-  }
+  },
 
   /**
    * İhtiyaç sahibinin durumunu günceller
@@ -295,7 +283,7 @@ export class BeneficiariesService extends BaseService<
       logger.info('Updating beneficiary status', { id, status });
 
       const { data, error } = await supabase
-        .from(this.tableName)
+        .from(tableName)
         .update({
           status,
           updated_at: new Date().toISOString(),
@@ -318,7 +306,7 @@ export class BeneficiariesService extends BaseService<
       logger.error('Unexpected error in updateBeneficiaryStatus', error);
       return { data: null, error: 'Beklenmeyen bir hata oluştu' };
     }
-  }
+  },
 
   /**
    * İhtiyaç sahibi istatistiklerini getirir
@@ -329,7 +317,7 @@ export class BeneficiariesService extends BaseService<
     try {
       logger.info('Fetching beneficiary statistics');
 
-      const { data, error } = await supabase.from(this.tableName).select('status, sehri, kategori'); // Use Turkish DB field names
+      const { data, error } = await supabase.from(tableName).select('status, sehri, kategori'); // Use Turkish DB field names
 
       if (error) {
         logger.error('Error fetching beneficiary statistics', error);
@@ -367,7 +355,7 @@ export class BeneficiariesService extends BaseService<
       logger.error('Unexpected error in getBeneficiaryStats', error);
       return { data: null, error: 'Beklenmeyen bir hata oluştu' };
     }
-  }
+  },
 
   /**
    * Destekleyici belgeleri ekler
@@ -418,7 +406,7 @@ export class BeneficiariesService extends BaseService<
       logger.error('Unexpected error in addSupportingDocuments', error);
       return { data: null, error: 'Beklenmeyen bir hata oluştu' };
     }
-  }
+  },
 
   /**
    * Destekleyici belgeyi kaldırır
@@ -475,7 +463,7 @@ export class BeneficiariesService extends BaseService<
       logger.error('Unexpected error in removeSupportingDocument', error);
       return { data: null, error: 'Beklenmeyen bir hata oluştu' };
     }
-  }
+  },
 
   /**
    * Destekleyici belgeleri getirir
@@ -506,7 +494,7 @@ export class BeneficiariesService extends BaseService<
       logger.error('Unexpected error in getSupportingDocuments', error);
       return { data: null, error: 'Beklenmeyen bir hata oluştu' };
     }
-  }
+  },
 
   /**
    * Destekleyici belgeleri toplu günceller
@@ -551,7 +539,7 @@ export class BeneficiariesService extends BaseService<
       logger.error('Unexpected error in updateSupportingDocuments', error);
       return { data: null, error: 'Beklenmeyen bir hata oluştu' };
     }
-  }
+  },
 
   /**
    * Legacy compatibility: getIhtiyacSahipleri
@@ -579,7 +567,7 @@ export class BeneficiariesService extends BaseService<
 
       const offset = (page - 1) * limit;
 
-      let query = supabase.from(this.tableName).select('*', { count: 'exact' });
+      let query = supabase.from(tableName).select('*', { count: 'exact' });
 
       // Apply filters using Turkish DB field names
       if (filters.sehir) {
@@ -672,7 +660,7 @@ export class BeneficiariesService extends BaseService<
         error: 'İhtiyaç sahipleri verileri alınamadı',
       };
     }
-  }
+  },
 
   /**
    * Legacy compatibility: getSehirler
@@ -683,7 +671,7 @@ export class BeneficiariesService extends BaseService<
       logger.info('Getting unique cities');
 
       const { data, error } = await supabase
-        .from(this.tableName)
+        .from(tableName)
         .select('sehri')
         .not('sehri', 'is', null);
 
@@ -711,7 +699,7 @@ export class BeneficiariesService extends BaseService<
         error: 'Şehirler alınamadı',
       };
     }
-  }
+  },
 
   /**
    * Legacy compatibility: testConnection
@@ -722,7 +710,7 @@ export class BeneficiariesService extends BaseService<
       logger.info('Testing Supabase connection and table existence...');
 
       const { data: tableData, error: tableError } = await supabase
-        .from(this.tableName)
+        .from(tableName)
         .select('*')
         .limit(1);
 
@@ -739,8 +727,9 @@ export class BeneficiariesService extends BaseService<
       logger.error('Connection test failed:', error);
       return { exists: false, error: error instanceof Error ? error.message : 'Unknown error' };
     }
-  }
-}
+  },
+};
 
-// Singleton instance
-export const beneficiariesService = new BeneficiariesService();
+// Export the service
+export { beneficiariesService };
+export default beneficiariesService;

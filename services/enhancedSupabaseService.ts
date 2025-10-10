@@ -54,21 +54,83 @@ export interface SupabaseQueryOptions {
   single?: boolean;
 }
 
-export class EnhancedSupabaseService {
-  private static instance: EnhancedSupabaseService;
-  private networkManager: NetworkManager;
+// Module-level variables
+const networkManager = NetworkManager.getInstance();
 
-  private constructor() {
-    this.networkManager = NetworkManager.getInstance();
+// Helper functions
+/**
+ * Check network connectivity (private method)
+ */
+async function checkNetworkConnectivity(): Promise<void> {
+  const diagnostics = await networkManager.testConnectivity();
+  if (!diagnostics.canReachSupabase) {
+    const err = new Error('NETWORK_UNREACHABLE');
+    (err as any).code = 'NETWORK_UNREACHABLE';
+    throw err;
+  }
+}
+
+/**
+ * Determine error type from Supabase error
+ */
+function determineErrorType(error: any): NetworkError['type'] {
+  const message = error.message?.toLowerCase() || '';
+  const code = error.code || '';
+
+  if (message.includes('network') || message.includes('fetch')) {
+    return 'NETWORK_ERROR';
+  }
+  if (code === 'PGRST301' || message.includes('timeout')) {
+    return 'TIMEOUT_ERROR';
+  }
+  if (code === '401' || code === '403' || message.includes('unauthorized')) {
+    return 'AUTH_ERROR';
+  }
+  if (message.includes('server') || code.startsWith('5')) {
+    return 'SERVER_ERROR';
   }
 
-  static getInstance(): EnhancedSupabaseService {
-    if (!EnhancedSupabaseService.instance) {
-      EnhancedSupabaseService.instance = new EnhancedSupabaseService();
-    }
-    return EnhancedSupabaseService.instance;
+  return 'UNKNOWN_ERROR';
+}
+
+/**
+ * Check if error should be retried
+ */
+function shouldRetry(error: any): boolean {
+  const message = error.message?.toLowerCase() || '';
+  const code = error.code || '';
+
+  // Retry on network errors and server errors
+  if (
+    message.includes('network') ||
+    message.includes('timeout') ||
+    message.includes('fetch') ||
+    code.startsWith('5')
+  ) {
+    return true;
   }
 
+  return false;
+}
+
+/**
+ * Calculate backoff delay
+ */
+function calculateBackoffDelay(attempt: number): number {
+  return Math.min(1000 * Math.pow(2, attempt), 5000);
+}
+
+/**
+ * Delay utility
+ */
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * Enhanced Supabase Service with network error handling
+ */
+const enhancedSupabase = {
   /**
    * Enhanced query with error handling and retry logic
    * @param table - The table name to query
@@ -96,7 +158,7 @@ export class EnhancedSupabaseService {
     try {
       // Check network connectivity first
       if (checkNetwork) {
-        await this.checkNetworkConnectivity();
+        await checkNetworkConnectivity();
       }
 
       // Execute query with timeout
@@ -113,19 +175,19 @@ export class EnhancedSupabaseService {
         logger.error('Supabase query error:', error);
 
         const networkError: NetworkError = {
-          type: this.determineErrorType(error),
+          type: determineErrorType(error),
           message: getUserFriendlyErrorMessage({
-            type: this.determineErrorType(error),
+            type: determineErrorType(error),
             message: error.message,
           }),
           details: error,
         };
 
         // Retry on certain errors
-        if (this.shouldRetry(error) && retries > 0) {
+        if (shouldRetry(error) && retries > 0) {
           logger.info(`Retrying query (${retries} attempts left)...`);
-          await this.delay(this.calculateBackoffDelay(3 - retries));
-          return this.query(table, queryBuilder, { ...options, retries: retries - 1 });
+          await delay(calculateBackoffDelay(3 - retries));
+          return enhancedSupabase.query(table, queryBuilder, { ...options, retries: retries - 1 });
         }
 
         return {
@@ -155,7 +217,15 @@ export class EnhancedSupabaseService {
 
       let networkError: NetworkError;
 
-      if (error.name === 'AbortError') {
+      if (error.code === 'NETWORK_UNREACHABLE') {
+        networkError = {
+          type: 'NETWORK_ERROR',
+          message: getUserFriendlyErrorMessage({
+            type: 'NETWORK_ERROR',
+            message: 'Supabase unreachable',
+          }),
+        };
+      } else if (error.name === 'AbortError') {
         networkError = {
           type: 'TIMEOUT_ERROR',
           message: getUserFriendlyErrorMessage({
@@ -184,8 +254,8 @@ export class EnhancedSupabaseService {
       // Retry on network errors
       if (networkError.type === 'NETWORK_ERROR' && retries > 0) {
         logger.info(`Retrying query due to network error (${retries} attempts left)...`);
-        await this.delay(this.calculateBackoffDelay(3 - retries));
-        return this.query(table, queryBuilder, { ...options, retries: retries - 1 });
+        await delay(calculateBackoffDelay(3 - retries));
+        return enhancedSupabase.query(table, queryBuilder, { ...options, retries: retries - 1 });
       }
 
       return {
@@ -199,7 +269,7 @@ export class EnhancedSupabaseService {
         },
       };
     }
-  }
+  },
 
   /**
    * Enhanced insert with error handling
@@ -227,7 +297,7 @@ export class EnhancedSupabaseService {
 
     try {
       if (checkNetwork) {
-        await this.checkNetworkConnectivity();
+        await checkNetworkConnectivity();
       }
 
       let query = supabase.from(table).insert(data).select();
@@ -242,17 +312,17 @@ export class EnhancedSupabaseService {
         logger.error('Supabase insert error:', error);
 
         const networkError: NetworkError = {
-          type: this.determineErrorType(error),
+          type: determineErrorType(error),
           message: getUserFriendlyErrorMessage({
-            type: this.determineErrorType(error),
+            type: determineErrorType(error),
             message: error.message,
           }),
           details: error,
         };
 
-        if (this.shouldRetry(error) && retries > 0) {
-          await this.delay(this.calculateBackoffDelay(3 - retries));
-          return this.insert(table, data, { ...options, retries: retries - 1 });
+        if (shouldRetry(error) && retries > 0) {
+          await delay(calculateBackoffDelay(3 - retries));
+          return enhancedSupabase.insert(table, data, { ...options, retries: retries - 1 });
         }
 
         return {
@@ -280,13 +350,33 @@ export class EnhancedSupabaseService {
     } catch (error: any) {
       logger.error('Supabase insert service error:', error);
 
-      const networkError: NetworkError = {
-        type: 'UNKNOWN_ERROR',
-        message: getUserFriendlyErrorMessage({
+      let networkError: NetworkError;
+
+      if (error.code === 'NETWORK_UNREACHABLE') {
+        networkError = {
+          type: 'NETWORK_ERROR',
+          message: getUserFriendlyErrorMessage({
+            type: 'NETWORK_ERROR',
+            message: 'Supabase unreachable',
+          }),
+        };
+      } else if (error.name === 'AbortError') {
+        networkError = {
+          type: 'TIMEOUT_ERROR',
+          message: getUserFriendlyErrorMessage({
+            type: 'TIMEOUT_ERROR',
+            message: 'Request timeout',
+          }),
+        };
+      } else {
+        networkError = {
           type: 'UNKNOWN_ERROR',
-          message: error.message || 'Insert failed',
-        }),
-      };
+          message: getUserFriendlyErrorMessage({
+            type: 'UNKNOWN_ERROR',
+            message: error.message || 'Insert failed',
+          }),
+        };
+      }
 
       return {
         data: null,
@@ -299,7 +389,7 @@ export class EnhancedSupabaseService {
         },
       };
     }
-  }
+  },
 
   /**
    * Enhanced update with error handling
@@ -330,7 +420,7 @@ export class EnhancedSupabaseService {
 
     try {
       if (checkNetwork) {
-        await this.checkNetworkConnectivity();
+        await checkNetworkConnectivity();
       }
 
       let query = supabase.from(table).update(data).match(filter).select();
@@ -345,17 +435,17 @@ export class EnhancedSupabaseService {
         logger.error('Supabase update error:', error);
 
         const networkError: NetworkError = {
-          type: this.determineErrorType(error),
+          type: determineErrorType(error),
           message: getUserFriendlyErrorMessage({
-            type: this.determineErrorType(error),
+            type: determineErrorType(error),
             message: error.message,
           }),
           details: error,
         };
 
-        if (this.shouldRetry(error) && retries > 0) {
-          await this.delay(this.calculateBackoffDelay(3 - retries));
-          return this.update(table, data, filter, { ...options, retries: retries - 1 });
+        if (shouldRetry(error) && retries > 0) {
+          await delay(calculateBackoffDelay(3 - retries));
+          return enhancedSupabase.update(table, data, filter, { ...options, retries: retries - 1 });
         }
 
         return {
@@ -383,13 +473,33 @@ export class EnhancedSupabaseService {
     } catch (error: any) {
       logger.error('Supabase update service error:', error);
 
-      const networkError: NetworkError = {
-        type: 'UNKNOWN_ERROR',
-        message: getUserFriendlyErrorMessage({
+      let networkError: NetworkError;
+
+      if (error.code === 'NETWORK_UNREACHABLE') {
+        networkError = {
+          type: 'NETWORK_ERROR',
+          message: getUserFriendlyErrorMessage({
+            type: 'NETWORK_ERROR',
+            message: 'Supabase unreachable',
+          }),
+        };
+      } else if (error.name === 'AbortError') {
+        networkError = {
+          type: 'TIMEOUT_ERROR',
+          message: getUserFriendlyErrorMessage({
+            type: 'TIMEOUT_ERROR',
+            message: 'Request timeout',
+          }),
+        };
+      } else {
+        networkError = {
           type: 'UNKNOWN_ERROR',
-          message: error.message || 'Update failed',
-        }),
-      };
+          message: getUserFriendlyErrorMessage({
+            type: 'UNKNOWN_ERROR',
+            message: error.message || 'Update failed',
+          }),
+        };
+      }
 
       return {
         data: null,
@@ -402,7 +512,7 @@ export class EnhancedSupabaseService {
         },
       };
     }
-  }
+  },
 
   /**
    * Enhanced delete with error handling
@@ -430,7 +540,7 @@ export class EnhancedSupabaseService {
 
     try {
       if (checkNetwork) {
-        await this.checkNetworkConnectivity();
+        await checkNetworkConnectivity();
       }
 
       let query = supabase.from(table).delete().match(filter).select();
@@ -445,17 +555,17 @@ export class EnhancedSupabaseService {
         logger.error('Supabase delete error:', error);
 
         const networkError: NetworkError = {
-          type: this.determineErrorType(error),
+          type: determineErrorType(error),
           message: getUserFriendlyErrorMessage({
-            type: this.determineErrorType(error),
+            type: determineErrorType(error),
             message: error.message,
           }),
           details: error,
         };
 
-        if (this.shouldRetry(error) && retries > 0) {
-          await this.delay(this.calculateBackoffDelay(3 - retries));
-          return this.delete(table, filter, { ...options, retries: retries - 1 });
+        if (shouldRetry(error) && retries > 0) {
+          await delay(calculateBackoffDelay(3 - retries));
+          return enhancedSupabase.delete(table, filter, { ...options, retries: retries - 1 });
         }
 
         return {
@@ -483,13 +593,33 @@ export class EnhancedSupabaseService {
     } catch (error: any) {
       logger.error('Supabase delete service error:', error);
 
-      const networkError: NetworkError = {
-        type: 'UNKNOWN_ERROR',
-        message: getUserFriendlyErrorMessage({
+      let networkError: NetworkError;
+
+      if (error.code === 'NETWORK_UNREACHABLE') {
+        networkError = {
+          type: 'NETWORK_ERROR',
+          message: getUserFriendlyErrorMessage({
+            type: 'NETWORK_ERROR',
+            message: 'Supabase unreachable',
+          }),
+        };
+      } else if (error.name === 'AbortError') {
+        networkError = {
+          type: 'TIMEOUT_ERROR',
+          message: getUserFriendlyErrorMessage({
+            type: 'TIMEOUT_ERROR',
+            message: 'Request timeout',
+          }),
+        };
+      } else {
+        networkError = {
           type: 'UNKNOWN_ERROR',
-          message: error.message || 'Delete failed',
-        }),
-      };
+          message: getUserFriendlyErrorMessage({
+            type: 'UNKNOWN_ERROR',
+            message: error.message || 'Delete failed',
+          }),
+        };
+      }
 
       return {
         data: null,
@@ -502,7 +632,7 @@ export class EnhancedSupabaseService {
         },
       };
     }
-  }
+  },
 
   /**
    * Batch insert multiple records
@@ -532,7 +662,7 @@ export class EnhancedSupabaseService {
     };
 
     for (const item of data) {
-      const result = await this.insert<T>(table, item, { ...options, single: true });
+      const result = await enhancedSupabase.insert<T>(table, item, { ...options, single: true });
       if (result.success && result.data) {
         results.successful.push(result.data as T);
         results.successCount++;
@@ -543,7 +673,7 @@ export class EnhancedSupabaseService {
     }
 
     return results;
-  }
+  },
 
   /**
    * Batch update multiple records
@@ -573,7 +703,7 @@ export class EnhancedSupabaseService {
     };
 
     for (const update of updates) {
-      const result = await this.update<T>(table, update.data, update.filter, {
+      const result = await enhancedSupabase.update<T>(table, update.data, update.filter, {
         ...options,
         single: true,
       });
@@ -587,7 +717,7 @@ export class EnhancedSupabaseService {
     }
 
     return results;
-  }
+  },
 
   /**
    * Batch delete multiple records
@@ -617,7 +747,7 @@ export class EnhancedSupabaseService {
     };
 
     for (const filter of filters) {
-      const result = await this.delete<T>(table, filter, { ...options, single: true });
+      const result = await enhancedSupabase.delete<T>(table, filter, { ...options, single: true });
       if (result.success && result.data) {
         results.successful.push(result.data as T);
         results.successCount++;
@@ -628,7 +758,7 @@ export class EnhancedSupabaseService {
     }
 
     return results;
-  }
+  },
 
   /**
    * Build a query builder for flexible query construction
@@ -642,7 +772,7 @@ export class EnhancedSupabaseService {
    */
   buildQuery<T>(table: string): QueryBuilder<T> {
     return supabase.from(table) as QueryBuilder<T>;
-  }
+  },
 
   /**
    * Test Supabase connection with detailed diagnostics
@@ -675,7 +805,7 @@ export class EnhancedSupabaseService {
           latency: Date.now() - startTime,
           endpoint: supabase.supabaseUrl,
           error: getUserFriendlyErrorMessage({
-            type: this.determineErrorType(error),
+            type: determineErrorType(error),
             message: error.message,
           }),
           timestamp: new Date().toISOString(),
@@ -701,85 +831,18 @@ export class EnhancedSupabaseService {
         timestamp: new Date().toISOString(),
       };
     }
-  }
+  },
 
   /**
    * Get network diagnostics
    * @returns Network diagnostics information
    */
   async getDiagnostics() {
-    return this.networkManager.getDiagnostics();
-  }
-
-  /**
-   * Check network connectivity (private method)
-   */
-  private async checkNetworkConnectivity(): Promise<void> {
-    const diagnostics = await this.networkManager.testConnectivity();
-    if (!diagnostics.canReachSupabase) {
-      throw new Error('Supabase sunucusuna erişilemiyor. İnternet bağlantınızı kontrol edin.');
-    }
-  }
-
-  /**
-   * Determine error type from Supabase error
-   */
-  private determineErrorType(error: any): NetworkError['type'] {
-    const message = error.message?.toLowerCase() || '';
-    const code = error.code || '';
-
-    if (message.includes('network') || message.includes('fetch')) {
-      return 'NETWORK_ERROR';
-    }
-    if (code === 'PGRST301' || message.includes('timeout')) {
-      return 'TIMEOUT_ERROR';
-    }
-    if (code === '401' || code === '403' || message.includes('unauthorized')) {
-      return 'AUTH_ERROR';
-    }
-    if (message.includes('server') || code.startsWith('5')) {
-      return 'SERVER_ERROR';
-    }
-
-    return 'UNKNOWN_ERROR';
-  }
-
-  /**
-   * Check if error should be retried
-   */
-  private shouldRetry(error: any): boolean {
-    const message = error.message?.toLowerCase() || '';
-    const code = error.code || '';
-
-    // Retry on network errors and server errors
-    if (
-      message.includes('network') ||
-      message.includes('timeout') ||
-      message.includes('fetch') ||
-      code.startsWith('5')
-    ) {
-      return true;
-    }
-
-    return false;
-  }
-
-  /**
-   * Calculate backoff delay
-   */
-  private calculateBackoffDelay(attempt: number): number {
-    return Math.min(1000 * Math.pow(2, attempt), 5000);
-  }
-
-  /**
-   * Delay utility
-   */
-  private delay(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  }
-}
+    return networkManager.getDiagnostics();
+  },
+};
 
 // Export singleton instance
-export const enhancedSupabase = EnhancedSupabaseService.getInstance();
+export { enhancedSupabase };
 
-export default EnhancedSupabaseService;
+export default enhancedSupabase;

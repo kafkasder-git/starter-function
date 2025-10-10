@@ -83,7 +83,7 @@ export interface DonationStats {
   paymentMethods: Record<string, number>;
 }
 
-export class DonationsService {
+const donationsService = {
   // Get all donations with pagination and filters
   async getDonations(
     page = 1,
@@ -164,7 +164,7 @@ export class DonationsService {
       logger.error('❌ Unexpected error in getDonations:', error);
       return { error: error.message || 'Beklenmeyen hata oluştu' };
     }
-  }
+  },
 
   // Get single donation
   async getDonation(id: number): Promise<DonationsApiResponse<Donation>> {
@@ -184,7 +184,7 @@ export class DonationsService {
       logger.error('❌ Unexpected error in getDonation:', error);
       return { error: error.message || 'Bağış bulunamadı' };
     }
-  }
+  },
 
   // Get donation statistics
   async getDonationStats(): Promise<DonationsApiResponse<DonationStats>> {
@@ -275,7 +275,7 @@ export class DonationsService {
       logger.error('❌ Error calculating donation statistics:', error);
       return { error: error.message || 'İstatistikler hesaplanamadı' };
     }
-  }
+  },
 
   // Create new donation
   async createDonation(donationData: Partial<Donation>): Promise<DonationsApiResponse<Donation>> {
@@ -330,7 +330,7 @@ export class DonationsService {
       logger.error('❌ Unexpected error in createDonation:', error);
       return { error: error.message || 'Bağış oluşturulamadı' };
     }
-  }
+  },
 
   // Update donation
   async updateDonation(
@@ -361,7 +361,7 @@ export class DonationsService {
       logger.error('❌ Unexpected error in updateDonation:', error);
       return { error: error.message || 'Bağış güncellenemedi' };
     }
-  }
+  },
 
   // Delete donation
   async deleteDonation(id: number): Promise<DonationsApiResponse<boolean>> {
@@ -381,7 +381,7 @@ export class DonationsService {
       logger.error('❌ Unexpected error in deleteDonation:', error);
       return { error: error.message || 'Bağış silinemedi' };
     }
-  }
+  },
 
   // Get donor types for filter dropdown
   async getDonorTypes(): Promise<DonationsApiResponse<string[]>> {
@@ -402,7 +402,7 @@ export class DonationsService {
     } catch (error: any) {
       return { error: error.message || 'Bağışçı türleri getirilemedi' };
     }
-  }
+  },
 
   // Get donation types for filter dropdown
   async getDonationTypes(): Promise<DonationsApiResponse<string[]>> {
@@ -423,7 +423,7 @@ export class DonationsService {
     } catch (error: any) {
       return { error: error.message || 'Bağış türleri getirilemedi' };
     }
-  }
+  },
 
   // Get payment methods for filter dropdown
   async getPaymentMethods(): Promise<DonationsApiResponse<string[]>> {
@@ -444,7 +444,7 @@ export class DonationsService {
     } catch (error: any) {
       return { error: error.message || 'Ödeme yöntemleri getirilemedi' };
     }
-  }
+  },
 
   // Bulk approve donations
   async bulkApproveDonations(ids: number[]): Promise<DonationsApiResponse<boolean>> {
@@ -471,7 +471,7 @@ export class DonationsService {
       logger.error('❌ Unexpected error in bulkApproveDonations:', error);
       return { error: error.message || 'Toplu onay işlemi başarısız' };
     }
-  }
+  },
 
   // Export donations to CSV
   async exportDonations(filters: DonationsFilters = {}): Promise<DonationsApiResponse<Donation[]>> {
@@ -526,11 +526,11 @@ export class DonationsService {
       logger.error('❌ Unexpected error in exportDonations:', error);
       return { error: error.message || 'Dışa aktarma başarısız' };
     }
-  }
-}
+  },
+};
 
-// Singleton instance
-export const donationsService = new DonationsService();
+// Export the service
+export { donationsService };
 
 // Default export
 export default donationsService;

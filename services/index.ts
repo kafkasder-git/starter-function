@@ -16,7 +16,7 @@ import monitoring from './monitoringService';
 import exportService from './exportService';
 // AI services removed
 import performanceMonitoringService from './performanceMonitoringService';
-import { enhancedSupabase, EnhancedSupabaseService } from './enhancedSupabaseService';
+import { enhancedSupabase } from './enhancedSupabaseService';
 
 // =============================================================================
 // CORE SERVICES
@@ -54,7 +54,7 @@ export { default as intelligentStatsService } from './intelligentStatsService';
 // Enhanced Supabase service - Recommended way to interact with Supabase
 // See documentation: c:/Users/isaha/Desktop/panel/docs/services/ENHANCED_SUPABASE_SERVICE.md
 
-export { enhancedSupabase, EnhancedSupabaseService } from './enhancedSupabaseService';
+export { enhancedSupabase } from './enhancedSupabaseService';
 
 // =============================================================================
 // COMMUNICATION SERVICES

@@ -33,14 +33,15 @@ export interface ApiResponse<T> {
   error: string | null;
 }
 
+// Module-level constants
+const rolesTable = 'roles';
+const permissionsTable = 'permissions';
+const userProfilesTable = 'user_profiles';
+
 /**
  * Role and permission management service
  */
-export class RolesService {
-  private rolesTable = 'roles';
-  private permissionsTable = 'permissions';
-  private userProfilesTable = 'user_profiles';
-
+const rolesService = {
   /**
    * Get all roles
    */
@@ -48,7 +49,7 @@ export class RolesService {
     try {
       logger.info('Fetching all roles');
 
-      const { data, error } = await supabase.from(this.rolesTable).select('*').order('name');
+      const { data, error } = await supabase.from(rolesTable).select('*').order('name');
 
       if (error) {
         logger.error('Error fetching roles', error);
@@ -67,7 +68,7 @@ export class RolesService {
         error: 'Beklenmeyen bir hata oluştu',
       };
     }
-  }
+  },
 
   /**
    * Get a single role by ID
@@ -76,11 +77,7 @@ export class RolesService {
     try {
       logger.info(`Fetching role: ${id}`);
 
-      const { data, error } = await supabase
-        .from(this.rolesTable)
-        .select('*')
-        .eq('id', id)
-        .single();
+      const { data, error } = await supabase.from(rolesTable).select('*').eq('id', id).single();
 
       if (error) {
         logger.error('Error fetching role', error);
@@ -98,7 +95,7 @@ export class RolesService {
         error: 'Beklenmeyen bir hata oluştu',
       };
     }
-  }
+  },
 
   /**
    * Get all permissions
@@ -108,7 +105,7 @@ export class RolesService {
       logger.info('Fetching all permissions');
 
       const { data, error } = await supabase
-        .from(this.permissionsTable)
+        .from(permissionsTable)
         .select('*')
         .order('resource, action');
 
@@ -129,7 +126,7 @@ export class RolesService {
         error: 'Beklenmeyen bir hata oluştu',
       };
     }
-  }
+  },
 
   /**
    * Get permissions grouped by resource
@@ -162,7 +159,7 @@ export class RolesService {
         error: 'Beklenmeyen bir hata oluştu',
       };
     }
-  }
+  },
 
   /**
    * Check if user has a specific permission
@@ -171,7 +168,7 @@ export class RolesService {
     try {
       // Get user role
       const { data: userProfile } = await supabase
-        .from(this.userProfilesTable)
+        .from(userProfilesTable)
         .select('role')
         .eq('id', userId)
         .single();
@@ -185,7 +182,7 @@ export class RolesService {
 
       // Get role permissions
       const { data: role } = await supabase
-        .from(this.rolesTable)
+        .from(rolesTable)
         .select('permissions')
         .eq('name', normalizedRole)
         .single();
@@ -207,7 +204,7 @@ export class RolesService {
       logger.error('Error checking permission', error);
       return false;
     }
-  }
+  },
 
   /**
    * Get user's role details
@@ -218,7 +215,7 @@ export class RolesService {
 
       // Get user profile with role
       const { data: userProfile, error: userError } = await supabase
-        .from(this.userProfilesTable)
+        .from(userProfilesTable)
         .select('role')
         .eq('id', userId)
         .single();
@@ -236,7 +233,7 @@ export class RolesService {
 
       // Get role details
       const { data: role, error: roleError } = await supabase
-        .from(this.rolesTable)
+        .from(rolesTable)
         .select('*')
         .eq('name', normalizedRole)
         .single();
@@ -257,7 +254,7 @@ export class RolesService {
         error: 'Beklenmeyen bir hata oluştu',
       };
     }
-  }
+  },
 
   /**
    * Update user role
@@ -268,7 +265,7 @@ export class RolesService {
 
       // Verify role exists
       const { data: roleExists } = await supabase
-        .from(this.rolesTable)
+        .from(rolesTable)
         .select('name')
         .eq('name', newRole)
         .single();
@@ -282,7 +279,7 @@ export class RolesService {
 
       // Update user role
       const { error } = await supabase
-        .from(this.userProfilesTable)
+        .from(userProfilesTable)
         .update({ role: newRole as any, updated_at: new Date().toISOString() })
         .eq('id', userId);
 
@@ -303,7 +300,7 @@ export class RolesService {
         error: 'Beklenmeyen bir hata oluştu',
       };
     }
-  }
+  },
 
   /**
    * Get all users with their roles
@@ -313,7 +310,7 @@ export class RolesService {
       logger.info('Fetching users with roles');
 
       const { data: users, error } = await supabase
-        .from(this.userProfilesTable)
+        .from(userProfilesTable)
         .select('id, name, email, role, is_active')
         .order('name');
 
@@ -333,7 +330,7 @@ export class RolesService {
         error: 'Beklenmeyen bir hata oluştu',
       };
     }
-  }
+  },
 
   /**
    * Get role statistics
@@ -343,7 +340,7 @@ export class RolesService {
       logger.info('Fetching role statistics');
 
       const { data: users, error } = await supabase
-        .from(this.userProfilesTable)
+        .from(userProfilesTable)
         .select('role')
         .eq('is_active', true);
 
@@ -379,7 +376,7 @@ export class RolesService {
         error: 'Beklenmeyen bir hata oluştu',
       };
     }
-  }
+  },
 
   /**
    * Create a new role
@@ -394,7 +391,7 @@ export class RolesService {
       logger.info(`Creating new role: ${name}`);
 
       const { data, error } = await supabase
-        .from(this.rolesTable)
+        .from(rolesTable)
         .insert({
           name,
           display_name: displayName,
@@ -422,7 +419,7 @@ export class RolesService {
         error: 'Beklenmeyen bir hata oluştu',
       };
     }
-  }
+  },
 
   /**
    * Update an existing role
@@ -449,7 +446,7 @@ export class RolesService {
       if (updates.is_active !== undefined) updateData.is_active = updates.is_active;
 
       const { data, error } = await supabase
-        .from(this.rolesTable)
+        .from(rolesTable)
         .update(updateData)
         .eq('id', id)
         .select()
@@ -472,7 +469,7 @@ export class RolesService {
         error: 'Beklenmeyen bir hata oluştu',
       };
     }
-  }
+  },
 
   /**
    * Get permission matrix for a role
@@ -498,7 +495,7 @@ export class RolesService {
     });
 
     return matrix;
-  }
+  },
 
   /**
    * Check if role has access to resource
@@ -512,9 +509,9 @@ export class RolesService {
       permStrings.includes(`${resource}:*`) ||
       permStrings.includes('*:*')
     );
-  }
-}
+  },
+};
 
-// Export singleton instance
-export const rolesService = new RolesService();
+// Export the service
+export { rolesService };
 export default rolesService;

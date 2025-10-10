@@ -505,7 +505,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
       const blob = new Blob([`\ufeff${csv}`], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
-      link.download = `ihtiyac_sahipleri_${new Date().toISOString().split('T')[0]}.csv`;
+      link.download = `beneficiaries_${new Date().toISOString().split('T')[0]}.csv`;
       link.click();
 
       toast.success('Veriler başarıyla dışa aktarıldı');
