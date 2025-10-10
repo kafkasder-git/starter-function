@@ -1,6 +1,6 @@
 /**
  * @fileoverview UnauthorizedPage Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -66,7 +66,7 @@ const PERMISSION_LABELS: Record<Permission, string> = {
 
 /**
  * UnauthorizedPage function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */

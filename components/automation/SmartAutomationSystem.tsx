@@ -1,6 +1,6 @@
 /**
  * @fileoverview SmartAutomationSystem Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -47,7 +47,7 @@ export type TriggerType = 'time' | 'event' | 'condition' | 'manual' | 'api';
 
 /**
  * AutomationRule Interface
- * 
+ *
  * @interface AutomationRule
  */
 export interface AutomationRule {
@@ -260,7 +260,7 @@ interface SmartAutomationSystemProps {
 
 /**
  * SmartAutomationSystem function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
