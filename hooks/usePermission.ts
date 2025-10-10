@@ -39,8 +39,7 @@ export const usePermission = (resource: string, action = 'read'): boolean => {
         const permission = await rolesService.hasPermission(user.id, `${resource}:${action}`);
 
         setHasPermission(permission);
-      } catch (error) {
-        console.error('Error checking permission:', error);
+      } catch {
         setHasPermission(false);
       }
     };
@@ -81,7 +80,8 @@ export const useRole = (roles: string | string[]): boolean => {
  * const { role, permissions, isLoading } = useUserRole();
  */
 export const useUserRole = () => {
-  const [role, setRole] = useState<any>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [role, setRole] = useState<any | null>(null);
   const [permissions, setPermissions] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const user = useAuthStore((state) => state.user);
@@ -98,10 +98,14 @@ export const useUserRole = () => {
 
         if (data) {
           setRole(data);
-          setPermissions(Array.isArray(data.permissions) ? data.permissions : []);
+          // Convert Json[] to string[] safely
+          const perms = Array.isArray(data.permissions)
+            ? data.permissions.filter((p): p is string => typeof p === 'string')
+            : [];
+          setPermissions(perms);
         }
-      } catch (error) {
-        console.error('Error fetching user role:', error);
+      } catch {
+        // Silently fail - user will see no permissions
       } finally {
         setIsLoading(false);
       }
