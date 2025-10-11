@@ -1,136 +1,17 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+node_modules
 
-# dependencies
-/node_modules
-/.pnp
-.pnp.js
+# Environment files
 
-# testing
-/coverage
-
-# production
-/build
-/dist
-
-# misc
-.DS_Store
-.env
-.env.local
-.env.development.local
-.env.test.local
 .env.production.local
 
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+# Build outputs
+dist/
+build/
 
-# IDE
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-.idea/
-*.swp
-*.swo
-*~
-
-# Cursor IDE - MCP Configuration (contains sensitive tokens)
-.cursor/environment.json
-
-# OS
-Thumbs.db
-
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-# Vite
-dist-ssr
-*.local
-
-# Editor directories and files
+# IDE files
 .vscode/
-!.vscode/extensions.json
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+.idea/
 
-# PWA
-sw.js
-sw.js.map
-workbox-*.js
-workbox-*.js.map
-
-# Test
-test-results/
-playwright-report/
-playwright/.cache/
-
-# Security
-*.pem
-*.key
-.env.production
-
-# Temporary files
-*.tmp
-.temp/
-tmp/
-
-# Backup files
-*.backup
-*.bak
-*.old
-
-# Python virtual environment
-venv/
-env/
-.venv/
-
-# Project Specific
-# Test Reports
-testsprite_tests/
-*.test-report.html
-*.test-report.md
-test-report-*.json
-standard_prd.json
-
-# Lint Output
-lint-output.txt
-lint-output-*.txt
-eslint-output.txt
-*.lint.txt
-
-# Temporary Documentation
-*_SUMMARY.md
-*_STATUS.md
-*_COMPLETE.md
-INTEGRATION_*.md
-
-# Kod Review Çıktıları
-eslint-review.log
-typecheck-review.log
-depcheck-review.log
-dead-code-review.log
-build-review.log
-bundle-size-review.log
-test-coverage-review.log
-complexity-review.json
-duplicate-code-review.log
-lighthouse-report.json
-.jscpd/
-
-# Bundle Analizi
-bundle-analysis.html
-dist/bundle-analysis.html
-
-# Metrik Karşılaştırma
-metrics-before.txt
-metrics-after.txt
+# OS files
+.DS_Store
+Thumbs.db

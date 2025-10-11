@@ -5,9 +5,10 @@
  * @version 1.0.0
  */
 
-import { forwardRef, useState, type ReactNode } from 'react';
+import { forwardRef, useState, useEffect, useCallback, type ReactNode } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { AlertCircle, CheckCircle, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { useDebounce } from '../../hooks/useDebounce';
 import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
 import { Label } from '../ui/label';
@@ -73,6 +74,11 @@ export interface FormFieldProps {
   onBlur?: () => void;
   onFocus?: () => void;
   children?: ReactNode;
+  // New async validation props
+  asyncValidator?: (value: any) => Promise<ValidationError[] | null>;
+  validationDelay?: number;
+  onValidationStart?: () => void;
+  onValidationComplete?: (errors: ValidationError[] | null) => void;
 }
 
 export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, FormFieldProps>(
@@ -109,16 +115,68 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
       onBlur,
       onFocus,
       children,
+      // New async validation props
+      asyncValidator,
+      validationDelay = 500,
+      onValidationStart,
+      onValidationComplete,
       ...props
     },
     ref,
   ) => {
     const [showPassword, setShowPassword] = useState(false);
     const [isFocused, setIsFocused] = useState(false);
+    const [asyncErrors, setAsyncErrors] = useState<ValidationError[]>([]);
+    const [isAsyncValidating, setIsAsyncValidating] = useState(false);
+    
+    // Debounce the value for async validation
+    const debouncedValue = useDebounce(value, validationDelay);
 
-    const hasError = errors.length > 0;
+    // Async validation effect
+    useEffect(() => {
+      if (!asyncValidator || !debouncedValue || disabled || readOnly) {
+        return;
+      }
+
+      const runAsyncValidation = async () => {
+        setIsAsyncValidating(true);
+        onValidationStart?.();
+
+        try {
+          const validationErrors = await asyncValidator(debouncedValue);
+          setAsyncErrors(validationErrors || []);
+          onValidationComplete?.(validationErrors);
+        } catch {
+          // console.error('Async validation error:', error);
+          setAsyncErrors([{ 
+            field: name, 
+            message: 'Validation failed. Please try again.' 
+          }]);
+          onValidationComplete?.([{ 
+            field: name, 
+            message: 'Validation failed. Please try again.' 
+          }]);
+        } finally {
+          setIsAsyncValidating(false);
+        }
+      };
+
+      runAsyncValidation();
+    }, [debouncedValue, asyncValidator, name, disabled, readOnly, onValidationStart, onValidationComplete]);
+
+    // Clear async errors when value changes (before debounce)
+    useEffect(() => {
+      if (asyncErrors.length > 0) {
+        setAsyncErrors([]);
+      }
+    }, [value]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    // Combine sync and async errors
+    const allErrors = [...errors, ...asyncErrors];
+    const hasError = allErrors.length > 0;
     const hasWarning = warnings.length > 0 && !hasError;
-    const isValid = touched && !hasError && !isValidating && value;
+    const isCurrentlyValidating = isValidating || isAsyncValidating;
+    const isValid = touched && !hasError && !isCurrentlyValidating && value;
 
     const handleFocus = () => {
       setIsFocused(true);
@@ -137,7 +195,7 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
     const renderValidationIcon = () => {
       if (!showValidationIcon) return null;
 
-      if (isValidating) {
+      if (isCurrentlyValidating) {
         return <Loader2 className="w-4 h-4 text-blue-500 animate-spin" />;
       }
 
@@ -472,7 +530,7 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
               transition={{ duration: 0.2 }}
               className={cn('space-y-1', errorClassName)}
             >
-              {errors.map((error, index) => (
+              {allErrors.map((error, index) => (
                 <div
                   key={index}
                   id={`${id}-error`}

@@ -241,7 +241,40 @@ export default {
         'smooth': 'cubic-bezier(0.4, 0, 0.2, 1)',
         'snappy': 'cubic-bezier(0.4, 0, 0.6, 1)',
       },
+
+      // Typography Utilities
+      textWrap: {
+        'balance': 'balance',
+        'pretty': 'pretty',
+      },
     },
   },
-  plugins: [],
+  plugins: [
+    // Typography utilities plugin
+    function({ addUtilities }: { addUtilities: any }) {
+      const newUtilities = {
+        '.text-balance': {
+          'text-wrap': 'balance',
+        },
+        '.text-pretty': {
+          'text-wrap': 'pretty',
+        },
+        // Fallbacks for browsers that don't support text-wrap
+        '@supports not (text-wrap: balance)': {
+          '.text-balance': {
+            'hyphens': 'auto',
+            'word-break': 'break-word',
+          },
+        },
+        '@supports not (text-wrap: pretty)': {
+          '.text-pretty': {
+            'orphans': '2',
+            'widows': '2',
+            'word-break': 'break-word',
+          },
+        },
+      };
+      addUtilities(newUtilities);
+    },
+  ],
 } satisfies Config;

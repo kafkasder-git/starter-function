@@ -1,0 +1,26 @@
+# Appwrite Configuration
+# This file configures your Appwrite project for deployment
+
+projectId: '68ea4704000d41e50bb0'
+
+# Sites configuration for your React panel application
+sites:
+  - id: 'panel-app'
+    name: 'Kafkasder Management Panel'
+    buildCommand: 'npm run build'
+    outputDirectory: 'dist'
+    environmentVariables:
+      - VITE_APPWRITE_ENDPOINT: 'https://fra.cloud.appwrite.io/v1'
+      - VITE_APPWRITE_PROJECT_ID: '68ea4704000d41e50bb0'
+      - VITE_APPWRITE_PROJECT_NAME: 'kafkasyapı'
+      - VITE_APPWRITE_DATABASE_ID: 'kafkasder_db'
+    # Optional: Custom domain
+    # customDomain: 'panel.yourdomain.com'
+
+# Functions (if you want to add server-side logic later)
+functions:
+  # Example function for backend logic
+  # - id: 'panel-api'
+  #   name: 'Panel API Functions'
+  #   runtime: 'node-18.0'
+  #   entrypoint: 'src/functions/index.js'

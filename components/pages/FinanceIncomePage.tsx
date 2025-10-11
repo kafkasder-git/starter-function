@@ -15,7 +15,7 @@ import { toast } from 'sonner';
 import { useIsMobile } from '../../hooks/useTouchDevice';
 import { db, collections } from '../../lib/database';
 import { logger } from '../../lib/logging/logger';
-import { MobileInfoCard, ResponsiveCardGrid } from '../ResponsiveCard';
+import { MobileInfoCard, ResponsiveCardGrid } from '../shared/ResponsiveCard';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
@@ -66,6 +66,7 @@ function FinanceIncomePageContent() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [showTransactionDialog, setShowTransactionDialog] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [, setLoading] = useState(false);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [formData, setFormData] = useState({
     type: 'income' as 'income' | 'expense',

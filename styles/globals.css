@@ -1108,6 +1108,34 @@ body {
   border: 1px solid rgba(71, 85, 105, 0.3);
 }
 
+/* Typography Utility Classes */
+.text-balance {
+  text-wrap: balance;
+}
+
+/* Fallback for browsers that don't support text-wrap: balance */
+@supports not (text-wrap: balance) {
+  .text-balance {
+    /* Use hyphens as fallback for better text wrapping */
+    hyphens: auto;
+    word-break: break-word;
+  }
+}
+
+.text-pretty {
+  text-wrap: pretty;
+}
+
+/* Fallback for browsers that don't support text-wrap: pretty */
+@supports not (text-wrap: pretty) {
+  .text-pretty {
+    /* Prevent orphans and improve text flow */
+    orphans: 2;
+    widows: 2;
+    word-break: break-word;
+  }
+}
+
 /* Desktop Layout Classes */
 .desktop-container {
   width: 100%;
