@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Heart, Share2, Download, Star, Calendar, Clock, User, Mail, Phone } from "lucide-react"
+import { Heart, Share2, Download, Star, Calendar, Clock, User, Mail, Phone, Users, DollarSign, CreditCard, Activity } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, CardAction } from "@/components/ui/card"
@@ -346,5 +346,3 @@ export function CardExamples() {
   )
 }
 
-// Import missing icons
-import { DollarSign, CreditCard, Activity } from "lucide-react"

@@ -16,9 +16,10 @@ import { FormExamplesPage } from '../components/pages/FormExamplesPage';
 import BursStudentsPage from '../components/pages/BursStudentsPage';
 import BursApplicationsPage from '../components/pages/BursApplicationsPage';
 import BulkMessagePage from '../components/pages/BulkMessagePage';
-import EventsPage from '../components/pages/EventsPage';
-import LegalConsultationPage from '../components/pages/LegalConsultationPage';
 import LegalDocumentsPage from '../components/pages/LegalDocumentsPage';
+import TasksPage from '../components/pages/TasksPage';
+import MeetingsPage from '../components/pages/MeetingsPage';
+import PartnersPage from '../components/pages/PartnersPage';
 
 /**
  * Public routes configuration
@@ -46,6 +47,10 @@ export const protectedRoutes: RouteObject[] = [
       // Dashboard/General module
       {
         path: 'genel',
+        element: <DashboardPage />,
+      },
+      {
+        path: 'dashboard',
         element: <DashboardPage />,
       },
       {
@@ -112,6 +117,45 @@ export const protectedRoutes: RouteObject[] = [
         path: 'mesaj/toplu',
         element: <BulkMessagePage />,
       },
+      // Work module
+      {
+        path: 'is',
+        element: <TasksPage />,
+      },
+      {
+        path: 'is/etkinlikler',
+        element: <TasksPage />,
+      },
+      {
+        path: 'is/toplantilar',
+        element: <MeetingsPage />,
+      },
+      {
+        path: 'is/gorevlerim',
+        element: <TasksPage />,
+      },
+      {
+        path: 'is/gorevler',
+        element: <TasksPage />,
+      },
+      // Legal module
+      {
+        path: 'hukuki',
+        element: <LegalDocumentsPage />,
+      },
+      {
+        path: 'hukuki/belgeler',
+        element: <LegalDocumentsPage />,
+      },
+      // Partners module
+      {
+        path: 'partner',
+        element: <PartnersPage />,
+      },
+      {
+        path: 'partner/liste',
+        element: <PartnersPage />,
+      },
       // User management
       {
         path: 'user-management',
@@ -169,8 +213,7 @@ export const moduleToRoute: Record<string, string> = {
  */
 export const routeToModule: Record<string, string> = Object.entries(moduleToRoute).reduce(
   (acc, [module, route]) => {
-    acc[route] = module;
-    return acc;
+    return { ...acc, [route]: module };
   },
   {} as Record<string, string>,
 );

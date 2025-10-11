@@ -63,7 +63,6 @@ export function BeneficiaryDocuments({
   const [selectedFileType, setSelectedFileType] = useState('all');
   const [previewFile, setPreviewFile] = useState<any>(null);
   const [isLoadingDocuments, setIsLoadingDocuments] = useState(false);
-  const [_loading] = useState(false);
 
   useEffect(() => {
     const fetchDocuments = async () => {

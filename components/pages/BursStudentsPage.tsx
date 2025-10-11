@@ -69,7 +69,7 @@ export function BursStudentsPage() {
   const [showApplicationDialog, setShowApplicationDialog] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [students, setStudents] = useState<Student[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [_loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     student_name: '',
     email: '',

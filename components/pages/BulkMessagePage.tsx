@@ -80,7 +80,7 @@ export function BulkMessagePage() {
       setSubject('');
       setMessage('');
       setSelectedTemplate('');
-    } catch (error) {
+    } catch (_error) {
       toast.error('Mesaj gönderilirken hata oluştu');
     } finally {
       setIsSending(false);

@@ -13,7 +13,6 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Progress } from "@/components/ui/progress"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
@@ -103,7 +102,7 @@ function CodeBlock({ children, title }: { children: string; title: string }) {
   const copyToClipboard = async () => {
     await navigator.clipboard.writeText(children)
     setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+    setTimeout(() => { setCopied(false); }, 2000)
   }
 
   return (
@@ -132,7 +131,7 @@ export function UIComponentsShowcase() {
       <div className="text-center space-y-2">
         <h1 className="text-3xl font-bold">shadcn/ui Bileşen Galerisi</h1>
         <p className="text-muted-foreground">
-          Kafkasder Yönetim Sistemi'nde kullanılan tüm UI bileşenlerinin örnekleri
+          Kafkasder Yönetim Sistemi&apos;nde kullanılan tüm UI bileşenlerinin örnekleri
         </p>
       </div>
 
@@ -206,7 +205,7 @@ export function UIComponentsShowcase() {
                     <Button size="icon">🚀</Button>
                   </div>
                 </div>
-                <CodeBlock title="Button Kullanımı" children={codeExamples.button} />
+                <CodeBlock title="Button Kullanımı">{codeExamples.button}</CodeBlock>
               </CardContent>
             </Card>
 
@@ -275,7 +274,7 @@ export function UIComponentsShowcase() {
                     <Label htmlFor="notifications">Bildirimleri aç</Label>
                   </div>
                 </div>
-                <CodeBlock title="Form Bileşenleri Kullanımı" children={codeExamples.form} />
+                <CodeBlock title="Form Bileşenleri Kullanımı">{codeExamples.form}</CodeBlock>
               </CardContent>
             </Card>
           </div>
@@ -317,7 +316,7 @@ export function UIComponentsShowcase() {
                     </CardContent>
                   </Card>
                 </div>
-                <CodeBlock title="Card Kullanımı" children={codeExamples.card} />
+                <CodeBlock title="Card Kullanımı">{codeExamples.card}</CodeBlock>
               </CardContent>
             </Card>
 

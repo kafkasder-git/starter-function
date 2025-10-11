@@ -194,10 +194,10 @@ export function UsageGuide() {
       <section className="space-y-4">
         <h2 className="text-2xl font-semibold">Code Examples</h2>
         <div className="space-y-6">
-          <CodeBlock title="Login Form Implementation" children={codeExamples.login} />
-          <CodeBlock title="Dashboard Component" children={codeExamples.dashboard} />
-          <CodeBlock title="Basic Card Usage" children={codeExamples.card} />
-          <CodeBlock title="Form with Validation" children={codeExamples.form} />
+          <CodeBlock title="Login Form Implementation">{codeExamples.login}</CodeBlock>
+          <CodeBlock title="Dashboard Component">{codeExamples.dashboard}</CodeBlock>
+          <CodeBlock title="Basic Card Usage">{codeExamples.card}</CodeBlock>
+          <CodeBlock title="Form with Validation">{codeExamples.form}</CodeBlock>
         </div>
       </section>
 
@@ -224,7 +224,7 @@ export function UsageGuide() {
               </div>
               <Separator />
               <div className="space-y-2">
-                <h4 className="font-medium text-red-600">❌ Don't</h4>
+                <h4 className="font-medium text-red-600">❌ Don&apos;t</h4>
                 <ul className="text-sm space-y-1 text-muted-foreground">
                   <li>• Override component internals</li>
                   <li>• Use inline styles excessively</li>

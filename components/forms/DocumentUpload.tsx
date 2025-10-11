@@ -11,6 +11,7 @@ import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Progress } from '../ui/progress';
 import { toast } from 'sonner';
+import { useAuthStore } from '../../stores/authStore';
 import type { FileUploadOptions } from '../../services/fileStorageService';
 import { fileStorageService } from '../../services/fileStorageService';
 
@@ -100,11 +101,11 @@ export function DocumentUpload({
     return null;
   };
 
-  const simulateVirusScan = async (_file: File): Promise<boolean> => {
+  const simulateVirusScan = async (): Promise<boolean> => {
     // Placeholder for virus scanning
     // In real implementation, integrate with ClamAV or similar service
     await new Promise((resolve) => setTimeout(resolve, 500));
-    
+
     return true; // Always pass for now
   };
 

@@ -66,7 +66,7 @@ export function BursApplicationsPage() {
   const [showApplicationDialog, setShowApplicationDialog] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [applications, setApplications] = useState<Application[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [_loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     applicantName: '',
     email: '',
