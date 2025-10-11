@@ -26,7 +26,13 @@ import { useUserPreferences } from '../hooks/useLocalStorage';
  * Redirects based on authentication status
  */
 const RootRedirect = () => {
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, isInitialized } = useAuthStore();
+  
+  // Wait for auth initialization to complete
+  if (!isInitialized) {
+    return <div>Loading...</div>;
+  }
+  
   return <Navigate to={isAuthenticated ? '/genel' : '/login'} replace />;
 };
 
@@ -230,7 +236,12 @@ const AppContent = memo(() => {
  */
 const AppWithNavigation = memo(() => {
   return (
-    <BrowserRouter>
+    <BrowserRouter
+      future={{
+        v7_startTransition: true,
+        v7_relativeSplatPath: true,
+      }}
+    >
       <RouterNavigationProvider>
         <Routes>
           {/* Root redirect */}

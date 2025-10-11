@@ -6,8 +6,8 @@
  */
 
 import { forwardRef } from 'react';
-import { cn } from './ui/utils';
-import { Card } from './ui/card';
+import { cn } from '../ui/utils';
+import { Card } from '../ui/card';
 import { motion } from 'motion/react';
 
 interface ResponsiveCardProps {

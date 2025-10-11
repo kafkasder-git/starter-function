@@ -906,6 +906,10 @@ export const useAuthStore = create<AuthStore>()(
         {
           name: 'auth-store',
           partialize: (state) => ({
+            user: state.user,
+            session: state.session,
+            isAuthenticated: state.isAuthenticated,
+            isInitialized: state.isInitialized,
             rememberMe: state.rememberMe,
             loginAttempts: state.loginAttempts,
             lastLoginAttempt: state.lastLoginAttempt,

@@ -3,6 +3,7 @@ import path from 'path';
 // import { visualizer } from 'rollup-plugin-visualizer';
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
+import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
   esbuild: {
@@ -14,6 +15,7 @@ export default defineConfig({
     postcss: './postcss.config.js',
   },
   plugins: [
+    tailwindcss(),
     react({
       // React plugin optimizasyonları
       include: ['**/*.{jsx,tsx}'],

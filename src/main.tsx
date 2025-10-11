@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-import '../index.css';
+import './index.css';
 import { logger } from '../lib/logging/logger';
 
 // Global error handlers for production

@@ -102,7 +102,25 @@ interface UserFormData {
 }
 
 // User Management Components
-const UserStatsCards = ({ stats }: { stats: UserStats }) => (
+const UserStatsCards = ({ stats }: { stats: UserStats | undefined }) => {
+  if (!stats) {
+    return (
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+        {[...Array(5)].map((_, i) => (
+          <Card key={i}>
+            <CardContent className="p-4">
+              <div className="animate-pulse">
+                <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                <div className="h-6 bg-gray-200 rounded"></div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    );
+  }
+
+  return (
   <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
     <Card>
       <CardContent className="p-4">
@@ -174,7 +192,8 @@ const UserStatsCards = ({ stats }: { stats: UserStats }) => (
       </CardContent>
     </Card>
   </div>
-);
+  );
+};
 
 const UserTable = ({ 
   users, 

@@ -11,6 +11,14 @@ import SystemSettingsPage from '../components/pages/SystemSettingsPage';
 import UserManagementPage from '../components/pages/UserManagementPageReal';
 import NotFoundPage from '../components/pages/NotFoundPage';
 import LoginPage from '../components/auth/LoginPage';
+import { UIComponentsShowcase } from '../components/pages/UIComponentsShowcase';
+import { FormExamplesPage } from '../components/pages/FormExamplesPage';
+import BursStudentsPage from '../components/pages/BursStudentsPage';
+import BursApplicationsPage from '../components/pages/BursApplicationsPage';
+import BulkMessagePage from '../components/pages/BulkMessagePage';
+import EventsPage from '../components/pages/EventsPage';
+import LegalConsultationPage from '../components/pages/LegalConsultationPage';
+import LegalDocumentsPage from '../components/pages/LegalDocumentsPage';
 
 /**
  * Public routes configuration
@@ -40,45 +48,69 @@ export const protectedRoutes: RouteObject[] = [
         path: 'genel',
         element: <DashboardPage />,
       },
+      {
+        path: 'genel/ui-showcase',
+        element: <UIComponentsShowcase />,
+      },
+      {
+        path: 'genel/form-examples',
+        element: <FormExamplesPage />,
+      },
       // Aid management module
       {
         path: 'yardim',
-        children: [
-          {
-            index: true,
-            element: <BeneficiariesPage />,
-          },
-          {
-            path: 'ihtiyac-sahipleri',
-            element: <BeneficiariesPage />,
-          },
-          {
-            path: 'ihtiyac-sahipleri/:id',
-            element: <BeneficiaryDetailPage />,
-          },
-          {
-            path: 'basvurular',
-            element: <AidApplicationsPage />,
-          },
-          {
-            path: 'liste',
-            element: <AllAidListPage />,
-          },
-        ],
+        element: <BeneficiariesPage />,
+      },
+      {
+        path: 'yardim/ihtiyac-sahipleri',
+        element: <BeneficiariesPage />,
+      },
+      {
+        path: 'yardim/ihtiyac-sahipleri/:id',
+        element: <BeneficiaryDetailPage />,
+      },
+      {
+        path: 'yardim/basvurular',
+        element: <AidApplicationsPage />,
+      },
+      {
+        path: 'yardim/liste',
+        element: <AllAidListPage />,
+      },
+      {
+        path: 'yardim/ogrenci-listesi',
+        element: <BursStudentsPage />,
       },
       // Donation module
       {
         path: 'bagis',
-        children: [
-          {
-            index: true,
-            element: <DonationsPage />,
-          },
-          {
-            path: 'liste',
-            element: <DonationsPage />,
-          },
-        ],
+        element: <DonationsPage />,
+      },
+      {
+        path: 'bagis/liste',
+        element: <DonationsPage />,
+      },
+      // Burs (Scholarship) module
+      {
+        path: 'burs',
+        element: <BursStudentsPage />,
+      },
+      {
+        path: 'burs/ogrenciler',
+        element: <BursStudentsPage />,
+      },
+      {
+        path: 'burs/basvurular',
+        element: <BursApplicationsPage />,
+      },
+      // Message module
+      {
+        path: 'mesaj',
+        element: <BulkMessagePage />,
+      },
+      {
+        path: 'mesaj/toplu',
+        element: <BulkMessagePage />,
       },
       // User management
       {

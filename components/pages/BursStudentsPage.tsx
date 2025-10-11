@@ -20,7 +20,7 @@ import { motion } from 'motion/react';
 import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { useIsMobile } from '../../hooks/useTouchDevice';
-import { MobileInfoCard, ResponsiveCardGrid, TouchActionCard } from '../ResponsiveCard';
+import { MobileInfoCard, ResponsiveCardGrid, TouchActionCard } from '../shared/ResponsiveCard';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
@@ -634,3 +634,5 @@ export function BursStudentsPage() {
     </div>
   );
 }
+
+export default BursStudentsPage;

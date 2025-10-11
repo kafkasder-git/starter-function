@@ -60,6 +60,7 @@ export function Header({
   notificationComponent,
   onNavigate,
   onQuickAction,
+  currentModule,
   onMobileMenuToggle,
 }: HeaderProps) {
   // Get real authenticated user

@@ -10,7 +10,7 @@ import { motion } from 'motion/react';
 import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { useIsMobile } from '../../hooks/useTouchDevice';
-import { MobileInfoCard, ResponsiveCardGrid } from '../ResponsiveCard';
+import { MobileInfoCard, ResponsiveCardGrid } from '../shared/ResponsiveCard';
 import { Avatar, AvatarFallback } from '../ui/avatar';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
@@ -769,3 +769,5 @@ export function BursApplicationsPage() {
     </div>
   );
 }
+
+export default BursApplicationsPage;
