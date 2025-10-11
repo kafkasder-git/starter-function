@@ -6,7 +6,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { db, collections, queryHelpers, getMappedField } from '../lib/database';
+import { db, queryHelpers } from '../lib/database';
 import { logger } from '../lib/logging/logger';
 
 /**

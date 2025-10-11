@@ -84,7 +84,6 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
       type = 'text',
       variant = 'input',
       value,
-      defaultValue: _defaultValue,
       options,
       required,
       disabled,
@@ -92,19 +91,16 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
       autoFocus,
       autoComplete,
       rows = 3,
-      className: _className,
       containerClassName,
       labelClassName,
       inputClassName,
       errorClassName,
       description,
-      tooltip: _tooltip,
       prefix,
       suffix,
       errors = [],
       warnings = [],
       touched = false,
-      dirty: _dirty = false,
       isValidating = false,
       showValidationIcon = true,
       onChange,
@@ -316,6 +312,53 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
               }}
               ref={ref as React.RefObject<HTMLInputElement>}
             />
+          );
+
+        case 'input':
+          return (
+            <div className="relative">
+              <Input
+                {...baseInputProps}
+                type={type === 'password' && showPassword ? 'text' : type}
+                ref={ref as React.RefObject<HTMLInputElement>}
+                className={cn(
+                  ((prefix ?? suffix) || type === 'password' || showValidationIcon) && 'pr-10',
+                  prefix && 'pl-10',
+                )}
+              />
+
+              {/* Prefix */}
+              {prefix && (
+                <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-500">
+                  {prefix}
+                </div>
+              )}
+
+              {/* Password toggle, suffix, or validation icon */}
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center space-x-1">
+                {type === 'password' && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="w-6 h-6 p-0 hover:bg-transparent"
+                    onClick={() => {
+                      setShowPassword(!showPassword);
+                    }}
+                    tabIndex={-1}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="w-4 h-4 text-slate-500" />
+                    ) : (
+                      <Eye className="w-4 h-4 text-slate-500" />
+                    )}
+                  </Button>
+                )}
+
+                {suffix && <div className="text-slate-500">{suffix}</div>}
+                {renderValidationIcon()}
+              </div>
+            </div>
           );
 
         default:

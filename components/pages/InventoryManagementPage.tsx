@@ -355,7 +355,7 @@ export default function PartnerAssociationsPage() {
       <div className="flex-1 space-y-4 p-4 sm:space-y-6 sm:p-6">
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
-            <div className="mb-4 h-8 w-8 animate-spin rounded-full border-4 border-gray-300 border-t-blue-600"></div>
+            <div className="mb-4 h-8 w-8 animate-spin rounded-full border-4 border-gray-300 border-t-blue-600" />
             <p className="text-muted-foreground">Dernekler yükleniyor...</p>
           </div>
         </div>

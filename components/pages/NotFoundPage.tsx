@@ -42,7 +42,7 @@ export function NotFoundPage() {
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
-              onClick={() => navigate(-1)}
+              onClick={() => { navigate(-1); }}
               variant="outline"
               className="gap-2"
             >

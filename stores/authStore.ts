@@ -914,7 +914,7 @@ export const useAuthStore = create<AuthStore>()(
           migrate: (persistedState: any, version: number) => {
             // Clear any old Supabase data and reset to clean state
             if (version < 2) {
-              console.log('🧹 Migrating auth store from version', version, 'to version 2 - clearing old data');
+              authLogger.info(`Migrating auth store from version ${version} to version 2 - clearing old data`);
               return {
                 rememberMe: false,
                 loginAttempts: 0,

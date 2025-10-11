@@ -13,7 +13,6 @@ import { Progress } from '../ui/progress';
 import { toast } from 'sonner';
 import type { FileUploadOptions } from '../../services/fileStorageService';
 import { fileStorageService } from '../../services/fileStorageService';
-import { useAuthStore } from '../../stores/authStore';
 
 interface UploadedFile {
   id: string;

@@ -33,7 +33,7 @@ interface Activity {
  */
 export function RecentActivity() {
   const [activities, setActivities] = useState<Activity[]>([]);
-  const [_loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchActivities = async () => {

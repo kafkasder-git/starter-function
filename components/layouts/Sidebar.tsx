@@ -19,7 +19,7 @@ import {
   Wallet,
 } from 'lucide-react';
 import { useEffect, useRef, useState, startTransition } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../stores/authStore';
 import { Badge } from '../ui/badge';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
@@ -377,11 +377,11 @@ export function Sidebar({
                             className={cn(
                               'w-full flex items-center justify-center p-4 rounded-lg transition-all duration-200 group relative',
                               // Check if any subpage of this module is active
-                              module.subPages.some(sp => currentPath === sp.href || currentPath.startsWith(sp.href + '/'))
+                              module.subPages.some(sp => currentPath === sp.href || currentPath.startsWith(`${sp.href  }/`))
                                 ? 'bg-gray-700 text-white'
                                 : 'text-gray-400 hover:bg-gray-800 hover:text-gray-200',
                               hoveredModule === module.id &&
-                                !module.subPages.some(sp => currentPath === sp.href || currentPath.startsWith(sp.href + '/')) &&
+                                !module.subPages.some(sp => currentPath === sp.href || currentPath.startsWith(`${sp.href  }/`)) &&
                                 'bg-gray-800',
                             )}
                           >
@@ -394,7 +394,7 @@ export function Sidebar({
                               )}
                             </div>
 
-                            {module.subPages.some(sp => currentPath === sp.href || currentPath.startsWith(sp.href + '/')) && (
+                            {module.subPages.some(sp => currentPath === sp.href || currentPath.startsWith(`${sp.href  }/`)) && (
                               <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-blue-500 rounded-r-full" />
                             )}
                           </button>
@@ -441,11 +441,11 @@ export function Sidebar({
                       {/* Menu Items */}
                       <div className="p-2 space-y-1">
                         {module.subPages.map((subPage, index) => {
-                          const isActive = currentPath === subPage.href || currentPath.startsWith(subPage.href + '/');
+                          const isActive = currentPath === subPage.href || currentPath.startsWith(`${subPage.href  }/`);
                           return (
                             <button
                               key={subPage.href}
-                              onClick={() => handleSubPageClick(subPage.href)}
+                              onClick={() => { handleSubPageClick(subPage.href); }}
                               className={cn(
                                 'w-full text-left px-3 py-2.5 text-sm rounded-lg transition-all duration-200 group flex items-center justify-between animate-in fade-in-0 slide-in-from-left-1 animate-fill-both',
                                 isActive 

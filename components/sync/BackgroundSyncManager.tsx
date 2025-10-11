@@ -67,7 +67,7 @@ const BackgroundSyncManager: React.FC<BackgroundSyncManagerProps> = ({ className
           variant: 'destructive',
         });
       }
-    } catch (error) {
+    } catch {
       toast({
         title: 'Senkronizasyon Hatası',
         description: 'Senkronizasyon işlemi başlatılamadı.',

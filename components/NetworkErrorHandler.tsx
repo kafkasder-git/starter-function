@@ -54,7 +54,7 @@ export function NetworkErrorHandler({
 
   useEffect(() => {
     checkNetworkStatus();
-    
+
     // Listen for online/offline events
     const handleOnline = () => {
       setNetworkStatus(prev => ({ ...prev, isOnline: true }));
@@ -78,14 +78,14 @@ export function NetworkErrorHandler({
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
-  }, []);
+  }, [checkNetworkStatus]);
 
   const handleRetry = async () => {
     setIsRetrying(true);
     try {
       await checkNetworkStatus();
       if (onRetry) {
-        await onRetry();
+        onRetry();
       } else {
         window.location.reload();
       }

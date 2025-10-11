@@ -75,7 +75,7 @@ const PushNotificationManager: React.FC<PushNotificationManagerProps> = ({ class
       });
 
       toast.success('Test bildirimi başarıyla gönderildi.');
-    } catch (err) {
+    } catch {
       toast.error('Test bildirimi gönderilirken hata oluştu.');
     }
   }, [showNotification, testNotification]);
@@ -135,6 +135,8 @@ const PushNotificationManager: React.FC<PushNotificationManagerProps> = ({ class
             İzin Reddedildi
           </Badge>
         );
+      case 'default':
+        return <Badge variant="secondary">İzin Bekleniyor</Badge>;
       default:
         return <Badge variant="secondary">İzin Bekleniyor</Badge>;
     }

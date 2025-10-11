@@ -9,7 +9,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card';
 import { Button } from '../ui/button';
 import { PermissionGuard, RoleGuard } from '../auth/PermissionGuard';
-import { usePermission, useRole, useUserRole } from '../../hooks/usePermission';
+import { usePermission, useRole, useUserRole } from '../../hooks/usePermissions';
 import { Badge } from '../ui/badge';
 import { Alert, AlertDescription } from '../ui/alert';
 import { CheckCircle2, XCircle, Shield, Code, Eye, Edit, Trash2, ThumbsUp } from 'lucide-react';
@@ -228,7 +228,7 @@ export const ExampleRoleUsagePage: React.FC = () => {
           <div>
             <p className="mb-2 text-sm font-medium">Hook Kullanımı:</p>
             <pre className="bg-muted overflow-x-auto rounded-lg p-4 text-xs">
-              {`import { usePermission, useRole } from '../hooks/usePermission';
+              {`import { usePermission, useRole } from '../hooks/usePermissions';
 
 function MyComponent() {
   const canApprove = usePermission('donations', 'approve');

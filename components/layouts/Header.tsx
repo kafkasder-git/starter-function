@@ -60,7 +60,6 @@ export function Header({
   notificationComponent,
   onNavigate,
   onQuickAction,
-  currentModule = 'genel',
   onMobileMenuToggle,
 }: HeaderProps) {
   // Get real authenticated user
@@ -76,13 +75,13 @@ export function Header({
   });
 
   // const { trackClick, trackSearch, trackFeatureUse } = useUXAnalytics();
-  const trackClick = (_component: string, _action: string): void => {
+  const trackClick = (): void => {
     // TODO: Implement analytics tracking
   };
-  const trackSearch = (_query: string, _resultCount: number, _source?: string): void => {
+  const trackSearch = (): void => {
     // TODO: Implement search analytics
   };
-  const trackFeatureUse = (_feature: string, _action: string, _metadata?: unknown): void => {
+  const trackFeatureUse = (): void => {
     // TODO: Implement feature usage tracking
   };
 

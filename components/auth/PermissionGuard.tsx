@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import { usePermission, useRole } from '../../hooks/usePermission';
+import { usePermission, useRole } from '../../hooks/usePermissions';
 import { Alert, AlertDescription } from '../ui/alert';
 import { Lock } from 'lucide-react';
 

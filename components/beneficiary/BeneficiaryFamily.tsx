@@ -40,7 +40,6 @@ interface BeneficiaryFamilyProps {
  * @returns {void} Nothing
  */
 export function BeneficiaryFamily({
-  beneficiaryId: _beneficiaryId,
   familyMembers = [],
   editMode,
   onFamilyUpdate,

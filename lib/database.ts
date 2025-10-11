@@ -525,7 +525,7 @@ export function getCollectionMapping(collection: keyof typeof FIELD_MAPPING) {
 export function debugFieldMapping(collection: string, field: string) {
   if (import.meta.env.DEV) {
     const mapped = getMappedField(collection as keyof typeof FIELD_MAPPING, field);
-    console.log(`[Field Mapping] ${collection}.${field} -> ${mapped}`);
+    logger.debug(`Field Mapping: ${collection}.${field} -> ${mapped}`);
   }
 }
 

@@ -215,7 +215,6 @@ export function KumbaraForm({
     handleSubmit,
     formState: { errors },
     setValue,
-    watch: _watch,
   } = form;
 
   const handleFormSubmit = async (data: KumbaraFormData) => {

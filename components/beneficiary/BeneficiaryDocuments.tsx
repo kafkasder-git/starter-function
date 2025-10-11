@@ -52,7 +52,6 @@ interface BeneficiaryDocumentsProps {
  */
 export function BeneficiaryDocuments({
   beneficiaryId,
-  documents: _documents = [],
   onDocumentUpload,
   onDocumentDelete,
 }: BeneficiaryDocumentsProps) {
@@ -64,6 +63,7 @@ export function BeneficiaryDocuments({
   const [selectedFileType, setSelectedFileType] = useState('all');
   const [previewFile, setPreviewFile] = useState<any>(null);
   const [isLoadingDocuments, setIsLoadingDocuments] = useState(false);
+  const [_loading] = useState(false);
 
   useEffect(() => {
     const fetchDocuments = async () => {
@@ -92,7 +92,7 @@ export function BeneficiaryDocuments({
           });
           setUploadedFiles(docs);
         }
-      } catch (error) {
+      } catch {
         toast.error('Belgeler yüklenirken hata oluştu');
       } finally {
         setIsLoadingDocuments(false);
@@ -160,7 +160,7 @@ export function BeneficiaryDocuments({
 
       // Show Success Toast
       toast.success(`${successfulUploads.length} dosya başarıyla yüklendi!`);
-    } catch (error) {
+    } catch {
       toast.error('Dosya yükleme hatası!');
     } finally {
       setIsUploading(false);
@@ -188,7 +188,7 @@ export function BeneficiaryDocuments({
 
       // Show Success Toast
       toast.success('Dosya silindi!');
-    } catch (error) {
+    } catch {
       toast.error('Dosya silme hatası!');
     }
   };
@@ -220,7 +220,7 @@ export function BeneficiaryDocuments({
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-    } catch (error) {
+    } catch {
       toast.error('İndirme hatası!');
     }
   };

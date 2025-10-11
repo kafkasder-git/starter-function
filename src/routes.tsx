@@ -1,8 +1,5 @@
 import type { RouteObject } from 'react-router-dom';
-import { lazy, Suspense, type ComponentType } from 'react';
-import { SkeletonLoader } from '../components/shared/LoadingSpinner';
 
-// Temporarily disable lazy loading to debug
 import DashboardPage from '../components/pages/DashboardPage';
 import BeneficiariesPage from '../components/pages/BeneficiariesPageEnhanced';
 import BeneficiaryDetailPage from '../components/pages/BeneficiaryDetailPageComprehensive';
@@ -14,8 +11,6 @@ import SystemSettingsPage from '../components/pages/SystemSettingsPage';
 import UserManagementPage from '../components/pages/UserManagementPageReal';
 import NotFoundPage from '../components/pages/NotFoundPage';
 import LoginPage from '../components/auth/LoginPage';
-
-// No need for Suspense wrapper when not using lazy loading
 
 /**
  * Public routes configuration
