@@ -176,13 +176,18 @@ export function BursStudentsPage() {
   }, [students, searchQuery, statusFilter, programFilter]);
 
   const getStatusBadge = (status: Student['status']) => {
-    const statusConfig = {
-      active: { label: 'Aktif', variant: 'default' as const, color: 'bg-green-500' },
-      graduated: { label: 'Mezun', variant: 'secondary' as const, color: 'bg-blue-500' },
-      dropped: { label: 'Bırakmış', variant: 'destructive' as const, color: 'bg-gray-500' },
-      suspended: { label: 'Askıda', variant: 'outline' as const, color: 'bg-yellow-500' },
+    const statusConfig: Record<
+      Student['status'],
+      { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline'; color: string }
+    > = {
+      active: { label: 'Aktif', variant: 'default', color: 'bg-green-500' },
+      graduated: { label: 'Mezun', variant: 'secondary', color: 'bg-blue-500' },
+      dropped: { label: 'Bırakmış', variant: 'destructive', color: 'bg-gray-500' },
+      suspended: { label: 'Askıda', variant: 'outline', color: 'bg-yellow-500' },
     };
 
+    // Safe to access since status is typed as Student['status']
+    // eslint-disable-next-line security/detect-object-injection
     return statusConfig[status];
   };
 
