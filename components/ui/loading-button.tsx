@@ -8,7 +8,7 @@
 import * as React from 'react';
 import { motion } from 'motion/react';
 import { Loader2, Check, X } from 'lucide-react';
-import { Button, ButtonProps } from './button';
+import { Button, type ButtonProps } from './button';
 
 export interface LoadingButtonProps extends Omit<ButtonProps, 'loading'> {
   /** Current button state */
@@ -79,7 +79,7 @@ const LoadingButton = React.forwardRef<HTMLButtonElement, LoadingButtonProps>(
       onClick,
       ...props
     },
-    ref
+    ref,
   ) => {
     const [announcement, setAnnouncement] = React.useState('');
 
@@ -91,21 +91,30 @@ const LoadingButton = React.forwardRef<HTMLButtonElement, LoadingButtonProps>(
         setAnnouncement('Success');
         if (resetOnComplete) {
           const timer = setTimeout(() => {
-            onSuccess?.();
+            if (onSuccess) {
+              onSuccess();
+            }
           }, successDuration);
-          return () => clearTimeout(timer);
+          return () => {
+            clearTimeout(timer);
+          };
         }
       } else if (state === 'error') {
         setAnnouncement('Error');
         if (resetOnComplete) {
           const timer = setTimeout(() => {
-            onError?.();
+            if (onError) {
+              onError();
+            }
           }, errorDuration);
-          return () => clearTimeout(timer);
+          return () => {
+            clearTimeout(timer);
+          };
         }
       } else {
         setAnnouncement('');
       }
+      return undefined;
     }, [state, onSuccess, onError, successDuration, errorDuration, resetOnComplete]);
 
     // Determine variant based on state
@@ -123,9 +132,9 @@ const LoadingButton = React.forwardRef<HTMLButtonElement, LoadingButtonProps>(
         case 'loading':
           return <Loader2 className="h-4 w-4 animate-spin" />;
         case 'success':
-          return <Check className="h-4 w-4 text-success-600 animate-scale-in" />;
+          return <Check className="text-success-600 animate-scale-in h-4 w-4" />;
         case 'error':
-          return <X className="h-4 w-4 text-error-600" />;
+          return <X className="text-error-600 h-4 w-4" />;
         default:
           return null;
       }
@@ -175,10 +184,9 @@ const LoadingButton = React.forwardRef<HTMLButtonElement, LoadingButtonProps>(
         </motion.div>
       </>
     );
-  }
+  },
 );
 
 LoadingButton.displayName = 'LoadingButton';
 
 export { LoadingButton };
-
