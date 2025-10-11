@@ -129,6 +129,10 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
     try {
       setIsResetting(true);
 
+      if (!account) {
+        throw new Error('Appwrite account not configured');
+      }
+
       await account.createRecovery(
         resetEmail,
         `${window.location.origin}/reset-password` // Redirect URL

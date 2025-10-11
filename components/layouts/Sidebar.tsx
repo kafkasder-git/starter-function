@@ -41,6 +41,12 @@ interface Module {
 // Static modules array removed - using dynamicModules only
 
 interface SidebarProps {
+  activeModule?: string;
+  onModuleChange?: (moduleId: string) => void;
+  onSubPageChange?: (href: string) => void;
+  onNavigateToProfile?: () => void;
+  onNavigateToSettings?: () => void;
+  onNavigateToUserManagement?: () => void;
   isMobileOpen?: boolean;
   onMobileToggle?: () => void;
 }
@@ -52,6 +58,12 @@ interface SidebarProps {
  * @returns {void} Nothing
  */
 export function Sidebar({
+  activeModule,
+  onModuleChange,
+  onSubPageChange,
+  onNavigateToProfile,
+  onNavigateToSettings,
+  onNavigateToUserManagement,
   isMobileOpen = false,
   onMobileToggle,
 }: SidebarProps) {

@@ -21,6 +21,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 // Note: useSupabaseAuth removed as authentication is handled at app level
 import { beneficiariesService } from '../../services/beneficiariesService';
+import { useAuthStore } from '../../stores/authStore';
 import type { Beneficiary } from '../../types/beneficiary';
 import { PageLoading } from '../shared/LoadingSpinner';
 // OCR Scanner removed
@@ -135,6 +136,9 @@ interface BeneficiariesPageProps {
  * @returns {void} Nothing
  */
 export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesPageProps) {
+  // Get authentication state
+  const { isAuthenticated, user } = useAuthStore();
+  
   // Note: Authentication is handled at the app level, no need to check here
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);

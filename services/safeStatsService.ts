@@ -138,11 +138,11 @@ class SafeStatsService {
       // Get counts for all tables
       const [beneficiariesCount, membersCount, donationsCount, aidRequestsCount, campaignsCount] =
         await Promise.all([
-          this.getTableCount(TABLES.BENEFICIARIES),
-          this.getTableCount(TABLES.MEMBERS),
-          this.getTableCount(TABLES.DONATIONS),
-          this.getTableCount(TABLES.AID_REQUESTS),
-          this.getTableCount(TABLES.CAMPAIGNS),
+          this.getTableCount(COLLECTIONS.BENEFICIARIES),
+          this.getTableCount(COLLECTIONS.MEMBERS),
+          this.getTableCount(COLLECTIONS.DONATIONS),
+          this.getTableCount(COLLECTIONS.AID_REQUESTS),
+          this.getTableCount(COLLECTIONS.CAMPAIGNS),
         ]);
 
       const stats: SafeStats = {

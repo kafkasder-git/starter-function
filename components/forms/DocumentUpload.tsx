@@ -132,7 +132,7 @@ export function DocumentUpload({
       }
 
       // Get current user
-      const {user} = useAuthStore.getState();
+      const { user } = useAuthStore.getState();
       const uploadedBy = user?.id || 'system';
 
       // Determine bucket and folder

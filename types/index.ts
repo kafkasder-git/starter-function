@@ -217,10 +217,7 @@ export type {
 export type {
   AppwriteDocument,
   UserProfile,
-  Beneficiary,
-  Donation,
   AidApplication,
-  Campaign,
   SystemSettings,
   Role,
   Permission,
@@ -228,11 +225,6 @@ export type {
   Partner,
   AuditLog,
   FamilyRelationship,
-  FileMetadata,
-  BeneficiaryStats,
-  DonationStats,
-  CampaignStats,
-  AidRequestStats,
   AppwriteResponse,
   AppwriteListResponse,
   QueryOptions,
@@ -240,6 +232,18 @@ export type {
   BucketName,
   PermissionName,
   RoleName,
+} from './appwrite';
+
+// Re-export with aliases to avoid conflicts
+export type {
+  Beneficiary as AppwriteBeneficiary,
+  Donation as AppwriteDonation,
+  Campaign as AppwriteCampaign,
+  FileMetadata as AppwriteFileMetadata,
+  BeneficiaryStats as AppwriteBeneficiaryStats,
+  DonationStats as AppwriteDonationStats,
+  CampaignStats as AppwriteCampaignStats,
+  AidRequestStats as AppwriteAidRequestStats,
 } from './appwrite';
 
 export {

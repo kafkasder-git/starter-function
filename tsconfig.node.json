@@ -20,6 +20,7 @@
     "vitest.config.ts",
     "playwright.config.ts",
     "*.config.ts",
-    "*.config.js"
+    "*.config.js",
+    "lib/design-system/**/*"
   ]
 }

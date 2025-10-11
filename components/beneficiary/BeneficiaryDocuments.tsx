@@ -27,18 +27,24 @@ import { fileStorageService, type FileUploadResult } from '../../services/fileSt
 import { beneficiariesService } from '../../services/beneficiariesService';
 import { useAuthStore } from '../../stores/authStore';
 
+// Extended document type that includes FileUploadResult properties
+interface DocumentFile {
+  id: string;
+  name: string;
+  type: string;
+  url: string;
+  uploadedAt?: Date;
+  uploadDate?: Date;
+  bucket?: string;
+  path?: string;
+  uploadedBy?: string;
+  size?: number;
+  success?: boolean;
+}
+
 interface BeneficiaryDocumentsProps {
   beneficiaryId: string;
-  documents?: {
-    id: string;
-    name: string;
-    type: string;
-    url: string;
-    uploadedAt: Date;
-    bucket: string;
-    path: string;
-    uploadedBy?: string;
-  }[];
+  documents?: DocumentFile[];
   onDocumentUpload?: (files: File[]) => void;
   onDocumentDelete?: (documentId: string) => void;
 }
@@ -55,12 +61,12 @@ export function BeneficiaryDocuments({
   onDocumentDelete,
 }: BeneficiaryDocumentsProps) {
   const [isDocumentModalOpen, setIsDocumentModalOpen] = useState(false);
-  const [uploadedFiles, setUploadedFiles] = useState<FileUploadResult[]>([]);
+  const [uploadedFiles, setUploadedFiles] = useState<DocumentFile[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFileType, setSelectedFileType] = useState('all');
-  const [previewFile, setPreviewFile] = useState<FileUploadResult | null>(null);
+  const [previewFile, setPreviewFile] = useState<DocumentFile | null>(null);
   const [isLoadingDocuments, setIsLoadingDocuments] = useState(false);
 
   useEffect(() => {
@@ -170,7 +176,7 @@ export function BeneficiaryDocuments({
     try {
       // Find Document
       const document = uploadedFiles.find(file => file.id === fileId);
-      if (!document) return;
+      if (!document || !document.bucket || !document.path) return;
 
       // Delete from Storage
       await fileStorageService.deleteFile(document.bucket, document.path);
@@ -277,10 +283,10 @@ export function BeneficiaryDocuments({
                       <p className="text-sm font-medium text-gray-900">{file.name}</p>
                       <div className="flex items-center gap-2 mt-1">
                         <Badge variant="outline" className="text-xs font-medium px-2 py-1 bg-blue-50 text-blue-700 border-blue-200">
-                          {(file.size / 1024).toFixed(1)} KB
+                          {file.size ? (file.size / 1024).toFixed(1) : '0'} KB
                         </Badge>
                         <span className="text-xs text-gray-500">
-                          {new Date(file.uploadDate).toLocaleDateString('tr-TR')}
+                          {file.uploadDate ? new Date(file.uploadDate).toLocaleDateString('tr-TR') : 'N/A'}
                         </span>
                       </div>
                     </div>
@@ -443,8 +449,8 @@ export function BeneficiaryDocuments({
                       <div>
                         <p className="text-sm font-medium">{file.name}</p>
                         <p className="text-xs text-gray-500">
-                          {(file.size / 1024).toFixed(1)} KB •{' '}
-                          {new Date(file.uploadDate).toLocaleDateString('tr-TR')}
+                          {file.size ? (file.size / 1024).toFixed(1) : '0'} KB •{' '}
+                          {file.uploadDate ? new Date(file.uploadDate).toLocaleDateString('tr-TR') : 'N/A'}
                         </p>
                       </div>
                     </div>
@@ -460,7 +466,12 @@ export function BeneficiaryDocuments({
                       >
                         <Eye className="w-4 h-4" />
                       </Button>
-                      <Button variant="ghost" size="sm" onClick={() => handleDownload(file.bucket, file.path)} disabled={isUploading}>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => file.bucket && file.path && handleDownload(file.bucket, file.path)} 
+                        disabled={isUploading || !file.bucket || !file.path}
+                      >
                         <Download className="w-4 h-4" />
                       </Button>
                       <Button variant="ghost" size="sm" onClick={() => handleDeleteFile(file.id)} disabled={isUploading}>
@@ -506,7 +517,11 @@ export function BeneficiaryDocuments({
                 <div className="text-center py-8">
                   <FileText className="w-16 h-16 mx-auto mb-4 text-gray-400" />
                   <p>Bu dosya türü önizlenemez</p>
-                  <Button className="mt-2" onClick={() => handleDownload(previewFile.bucket, previewFile.path)}>
+                  <Button 
+                    className="mt-2" 
+                    onClick={() => previewFile.bucket && previewFile.path && handleDownload(previewFile.bucket, previewFile.path)}
+                    disabled={!previewFile.bucket || !previewFile.path}
+                  >
                     <Download className="w-4 h-4 mr-2" />
                     İndir
                   </Button>

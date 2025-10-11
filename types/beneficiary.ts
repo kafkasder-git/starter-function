@@ -38,7 +38,7 @@ export type FamilyStatus = 'single' | 'married' | 'widowed' | 'divorced' | 'sepa
 /**
  * İhtiyaç sahibi ana interface'i
  */
-export interface Beneficiary extends BaseEntity {
+export interface Beneficiary extends BaseEntity<number> {
   /** İhtiyaç sahibinin adı */
   name: string;
   /** İhtiyaç sahibinin soyadı */
@@ -427,7 +427,7 @@ export function mapDBToBeneficiary(dbData: BeneficiaryDBFields): Beneficiary {
   const surname = nameParts.slice(1).join(' ') || '';
 
   return {
-    id: String(dbData.id),
+    id: Number(dbData.id),
     name,
     surname,
     full_name: dbData.ad_soyad,
@@ -455,10 +455,10 @@ export function mapDBToBeneficiary(dbData: BeneficiaryDBFields): Beneficiary {
     description: dbData.kategori,
     notes: dbData.tur,
     application_date: dbData.kayit_tarihi || dbData.created_at || new Date().toISOString(),
-    created_at: dbData.created_at || undefined,
-    updated_at: dbData.updated_at || undefined,
-    created_by: dbData.created_by || undefined,
-    updated_by: dbData.updated_by || undefined,
+    created_at: dbData.created_at || new Date().toISOString(),
+    updated_at: dbData.updated_at || new Date().toISOString(),
+    created_by: dbData.created_by,
+    updated_by: dbData.updated_by,
   };
 }
 

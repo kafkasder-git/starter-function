@@ -76,13 +76,13 @@ export function Header({
   });
 
   // const { trackClick, trackSearch, trackFeatureUse } = useUXAnalytics();
-  const trackClick = (): void => {
+  const trackClick = (..._args: any[]): void => {
     // TODO: Implement analytics tracking
   };
-  const trackSearch = (): void => {
+  const trackSearch = (..._args: any[]): void => {
     // TODO: Implement search analytics
   };
-  const trackFeatureUse = (): void => {
+  const trackFeatureUse = (..._args: any[]): void => {
     // TODO: Implement feature usage tracking
   };
 

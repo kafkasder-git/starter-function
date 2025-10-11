@@ -1,4 +1,6 @@
 import type { Config } from 'tailwindcss';
+import { tailwindAnimationConfig } from './lib/design-system/animations.js';
+import { colorTokens } from './lib/design-system/tokens.js';
 
 export default {
   content: [
@@ -28,176 +30,60 @@ export default {
         '6xl': ['3.75rem', { lineHeight: '1' }],
       },
 
-      // Animation Presets
-      animation: {
-        'fade-in': 'fadeIn 0.2s ease-in-out',
-        'fade-out': 'fadeOut 0.2s ease-in-out',
-        'slide-in': 'slideIn 0.3s ease-out',
-        'slide-out': 'slideOut 0.3s ease-in',
-        'scale-in': 'scaleIn 0.2s ease-out',
-        'scale-out': 'scaleOut 0.2s ease-in',
-        'bounce-subtle': 'bounceSubtle 0.6s ease-in-out',
-        'pulse-subtle': 'pulseSubtle 2s ease-in-out infinite',
-        'shimmer': 'shimmer 2s linear infinite',
-      },
+      // Animation system from design tokens
+      ...tailwindAnimationConfig,
 
-      // Keyframes for animations
-      keyframes: {
-        fadeIn: {
-          '0%': { opacity: '0' },
-          '100%': { opacity: '1' },
-        },
-        fadeOut: {
-          '0%': { opacity: '1' },
-          '100%': { opacity: '0' },
-        },
-        slideIn: {
-          '0%': { transform: 'translateY(-10px)', opacity: '0' },
-          '100%': { transform: 'translateY(0)', opacity: '1' },
-        },
-        slideOut: {
-          '0%': { transform: 'translateY(0)', opacity: '1' },
-          '100%': { transform: 'translateY(-10px)', opacity: '0' },
-        },
-        scaleIn: {
-          '0%': { transform: 'scale(0.95)', opacity: '0' },
-          '100%': { transform: 'scale(1)', opacity: '1' },
-        },
-        scaleOut: {
-          '0%': { transform: 'scale(1)', opacity: '1' },
-          '100%': { transform: 'scale(0.95)', opacity: '0' },
-        },
-        bounceSubtle: {
-          '0%, 100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-4px)' },
-        },
-        pulseSubtle: {
-          '0%, 100%': { opacity: '1' },
-          '50%': { opacity: '0.8' },
-        },
-        shimmer: {
-          '0%': { transform: 'translateX(-100%)' },
-          '100%': { transform: 'translateX(100%)' },
-        },
-      },
-
-      // Enhanced Color Palette
+      // Enhanced Color Palette with Design Tokens
       colors: {
-        // Comprehensive neutral color scale
-        neutral: {
-          50: 'hsl(var(--neutral-50))',
-          100: 'hsl(var(--neutral-100))',
-          200: 'hsl(var(--neutral-200))',
-          300: 'hsl(var(--neutral-300))',
-          400: 'hsl(var(--neutral-400))',
-          500: 'hsl(var(--neutral-500))',
-          600: 'hsl(var(--neutral-600))',
-          700: 'hsl(var(--neutral-700))',
-          800: 'hsl(var(--neutral-800))',
-          900: 'hsl(var(--neutral-900))',
-          950: 'hsl(var(--neutral-950))',
-        },
-        // Semantic color scales
-        primary: {
-          DEFAULT: 'hsl(var(--primary))',
-          foreground: 'hsl(var(--primary-foreground))',
-          50: 'hsl(var(--primary-50))',
-          100: 'hsl(var(--primary-100))',
-          200: 'hsl(var(--primary-200))',
-          300: 'hsl(var(--primary-300))',
-          400: 'hsl(var(--primary-400))',
-          500: 'hsl(var(--primary-500))',
-          600: 'hsl(var(--primary-600))',
-          700: 'hsl(var(--primary-700))',
-          800: 'hsl(var(--primary-800))',
-          900: 'hsl(var(--primary-900))',
-          950: 'hsl(var(--primary-950))',
-          // Alpha variants for overlays and subtle backgrounds
-          'alpha-10': 'hsl(var(--primary-500) / 0.1)',
-          'alpha-20': 'hsl(var(--primary-500) / 0.2)',
-          'alpha-30': 'hsl(var(--primary-500) / 0.3)',
-          'alpha-40': 'hsl(var(--primary-500) / 0.4)',
-          'alpha-50': 'hsl(var(--primary-500) / 0.5)',
-        },
-        success: {
-          50: 'hsl(var(--success-50))',
-          100: 'hsl(var(--success-100))',
-          200: 'hsl(var(--success-200))',
-          300: 'hsl(var(--success-300))',
-          400: 'hsl(var(--success-400))',
-          500: 'hsl(var(--success-500))',
-          600: 'hsl(var(--success-600))',
-          700: 'hsl(var(--success-700))',
-          800: 'hsl(var(--success-800))',
-          900: 'hsl(var(--success-900))',
-          950: 'hsl(var(--success-950))',
-          // Alpha variants
-          'alpha-10': 'hsl(var(--success-500) / 0.1)',
-          'alpha-20': 'hsl(var(--success-500) / 0.2)',
-          'alpha-30': 'hsl(var(--success-500) / 0.3)',
-        },
-        warning: {
-          50: 'hsl(var(--warning-50))',
-          100: 'hsl(var(--warning-100))',
-          200: 'hsl(var(--warning-200))',
-          300: 'hsl(var(--warning-300))',
-          400: 'hsl(var(--warning-400))',
-          500: 'hsl(var(--warning-500))',
-          600: 'hsl(var(--warning-600))',
-          700: 'hsl(var(--warning-700))',
-          800: 'hsl(var(--warning-800))',
-          900: 'hsl(var(--warning-900))',
-          950: 'hsl(var(--warning-950))',
-          // Alpha variants
-          'alpha-10': 'hsl(var(--warning-500) / 0.1)',
-          'alpha-20': 'hsl(var(--warning-500) / 0.2)',
-          'alpha-30': 'hsl(var(--warning-500) / 0.3)',
-        },
-        error: {
-          50: 'hsl(var(--error-50))',
-          100: 'hsl(var(--error-100))',
-          200: 'hsl(var(--error-200))',
-          300: 'hsl(var(--error-300))',
-          400: 'hsl(var(--error-400))',
-          500: 'hsl(var(--error-500))',
-          600: 'hsl(var(--error-600))',
-          700: 'hsl(var(--error-700))',
-          800: 'hsl(var(--error-800))',
-          900: 'hsl(var(--error-900))',
-          950: 'hsl(var(--error-950))',
-          // Alpha variants
-          'alpha-10': 'hsl(var(--error-500) / 0.1)',
-          'alpha-20': 'hsl(var(--error-500) / 0.2)',
-          'alpha-30': 'hsl(var(--error-500) / 0.3)',
-        },
+        // Design token-based colors
+        ...Object.entries(colorTokens).reduce((acc, [colorName, shades]) => {
+          const colorShades = shades as Record<string, string>;
+          acc[colorName] = Object.entries(colorShades).reduce((shadeAcc, [shade, value]) => {
+            shadeAcc[shade] = `hsl(${value})`;
+            return shadeAcc;
+          }, {} as Record<string, string>);
+          
+          // Add alpha variants for semantic colors
+          if (['primary', 'success', 'error', 'warning', 'info'].includes(colorName)) {
+            acc[colorName]['alpha-10'] = `hsl(${colorShades['500']} / 0.1)`;
+            acc[colorName]['alpha-20'] = `hsl(${colorShades['500']} / 0.2)`;
+            acc[colorName]['alpha-30'] = `hsl(${colorShades['500']} / 0.3)`;
+            acc[colorName]['alpha-40'] = `hsl(${colorShades['500']} / 0.4)`;
+            acc[colorName]['alpha-50'] = `hsl(${colorShades['500']} / 0.5)`;
+          }
+          
+          return acc;
+        }, {} as Record<string, Record<string, string>>),
+        
+        // Compatibility with existing shadcn/ui colors
         destructive: {
-          DEFAULT: 'hsl(var(--error-500))',
-          foreground: 'hsl(var(--error-50))',
+          DEFAULT: `hsl(${colorTokens.error[500]})`,
+          foreground: `hsl(${colorTokens.error[50]})`,
         },
         muted: {
-          DEFAULT: 'hsl(210 40% 96%)',
-          foreground: 'hsl(215.4 16.3% 46.9%)',
+          DEFAULT: `hsl(${colorTokens.neutral[100]})`,
+          foreground: `hsl(${colorTokens.neutral[600]})`,
         },
         accent: {
-          DEFAULT: 'hsl(210 40% 96%)',
-          foreground: 'hsl(222.2 84% 4.9%)',
+          DEFAULT: `hsl(${colorTokens.neutral[100]})`,
+          foreground: `hsl(${colorTokens.neutral[900]})`,
         },
         popover: {
           DEFAULT: 'hsl(0 0% 100%)',
-          foreground: 'hsl(222.2 84% 4.9%)',
+          foreground: `hsl(${colorTokens.neutral[900]})`,
         },
         card: {
           DEFAULT: 'hsl(0 0% 100%)',
-          foreground: 'hsl(222.2 84% 4.9%)',
+          foreground: `hsl(${colorTokens.neutral[900]})`,
         },
-        border: 'hsl(214.3 31.8% 91.4%)',
-        input: 'hsl(214.3 31.8% 91.4%)',
-        ring: 'hsl(222.2 84% 4.9%)',
+        border: `hsl(${colorTokens.neutral[200]})`,
+        input: `hsl(${colorTokens.neutral[200]})`,
+        ring: `hsl(${colorTokens.primary[500]})`,
         background: 'hsl(0 0% 100%)',
-        foreground: 'hsl(222.2 84% 4.9%)',
+        foreground: `hsl(${colorTokens.neutral[900]})`,
         secondary: {
-          DEFAULT: 'hsl(210 40% 96%)',
-          foreground: 'hsl(222.2 84% 4.9%)',
+          DEFAULT: `hsl(${colorTokens.neutral[100]})`,
+          foreground: `hsl(${colorTokens.neutral[900]})`,
         },
       },
 
@@ -235,12 +121,8 @@ export default {
         xs: '2px',
       },
 
-      // Transition Timing Functions
-      transitionTimingFunction: {
-        'bounce-in': 'cubic-bezier(0.68, -0.55, 0.265, 1.55)',
-        'smooth': 'cubic-bezier(0.4, 0, 0.2, 1)',
-        'snappy': 'cubic-bezier(0.4, 0, 0.6, 1)',
-      },
+      // Transition Timing Functions from design tokens
+      // (Already included in tailwindAnimationConfig)
 
       // Typography Utilities
       textWrap: {
@@ -250,6 +132,24 @@ export default {
     },
   },
   plugins: [
+    // Design token CSS variables injection
+    function({ addBase }: { addBase: any }) {
+      const cssVariables: Record<string, Record<string, string>> = {};
+      
+      // Generate CSS variables for colors
+      Object.entries(colorTokens).forEach(([colorName, shades]) => {
+        const colorShades = shades as Record<string, string>;
+        Object.entries(colorShades).forEach(([shade, value]) => {
+          if (!cssVariables[':root']) {
+            cssVariables[':root'] = {};
+          }
+          cssVariables[':root'][`--${colorName}-${shade}`] = value;
+        });
+      });
+      
+      addBase(cssVariables);
+    },
+    
     // Typography utilities plugin
     function({ addUtilities }: { addUtilities: any }) {
       const newUtilities = {
@@ -271,6 +171,54 @@ export default {
             'orphans': '2',
             'widows': '2',
             'word-break': 'break-word',
+          },
+        },
+        
+        // Accessibility utilities
+        '.sr-only': {
+          position: 'absolute',
+          width: '1px',
+          height: '1px',
+          padding: '0',
+          margin: '-1px',
+          overflow: 'hidden',
+          clip: 'rect(0, 0, 0, 0)',
+          whiteSpace: 'nowrap',
+          border: '0',
+        },
+        '.not-sr-only': {
+          position: 'static',
+          width: 'auto',
+          height: 'auto',
+          padding: '0',
+          margin: '0',
+          overflow: 'visible',
+          clip: 'auto',
+          whiteSpace: 'normal',
+        },
+        
+        // Focus utilities
+        '.focus-ring': {
+          '&:focus-visible': {
+            outline: '2px solid hsl(var(--primary-500))',
+            outlineOffset: '2px',
+          },
+        },
+        
+        // Touch target utilities
+        '.touch-target': {
+          minHeight: '44px',
+          minWidth: '44px',
+        },
+        '.touch-target-comfortable': {
+          minHeight: '48px',
+          minWidth: '48px',
+        },
+        
+        // Animation utilities with reduced motion support
+        '.animate-with-motion-preference': {
+          '@media (prefers-reduced-motion: reduce)': {
+            animation: 'none !important',
           },
         },
       };

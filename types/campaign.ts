@@ -6,7 +6,6 @@
  */
 
 import type { BaseEntity } from '../services/baseService';
-import type { Campaign as CampaignRow, CampaignInsert as CampaignInsertRow, CampaignUpdate as CampaignUpdateRow, CampaignWithStats } from '../types/database';
 
 /**
  * Campaign status types
@@ -22,8 +21,8 @@ export type CampaignCategory = string; // Can be extended with specific categori
  * App-level Campaign interface
  * Extends BaseEntity and includes all database fields plus computed properties
  */
-export interface Campaign extends BaseEntity {
-  /** Unique identifier (overrides BaseEntity's number to string) */
+export interface Campaign extends BaseEntity<string> {
+  /** Unique identifier (string UUID) */
   id: string;
   /** Campaign name */
   name: string;
@@ -129,9 +128,18 @@ export interface CampaignStats {
 
 /**
  * Campaign with additional statistics
- * Re-exported from database types for convenience
+ * Extended Campaign type with computed stats
  */
-export type { CampaignWithStats };
+export interface CampaignWithStats extends Campaign {
+  donationCount?: number;
+  donorCount?: number;
+  averageDonation?: number;
+  recentDonations?: Array<{
+    amount: number;
+    donor: string;
+    date: string;
+  }>;
+}
 
 /**
  * Note: Unlike beneficiaries, campaigns collection uses English field names

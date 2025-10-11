@@ -5,9 +5,9 @@
  * @version 1.0.0
  */
 
-import React, { useState } from 'react';
+import { useState, forwardRef, useId } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ChevronDown, ChevronRight } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { cn } from '../ui/utils';
 import { Button } from '../ui/button';
 
@@ -38,7 +38,7 @@ export interface FormSectionProps {
   disabled?: boolean;
 }
 
-export const FormSection = React.forwardRef<HTMLDivElement, FormSectionProps>(
+export const FormSection = forwardRef<HTMLDivElement, FormSectionProps>(
   ({
     title,
     description,
@@ -64,7 +64,7 @@ export const FormSection = React.forwardRef<HTMLDivElement, FormSectionProps>(
       onToggle?.(newState);
     };
 
-    const sectionId = React.useId();
+    const sectionId = useId();
     const contentId = `${sectionId}-content`;
     const headerId = `${sectionId}-header`;
 

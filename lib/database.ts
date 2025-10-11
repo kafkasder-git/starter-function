@@ -39,6 +39,9 @@ export const collections = {
   INVENTORY_ITEMS: 'inventory_items',
   NOTIFICATIONS: 'notifications',
   TASKS: 'tasks',
+  ROLES: 'roles',
+  PERMISSIONS: 'permissions',
+  SYSTEM_SETTINGS: 'system_settings',
 } as const;
 
 // Export for backward compatibility with existing code

@@ -1,6 +1,5 @@
 "use client"
 
-import * as React from "react"
 import { Heart, Share2, Download, Star, Calendar, Mail, Phone, Users, DollarSign, CreditCard, Activity } from "lucide-react"
 
 import { Button } from "@/components/ui/button"

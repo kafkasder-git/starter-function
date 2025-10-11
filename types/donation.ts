@@ -6,7 +6,6 @@
  */
 
 import type { BaseEntity } from '../services/baseService';
-import type { Donation as DonationRow, DonationInsert as DonationInsertRow, DonationUpdate as DonationUpdateRow } from './database';
 
 /**
  * Bağış durumları
@@ -31,7 +30,7 @@ export type PaymentMethod = 'bank_transfer' | 'credit_card' | 'cash' | 'check' |
 /**
  * Bağış ana interface'i
  */
-export interface Donation extends BaseEntity {
+export interface Donation extends BaseEntity<string> {
   /** Unique identifier (UUID) */
   id: string;
   /** Bağışçı adı */

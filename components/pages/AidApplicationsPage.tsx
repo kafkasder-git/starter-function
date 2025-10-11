@@ -90,6 +90,7 @@ export function AidApplicationsPage() {
   const [aidTypeFilter, setAidTypeFilter] = useState<string>('all');
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     applicantName: '',
     applicantId: '',

@@ -5,7 +5,7 @@
  * @version 1.0.0
  */
 
-import { forwardRef, useState, useEffect, useCallback, type ReactNode } from 'react';
+import { forwardRef, useState, useEffect, type ReactNode } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { AlertCircle, CheckCircle, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useDebounce } from '../../hooks/useDebounce';
@@ -150,11 +150,15 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
           // console.error('Async validation error:', error);
           setAsyncErrors([{ 
             field: name, 
-            message: 'Validation failed. Please try again.' 
+            message: 'Validation failed. Please try again.',
+            code: 'ASYNC_VALIDATION_ERROR',
+            severity: 'error'
           }]);
           onValidationComplete?.([{ 
             field: name, 
-            message: 'Validation failed. Please try again.' 
+            message: 'Validation failed. Please try again.',
+            code: 'ASYNC_VALIDATION_ERROR',
+            severity: 'error'
           }]);
         } finally {
           setIsAsyncValidating(false);

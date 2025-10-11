@@ -10,15 +10,17 @@ import { SERVICE_CONFIG, type ApiResponse, type PaginatedResponse } from './conf
 /**
  * Base entity interface that all database entities should extend
  * @interface BaseEntity
+ * @template TId - Type of the ID field (number or string)
  */
 /**
  * BaseEntity Interface
  *
  * @interface BaseEntity
+ * @template TId - Type of the ID field (defaults to number)
  */
-export interface BaseEntity {
+export interface BaseEntity<TId = number> {
   /** Unique identifier for the entity */
-  id: number;
+  id: TId;
   /** ISO timestamp when the entity was created */
   created_at: string;
   /** ISO timestamp when the entity was last updated */

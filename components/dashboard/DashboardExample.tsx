@@ -1,6 +1,5 @@
 "use client"
 
-import * as React from "react"
 import { TrendingUp, TrendingDown, Users, DollarSign, Activity, Calendar } from "lucide-react"
 
 import { Button } from "@/components/ui/button"

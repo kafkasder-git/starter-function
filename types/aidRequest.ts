@@ -6,7 +6,6 @@
  */
 
 import type { BaseEntity } from '../services/baseService';
-import type { AidRequest as AidRequestRow, AidRequestInsert as AidRequestInsertRow, AidRequestUpdate as AidRequestUpdateRow } from '../types/database';
 
 /**
  * Yardım talebi durumları

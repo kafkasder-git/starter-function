@@ -91,17 +91,17 @@ interface AuthActions {
   hasAnyPermission: (permissions: Permission[]) => boolean;
   hasAllPermissions: (permissions: Permission[]) => boolean;
 
-          // Internal actions
-          setUser: (user: User | null) => void;
-          setSession: (session: Session | null) => void;
-          setLoading: (loading: boolean) => void;
-          setError: (error: string | null) => void;
-          incrementLoginAttempts: () => void;
-          resetLoginAttempts: () => void;
-          
-          // Database sync actions
-          syncUserProfile: (userId: string) => Promise<void>;
-          createUserProfile: (userData: any) => Promise<void>;
+  // Internal actions
+  setUser: (user: User | null) => void;
+  setSession: (session: Session | null) => void;
+  setLoading: (loading: boolean) => void;
+  setError: (error: string | null) => void;
+  incrementLoginAttempts: () => void;
+  resetLoginAttempts: () => void;
+
+  // Database sync actions
+  syncUserProfile: (userId: string) => Promise<void>;
+  createUserProfile: (userData: any) => Promise<void>;
 }
 
 interface RegisterData {
@@ -135,7 +135,7 @@ const buildUserFromAppwriteUser = async (appwriteUser: Models.User<Models.Prefer
       isActive = profile.is_active !== false;
       avatar = profile.avatar_url;
       metadata = { ...prefs, ...profile };
-      
+
       authLogger.info('Successfully fetched user profile from database', {
         userId: appwriteUser.$id,
         role: profile.role
@@ -152,8 +152,8 @@ const buildUserFromAppwriteUser = async (appwriteUser: Models.User<Models.Prefer
       });
     }
   } catch (error: any) {
-    authLogger.error('Failed to fetch user profile from database, using preferences', { 
-      userId: appwriteUser.$id, 
+    authLogger.error('Failed to fetch user profile from database, using preferences', {
+      userId: appwriteUser.$id,
       error: error.message,
       errorType: (error as any).type || 'unknown'
     });
@@ -172,7 +172,7 @@ const buildUserFromAppwriteUser = async (appwriteUser: Models.User<Models.Prefer
       });
     }
   }
-  
+
   isActive = (prefs as any).is_active !== false;
   avatar = (prefs as any).avatar_url as string;
 
@@ -221,6 +221,16 @@ export const useAuthStore = create<AuthStore>()(
             });
 
             try {
+              // Check if account is available
+              if (!account) {
+                authLogger.error('Appwrite account not configured', {});
+                set((state) => {
+                  state.isInitialized = true;
+                  state.isLoading = false;
+                });
+                return;
+              }
+
               // Get current account session
               const appwriteUser = await account.get();
 
@@ -237,10 +247,10 @@ export const useAuthStore = create<AuthStore>()(
                       name: user.name,
                       is_active: user.isActive,
                     });
-                  authLogger.info('Updated Appwrite preferences with database role on init', {
-                    userId: user.id,
-                    role: user.role
-                  });
+                    authLogger.info('Updated Appwrite preferences with database role on init', {
+                      userId: user.id,
+                      role: user.role
+                    });
                   }
                 } catch (prefsError) {
                   authLogger.error('Failed to update Appwrite preferences on init', {
@@ -271,7 +281,7 @@ export const useAuthStore = create<AuthStore>()(
               } else {
                 authLogger.error('auth initialization', error);
               }
-              
+
               set((state) => {
                 state.user = null;
                 state.session = null;
@@ -305,7 +315,7 @@ export const useAuthStore = create<AuthStore>()(
 
             try {
               authLogger.info('Attempting login', { email });
-              
+
               // Development credentials fallback
               const DEV_CREDENTIALS = {
                 'admin@dernek.org': 'admin123',
@@ -314,14 +324,14 @@ export const useAuthStore = create<AuthStore>()(
                 'viewer@dernek.org': 'viewer123',
                 'isahamid095@gmail.com': 'Vadalov95.',
               };
-              
+
               if (DEV_CREDENTIALS[email as keyof typeof DEV_CREDENTIALS] === password) {
                 authLogger.info('Using development credentials', { email });
-                
-                const mockUser = {
+
+                const mockUser: User = {
                   id: 'dev-user-' + Date.now(),
                   email: email,
-                  name: email.split('@')[0],
+                  name: email.split('@')[0] || 'Dev User',
                   role: 'admin' as UserRole,
                   avatar: undefined,
                   permissions: ROLE_PERMISSIONS.admin,
@@ -331,7 +341,7 @@ export const useAuthStore = create<AuthStore>()(
                   createdAt: new Date(),
                   updatedAt: new Date(),
                 };
-                
+
                 set((state) => {
                   state.user = mockUser;
                   state.session = {
@@ -342,28 +352,32 @@ export const useAuthStore = create<AuthStore>()(
                   state.isLoading = false;
                   state.error = null;
                 });
-                
+
                 get().resetLoginAttempts();
                 toast.success(`Hoş geldiniz, ${mockUser.name}!`, { duration: 3000 });
                 return;
               }
-              
+              // Check if account is available
+              if (!account) {
+                throw new Error('Appwrite account not configured');
+              }
+
               // Create email session
               await account.createEmailPasswordSession(email, password);
               authLogger.info('Email session created successfully', { email });
 
               // Get user data
               const appwriteUser = await account.get();
-              authLogger.info('Retrieved Appwrite user data', { 
+              authLogger.info('Retrieved Appwrite user data', {
                 userId: appwriteUser.$id,
-                email: appwriteUser.email 
+                email: appwriteUser.email
               });
-              
+
               const user = await buildUserFromAppwriteUser(appwriteUser);
-              authLogger.info('Built user object successfully', { 
+              authLogger.info('Built user object successfully', {
                 userId: user.id,
                 role: user.role,
-                isActive: user.isActive 
+                isActive: user.isActive
               });
 
               // Update Appwrite preferences with database role if different
@@ -410,7 +424,7 @@ export const useAuthStore = create<AuthStore>()(
               let errorMessage = 'Giriş yapılamadı';
 
               if (error instanceof AppwriteException) {
-                
+
                 switch (error.type) {
                   case 'user_invalid_credentials':
                     errorMessage = 'Geçersiz email veya şifre';
@@ -430,7 +444,7 @@ export const useAuthStore = create<AuthStore>()(
                   default:
                     errorMessage = error.message || 'Giriş yapılamadı';
                 }
-                
+
                 authLogger.error('Appwrite login error', {
                   email,
                   errorType: error.type,
@@ -438,7 +452,7 @@ export const useAuthStore = create<AuthStore>()(
                   errorMessage: error.message
                 });
               } else if (error instanceof Error) {
-                
+
                 // Check for network errors
                 if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
                   errorMessage = 'Ağ bağlantısı hatası. Lütfen internet bağlantınızı kontrol edin.';
@@ -447,7 +461,7 @@ export const useAuthStore = create<AuthStore>()(
                 } else {
                   errorMessage = error.message || 'Bilinmeyen hata oluştu';
                 }
-                
+
                 authLogger.error('Login error', {
                   email,
                   errorName: error.name,
@@ -473,6 +487,9 @@ export const useAuthStore = create<AuthStore>()(
           // Logout action
           logout: async (callback?: () => void) => {
             try {
+              if (!account) {
+                throw new Error('Appwrite account not configured');
+              }
               await account.deleteSession('current');
 
               set((state) => {
@@ -519,6 +536,11 @@ export const useAuthStore = create<AuthStore>()(
             });
 
             try {
+              // Check if account is available
+              if (!account) {
+                throw new Error('Appwrite account not configured');
+              }
+
               // Create account
               const userId = ID.unique();
               await account.create(
@@ -546,9 +568,9 @@ export const useAuthStore = create<AuthStore>()(
                   updated_at: new Date().toISOString(),
                 });
               } catch (dbError) {
-                authLogger.error('Failed to create user profile in database', { 
-                  userId, 
-                  error: dbError 
+                authLogger.error('Failed to create user profile in database', {
+                  userId,
+                  error: dbError
                 });
                 // Continue even if database profile creation fails
               }
@@ -592,6 +614,9 @@ export const useAuthStore = create<AuthStore>()(
           // Reset password action
           resetPassword: async (email: string) => {
             try {
+              if (!account) {
+                throw new Error('Appwrite account not configured');
+              }
               await account.createRecovery(
                 email,
                 `${window.location.origin}/reset-password`
@@ -618,6 +643,11 @@ export const useAuthStore = create<AuthStore>()(
             }
 
             try {
+              // Check if account is available
+              if (!account) {
+                throw new Error('Appwrite account not configured');
+              }
+
               // Update name if provided
               if (userData.name) {
                 await account.updateName(userData.name);
@@ -646,9 +676,9 @@ export const useAuthStore = create<AuthStore>()(
 
                 await db.update(collections.USER_PROFILES, user.id, updateData);
               } catch (dbError) {
-                authLogger.error('Failed to update user profile in database', { 
-                  userId: user.id, 
-                  error: dbError 
+                authLogger.error('Failed to update user profile in database', {
+                  userId: user.id,
+                  error: dbError
                 });
                 // Continue even if database update fails
               }
@@ -680,6 +710,12 @@ export const useAuthStore = create<AuthStore>()(
 
             const promise = (async () => {
               try {
+                // Check if account is available
+                if (!account) {
+                  authLogger.error('Appwrite account not configured', {});
+                  return;
+                }
+
                 // Get current session
                 const appwriteUser = await account.get();
 
@@ -735,16 +771,11 @@ export const useAuthStore = create<AuthStore>()(
                 state.sessionExpiryWarningShown = true;
                 state.sessionExpiryWarningTime = new Date();
               });
-              toast('Oturumunuz sona ermek üzere. Devam etmek ister misiniz?', {
+              toast.warning('Oturumunuz sona ermek üzere. Devam etmek ister misiniz?', {
                 duration: 0,
-                action: {
-                  label: 'Devam Et',
-                  onClick: () => {
-                    get().dismissSessionWarning();
-                    get().refreshSession();
-                  },
-                },
               });
+              // Note: Sonner doesn't support action buttons in basic toast
+              // User can manually refresh by continuing to use the app
             }
 
             // If warning was shown more than 5 minutes ago and no action, logout
@@ -860,7 +891,7 @@ export const useAuthStore = create<AuthStore>()(
               if (!error && profileData?.documents?.[0]) {
                 const profile = profileData.documents[0];
                 const { user } = get();
-                
+
                 if (user && user.id === userId) {
                   const updatedUser = {
                     ...user,
@@ -870,11 +901,11 @@ export const useAuthStore = create<AuthStore>()(
                     metadata: { ...user.metadata, ...profile },
                     updatedAt: new Date(),
                   };
-                  
+
                   set((state) => {
                     state.user = updatedUser;
                   });
-                  
+
                   authLogger.info('User profile synced with database', { userId });
                 }
               }
@@ -895,7 +926,7 @@ export const useAuthStore = create<AuthStore>()(
                 created_at: new Date().toISOString(),
                 updated_at: new Date().toISOString(),
               });
-              
+
               authLogger.info('User profile created in database', { userId: userData.id });
             } catch (error) {
               authLogger.error('Failed to create user profile', { userId: userData.id, error });
