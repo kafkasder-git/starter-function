@@ -607,3 +607,5 @@ export function UserManagementPageReal() {
     </div>
   );
 }
+
+export default UserManagementPageReal;

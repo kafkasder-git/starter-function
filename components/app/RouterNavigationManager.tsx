@@ -4,7 +4,7 @@
  * @version 2.0.0
  */
 
-import React, { createContext, useCallback, useContext, useEffect, useMemo } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, startTransition } from 'react';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { useUserPreferences } from '../../hooks/useLocalStorage';
 import monitoringService from '../../services/monitoringService';
@@ -71,7 +71,7 @@ export function RouterNavigationProvider({ children }: RouterNavigationProviderP
 
   // Derive state from current route
   const navigationState = useMemo<NavigationState>(() => {
-    const pathname = location.pathname;
+    const { pathname } = location;
     const pathParts = pathname.split('/').filter(Boolean);
     
     // Determine active module from path
@@ -82,7 +82,7 @@ export function RouterNavigationProvider({ children }: RouterNavigationProviderP
 
     if (pathParts.length > 0) {
       const firstPart = `/${pathParts[0]}`;
-      activeModule = routeToModule[firstPart] || pathParts[0] || 'genel';
+      activeModule = routeToModule[firstPart] ?? pathParts[0] ?? 'genel';
       
       if (pathParts.length > 1) {
         currentSubPage = `/${pathParts.slice(0, 2).join('/')}`;
@@ -114,8 +114,10 @@ export function RouterNavigationProvider({ children }: RouterNavigationProviderP
   // Navigation actions
   const setActiveModule = useCallback(
     (moduleId: string) => {
-      const route = moduleToRoute[moduleId] || `/${moduleId}`;
-      navigate(route);
+      const route = moduleToRoute[moduleId] ?? `/${moduleId}`;
+      startTransition(() => {
+        navigate(route);
+      });
       monitoringService.trackFeatureUsage('navigation', 'module_change', { moduleId });
     },
     [navigate],
@@ -131,7 +133,9 @@ export function RouterNavigationProvider({ children }: RouterNavigationProviderP
 
   const setCurrentSubPage = useCallback(
     (subPage: string) => {
-      navigate(subPage);
+      startTransition(() => {
+        navigate(subPage);
+      });
     },
     [navigate],
   );
@@ -144,7 +148,9 @@ export function RouterNavigationProvider({ children }: RouterNavigationProviderP
   const setSelectedBeneficiaryId = useCallback(
     (id: string | null) => {
       if (id) {
-        navigate(`/yardim/ihtiyac-sahipleri/${id}`);
+        startTransition(() => {
+          navigate(`/yardim/ihtiyac-sahipleri/${id}`);
+        });
       }
     },
     [navigate],
@@ -153,18 +159,24 @@ export function RouterNavigationProvider({ children }: RouterNavigationProviderP
   const navigateToBeneficiaryDetail = useCallback(
     (beneficiaryId: string | number) => {
       const id = typeof beneficiaryId === 'number' ? beneficiaryId.toString() : beneficiaryId;
-      navigate(`/yardim/ihtiyac-sahipleri/${id}`);
+      startTransition(() => {
+        navigate(`/yardim/ihtiyac-sahipleri/${id}`);
+      });
     },
     [navigate],
   );
 
   const backToBeneficiariesList = useCallback(() => {
-    navigate('/yardim/ihtiyac-sahipleri');
+    startTransition(() => {
+      navigate('/yardim/ihtiyac-sahipleri');
+    });
   }, [navigate]);
 
   const subPageChange = useCallback(
     (href: string) => {
-      navigate(href);
+      startTransition(() => {
+        navigate(href);
+      });
     },
     [navigate],
   );
@@ -177,19 +189,27 @@ export function RouterNavigationProvider({ children }: RouterNavigationProviderP
   );
 
   const navigateToProfile = useCallback(() => {
-    navigate('/profile');
+    startTransition(() => {
+      navigate('/profile');
+    });
   }, [navigate]);
 
   const navigateToSettings = useCallback(() => {
-    navigate('/settings');
+    startTransition(() => {
+      navigate('/settings');
+    });
   }, [navigate]);
 
   const backToMain = useCallback(() => {
-    navigate('/genel');
+    startTransition(() => {
+      navigate('/genel');
+    });
   }, [navigate]);
 
   const navigateToUserManagement = useCallback(() => {
-    navigate('/user-management');
+    startTransition(() => {
+      navigate('/user-management');
+    });
   }, [navigate]);
 
   // Memoized context value

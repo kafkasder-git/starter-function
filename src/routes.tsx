@@ -1,36 +1,21 @@
 import type { RouteObject } from 'react-router-dom';
-import { lazy, type ComponentType } from 'react';
+import { lazy, Suspense, type ComponentType } from 'react';
+import { SkeletonLoader } from '../components/shared/LoadingSpinner';
 
-// Lazy load pages for better performance
-const DashboardPage = lazy(() => import('../components/pages/DashboardPage'));
-const BeneficiariesPage = lazy(() =>
-  import('../components/pages/BeneficiariesPageEnhanced')
-);
-const BeneficiaryDetailPage = lazy(() =>
-  import('../components/pages/BeneficiaryDetailPageComprehensive')
-);
-const AidApplicationsPage = lazy(() =>
-  import('../components/pages/AidApplicationsPage')
-);
-const AllAidListPage = lazy(() =>
-  import('../components/pages/AllAidListPage')
-);
-const DonationsPage = lazy(() =>
-  import('../components/pages/DonationsPage')
-);
-const ProfilePage = lazy(() =>
-  import('../components/pages/ProfilePage')
-);
-const SystemSettingsPage = lazy(() =>
-  import('../components/pages/SystemSettingsPage')
-);
-const UserManagementPage = lazy(() =>
-  import('../components/pages/UserManagementPageReal')
-);
-const NotFoundPage = lazy(() =>
-  import('../components/pages/NotFoundPage')
-);
-const LoginPage = lazy(() => import('../components/auth/LoginPage'));
+// Temporarily disable lazy loading to debug
+import DashboardPage from '../components/pages/DashboardPage';
+import BeneficiariesPage from '../components/pages/BeneficiariesPageEnhanced';
+import BeneficiaryDetailPage from '../components/pages/BeneficiaryDetailPageComprehensive';
+import AidApplicationsPage from '../components/pages/AidApplicationsPage';
+import AllAidListPage from '../components/pages/AllAidListPage';
+import DonationsPage from '../components/pages/DonationsPage';
+import ProfilePage from '../components/pages/ProfilePage';
+import SystemSettingsPage from '../components/pages/SystemSettingsPage';
+import UserManagementPage from '../components/pages/UserManagementPageReal';
+import NotFoundPage from '../components/pages/NotFoundPage';
+import LoginPage from '../components/auth/LoginPage';
+
+// No need for Suspense wrapper when not using lazy loading
 
 /**
  * Public routes configuration

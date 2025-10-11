@@ -26,6 +26,7 @@ import { environment } from './environment';
 export const APPWRITE_CONFIG = {
   endpoint: environment.appwrite.endpoint,
   projectId: environment.appwrite.projectId,
+  projectName: environment.appwrite.projectName,
   databaseId: environment.appwrite.databaseId,
 };
 
@@ -40,6 +41,7 @@ export const DEV_CREDENTIALS = isDevelopment
       'manager@dernek.org': 'manager123',
       'operator@dernek.org': 'operator123',
       'viewer@dernek.org': 'viewer123',
+      'isahamid095@gmail.com': 'Vadalov95.',
     }
   : {};
 

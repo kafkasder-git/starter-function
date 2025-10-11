@@ -856,3 +856,5 @@ export function ProfilePage() {
     </PageLayout>
   );
 }
+
+export default ProfilePage;

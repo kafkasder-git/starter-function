@@ -18,8 +18,8 @@ import {
   Shield,
   Wallet,
 } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { useEffect, useRef, useState, startTransition } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../stores/authStore';
 import { Badge } from '../ui/badge';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
@@ -286,7 +286,7 @@ export function Sidebar({
     setHoveredModule(moduleId);
   };
 
-  const handleSubPageClick = () => {
+  const handleSubPageClick = (href: string) => {
     // Close popover after selection
     setOpenPopover(null);
     setHoveredModule(null);
@@ -296,10 +296,16 @@ export function Sidebar({
     if (isMobileOpen) {
       onMobileToggle?.();
     }
+
+    // Use startTransition to prevent Suspense warnings during navigation
+    startTransition(() => {
+      navigate(href);
+    });
   };
   
   // Get current location for active state
   const location = useLocation();
+  const navigate = useNavigate();
   const currentPath = location.pathname;
 
   // Close popover when clicking outside
@@ -437,10 +443,9 @@ export function Sidebar({
                         {module.subPages.map((subPage, index) => {
                           const isActive = currentPath === subPage.href || currentPath.startsWith(subPage.href + '/');
                           return (
-                            <Link
+                            <button
                               key={subPage.href}
-                              to={subPage.href}
-                              onClick={handleSubPageClick}
+                              onClick={() => handleSubPageClick(subPage.href)}
                               className={cn(
                                 'w-full text-left px-3 py-2.5 text-sm rounded-lg transition-all duration-200 group flex items-center justify-between animate-in fade-in-0 slide-in-from-left-1 animate-fill-both',
                                 isActive 
@@ -466,7 +471,7 @@ export function Sidebar({
                                   ? 'bg-gray-900 opacity-100 scale-110' 
                                   : 'bg-gray-400 opacity-0 group-hover:opacity-100 group-hover:scale-110'
                               )} />
-                            </Link>
+                            </button>
                           );
                         })}
                       </div>

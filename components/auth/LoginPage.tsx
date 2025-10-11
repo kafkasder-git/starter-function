@@ -406,3 +406,5 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
     </div>
   );
 }
+
+export default LoginPage;

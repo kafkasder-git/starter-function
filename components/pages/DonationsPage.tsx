@@ -943,3 +943,5 @@ export function DonationsPage() {
     </PageLayout>
   );
 }
+
+export default DonationsPage;

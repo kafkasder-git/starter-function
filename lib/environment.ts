@@ -13,6 +13,7 @@ interface EnvironmentConfig {
   appwrite: {
     endpoint: string;
     projectId: string;
+    projectName: string;
     databaseId: string;
   };
   sentry?: {
@@ -83,9 +84,10 @@ export const environment: EnvironmentConfig = {
   },
   
   appwrite: {
-    endpoint: getEnv('VITE_APPWRITE_ENDPOINT', 'https://cloud.appwrite.io/v1'),
-    projectId: getEnv('VITE_APPWRITE_PROJECT_ID', '68e92f380024d5de7dfa'),
-    databaseId: getEnv('VITE_APPWRITE_DATABASE_ID', '68e9310d0008e60db79f'),
+    endpoint: getEnv('VITE_APPWRITE_ENDPOINT', 'https://fra.cloud.appwrite.io/v1'),
+    projectId: getEnv('VITE_APPWRITE_PROJECT_ID', '68e99f6c000183bafb39'),
+    projectName: getEnv('VITE_APPWRITE_PROJECT_NAME', 'KafkasPortal'),
+    databaseId: getEnv('VITE_APPWRITE_DATABASE_ID', ''),
   },
   
   sentry: getEnv('VITE_SENTRY_DSN') ? {

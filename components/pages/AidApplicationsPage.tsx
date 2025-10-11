@@ -802,3 +802,5 @@ export function AidApplicationsPage() {
     </PageLayout>
   );
 }
+
+export default AidApplicationsPage;

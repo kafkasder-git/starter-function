@@ -8,20 +8,22 @@
 import React, { useState, useMemo } from 'react';
 import { motion } from 'motion/react';
 // Optimized selective imports from recharts
-import { ResponsiveContainer } from 'recharts/lib/component/ResponsiveContainer';
-import { LineChart } from 'recharts/lib/chart/LineChart';
-import { Line } from 'recharts/lib/cartesian/Line';
-import { AreaChart } from 'recharts/lib/chart/AreaChart';
-import { Area } from 'recharts/lib/cartesian/Area';
-import { BarChart } from 'recharts/lib/chart/BarChart';
-import { Bar } from 'recharts/lib/cartesian/Bar';
-import { XAxis } from 'recharts/lib/cartesian/XAxis';
-import { YAxis } from 'recharts/lib/cartesian/YAxis';
-import { CartesianGrid } from 'recharts/lib/cartesian/CartesianGrid';
-import { Tooltip } from 'recharts/lib/component/Tooltip';
-import { PieChart } from 'recharts/lib/chart/PieChart';
-import { Pie } from 'recharts/lib/polar/Pie';
-import { Cell } from 'recharts/lib/component/Cell';
+import {
+  ResponsiveContainer,
+  LineChart,
+  Line,
+  AreaChart,
+  Area,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  PieChart,
+  Pie,
+  Cell,
+} from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from './card';
 import { Badge } from './badge';
 import { Button } from './button';

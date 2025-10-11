@@ -350,3 +350,5 @@ export function AllAidListPage() {
     </PageLayout>
   );
 }
+
+export default AllAidListPage;
