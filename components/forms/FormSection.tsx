@@ -1,6 +1,6 @@
 /**
  * @fileoverview FormSection Component - Groups related form fields with visual separation
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -10,6 +10,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import { ChevronDown } from 'lucide-react';
 import { cn } from '../ui/utils';
 import { Button } from '../ui/button';
+import { Heading } from '../ui/heading';
+import { Text } from '../ui/text';
 
 export interface FormSectionProps {
   /** Section title */
@@ -58,7 +60,7 @@ export const FormSection = forwardRef<HTMLDivElement, FormSectionProps>(
 
     const handleToggle = () => {
       if (disabled) return;
-      
+
       const newState = !isOpen;
       setIsOpen(newState);
       onToggle?.(newState);
@@ -94,21 +96,23 @@ export const FormSection = forwardRef<HTMLDivElement, FormSectionProps>(
                 {icon}
               </div>
             )}
-            
+
             {/* Title and Description */}
             <div className="flex-1 min-w-0">
-              <h3 
+              <Heading
+                level={3}
+                size="lg"
+                weight="semibold"
                 className={cn(
-                  'text-lg font-semibold text-foreground',
                   required && "after:content-['*'] after:text-destructive after:ml-1"
                 )}
               >
                 {title}
-              </h3>
+              </Heading>
               {description && (
-                <p className="text-sm text-muted-foreground mt-1">
+                <Text size="sm" color="muted" className="mt-1">
                   {description}
-                </p>
+                </Text>
               )}
             </div>
           </div>
@@ -144,8 +148,8 @@ export const FormSection = forwardRef<HTMLDivElement, FormSectionProps>(
               initial={collapsible ? { height: 0, opacity: 0 } : false}
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              transition={{ 
-                duration: 0.3, 
+              transition={{
+                duration: 0.3,
                 ease: 'easeInOut',
                 opacity: { duration: 0.2 }
               }}

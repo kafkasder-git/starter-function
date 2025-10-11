@@ -10,6 +10,8 @@ export default defineConfig({
     // Drop console and debugger in production builds (Vite handles modes)
     drop: ['console', 'debugger'],
     legalComments: 'none',
+    jsx: 'automatic',
+    jsxImportSource: 'react',
   },
   css: {
     postcss: './postcss.config.js',
@@ -17,7 +19,9 @@ export default defineConfig({
   plugins: [
     tailwindcss(),
     react({
-      // React plugin optimizasyonları
+      // React plugin optimizations with automatic JSX runtime
+      jsxRuntime: 'automatic',
+      jsxImportSource: 'react',
       include: ['**/*.{jsx,tsx}'],
       exclude: [/node_modules/],
     }),
@@ -123,8 +127,8 @@ export default defineConfig({
       'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
     },
     dedupe: [
-      'react', 
-      'react-dom', 
+      'react',
+      'react-dom',
       '@radix-ui/react-slot',
       '@radix-ui/react-dialog',
       '@radix-ui/react-dropdown-menu',
@@ -136,57 +140,47 @@ export default defineConfig({
     outDir: 'dist',
     chunkSizeWarningLimit: 1000, // Daha düşük limit
     assetsDir: 'assets',
+    // Prevent React duplication
+    commonjsOptions: {
+      include: [/node_modules/],
+      transformMixedEsModules: true,
+    },
     rollupOptions: {
       output: {
-        manualChunks: {
-          // React ve React-DOM - jsx-runtime ile birlikte bundle'da
-          'react-vendor': [
-            'react',
-            'react-dom',
-            'react/jsx-runtime',
-          ],
-          // Radix UI bileşenleri - ayrı chunk
-          'ui-vendor': [
-            '@radix-ui/react-dialog',
-            '@radix-ui/react-dropdown-menu',
-            '@radix-ui/react-select',
-            '@radix-ui/react-popover',
-            '@radix-ui/react-tooltip',
-            '@radix-ui/react-tabs',
-            '@radix-ui/react-accordion',
-            '@radix-ui/react-collapsible',
-            '@radix-ui/react-slot',
-            '@radix-ui/react-alert-dialog',
-            '@radix-ui/react-checkbox',
-            '@radix-ui/react-radio-group',
-            '@radix-ui/react-avatar',
-            '@radix-ui/react-label',
-            '@radix-ui/react-menubar',
-            '@radix-ui/react-navigation-menu',
-            '@radix-ui/react-separator',
-            '@radix-ui/react-slider',
-            '@radix-ui/react-switch',
-            '@radix-ui/react-toggle',
-            '@radix-ui/react-toggle-group',
-            '@radix-ui/react-aspect-ratio',
-            '@radix-ui/react-context-menu',
-            '@radix-ui/react-hover-card',
-            '@radix-ui/react-progress',
-            '@radix-ui/react-scroll-area',
-          ],
-          'appwrite-vendor': ['appwrite'],
-          'chart-vendor': ['recharts'],
-          'form-vendor': ['react-hook-form', '@hookform/resolvers', 'zod'],
-          'utils-vendor': [
-            'date-fns',
-            'clsx',
-            'tailwind-merge',
-            'class-variance-authority',
-            'crypto-js',
-          ],
-          'icons-vendor': ['lucide-react'],
-          'motion-vendor': ['motion'],
-          'query-vendor': ['@tanstack/react-query'],
+        manualChunks(id) {
+          // Keep React in a single vendor chunk to avoid duplication
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('react-dom')) {
+              return 'react-vendor';
+            }
+            if (id.includes('@radix-ui')) {
+              return 'ui-vendor';
+            }
+            if (id.includes('appwrite')) {
+              return 'appwrite-vendor';
+            }
+            // Don't split recharts - it has circular dependencies
+            // Let Vite handle it automatically
+            if (id.includes('react-hook-form') || id.includes('@hookform') || id.includes('zod')) {
+              return 'form-vendor';
+            }
+            if (id.includes('date-fns') || id.includes('clsx') || id.includes('tailwind-merge') ||
+                id.includes('class-variance-authority') || id.includes('crypto-js')) {
+              return 'utils-vendor';
+            }
+            if (id.includes('lucide-react')) {
+              return 'icons-vendor';
+            }
+            if (id.includes('motion')) {
+              return 'motion-vendor';
+            }
+            if (id.includes('sonner')) {
+              return 'toast-vendor';
+            }
+            if (id.includes('@tanstack/react-query')) {
+              return 'query-vendor';
+            }
+          }
         },
         // Daha iyi cache stratejisi
         chunkFileNames: (chunkInfo) => {

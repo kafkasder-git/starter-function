@@ -133,7 +133,7 @@ export function NotificationBell({
           transition={{ duration: 0.6, ease: 'easeInOut' }}
         >
           {store.unreadCount > 0 && isAnimating ? (
-            <BellRing className={cn(config.icon, 'text-blue-600')} />
+            <BellRing className={cn(config.icon, 'text-info-600')} />
           ) : (
             <Bell className={cn(config.icon)} />
           )}
@@ -149,9 +149,10 @@ export function NotificationBell({
               className="absolute -top-1 -right-1"
             >
               <Badge
+                variant="destructive"
                 className={cn(
                   config.badge,
-                  'border-2 border-white bg-red-500 text-white shadow-sm',
+                  'border-2 border-white shadow-sm',
                   'flex items-center justify-center rounded-full',
                   store.unreadCount > 99 && 'px-1',
                 )}
@@ -170,7 +171,7 @@ export function NotificationBell({
               animate={{ scale: 2, opacity: 0 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 1, ease: 'easeOut' }}
-              className="absolute inset-0 rounded-full border-2 border-blue-400"
+              className="absolute inset-0 rounded-full border-2 border-info-400"
             />
           )}
         </AnimatePresence>
@@ -181,7 +182,7 @@ export function NotificationBell({
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          className="absolute -right-1 -bottom-1 h-3 w-3 rounded-full border border-white bg-red-500"
+          className="absolute -right-1 -bottom-1 h-3 w-3 rounded-full border border-white bg-error-500"
         />
       )}
     </div>

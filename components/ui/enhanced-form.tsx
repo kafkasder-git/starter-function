@@ -1,6 +1,6 @@
 /**
  * @fileoverview enhanced-form Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -45,10 +45,9 @@ import { Card, CardContent, CardHeader, CardTitle } from './card';
 import { Alert, AlertDescription } from './alert';
 import { Popover, PopoverContent, PopoverTrigger } from './popover';
 import { Calendar as CalendarComponent } from './calendar';
-import { format } from 'date-fns';
-import { tr } from 'date-fns/locale';
+import { formatDate, formatTime } from '../../lib/utils/dateFormatter';
 
-import { logger } from '../lib/logging/logger';
+import { logger } from '../../lib/logging/logger';
 // Enhanced Form Context
 interface EnhancedFormContextValue {
   formId: string;
@@ -80,7 +79,7 @@ interface EnhancedFormProviderProps<T extends FieldValues = FieldValues> {
 
 /**
  * EnhancedFormProvider function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -156,7 +155,7 @@ export function EnhancedFormProvider<T extends FieldValues = FieldValues>({
     <EnhancedFormContext.Provider value={contextValue}>
       <ReactHookFormProvider {...form}>
         <Card className={cn('w-full shadow-lg border-0 bg-white/80 backdrop-blur-sm', className)}>
-          {(title ?? description || autoSave) && (
+          {((title ?? description) || autoSave) && (
             <CardHeader className={cn('pb-4', compactMode && 'pb-2')}>
               <div className="flex items-center justify-between">
                 <div>
@@ -168,16 +167,16 @@ export function EnhancedFormProvider<T extends FieldValues = FieldValues>({
 
                 {autoSave && lastSaved && (
                   <div className="flex items-center gap-2 text-sm text-gray-500">
-                    <CheckCircle className="w-4 h-4 text-green-500" />
-                    <span>Son kaydedilme: {format(lastSaved, 'HH:mm', { locale: tr })}</span>
+                    <CheckCircle className="w-4 h-4 text-success-500" />
+                    <span>Son kaydedilme: {formatTime(lastSaved)}</span>
                   </div>
                 )}
               </div>
 
               {Object.keys(errors).length > 0 && (
-                <Alert className="border-red-200 bg-red-50">
-                  <AlertCircle className="h-4 w-4 text-red-600" />
-                  <AlertDescription className="text-red-700">
+                <Alert className="border-error-200 bg-error-50">
+                  <AlertCircle className="h-4 w-4 text-error-600" />
+                  <AlertDescription className="text-error-700">
                     Lütfen formdaki hataları düzeltin.
                   </AlertDescription>
                 </Alert>
@@ -203,6 +202,7 @@ export function EnhancedFormProvider<T extends FieldValues = FieldValues>({
 }
 
 // Enhanced Form Field Hook
+// eslint-disable-next-line react-refresh/only-export-components
 export const useEnhancedForm = () => {
   const context = useContext(EnhancedFormContext);
   if (!context) {
@@ -235,7 +235,7 @@ export type FieldType =
 
 /**
  * SelectOption Interface
- * 
+ *
  * @interface SelectOption
  */
 export interface SelectOption {
@@ -248,7 +248,7 @@ export interface SelectOption {
 
 /**
  * EnhancedFieldProps Interface
- * 
+ *
  * @interface EnhancedFieldProps
  */
 export interface EnhancedFieldProps {
@@ -283,7 +283,7 @@ export interface EnhancedFieldProps {
 // Enhanced Form Field Component
 /**
  * EnhancedField function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -336,10 +336,12 @@ export function EnhancedField({
     onFocus?.();
   };
 
-  const handleBlur = () => {
+  const handleBlur = (e?: React.FocusEvent) => {
     setFocused(false);
     onBlur?.();
-    field.onBlur();
+    if (e) {
+      field.onBlur(e);
+    }
   };
 
   const handleChange = (value: any) => {
@@ -351,11 +353,11 @@ export function EnhancedField({
     if (!enhancedForm.showValidationIcons || !isDirty) return null;
 
     if (error) {
-      return <AlertCircle className="w-4 h-4 text-red-500" />;
+      return <AlertCircle className="w-4 h-4 text-error-500" />;
     }
 
     if (!invalid && form.getValues(name)) {
-      return <CheckCircle className="w-4 h-4 text-green-500" />;
+      return <CheckCircle className="w-4 h-4 text-success-500" />;
     }
 
     return null;
@@ -371,7 +373,7 @@ export function EnhancedField({
           <Label htmlFor={fieldId} className="flex items-center gap-2">
             {icon}
             {label}
-            {required && <span className="text-red-500">*</span>}
+            {required && <span className="text-error-500">*</span>}
           </Label>
         )}
         {render(field)}
@@ -380,10 +382,10 @@ export function EnhancedField({
           <motion.p
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-sm text-red-600 flex items-center gap-1"
+            className="text-sm text-error-600 flex items-center gap-1"
           >
             <AlertCircle className="w-4 h-4" />
-            {error.message}
+            {typeof error === 'string' ? error : (typeof error === 'object' && error !== null && 'message' in error ? String(error.message) : String(error))}
           </motion.p>
         )}
       </div>
@@ -401,9 +403,9 @@ export function EnhancedField({
       className: cn(
         'transition-all duration-200',
         sizeClasses[size],
-        focused && 'ring-2 ring-blue-500 ring-offset-2',
-        error && 'border-red-500 focus:border-red-500',
-        !error && isDirty && 'border-green-500',
+        focused && 'ring-2 ring-primary-500 ring-offset-2',
+        error && 'border-error-500 focus:border-error-500',
+        !error && isDirty && 'border-success-500',
         icon && 'pl-10',
         (prefix ?? getValidationIcon()) && 'pl-8',
         (suffix ?? type === 'password') && 'pr-10',
@@ -434,7 +436,7 @@ export function EnhancedField({
       case 'select':
         return (
           <Select value={form.getValues(name) || ''} onValueChange={handleChange} disabled={disabled}>
-            <SelectTrigger className={cn(sizeClasses[size], error && 'border-red-500')}>
+            <SelectTrigger className={cn(sizeClasses[size], error && 'border-error-500')}>
               <SelectValue placeholder={placeholder} />
             </SelectTrigger>
             <SelectContent>
@@ -507,11 +509,11 @@ export function EnhancedField({
                   'w-full justify-start text-left font-normal',
                   !form.getValues(name) && 'text-muted-foreground',
                   sizeClasses[size],
-                  error && 'border-red-500',
+                  error && 'border-error-500',
                 )}
               >
                 <Calendar className="mr-2 h-4 w-4" />
-                {form.getValues(name) ? format(form.getValues(name), 'dd/MM/yyyy', { locale: tr }) : placeholder}
+                {form.getValues(name) ? formatDate(form.getValues(name)) : placeholder}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
@@ -636,7 +638,7 @@ export function EnhancedField({
         <Label htmlFor={fieldId} className="flex items-center gap-2 font-medium">
           {icon}
           {label}
-          {required && <span className="text-red-500">*</span>}
+          {required && <span className="text-error-500">*</span>}
         </Label>
       )}
 
@@ -675,10 +677,10 @@ export function EnhancedField({
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="text-sm text-red-600 flex items-center gap-1"
+            className="text-sm text-error-600 flex items-center gap-1"
           >
             <AlertCircle className="w-4 h-4" />
-            {error.message}
+            {typeof error === 'string' ? error : (typeof error === 'object' && error !== null && 'message' in error ? String(error.message) : String(error))}
           </motion.p>
         )}
       </AnimatePresence>
@@ -698,7 +700,7 @@ interface FormSectionProps {
 
 /**
  * FormSection function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -765,7 +767,7 @@ interface FormActionsProps {
 
 /**
  * FormActions function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */

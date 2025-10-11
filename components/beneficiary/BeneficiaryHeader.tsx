@@ -1,14 +1,17 @@
 /**
  * @fileoverview BeneficiaryHeader Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
 
-import { Calendar, Edit3, Mail, MapPin, Phone, Save, User, X } from 'lucide-react';
+import React from 'react';
+import { Calendar, Mail, MapPin, Phone, Save, User, X } from 'lucide-react';
+import { actionIcons } from '../../lib/design-system/icons';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { formatDate } from '../../lib/utils/dateFormatter';
 
 interface BeneficiaryHeaderProps {
   beneficiary: any;
@@ -20,7 +23,7 @@ interface BeneficiaryHeaderProps {
 
 /**
  * BeneficiaryHeader function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -37,9 +40,9 @@ export function BeneficiaryHeader({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             {onBack && (
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={onBack}
                 className="hover:bg-gray-100 rounded-lg p-2"
               >
@@ -55,8 +58,8 @@ export function BeneficiaryHeader({
                   {beneficiary?.name ?? 'İhtiyaç Sahibi Detayı'}
                 </CardTitle>
                 <div className="flex items-center gap-3 mt-2">
-                  <Badge 
-                    variant="outline" 
+                  <Badge
+                    variant="outline"
                     className="text-xs font-medium px-3 py-1 bg-gray-100 text-gray-700 border-gray-300"
                   >
                     ID: {beneficiary?.id ?? 'N/A'}
@@ -64,8 +67,8 @@ export function BeneficiaryHeader({
                   <Badge
                     variant={beneficiary?.status === 'Aktif' ? 'default' : 'secondary'}
                     className={`text-xs font-medium px-3 py-1 ${
-                      beneficiary?.status === 'Aktif' 
-                        ? 'bg-green-100 text-green-700 border-green-300' 
+                      beneficiary?.status === 'Aktif'
+                        ? 'bg-green-100 text-green-700 border-green-300'
                         : 'bg-gray-100 text-gray-700 border-gray-300'
                     }`}
                   >
@@ -79,17 +82,17 @@ export function BeneficiaryHeader({
           <div className="flex items-center gap-3">
             {editMode ? (
               <>
-                <Button 
-                  size="sm" 
+                <Button
+                  size="sm"
                   onClick={onSave}
                   className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium shadow-sm transition-all duration-200"
                 >
                   <Save className="w-4 h-4 mr-2" />
                   Kaydet
                 </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={onEditToggle}
                   className="px-4 py-2 text-gray-700 border-gray-300 hover:bg-gray-50 rounded-lg font-medium transition-all duration-200"
                 >
@@ -98,13 +101,13 @@ export function BeneficiaryHeader({
                 </Button>
               </>
             ) : (
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={onEditToggle}
                 className="px-4 py-2 text-blue-700 border-blue-300 hover:bg-blue-50 rounded-lg font-medium transition-all duration-200"
               >
-                <Edit3 className="w-4 h-4 mr-2" />
+                {React.createElement(actionIcons.edit, { className: 'w-4 h-4 mr-2' })}
                 Düzenle
               </Button>
             )}
@@ -125,7 +128,7 @@ export function BeneficiaryHeader({
               </p>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
             <div className="flex items-center justify-center w-8 h-8 bg-green-100 rounded-full">
               <Mail className="w-4 h-4 text-green-600" />
@@ -137,7 +140,7 @@ export function BeneficiaryHeader({
               </p>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
             <div className="flex items-center justify-center w-8 h-8 bg-orange-100 rounded-full">
               <MapPin className="w-4 h-4 text-orange-600" />
@@ -160,11 +163,7 @@ export function BeneficiaryHeader({
               <div>
                 <p className="text-xs font-medium text-blue-600 uppercase tracking-wide">Kayıt Tarihi</p>
                 <p className="text-sm font-medium text-blue-900">
-                  {new Date(beneficiary.registrationDate).toLocaleDateString('tr-TR', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                  })}
+                  {formatDate(beneficiary.registrationDate, 'long')}
                 </p>
               </div>
             </div>

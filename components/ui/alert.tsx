@@ -1,6 +1,6 @@
 /**
  * @fileoverview alert Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -33,6 +33,19 @@ const alertVariants = cva(
   },
 );
 
+/**
+ * Alert Component Icon Mapping
+ *
+ * Icons are chosen for page-level alert messages:
+ * - AlertCircle: General alerts and destructive messages (contextual error indication)
+ * - CheckCircle: Success messages (close to CheckCircle2 from StatusBadge)
+ * - AlertTriangle: Warning messages (matches icon mapping guide)
+ * - Info: Informational messages (matches icon mapping guide)
+ *
+ * Note: Alert uses AlertCircle for errors (page-level context) while StatusBadge
+ * uses XCircle for inline status indicators. This differentiation helps distinguish
+ * between page-level alerts and inline status displays.
+ */
 const alertIcons = {
   default: AlertCircle,
   destructive: AlertCircle,
@@ -94,7 +107,7 @@ function Alert({
       {...props}
     >
       {showIcon && <IconComponent className="mt-0.5" />}
-      
+
       <div className="col-start-2 flex-1">
         {children}
       </div>

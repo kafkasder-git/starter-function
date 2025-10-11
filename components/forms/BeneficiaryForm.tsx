@@ -1,6 +1,6 @@
 /**
  * @fileoverview BeneficiaryForm Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -22,6 +22,9 @@ import { Textarea } from '../ui/textarea';
 import { CameraScanner } from '../ui/camera-scanner';
 
 import { logger } from '../../lib/logging/logger';
+import { helperTextVariants } from '../../lib/design-system/variants';
+import { useFormRecovery } from '../../lib/forms/formRecovery';
+import { useFormAutoScroll } from '../../hooks/useFormAutoScroll';
 import type { OCRResult } from '../../services/ocrService';
 // Form validation schema
 const beneficiarySchema = z.object({
@@ -127,14 +130,7 @@ export default function BeneficiaryForm({
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const totalSteps = 6;
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-    watch,
-    setValue,
-    getValues,
-  } = useForm<BeneficiaryFormData>({
+  const form = useForm<BeneficiaryFormData>({
     resolver: zodResolver(beneficiarySchema),
     defaultValues: {
       family_members: [],
@@ -146,11 +142,36 @@ export default function BeneficiaryForm({
     },
   });
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    watch,
+    setValue,
+    getValues,
+  } = form;
+
   const watchedValues = watch();
+
+  // Add form recovery with auto-save
+  const { clearRecovery } = useFormRecovery(form, {
+    storageKey: 'beneficiary-form',
+    autoSaveInterval: 30000,
+    excludeFields: ['documents'], // exclude file uploads
+    onRecover: () => toast.info('Kaydedilmiş form verisi geri yüklendi'),
+  });
+
+  // Add auto-scroll to first error
+  useFormAutoScroll(form, {
+    behavior: 'smooth',
+    block: 'center',
+    offset: 80, // account for header
+  });
 
   const handleFormSubmit = async (data: BeneficiaryFormData) => {
     try {
       await onSubmit(data);
+      clearRecovery(); // Clear saved data after successful submission
       toast.success('Yardım alanı başarıyla kaydedildi');
     } catch (error) {
       toast.error('Kayıt sırasında bir hata oluştu');
@@ -215,23 +236,23 @@ export default function BeneficiaryForm({
       if (result.fullName) {
         setValue('full_name', result.fullName);
       }
-      
+
       if (result.identityNumber) {
         setValue('identity_no', result.identityNumber);
       }
-      
+
       if (result.nationality) {
         setValue('nationality', result.nationality);
       }
-      
+
       if (result.country) {
         setValue('country', result.country);
       }
-      
+
       if (result.birthDate) {
         setValue('birth_date', result.birthDate);
       }
-      
+
       if (result.gender) {
         setValue('gender', result.gender);
       }
@@ -292,9 +313,11 @@ export default function BeneficiaryForm({
               className="form-input"
             />
             {errors.full_name && (
-              <p className="form-error-text">{errors.full_name.message}</p>
+              <p className={helperTextVariants({ variant: 'error' })}>
+                {errors.full_name.message}
+              </p>
             )}
-            <p className="form-helper-text">
+            <p className={helperTextVariants({ variant: 'default' })}>
               Örnek: Ahmet Mehmet Yılmaz
             </p>
           </div>
@@ -311,9 +334,11 @@ export default function BeneficiaryForm({
               maxLength={11}
             />
             {errors.identity_no && (
-              <p className="form-error-text">{errors.identity_no.message}</p>
+              <p className={helperTextVariants({ variant: 'error' })}>
+                {errors.identity_no.message}
+              </p>
             )}
-            <p className="form-helper-text">
+            <p className={helperTextVariants({ variant: 'default' })}>
               Sadece rakam, boşluk veya tire kullanmayın
             </p>
           </div>
@@ -329,9 +354,11 @@ export default function BeneficiaryForm({
               className="form-input"
             />
             {errors.nationality && (
-              <p className="form-error-text">{errors.nationality.message}</p>
+              <p className={helperTextVariants({ variant: 'error' })}>
+                {errors.nationality.message}
+              </p>
             )}
-            <p className="form-helper-text">
+            <p className={helperTextVariants({ variant: 'default' })}>
               Vatandaşlık bilgisi
             </p>
           </div>
@@ -348,9 +375,11 @@ export default function BeneficiaryForm({
               className="form-input"
             />
             {errors.country && (
-              <p className="form-error-text">{errors.country.message}</p>
+              <p className={helperTextVariants({ variant: 'error' })}>
+                {errors.country.message}
+              </p>
             )}
-            <p className="form-helper-text">
+            <p className={helperTextVariants({ variant: 'default' })}>
               2 harfli ülke kodu (ISO standardı)
             </p>
           </div>
@@ -377,7 +406,7 @@ export default function BeneficiaryForm({
               placeholder="05XX XXX XX XX"
             />
             {errors.phone && (
-              <p className="text-sm text-red-500">{errors.phone.message}</p>
+              <p className={helperTextVariants({ variant: 'error' })}>{errors.phone.message}</p>
             )}
           </div>
 
@@ -390,7 +419,7 @@ export default function BeneficiaryForm({
               placeholder="ornek@email.com"
             />
             {errors.email && (
-              <p className="text-sm text-red-500">{errors.email.message}</p>
+              <p className={helperTextVariants({ variant: 'error' })}>{errors.email.message}</p>
             )}
           </div>
         </div>
@@ -416,7 +445,7 @@ export default function BeneficiaryForm({
               placeholder="Şehir"
             />
             {errors.city && (
-              <p className="text-sm text-red-500">{errors.city.message}</p>
+              <p className={helperTextVariants({ variant: 'error' })}>{errors.city.message}</p>
             )}
           </div>
 
@@ -428,7 +457,7 @@ export default function BeneficiaryForm({
               placeholder="İlçe/Mahalle"
             />
             {errors.settlement && (
-              <p className="text-sm text-red-500">{errors.settlement.message}</p>
+              <p className={helperTextVariants({ variant: 'error' })}>{errors.settlement.message}</p>
             )}
           </div>
 
@@ -450,7 +479,7 @@ export default function BeneficiaryForm({
               rows={3}
             />
             {errors.address && (
-              <p className="text-sm text-red-500">{errors.address.message}</p>
+              <p className={helperTextVariants({ variant: 'error' })}>{errors.address.message}</p>
             )}
           </div>
         </div>
@@ -485,7 +514,7 @@ export default function BeneficiaryForm({
               </SelectContent>
             </Select>
             {errors.category && (
-              <p className="text-sm text-red-500">{errors.category.message}</p>
+              <p className={helperTextVariants({ variant: 'error' })}>{errors.category.message}</p>
             )}
           </div>
 
@@ -502,7 +531,7 @@ export default function BeneficiaryForm({
               </SelectContent>
             </Select>
             {errors.aid_type && (
-              <p className="text-sm text-red-500">{errors.aid_type.message}</p>
+              <p className={helperTextVariants({ variant: 'error' })}>{errors.aid_type.message}</p>
             )}
           </div>
 
@@ -514,7 +543,7 @@ export default function BeneficiaryForm({
               placeholder="Bölge"
             />
             {errors.fund_region && (
-              <p className="text-sm text-red-500">{errors.fund_region.message}</p>
+              <p className={helperTextVariants({ variant: 'error' })}>{errors.fund_region.message}</p>
             )}
           </div>
 
@@ -526,7 +555,7 @@ export default function BeneficiaryForm({
               placeholder="Açan birim"
             />
             {errors.opened_by_unit && (
-              <p className="text-sm text-red-500">{errors.opened_by_unit.message}</p>
+              <p className={helperTextVariants({ variant: 'error' })}>{errors.opened_by_unit.message}</p>
             )}
           </div>
         </div>
@@ -569,7 +598,7 @@ export default function BeneficiaryForm({
               placeholder="TR00 0000 0000 0000 0000 0000 00"
             />
             {errors.iban && (
-              <p className="text-sm text-red-500">{errors.iban.message}</p>
+              <p className={helperTextVariants({ variant: 'error' })}>{errors.iban.message}</p>
             )}
           </div>
 
@@ -765,7 +794,7 @@ export default function BeneficiaryForm({
             İhtiyaç sahibi bilgilerini adım adım doldurun
           </p>
         </div>
-        
+
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-3">
@@ -792,7 +821,7 @@ export default function BeneficiaryForm({
               </span>
             </div>
           </div>
-          
+
           <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
             <div
               className="bg-gradient-to-r from-blue-500 to-blue-600 h-3 rounded-full transition-all duration-500 ease-out shadow-sm"
@@ -808,9 +837,9 @@ export default function BeneficiaryForm({
         <div className="flex justify-between items-center pt-6 border-t border-gray-200">
           <div>
             {currentStep > 1 && (
-              <Button 
-                type="button" 
-                onClick={prevStep} 
+              <Button
+                type="button"
+                onClick={prevStep}
                 variant="outline"
                 className="px-6 py-3 text-gray-700 border-gray-300 hover:bg-gray-50 transition-all duration-200"
               >
@@ -821,9 +850,9 @@ export default function BeneficiaryForm({
 
           <div className="flex gap-3">
             {onCancel && (
-              <Button 
-                type="button" 
-                onClick={onCancel} 
+              <Button
+                type="button"
+                onClick={onCancel}
                 variant="outline"
                 className="px-6 py-3 text-gray-700 border-gray-300 hover:bg-gray-50 transition-all duration-200"
               >
@@ -832,16 +861,16 @@ export default function BeneficiaryForm({
             )}
 
             {currentStep < totalSteps ? (
-              <Button 
-                type="button" 
+              <Button
+                type="button"
                 onClick={nextStep}
                 className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
               >
                 Sonraki Adım →
               </Button>
             ) : (
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 disabled={isSubmitting || isLoading}
                 className="px-8 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg shadow-sm hover:shadow-md transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >

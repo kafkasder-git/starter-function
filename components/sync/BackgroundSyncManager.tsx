@@ -3,8 +3,6 @@
  * Manages offline data synchronization and displays sync status
  */
 
-import { formatDistanceToNow } from 'date-fns';
-import { tr } from 'date-fns/locale';
 import {
   AlertCircle,
   CheckCircle,
@@ -21,6 +19,7 @@ import {
 import React, { useState } from 'react';
 import { useToast } from '../../hooks/use-toast';
 import { useBackgroundSync } from '../../hooks/useBackgroundSync';
+import { useRelativeTime } from '../../hooks/useRelativeTime';
 import { Alert, AlertDescription } from '../ui/alert';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
@@ -92,7 +91,7 @@ const BackgroundSyncManager: React.FC<BackgroundSyncManagerProps> = ({ className
           variant: 'destructive',
         });
       }
-    } catch (error) {
+    } catch {
       toast({
         title: 'Yeniden Deneme Hatası',
         description: 'Başarısız görevler yeniden denenemedi.',
@@ -149,7 +148,7 @@ const BackgroundSyncManager: React.FC<BackgroundSyncManagerProps> = ({ className
         title: 'Test Görevleri Oluşturuldu',
         description: `${testTasks.length} test görevi senkronizasyon kuyruğuna eklendi.`,
       });
-    } catch (error) {
+    } catch {
       toast({
         title: 'Test Görevleri Oluşturulamadı',
         description: 'Test görevleri oluşturulurken hata oluştu.',
@@ -191,6 +190,11 @@ const BackgroundSyncManager: React.FC<BackgroundSyncManagerProps> = ({ className
   const getSyncProgress = () => {
     if (syncStats.total === 0) return 0;
     return ((syncStats.completed + syncStats.failed) / syncStats.total) * 100;
+  };
+
+  const TaskTimestamp = ({ timestamp }: { timestamp: number }) => {
+    const relativeTime = useRelativeTime(timestamp);
+    return <div className="text-sm text-gray-600 dark:text-gray-400">{relativeTime}</div>;
   };
 
   if (!isSyncAvailable) {
@@ -245,7 +249,7 @@ const BackgroundSyncManager: React.FC<BackgroundSyncManagerProps> = ({ className
           <div className="flex gap-2">
             <Button
               onClick={handleSyncNow}
-              disabled={!isOnline ?? isSyncInProgress}
+              disabled={!isOnline || isSyncInProgress}
               size="sm"
               className="gap-2"
             >
@@ -313,7 +317,7 @@ const BackgroundSyncManager: React.FC<BackgroundSyncManagerProps> = ({ className
                 {pendingTasks.length > 0 && (
                   <Button
                     onClick={handleSyncNow}
-                    disabled={!isOnline ?? isSyncInProgress}
+                    disabled={!isOnline || isSyncInProgress}
                     size="sm"
                     variant="outline"
                   >
@@ -338,12 +342,7 @@ const BackgroundSyncManager: React.FC<BackgroundSyncManagerProps> = ({ className
                             <div className="font-medium">
                               {task.entity} - {task.type}
                             </div>
-                            <div className="text-sm text-gray-600 dark:text-gray-400">
-                              {formatDistanceToNow(new Date(task.timestamp), {
-                                addSuffix: true,
-                                locale: tr,
-                              })}
-                            </div>
+                            <TaskTimestamp timestamp={task.timestamp} />
                           </div>
                         </div>
 
@@ -369,7 +368,7 @@ const BackgroundSyncManager: React.FC<BackgroundSyncManagerProps> = ({ className
                 {failedTasks.length > 0 && (
                   <Button
                     onClick={handleRetryFailed}
-                    disabled={!isOnline ?? isSyncInProgress}
+                    disabled={!isOnline || isSyncInProgress}
                     size="sm"
                     variant="outline"
                   >

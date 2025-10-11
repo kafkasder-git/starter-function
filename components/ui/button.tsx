@@ -1,16 +1,40 @@
 /**
  * @fileoverview button Module - Application module
- * 
+ *
+ * Base Button Component
+ *
+ * This is the foundational button component used throughout the application.
+ * For buttons that need integrated loading, success, and error states,
+ * use the LoadingButton component which extends this base Button.
+ *
+ * @see LoadingButton in components/ui/loading-button.tsx for stateful button implementation
+ *
+ * Features:
+ * - Multiple variants (default, destructive, outline, secondary, ghost, link, success, warning, info)
+ * - Size options (xs, sm, default, lg, xl, icon)
+ * - Loading state with spinner
+ * - Icon support (left and right)
+ * - Ripple effect
+ * - Haptic feedback
+ * - Tooltip integration
+ * - Badge indicator
+ * - Full accessibility support
+ *
+ * Usage:
+ * - Use Button for simple actions (navigation, toggles, simple clicks)
+ * - Use LoadingButton for async operations that require visual feedback (form submissions, API calls)
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
 
 import { Slot } from '@radix-ui/react-slot';
-import { cva, type VariantProps } from 'class-variance-authority';
+import type { VariantProps } from 'class-variance-authority';
 import * as React from 'react';
 import { Loader2 } from 'lucide-react';
 
 import { cn } from './utils';
+import { buttonVariants } from '@/lib/design-system/variants';
 import { useHapticFeedback } from '../../hooks/useHapticFeedback';
 import { Tooltip, TooltipTrigger, TooltipContent } from './tooltip';
 import { Badge } from './badge';
@@ -37,40 +61,6 @@ const useRipple = () => {
   return { ripples, addRipple };
 };
 
-const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-60 disabled:cursor-not-allowed disabled:saturate-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-ring aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
-  {
-    variants: {
-      variant: {
-        default: 'bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/95',
-        destructive:
-          'bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60 active:bg-destructive/95',
-        outline:
-          'border bg-background text-foreground hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 active:bg-accent/80',
-        secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80 active:bg-secondary/70',
-        ghost: 'hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 active:bg-accent/80',
-        link: 'text-primary underline-offset-4 hover:underline active:text-primary/80',
-        success: 'bg-success text-success-foreground hover:bg-success/90 active:bg-success/95',
-        warning: 'bg-warning text-warning-foreground hover:bg-warning/90 active:bg-warning/95',
-        soft: 'bg-primary/10 text-primary hover:bg-primary/20 active:bg-primary/30 dark:bg-primary/20 dark:hover:bg-primary/30',
-      },
-      size: {
-        default: 'h-9 px-4 py-2 gap-2 has-[>svg]:px-3 md:h-9 min-h-[44px] md:min-h-0',
-        sm: 'h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 md:h-8 min-h-[44px] md:min-h-0',
-        lg: 'h-10 rounded-md gap-2.5 px-6 has-[>svg]:px-4 md:h-10 min-h-[44px] md:min-h-0',
-        xl: 'h-12 rounded-lg gap-3 px-8 text-base has-[>svg]:px-6 min-h-[44px]',
-        icon: 'size-9 rounded-md p-0 md:size-9 min-h-[44px] min-w-[44px] md:min-h-0 md:min-w-0',
-        'icon-sm': 'size-8 rounded-md p-0 md:size-8 min-h-[44px] min-w-[44px] md:min-h-0 md:min-w-0',
-        'icon-lg': 'size-10 rounded-md p-0 md:size-10 min-h-[44px] min-w-[44px] md:min-h-0 md:min-w-0',
-      },
-    },
-    defaultVariants: {
-      variant: 'default',
-      size: 'default',
-    },
-  },
-);
-
 export interface ButtonProps
   extends React.ComponentProps<'button'>,
     VariantProps<typeof buttonVariants> {
@@ -84,14 +74,15 @@ export interface ButtonProps
   haptic?: 'light' | 'medium' | 'heavy' | 'success' | 'warning' | 'error';
   tooltip?: string;
   badge?: string | number;
+  ariaLabel?: string;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ 
-    className, 
-    variant, 
-    size, 
-    asChild = false, 
+  ({
+    className,
+    variant,
+    size,
+    asChild = false,
     loading = false,
     loadingText,
     iconLeft,
@@ -101,15 +92,19 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     haptic,
     tooltip,
     badge,
+    ariaLabel,
     disabled,
     children,
     onClick,
-    ...props 
+    ...props
   }, ref) => {
     const Comp = asChild ? Slot : 'button';
     const isDisabled = disabled || loading;
     const { ripples, addRipple } = useRipple();
     const { triggerHaptic } = useHapticFeedback();
+
+    // Determine if button is icon-only (no text children)
+    const isIconOnly = !children || (typeof children !== 'string' && typeof children !== 'number');
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
       if (ripple && !isDisabled) {
@@ -136,7 +131,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={isDisabled}
         aria-disabled={isDisabled}
         aria-busy={loading}
-        aria-label={loading ? `${children} - Loading` : undefined}
+        aria-label={ariaLabel || (tooltip && isIconOnly ? tooltip : undefined)}
         onClick={handleClick}
         {...props}
       >
@@ -150,11 +145,11 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {!loading && iconRight && (
           <span className="ml-1">{iconRight}</span>
         )}
-        
+
         {/* Badge Indicator */}
         {badge && (
-          <Badge 
-            variant="destructive" 
+          <Badge
+            variant="destructive"
             size="sm"
             className="absolute -top-1 -right-1 min-w-5 h-5 flex items-center justify-center px-1 rounded-full"
             aria-label={`${badge} notifications`}
@@ -162,19 +157,18 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             {badge}
           </Badge>
         )}
-        
+
         {/* Ripple Effect */}
         {ripple && ripples.map((ripple) => (
           <span
             key={ripple.id}
-            className="absolute pointer-events-none animate-ping"
+            className="absolute pointer-events-none animate-ping bg-white/60"
             style={{
               left: ripple.x - 10,
               top: ripple.y - 10,
               width: 20,
               height: 20,
               borderRadius: '50%',
-              backgroundColor: 'rgba(255, 255, 255, 0.6)',
               transform: 'scale(0)',
               animation: 'ripple 0.6s linear',
             }}
@@ -216,4 +210,5 @@ export const MemoizedButton = React.memo(Button, (prevProps, nextProps) => {
   );
 });
 
+// eslint-disable-next-line react-refresh/only-export-components
 export { Button, buttonVariants };

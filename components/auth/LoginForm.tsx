@@ -4,15 +4,19 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 
+import { useFormAutoScroll } from "@/hooks/useFormAutoScroll"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Heading } from "@/components/ui/heading"
+import { Text } from "@/components/ui/text"
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
+  FormHelperText,
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
@@ -36,6 +40,12 @@ export function LoginForm() {
     },
   })
 
+  // Add auto-scroll to first error
+  useFormAutoScroll(form, {
+    behavior: 'smooth',
+    block: 'center',
+  })
+
   const onSubmit = () => {
     // Handle login logic here
   }
@@ -44,15 +54,15 @@ export function LoginForm() {
     <div className="flex min-h-screen w-full items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-gray-900">
+          <Heading level={1} size="3xl" weight="bold" className="tracking-tight">
             Sign in to your account
-          </h2>
-          <p className="mt-2 text-sm text-gray-600">
+          </Heading>
+          <Text size="sm" color="neutral" className="mt-2">
             Or{" "}
             <a href="#" className="font-medium text-primary hover:text-primary/80">
               create a new account
             </a>
-          </p>
+          </Text>
         </div>
 
         <Card>
@@ -78,6 +88,9 @@ export function LoginForm() {
                           {...field}
                         />
                       </FormControl>
+                      <FormHelperText variant="default">
+                        Enter the email address associated with your account
+                      </FormHelperText>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -96,6 +109,9 @@ export function LoginForm() {
                           {...field}
                         />
                       </FormControl>
+                      <FormHelperText variant="default">
+                        Password must be at least 8 characters
+                      </FormHelperText>
                       <FormMessage />
                     </FormItem>
                   )}

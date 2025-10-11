@@ -13,11 +13,12 @@ import {
   Loader2,
   Search,
   TrendingUp,
-  Trash2,
   UserPlus,
   Users,
 } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
+import { actionIcons } from '../../lib/design-system/icons';
+import { formatDate } from '../../lib/utils/dateFormatter';
+import React, { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 // Note: useSupabaseAuth removed as authentication is handled at app level
 import { beneficiariesService } from '../../services/beneficiariesService';
@@ -28,8 +29,10 @@ import { PageLoading } from '../shared/LoadingSpinner';
 import { PageLayout } from '../layouts/PageLayout';
 import { NewCategoryNotification } from '../notifications/NewCategoryNotification';
 import { Badge } from '../ui/badge';
+import { StatusBadge } from '../ui/status-badge';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { Tooltip, TooltipTrigger, TooltipContent } from '../ui/tooltip';
 import {
   Dialog,
   DialogContent,
@@ -41,7 +44,8 @@ import {
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
+import { ResponsiveTable, type ColumnDef } from '../ui/responsive-table';
+import { EmptyState } from '../shared/EmptyState';
 
 import { logger } from '../../lib/logging/logger';
 // İhtiyaç sahipleri için display tipi
@@ -49,7 +53,7 @@ interface BeneficiaryDisplay extends Beneficiary {
   display_id?: number; // 1'den başlayan sıralı ID
   formatted_phone?: string;
   formatted_registration_date?: string;
-  priority_level?: 'low' | 'medium' | 'high';
+  priority_level?: 'low' | 'medium' | 'high' | 'urgent';
   // Backward compatibility fields for display
   ad_soyad?: string;
   kimlik_no?: string;
@@ -72,45 +76,7 @@ interface BeneficiaryDisplay extends Beneficiary {
   Adres?: string;
 }
 
-// Status mapping for beneficiaries - Using Badge variants
-const statusMapping = {
-  active: {
-    label: 'Aktif',
-    key: 'active',
-    variant: 'success' as const,
-    className: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-  },
-  inactive: {
-    label: 'Pasif',
-    key: 'inactive',
-    variant: 'destructive' as const,
-    className: 'bg-red-50 text-red-700 border-red-200',
-  },
-  passive: {
-    label: 'Pasif',
-    key: 'passive',
-    variant: 'destructive' as const,
-    className: 'bg-red-50 text-red-700 border-red-200',
-  },
-  suspended: {
-    label: 'Askıda',
-    key: 'suspended',
-    variant: 'warning' as const,
-    className: 'bg-amber-50 text-amber-700 border-amber-200',
-  },
-  under_evaluation: {
-    label: 'Değerlendirmede',
-    key: 'under_evaluation',
-    variant: 'info' as const,
-    className: 'bg-cyan-50 text-cyan-700 border-cyan-200',
-  },
-  archived: {
-    label: 'Arşivlendi',
-    key: 'archived',
-    variant: 'outline' as const,
-    className: 'bg-gray-50 text-gray-700 border-gray-200',
-  },
-} as const;
+// Status mapping removed - now using StatusBadge component
 
 // Category mapping for beneficiaries - Corporate colors
 const categoryMapping = {
@@ -138,7 +104,7 @@ interface BeneficiariesPageProps {
 export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesPageProps) {
   // Get authentication state
   const { isAuthenticated, user } = useAuthStore();
-  
+
   // Note: Authentication is handled at the app level, no need to check here
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -371,9 +337,28 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
   }, [searchTerm, cityFilter, sortBy]);
 
   const getStatusBadge = (status: string) => {
-    const statusInfo =
-      statusMapping[status as keyof typeof statusMapping] || statusMapping.inactive;
-    return <Badge className={statusInfo.className}>{statusInfo.label}</Badge>;
+    const statusMap: Record<string, 'success' | 'error' | 'warning' | 'info' | 'pending'> = {
+      active: 'success',
+      inactive: 'error',
+      passive: 'error',
+      suspended: 'warning',
+      under_evaluation: 'info',
+      archived: 'pending',
+    };
+
+    const statusLabels: Record<string, string> = {
+      active: 'Aktif',
+      inactive: 'Pasif',
+      passive: 'Pasif',
+      suspended: 'Askıda',
+      under_evaluation: 'Değerlendirmede',
+      archived: 'Arşivlendi',
+    };
+
+    const statusType = statusMap[status] || 'pending';
+    const statusLabel = statusLabels[status] || status;
+
+    return <StatusBadge status={statusType}>{statusLabel}</StatusBadge>;
   };
 
   const getCategoryBadge = (category: string) => {
@@ -390,7 +375,6 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
             : (categoryInfo?.color ?? '')
         }
       >
-        {categoryInfo?.icon && `${categoryInfo.icon} `}
         {categoryLabel}
       </Badge>
     );
@@ -431,7 +415,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
         throw new Error(error ?? 'Kayıt oluşturulamadı');
       }
 
-      toast.success(`${data.ad_soyad} başarıyla kaydedildi!`, {
+      toast.success(`${data.full_name || newBeneficiary.ad_soyad} başarıyla kaydedildi!`, {
         description: 'Liste yenileniyor...',
         duration: 2000,
       });
@@ -501,8 +485,8 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
         beneficiary.kategori,
         beneficiary.tur,
         beneficiary.iban,
-        beneficiary.durum,
-        new Date(beneficiary.created_at).toLocaleDateString('tr-TR'),
+        beneficiary.status,
+        formatDate(beneficiary.created_at),
       ]);
 
       const csv = [headers, ...csvData].map((row) => row.join(',')).join('\n');
@@ -518,7 +502,216 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
     }
   };
 
+  // Delete function
+  const handleDelete = async (beneficiaryId: string) => {
+    if (!confirm('Bu kaydı silmek istediğinizden emin misiniz?')) {
+      return;
+    }
+
+    try {
+      const result = await beneficiariesService.delete(beneficiaryId);
+
+      if (result.error) {
+        throw new Error(result.error);
+      }
+
+      toast.success('Kayıt silindi');
+      await loadBeneficiaries();
+      await loadStats();
+    } catch (error) {
+      logger.error('Error deleting beneficiary:', error);
+      toast.error('Kayıt silinemedi');
+    }
+  };
+
   // OCR Scanner removed
+
+  // Column definitions for ResponsiveTable
+  const beneficiaryColumns: ColumnDef<BeneficiaryDisplay>[] = [
+    {
+      key: 'index',
+      title: '#',
+      width: '60px',
+      render: (_: any, __: BeneficiaryDisplay, index: number) => (
+        <span className="text-sm font-medium text-gray-600">
+          {index + 1 + (currentPage - 1) * pageSize}
+        </span>
+      ),
+      hideOnMobile: true,
+    },
+    {
+      key: 'ad_soyad',
+      title: 'İsim',
+      mobileLabel: 'İsim',
+      render: (_: any, row: BeneficiaryDisplay) => (
+        <div>
+          <div className="font-medium text-gray-900">{row.ad_soyad}</div>
+          <div className="mt-0.5 text-xs text-gray-500">{row.uyruk ?? 'TR'}</div>
+        </div>
+      ),
+    },
+    {
+      key: 'kategori',
+      title: 'Kategori',
+      mobileLabel: 'Kategori',
+      render: (value: string) => getCategoryBadge(value ?? 'Genel'),
+    },
+    {
+      key: 'telefon',
+      title: 'Telefon',
+      mobileLabel: 'Telefon',
+      render: (_: any, row: BeneficiaryDisplay) => (
+        <span className="text-blue-600">
+          {row.formatted_phone !== 'Telefon bilgisi yok' ? (
+            row.formatted_phone
+          ) : (
+            <span className="text-gray-400">-</span>
+          )}
+        </span>
+      ),
+    },
+    {
+      key: 'sehri',
+      title: 'Şehir',
+      mobileLabel: 'Şehir',
+    },
+    {
+      key: 'tc_kimlik_no',
+      title: 'Kimlik No',
+      mobileLabel: 'Kimlik No',
+      hideOnMobile: true,
+      render: (_: any, row: BeneficiaryDisplay) => (
+        <span className="font-mono text-xs">
+          {row.kimlik_no !== 'TC No bilgisi yok' ? (
+            row.kimlik_no
+          ) : (
+            <span className="text-gray-400">-</span>
+          )}
+        </span>
+      ),
+    },
+    {
+      key: 'actions',
+      title: 'İşlemler',
+      mobileLabel: 'İşlemler',
+      hideOnMobile: true,
+      render: (_: any, row: BeneficiaryDisplay) => {
+        const ViewIcon = actionIcons.view;
+        const DeleteIcon = actionIcons.delete;
+
+        return (
+          <div className="flex items-center justify-center gap-1">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onNavigateToDetail?.(String(row.id));
+                  }}
+                  aria-label={`View ${row.ad_soyad} details`}
+                >
+                  <ViewIcon className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Detayları Görüntüle</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0 text-red-600 hover:bg-red-50 hover:text-red-700"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDelete(String(row.id));
+                  }}
+                  aria-label={`Delete ${row.ad_soyad}`}
+                >
+                  <DeleteIcon className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Sil</TooltipContent>
+            </Tooltip>
+          </div>
+        );
+      },
+    },
+  ];
+
+  // Custom mobile card renderer
+  const renderBeneficiaryMobileCard = (row: BeneficiaryDisplay, index: number) => (
+    <Card
+      key={row.id}
+      className="cursor-pointer transition-shadow hover:shadow-md"
+      onClick={() => onNavigateToDetail?.(String(row.id))}
+    >
+      <CardContent className="p-4">
+        <div className="mb-3 flex items-start justify-between">
+          <div className="flex-1">
+            <div className="mb-1 text-base font-semibold">{row.ad_soyad}</div>
+            <div className="text-sm text-gray-600">
+              #{index + 1 + (currentPage - 1) * pageSize}
+            </div>
+          </div>
+          {getCategoryBadge(row.kategori ?? 'Genel')}
+        </div>
+
+        <div className="space-y-2 text-sm">
+          <div className="flex justify-between">
+            <span className="text-gray-600">Telefon:</span>
+            <span className="font-medium">{row.formatted_phone}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-600">Şehir:</span>
+            <span className="font-medium">{row.sehri}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-600">Tür:</span>
+            <span className="font-medium">{row.tur ?? 'Belirtilmemiş'}</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-gray-600">Durum:</span>
+            {getStatusBadge((row.status as any) ?? 'active')}
+          </div>
+        </div>
+
+        <div className="mt-4 flex gap-2 border-t pt-3">
+          <Button
+            size="sm"
+            variant="outline"
+            className="flex-1 min-h-[44px]"
+            onClick={(e) => {
+              e.stopPropagation();
+              onNavigateToDetail?.(String(row.id));
+            }}
+            aria-label={`View ${row.ad_soyad} details`}
+          >
+            Detay
+          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                size="sm"
+                variant="destructive"
+                className="min-h-[44px]"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDelete(String(row.id));
+                }}
+                aria-label={`Delete ${row.ad_soyad}`}
+              >
+                {React.createElement(actionIcons.delete, { className: 'h-4 w-4' })}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Sil</TooltipContent>
+          </Tooltip>
+        </div>
+      </CardContent>
+    </Card>
+  );
 
   if (loading && beneficiaries.length === 0) {
     return <PageLoading />;
@@ -865,183 +1058,21 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
                 </div>
               </div>
 
-              {/* Responsive View: Mobile Cards / Desktop Table */}
-
-              {/* Mobile Card View - Hidden on md and up */}
-              <div className="block space-y-3 md:hidden">
-                {beneficiaries.length === 0 ? (
-                  <div className="py-12 text-center text-gray-500">
-                    <UserPlus className="mx-auto mb-4 h-12 w-12 text-gray-300" />
-                    <p>Henüz hiç ihtiyaç sahibi kaydı yok.</p>
-                    <p className="mt-1 text-sm text-gray-400">
-                      İlk kayıt için &ldquo;Yeni İhtiyaç Sahibi Ekle&rdquo; butonunu kullanın
-                    </p>
-                  </div>
-                ) : (
-                  beneficiaries.map((beneficiary, index) => (
-                    <Card
-                      key={beneficiary.id}
-                      className="cursor-pointer transition-shadow hover:shadow-md"
-                      onClick={() => onNavigateToDetail?.(String(beneficiary.id))}
-                    >
-                      <CardContent className="p-4">
-                        <div className="mb-3 flex items-start justify-between">
-                          <div className="flex-1">
-                            <div className="mb-1 text-base font-semibold">
-                              {beneficiary.ad_soyad}
-                            </div>
-                            <div className="text-sm text-gray-600">
-                              #{index + 1 + (currentPage - 1) * pageSize}
-                            </div>
-                          </div>
-                          {getCategoryBadge(beneficiary.kategori ?? 'Genel')}
-                        </div>
-
-                        <div className="space-y-2 text-sm">
-                          <div className="flex justify-between">
-                            <span className="text-gray-600">Telefon:</span>
-                            <span className="font-medium">{beneficiary.formatted_phone}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-gray-600">Şehir:</span>
-                            <span className="font-medium">{beneficiary.sehri}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-gray-600">Tür:</span>
-                            <span className="font-medium">
-                              {beneficiary.tur ?? 'Belirtilmemiş'}
-                            </span>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <span className="text-gray-600">Durum:</span>
-                            {getStatusBadge((beneficiary.status as any) ?? 'active')}
-                          </div>
-                        </div>
-
-                        <div className="mt-4 flex gap-2 border-t pt-3">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="flex-1"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              onNavigateToDetail?.(String(beneficiary.id));
-                            }}
-                          >
-                            Detay
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="destructive"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDelete(String(beneficiary.id));
-                            }}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))
-                )}
-              </div>
-
-              {/* Desktop Table View - Hidden on mobile, shown on md and up */}
-              <div className="hidden overflow-x-auto md:block">
-                <Table className="min-w-full text-sm">
-                  <TableHeader>
-                    <TableRow className="bg-gray-50/50">
-                      <TableHead className="w-[60px] text-center font-medium">#</TableHead>
-                      <TableHead className="font-medium">İsim</TableHead>
-                      <TableHead className="font-medium">Kategori</TableHead>
-                      <TableHead className="font-medium">Telefon</TableHead>
-                      <TableHead className="font-medium">Şehir</TableHead>
-                      <TableHead className="font-medium">Kimlik No</TableHead>
-                      <TableHead className="text-center font-medium">İşlemler</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {beneficiaries.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={7} className="py-8 text-center text-gray-500">
-                          <UserPlus className="mx-auto mb-4 h-12 w-12 text-gray-300" />
-                          <p>Henüz hiç ihtiyaç sahibi kaydı yok.</p>
-                          <p className="mt-1 text-sm text-gray-400">
-                            İlk kayıt için &quot;Yeni İhtiyaç Sahibi Ekle&quot; butonunu kullanın
-                          </p>
-                        </TableCell>
-                      </TableRow>
-                    ) : (
-                      beneficiaries.map((beneficiary, index) => (
-                        <TableRow
-                          key={beneficiary.id}
-                          className="cursor-pointer transition-colors hover:bg-blue-50/30"
-                          onClick={() => onNavigateToDetail?.(String(beneficiary.id))}
-                        >
-                          <TableCell className="text-center">
-                            <span className="text-sm font-medium text-gray-600">
-                              {index + 1 + (currentPage - 1) * pageSize}
-                            </span>
-                          </TableCell>
-                          <TableCell>
-                            <div className="font-medium text-gray-900">{beneficiary.ad_soyad}</div>
-                            <div className="mt-0.5 text-xs text-gray-500">
-                              {beneficiary.uyruk ?? 'TR'}
-                            </div>
-                          </TableCell>
-                          <TableCell>{getCategoryBadge(beneficiary.kategori ?? 'Genel')}</TableCell>
-                          <TableCell>
-                            <span className="text-blue-600">
-                              {beneficiary.formatted_phone !== 'Telefon bilgisi yok' ? (
-                                beneficiary.formatted_phone
-                              ) : (
-                                <span className="text-gray-400">-</span>
-                              )}
-                            </span>
-                          </TableCell>
-                          <TableCell>{beneficiary.sehri}</TableCell>
-                          <TableCell className="font-mono text-xs">
-                            {beneficiary.kimlik_no !== 'TC No bilgisi yok' ? (
-                              beneficiary.kimlik_no
-                            ) : (
-                              <span className="text-gray-400">-</span>
-                            )}
-                          </TableCell>
-                          <TableCell className="text-center">
-                            <div className="flex items-center justify-center gap-1">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-8 w-8 p-0"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  onNavigateToDetail?.(String(beneficiary.id));
-                                }}
-                                title="Detayları Görüntüle"
-                              >
-                                👁️
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-8 w-8 p-0 text-red-600 hover:bg-red-50 hover:text-red-700"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleDelete(String(beneficiary.id));
-                                }}
-                                title="Sil"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
+              {/* Responsive Table - Automatically switches between mobile cards and desktop table */}
+              <ResponsiveTable<BeneficiaryDisplay>
+                data={beneficiaries}
+                columns={beneficiaryColumns}
+                loading={loading}
+                onRowClick={(row) => onNavigateToDetail?.(String(row.id))}
+                mobileCardRenderer={renderBeneficiaryMobileCard}
+                stickyHeader={true}
+                emptyState={
+                  <EmptyState
+                    title="Henüz hiç ihtiyaç sahibi kaydı yok."
+                    description='İlk kayıt için "Yeni İhtiyaç Sahibi Ekle" butonunu kullanın'
+                  />
+                }
+              />
             </CardContent>
           </Card>
         </div>

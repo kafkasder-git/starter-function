@@ -1,6 +1,6 @@
 /**
  * @fileoverview FloatingActionButton Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -27,7 +27,7 @@ interface FloatingActionButtonProps {
 
 /**
  * FloatingActionButton function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -46,7 +46,7 @@ export function FloatingActionButton({
             id: 'new-beneficiary',
             label: 'Yeni İhtiyaç Sahibi',
             icon: <UserPlus className="w-5 h-5" />,
-            color: 'bg-blue-500 hover:bg-blue-600',
+            color: 'bg-info-500 hover:bg-info-600',
             action: () => {
               toast.success('Yeni ihtiyaç sahibi formu açılıyor...');
               onQuickAction?.('new-beneficiary');
@@ -56,7 +56,7 @@ export function FloatingActionButton({
             id: 'new-aid-application',
             label: 'Yardım Başvurusu',
             icon: <Heart className="w-5 h-5" />,
-            color: 'bg-red-500 hover:bg-red-600',
+            color: 'bg-error-500 hover:bg-error-600',
             action: () => {
               toast.success('Yeni yardım başvurusu formu açılıyor...');
               onQuickAction?.('new-aid-application');
@@ -66,7 +66,7 @@ export function FloatingActionButton({
             id: 'quick-aid',
             label: 'Hızlı Yardım',
             icon: <FileText className="w-5 h-5" />,
-            color: 'bg-green-500 hover:bg-green-600',
+            color: 'bg-success-500 hover:bg-success-600',
             action: () => {
               toast.success('Hızlı yardım formu açılıyor...');
               onQuickAction?.('quick-aid');
@@ -79,7 +79,7 @@ export function FloatingActionButton({
             id: 'new-donation',
             label: 'Yeni Bağış',
             icon: <CreditCard className="w-5 h-5" />,
-            color: 'bg-green-500 hover:bg-green-600',
+            color: 'bg-success-500 hover:bg-success-600',
             action: () => {
               toast.success('Yeni bağış formu açılıyor...');
               onQuickAction?.('new-donation');
@@ -89,7 +89,7 @@ export function FloatingActionButton({
             id: 'new-donor',
             label: 'Yeni Bağışçı',
             icon: <UserPlus className="w-5 h-5" />,
-            color: 'bg-blue-500 hover:bg-blue-600',
+            color: 'bg-info-500 hover:bg-info-600',
             action: () => {
               toast.success('Yeni bağışçı formu açılıyor...');
               onQuickAction?.('new-donor');
@@ -102,7 +102,7 @@ export function FloatingActionButton({
             id: 'new-member',
             label: 'Yeni Üye',
             icon: <UserPlus className="w-5 h-5" />,
-            color: 'bg-purple-500 hover:bg-purple-600',
+            color: 'bg-primary-500 hover:bg-primary-600',
             action: () => {
               toast.success('Yeni üye formu açılıyor...');
               onQuickAction?.('new-member');
@@ -157,7 +157,7 @@ export function FloatingActionButton({
                   className="flex items-center gap-3"
                 >
                   {/* Action Label */}
-                  <div className="bg-gray-900 text-white px-3 py-2 rounded-lg text-sm font-medium shadow-lg whitespace-nowrap">
+                  <div className="bg-neutral-900 text-white px-3 py-2 rounded-lg text-sm font-medium shadow-lg whitespace-nowrap">
                     {action.label}
                   </div>
 
@@ -188,7 +188,7 @@ export function FloatingActionButton({
             className={cn(
               'w-14 h-14 rounded-full shadow-xl transition-all duration-300',
               isExpanded
-                ? 'bg-gray-600 hover:bg-gray-700 rotate-45'
+                ? 'bg-neutral-600 hover:bg-neutral-700 rotate-45'
                 : 'bg-primary hover:bg-primary/90',
             )}
             size="sm"

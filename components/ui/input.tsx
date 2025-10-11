@@ -1,6 +1,6 @@
 /**
  * @fileoverview input Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -26,12 +26,13 @@ export interface InputProps extends React.ComponentProps<'input'> {
   showCharacterCount?: boolean;
   onClear?: () => void;
   inputSize?: 'sm' | 'md' | 'lg';
+  id?: string;
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ 
-    className, 
-    type, 
+  ({
+    className,
+    type,
     prefixIcon,
     suffixIcon,
     clearable = false,
@@ -49,7 +50,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     value,
     onChange,
     inputSize = 'md',
-    ...props 
+    id,
+    ...props
   }, ref) => {
     const [showPassword, setShowPassword] = React.useState(false);
     const [inputValue, setInputValue] = React.useState(value || '');
@@ -58,6 +60,15 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     const canClear = clearable && hasValue && !props.disabled;
     const currentLength = String(inputValue).length;
     const isOverLimit = maxLength ? currentLength > maxLength : false;
+
+    // Generate unique IDs for aria-describedby
+    const internalId = React.useId();
+    const inputId = id || internalId;
+    const errorId = `${inputId}-error-text`;
+    const warningId = `${inputId}-warning-text`;
+    const successId = `${inputId}-success-text`;
+    const helperId = `${inputId}-helper-text`;
+    const charCountId = `${inputId}-character-count`;
 
     const handleChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
       setInputValue(e.target.value);
@@ -119,21 +130,22 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
               </div>
             </div>
           )}
-          
+
           <input
             type={inputType}
+            id={inputId}
             data-slot="input"
             className={cn(
-              'file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex w-full min-w-0 rounded-lg border bg-input-background transition-all duration-200 outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50',
+              'file:text-foreground placeholder:text-muted-foreground selection:bg-primary-500 selection:text-white dark:bg-input/30 border-input flex w-full min-w-0 rounded-lg border bg-white transition-all duration-200 outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50',
               'focus-visible:border-ring focus-visible:ring-ring/20 focus-visible:ring-2 focus-visible:ring-offset-2',
               'hover:border-ring/60',
               sizeClasses[inputSize],
               prefixIcon && prefixPaddingClasses[inputSize],
               (suffixIcon || canClear || loading || isPassword) && suffixPaddingClasses[inputSize],
-              error && 'border-destructive focus-visible:ring-destructive/20 focus-visible:border-destructive',
-              success && 'border-success focus-visible:ring-success/20 focus-visible:border-success',
-              warning && !error && 'border-warning focus-visible:ring-warning/20 focus-visible:border-warning',
-              isOverLimit && 'border-destructive',
+              error && 'border-error-600 focus-visible:ring-error-500/20 focus-visible:border-error-600',
+              success && 'border-success-600 focus-visible:ring-success-500/20 focus-visible:border-success-600',
+              warning && !error && 'border-warning-600 focus-visible:ring-warning-500/20 focus-visible:border-warning-600',
+              isOverLimit && 'border-error-600',
               className,
             )}
             ref={ref}
@@ -142,11 +154,11 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             maxLength={maxLength}
             aria-invalid={error || isOverLimit}
             aria-describedby={
-              error && errorText ? 'error-text' :
-              warning && warningText ? 'warning-text' :
-              success && successText ? 'success-text' :
-              helperText ? 'helper-text' :
-              showCharacterCount && maxLength ? 'character-count' :
+              error && errorText ? errorId :
+              warning && warningText ? warningId :
+              success && successText ? successId :
+              helperText ? helperId :
+              showCharacterCount && maxLength ? charCountId :
               undefined
             }
             aria-label={props['aria-label'] || (isPassword ? 'Password input' : undefined)}
@@ -160,7 +172,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             {loading && (
               <Loader2 className={cn("animate-spin text-muted-foreground", iconSizeClasses[inputSize])} />
             )}
-            
+
             {!loading && isPassword && (
               <button
                 type="button"
@@ -172,7 +184,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
                 {showPassword ? <EyeOff className={iconSizeClasses[inputSize]} /> : <Eye className={iconSizeClasses[inputSize]} />}
               </button>
             )}
-            
+
             {!loading && !isPassword && canClear && (
               <button
                 type="button"
@@ -184,7 +196,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
                 <X className={iconSizeClasses[inputSize]} />
               </button>
             )}
-            
+
             {!loading && !isPassword && !canClear && suffixIcon && (
               <div className={cn("text-muted-foreground", iconSizeClasses[inputSize])}>
                 {suffixIcon}
@@ -198,33 +210,33 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           <div className="mt-1 flex items-center justify-between text-xs">
             <div className="flex items-center gap-1">
               {error && errorText && (
-                <span id="error-text" className="text-destructive" role="alert">
+                <span id={errorId} className="text-error-600" role="alert">
                   {errorText}
                 </span>
               )}
               {!error && warning && warningText && (
-                <span id="warning-text" className="text-warning" role="alert">
+                <span id={warningId} className="text-warning-600" role="alert">
                   {warningText}
                 </span>
               )}
               {!error && !warning && success && successText && (
-                <span id="success-text" className="text-success">
+                <span id={successId} className="text-success-600">
                   {successText}
                 </span>
               )}
               {!error && !warning && !success && helperText && (
-                <span id="helper-text" className="text-muted-foreground">
+                <span id={helperId} className="text-muted-foreground">
                   {helperText}
                 </span>
               )}
             </div>
-            
+
             {showCharacterCount && maxLength && (
-              <span 
-                id="character-count"
+              <span
+                id={charCountId}
                 className={cn(
                   "text-muted-foreground",
-                  isOverLimit && "text-destructive"
+                  isOverLimit && "text-error-600"
                 )}
                 aria-live="polite"
               >
@@ -262,7 +274,7 @@ export interface FloatingLabelInputProps extends Omit<InputProps, 'placeholder'>
 }
 
 export const FloatingLabelInput = React.forwardRef<HTMLInputElement, FloatingLabelInputProps>(
-  ({ 
+  ({
     label,
     required = false,
     className,
@@ -275,12 +287,12 @@ export const FloatingLabelInput = React.forwardRef<HTMLInputElement, FloatingLab
     onChange,
     onFocus,
     onBlur,
-    ...props 
+    ...props
   }, ref) => {
     const [isFocused, setIsFocused] = React.useState(false);
     const [inputValue, setInputValue] = React.useState(value || '');
     const inputId = React.useMemo(() => id || `floating-input-${Math.random().toString(36).substr(2, 9)}`, [id]);
-    
+
     const hasValue = Boolean(inputValue) || Boolean(value);
     const isFloating = isFocused || hasValue;
 
@@ -348,18 +360,18 @@ export const FloatingLabelInput = React.forwardRef<HTMLInputElement, FloatingLab
           className={cn(
             'absolute pointer-events-none transition-all duration-200 ease-out bg-background',
             'text-muted-foreground',
-            isFloating 
-              ? labelSizeClasses[inputSize].floating 
+            isFloating
+              ? labelSizeClasses[inputSize].floating
               : labelSizeClasses[inputSize].default,
             isFocused && 'text-ring',
-            error && 'text-destructive',
-            success && !error && 'text-success',
-            warning && !error && !success && 'text-warning',
+            error && 'text-error-600',
+            success && !error && 'text-success-600',
+            warning && !error && !success && 'text-warning-600',
             props.disabled && 'opacity-50',
           )}
         >
           {label}
-          {required && <span className="text-destructive ml-0.5" aria-hidden="true">*</span>}
+          {required && <span className="text-error-500 ml-0.5" aria-hidden="true">*</span>}
         </label>
       </div>
     );
@@ -416,10 +428,10 @@ export const InputGroup = React.forwardRef<HTMLDivElement, InputGroupProps>(
       if (React.isValidElement(child)) {
         const isFirst = index === 0;
         const isLast = index === React.Children.count(children) - 1;
-        
+
         // Determine if child is Input component
         const isInput = child.type === Input || child.type === FloatingLabelInput;
-        
+
         // Determine if child is InputAddon
         const isAddon = child.type === InputAddon;
 

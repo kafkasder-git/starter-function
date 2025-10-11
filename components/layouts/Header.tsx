@@ -21,6 +21,8 @@ import { useState } from 'react';
 import { useAuthStore } from '../../stores/authStore';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
+import { Heading } from '../ui/heading';
+import { Text } from '../ui/text';
 // SearchInput removed - using basic search instead
 import { motion } from 'motion/react';
 import { useUserPreferences } from '../../hooks/useLocalStorage';
@@ -76,13 +78,13 @@ export function Header({
   });
 
   // const { trackClick, trackSearch, trackFeatureUse } = useUXAnalytics();
-  const trackClick = (..._args: any[]): void => {
+  const trackClick = (): void => {
     // TODO: Implement analytics tracking
   };
-  const trackSearch = (..._args: any[]): void => {
+  const trackSearch = (): void => {
     // TODO: Implement search analytics
   };
-  const trackFeatureUse = (..._args: any[]): void => {
+  const trackFeatureUse = (): void => {
     // TODO: Implement feature usage tracking
   };
 
@@ -122,13 +124,13 @@ export function Header({
             <Building2 className="h-4 w-4 text-white drop-shadow-sm sm:h-5 sm:w-5" />
           </div>
           <div className="hidden md:block">
-            <h1 className="text-base font-bold tracking-tight text-slate-900 sm:text-lg">
+            <Heading level={1} size="lg" weight="bold" className="text-base sm:text-lg tracking-tight">
               Dernek Yönetim Sistemi
-            </h1>
-            <p className="-mt-0.5 text-xs font-medium text-slate-600">Hayır İşleri Platformu</p>
+            </Heading>
+            <Text size="xs" weight="medium" color="neutral" className="-mt-0.5">Hayır İşleri Platformu</Text>
           </div>
           <div className="block md:hidden">
-            <h1 className="text-sm font-bold tracking-tight text-slate-900">Dernek</h1>
+            <Heading level={1} size="sm" weight="bold" className="tracking-tight">Dernek</Heading>
           </div>
         </div>
       </motion.div>

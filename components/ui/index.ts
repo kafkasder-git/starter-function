@@ -1,6 +1,6 @@
 /**
  * @fileoverview UI Components Index - Central export point for UI components
- * 
+ *
  * @author Kafkasder Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -23,6 +23,7 @@ export { Switch } from './switch';
 export { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './card';
 export { Separator } from './separator';
 export { Badge } from './badge';
+export { StatusBadge, ApprovalStatusBadge, PriorityBadge, MemoizedStatusBadge, type Status, type StatusBadgeProps } from './status-badge';
 export { Avatar, AvatarFallback, AvatarImage } from './avatar';
 
 // Feedback Components

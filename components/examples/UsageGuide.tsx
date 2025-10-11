@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
+import { Heading } from "@/components/ui/heading"
+import { Text } from "@/components/ui/text"
 
 const codeExamples = {
   login: `import { LoginForm } from "@/components/auth/LoginForm"
@@ -14,13 +16,13 @@ const codeExamples = {
 export default function LoginPage() {
   return <LoginForm />
 }`,
-  
+
   dashboard: `import { DashboardExample } from "@/components/dashboard/DashboardExample"
 
 export default function DashboardPage() {
   return <DashboardExample />
 }`,
-  
+
   card: `import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 export function MyCard() {
@@ -36,7 +38,7 @@ export function MyCard() {
     </Card>
   )
 }`,
-  
+
   form: `import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
@@ -114,15 +116,15 @@ export function UsageGuide() {
   return (
     <div className="container mx-auto p-6 space-y-8">
       <div className="text-center space-y-2">
-        <h1 className="text-3xl font-bold">shadcn/ui Usage Guide</h1>
-        <p className="text-muted-foreground">
+        <Heading level={1} size="3xl" weight="bold">shadcn/ui Usage Guide</Heading>
+        <Text color="muted">
           Complete examples and implementation guides for shadcn/ui components
-        </p>
+        </Text>
       </div>
 
       {/* Quick Start */}
       <section className="space-y-4">
-        <h2 className="text-2xl font-semibold">Quick Start</h2>
+        <Heading level={2} size="2xl" weight="semibold">Quick Start</Heading>
         <div className="grid gap-4 md:grid-cols-2">
           <Card>
             <CardHeader>
@@ -192,7 +194,7 @@ export function UsageGuide() {
 
       {/* Code Examples */}
       <section className="space-y-4">
-        <h2 className="text-2xl font-semibold">Code Examples</h2>
+        <Heading level={2} size="2xl" weight="semibold">Code Examples</Heading>
         <div className="space-y-6">
           <CodeBlock title="Login Form Implementation">{codeExamples.login}</CodeBlock>
           <CodeBlock title="Dashboard Component">{codeExamples.dashboard}</CodeBlock>
@@ -203,7 +205,7 @@ export function UsageGuide() {
 
       {/* Best Practices */}
       <section className="space-y-4">
-        <h2 className="text-2xl font-semibold">Best Practices</h2>
+        <Heading level={2} size="2xl" weight="semibold">Best Practices</Heading>
         <div className="grid gap-4 md:grid-cols-2">
           <Card>
             <CardHeader>
@@ -268,7 +270,7 @@ export function UsageGuide() {
 
       {/* Resources */}
       <section className="space-y-4">
-        <h2 className="text-2xl font-semibold">Resources</h2>
+        <Heading level={2} size="2xl" weight="semibold">Resources</Heading>
         <div className="grid gap-4 md:grid-cols-3">
           <Card>
             <CardHeader>

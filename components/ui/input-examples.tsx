@@ -1,6 +1,6 @@
 /**
  * @fileoverview Input Examples - Showcase of enhanced input components
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -8,6 +8,8 @@
 import * as React from 'react';
 import { Mail, Lock, Search, DollarSign, User, Phone } from 'lucide-react';
 import { Input, FloatingLabelInput, InputGroup, InputAddon } from './input';
+import { Heading } from './heading';
+import { Text } from './text';
 
 export function InputExamples() {
   const [email, setEmail] = React.useState('');
@@ -18,15 +20,15 @@ export function InputExamples() {
   return (
     <div className="w-full max-w-4xl mx-auto p-8 space-y-12">
       <div>
-        <h1 className="text-3xl font-bold mb-2">Enhanced Input Components</h1>
-        <p className="text-muted-foreground">
+        <Heading level={1} size="3xl" weight="bold" className="mb-2">Enhanced Input Components</Heading>
+        <Text color="muted">
           Comprehensive examples of the enhanced input system with new features
-        </p>
+        </Text>
       </div>
 
       {/* Size Variants */}
       <section className="space-y-4">
-        <h2 className="text-2xl font-semibold">Size Variants</h2>
+        <Heading level={2} size="2xl" weight="semibold">Size Variants</Heading>
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium mb-2">Small Input</label>

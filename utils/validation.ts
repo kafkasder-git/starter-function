@@ -4,6 +4,7 @@
  */
 
 import { z } from 'zod';
+import { validateDateRange } from '../lib/utils/dateFormatter';
 
 // =============================================================================
 // TYPE DEFINITIONS
@@ -11,7 +12,7 @@ import { z } from 'zod';
 
 /**
  * ValidationResult Interface
- * 
+ *
  * @interface ValidationResult
  */
 export interface ValidationResult<T = unknown> {
@@ -22,7 +23,7 @@ export interface ValidationResult<T = unknown> {
 
 /**
  * ValidationError Interface
- * 
+ *
  * @interface ValidationError
  */
 export interface ValidationError {
@@ -34,7 +35,7 @@ export interface ValidationError {
 
 /**
  * ValidationOptions Interface
- * 
+ *
  * @interface ValidationOptions
  */
 export interface ValidationOptions {
@@ -138,6 +139,15 @@ export const commonSchemas = {
       (type) => ['image/jpeg', 'image/png', 'image/gif', 'application/pdf'].includes(type),
       'Desteklenmeyen dosya türü',
     ),
+
+  // Date range validation
+  dateRange: z.object({
+    start: z.date(),
+    end: z.date(),
+  }).refine(
+    (data) => validateDateRange(data.start, data.end).valid,
+    { message: 'Başlangıç tarihi bitiş tarihinden sonra olamaz' }
+  ),
 };
 
 // =============================================================================
@@ -146,9 +156,9 @@ export const commonSchemas = {
 
 /**
  * ValidationService Service
- * 
+ *
  * Service class for handling validationservice operations
- * 
+ *
  * @class ValidationService
  */
 export class ValidationService {
@@ -331,6 +341,45 @@ export class ValidationService {
   }
 
   /**
+   * Validate date range
+   */
+  static validateDateRange(
+    startDate: Date | string,
+    endDate: Date | string,
+    options?: { allowSameDay?: boolean; maxDays?: number }
+  ): ValidationResult<{ start: Date; end: Date }> {
+    try {
+      const result = validateDateRange(startDate, endDate, options);
+      if (!result.valid) {
+        return {
+          success: false,
+          errors: [{
+            field: 'dateRange',
+            message: result.error ?? 'Geçersiz tarih aralığı',
+            code: 'INVALID_DATE_RANGE',
+          }],
+        };
+      }
+      return {
+        success: true,
+        data: {
+          start: new Date(startDate),
+          end: new Date(endDate),
+        },
+      };
+    } catch (error) {
+      return {
+        success: false,
+        errors: [{
+          field: 'dateRange',
+          message: 'Tarih aralığı doğrulanamadı',
+          code: 'DATE_RANGE_VALIDATION_ERROR',
+        }],
+      };
+    }
+  }
+
+  /**
    * Validate file
    */
   static validateFile(file: File, maxSize: number = 10 * 1024 * 1024): ValidationResult<File> {
@@ -399,7 +448,7 @@ export class ValidationService {
     const htmlRegex = /<[^>]*>/g;
     const jsProtocolRegex = /javascript:/gi;
     const eventHandlerRegex = /on\w+\s*=/gi;
-    
+
     return input
       .trim()
       .replace(scriptRegex, '') // Remove script tags
@@ -519,5 +568,8 @@ export const getFirstError = (result: ValidationResult): string | null => {
   if ((result.success || !result.errors) ?? result.errors.length === 0) return null;
   return result.errors[0]?.message ?? 'Validation error';
 };
+
+// Helper function for date range validation
+export const validateDateRangeHelper = (start: Date | string, end: Date | string) => ValidationService.validateDateRange(start, end);
 
 export default ValidationService;

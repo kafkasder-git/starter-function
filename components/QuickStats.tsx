@@ -1,12 +1,14 @@
 /**
  * @fileoverview QuickStats Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
 
 import { TrendingUp, TrendingDown } from 'lucide-react';
 import { Card, CardContent } from './ui/card';
+import { Heading } from './ui/heading';
+import { Text } from './ui/text';
 
 interface StatCardProps {
   title: string;
@@ -20,7 +22,7 @@ interface StatCardProps {
 
 /**
  * StatCard function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -53,25 +55,25 @@ export function StatCard({
         <div className="flex items-center">
           <div className="p-4 flex-1">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-medium text-gray-600 truncate">{title}</h3>
+              <Heading level={3} size="sm" weight="medium" color="neutral" className="truncate">{title}</Heading>
               <div
                 className={`p-2 rounded-lg ${color} group-hover:scale-110 transition-transform duration-200`}
               >
                 {icon}
               </div>
             </div>
-            <div className="text-2xl font-bold text-gray-900 mb-1">{formatValue(value)}</div>
+            <Heading level={4} size="2xl" weight="bold" className="tabular-nums mb-1">{formatValue(value)}</Heading>
             {change && (
               <div className="flex items-center text-sm">
                 {changeType === 'increase' ? (
-                  <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
+                  <TrendingUp className="w-4 h-4 text-success-500 mr-1" />
                 ) : (
-                  <TrendingDown className="w-4 h-4 text-red-500 mr-1" />
+                  <TrendingDown className="w-4 h-4 text-error-500 mr-1" />
                 )}
-                <span className={changeType === 'increase' ? 'text-green-600' : 'text-red-600'}>
+                <Text size="xs" weight="semibold" color={changeType === 'increase' ? 'success' : 'error'}>
                   {change}
-                </span>
-                <span className="text-gray-500 ml-1">bu ay</span>
+                </Text>
+                <Text size="xs" color="muted" className="ml-1">bu ay</Text>
               </div>
             )}
           </div>

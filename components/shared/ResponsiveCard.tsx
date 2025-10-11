@@ -1,6 +1,6 @@
 /**
  * @fileoverview ResponsiveCard Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -33,7 +33,7 @@ export const ResponsiveCard = forwardRef<HTMLDivElement, ResponsiveCardProps>(
       // Hover effects
       hoverable && 'hover:shadow-lg hover:-translate-y-1',
       // Interactive states
-      interactive && 'cursor-pointer hover:bg-slate-50 active:scale-95',
+      interactive && 'cursor-pointer hover:bg-neutral-50 active:scale-95',
       className,
     );
 
@@ -78,7 +78,7 @@ interface ResponsiveCardGridProps {
 
 /**
  * ResponsiveCardGrid function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -122,7 +122,7 @@ interface MobileInfoCardProps {
 
 /**
  * MobileInfoCard function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -158,7 +158,7 @@ export function MobileInfoCard({
       <div className="relative flex flex-col h-full">
         {/* Icon and Badge */}
         <div className="flex items-start justify-between mb-2">
-          <div className={cn('p-2 rounded-lg bg-slate-50', color)}>{icon}</div>
+          <div className={cn('p-2 rounded-lg bg-neutral-50', color)}>{icon}</div>
           {badge && (
             <span className="bg-primary text-white text-xs px-2 py-1 rounded-full font-medium">
               {badge}
@@ -168,8 +168,8 @@ export function MobileInfoCard({
 
         {/* Content */}
         <div className="flex-1 flex flex-col justify-end">
-          <div className="text-2xl sm:text-3xl font-bold text-slate-900 mb-1">{value}</div>
-          <div className="text-sm text-slate-600 font-medium">{title}</div>
+          <div className="text-2xl sm:text-3xl font-bold text-neutral-900 mb-1">{value}</div>
+          <div className="text-sm text-neutral-600 font-medium">{title}</div>
         </div>
       </div>
     </ResponsiveCard>
@@ -188,7 +188,7 @@ interface TouchActionCardProps {
 
 /**
  * TouchActionCard function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -202,20 +202,20 @@ export function TouchActionCard({
 }: TouchActionCardProps) {
   const variantClasses = {
     primary: 'border-primary/20 hover:border-primary/40 hover:bg-primary/5',
-    secondary: 'border-slate-200 hover:border-slate-300 hover:bg-slate-50',
-    success: 'border-green-200 hover:border-green-300 hover:bg-green-50',
-    warning: 'border-amber-200 hover:border-amber-300 hover:bg-amber-50',
-    danger: 'border-red-200 hover:border-red-300 hover:bg-red-50',
-    default: 'border-slate-200 hover:border-slate-300 hover:bg-slate-50',
+    secondary: 'border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50',
+    success: 'border-success-200 hover:border-success-300 hover:bg-success-50',
+    warning: 'border-warning-200 hover:border-warning-300 hover:bg-warning-50',
+    danger: 'border-error-200 hover:border-error-300 hover:bg-error-50',
+    default: 'border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50',
   };
 
   const iconColors = {
     primary: 'text-primary',
-    secondary: 'text-slate-600',
-    success: 'text-green-600',
-    warning: 'text-amber-600',
-    danger: 'text-red-600',
-    default: 'text-slate-600',
+    secondary: 'text-neutral-600',
+    success: 'text-success-600',
+    warning: 'text-warning-600',
+    danger: 'text-error-600',
+    default: 'text-neutral-600',
   };
 
   return (
@@ -234,10 +234,10 @@ export function TouchActionCard({
       <div className="flex items-center gap-4">
         <div className={cn('text-xl', variant in iconColors ? iconColors[variant] : iconColors.default)}>{icon}</div>
         <div className="flex-1 text-left">
-          <div className="font-semibold text-slate-900 mb-1">{title}</div>
-          {description && <div className="text-sm text-slate-600">{description}</div>}
+          <div className="font-semibold text-neutral-900 mb-1">{title}</div>
+          {description && <div className="text-sm text-neutral-600">{description}</div>}
         </div>
-        <div className="text-slate-400">
+        <div className="text-neutral-400">
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>

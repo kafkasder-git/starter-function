@@ -1,18 +1,19 @@
 /**
  * @fileoverview utils Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
 
 // Frontend Utilities
+import { formatDate as formatDateNew } from './utils/dateFormatter';
 
 /**
  * Generate a unique ID
  */
 /**
  * generateId function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -22,19 +23,18 @@ export function generateId(): string {
 
 /**
  * Format date for display
+ * @deprecated Use formatDate from lib/utils/dateFormatter.ts instead
+ * This function is kept for backward compatibility
  */
 /**
  * formatDate function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
 export function formatDate(date: string | Date): string {
-  return new Intl.DateTimeFormat('tr-TR', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  }).format(new Date(date));
+  // Deprecated: Use formatDate from lib/utils/dateFormatter.ts
+  return formatDateNew(date, 'long');
 }
 
 /**
@@ -42,7 +42,7 @@ export function formatDate(date: string | Date): string {
  */
 /**
  * formatCurrency function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -58,7 +58,7 @@ export function formatCurrency(amount: number): string {
  */
 /**
  * delay function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -71,7 +71,7 @@ export function delay(ms: number): Promise<void> {
  */
 /**
  * getTurkishMonthName function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -98,7 +98,7 @@ export function getTurkishMonthName(month: number): string {
  */
 /**
  * validateTurkishNationalId function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -119,7 +119,7 @@ export function validateTurkishNationalId(id: string): boolean {
  */
 /**
  * generateReceiptNumber function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -136,7 +136,7 @@ export function generateReceiptNumber(prefix = 'REC'): string {
  */
 /**
  * safeJsonParse function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -153,7 +153,7 @@ export function safeJsonParse<T>(json: string, fallback: T): T {
  */
 /**
  * debounce function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -161,10 +161,10 @@ export function debounce<T extends (...args: unknown[]) => unknown>(
   func: T,
   wait: number,
 ): (...args: Parameters<T>) => void {
-  let timeout: NodeJS.Timeout;
+  let timeout: number;
   return (...args: Parameters<T>) => {
     clearTimeout(timeout);
-    timeout = setTimeout(() => func(...args), wait);
+    timeout = setTimeout(() => func(...args), wait) as unknown as number;
   };
 }
 
@@ -173,7 +173,7 @@ export function debounce<T extends (...args: unknown[]) => unknown>(
  */
 /**
  * searchIncludes function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */

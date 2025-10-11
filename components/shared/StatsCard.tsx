@@ -1,11 +1,11 @@
 "use client"
 
-import * as React from "react"
-import { LucideIcon, TrendingUp, TrendingDown } from "lucide-react"
+import { TrendingUp, TrendingDown, type LucideIcon } from "lucide-react"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { cn } from "@/lib/utils"
+import { Heading } from "@/components/ui/heading"
+import { Text } from "@/components/ui/text"
+import { cn } from "@/components/ui/utils"
 
 interface StatsCardProps {
   title: string
@@ -23,14 +23,36 @@ interface StatsCardProps {
 }
 
 const colorVariants = {
-  default: "text-gray-600",
-  blue: "text-blue-600",
-  green: "text-green-600", 
-  purple: "text-purple-600",
-  orange: "text-orange-600",
-  red: "text-red-600",
+  default: "text-neutral-600",
+  blue: "text-info-600",
+  green: "text-success-600",
+  purple: "text-primary-600",
+  orange: "text-warning-600",
+  red: "text-error-600",
 }
 
+/**
+ * StatsCard Component
+ *
+ * Displays a statistic with optional trend indicator.
+ *
+ * Icons:
+ * - TrendingUp: Positive change (green)
+ * - TrendingDown: Negative change (red)
+ * - Custom icon via icon prop
+ *
+ * All icons use semantic color tokens for consistency.
+ *
+ * @example
+ * // Example with custom icon
+ * <StatsCard
+ *   title="Total Users"
+ *   value="1,234"
+ *   icon={Users}
+ *   color="blue"
+ *   change={{ value: 12, type: 'increase', period: 'vs last month' }}
+ * />
+ */
 export function StatsCard({
   title,
   value,
@@ -48,7 +70,7 @@ export function StatsCard({
   };
 
   return (
-    <Card 
+    <Card
       className={cn(
         "transition-all duration-200 hover:shadow-md",
         onClick && !loading && "cursor-pointer hover:scale-[1.02]",
@@ -65,29 +87,27 @@ export function StatsCard({
         )}
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold">
-          {loading ? (
-            <div className="h-8 w-20 animate-pulse bg-muted rounded" />
-          ) : (
-            value
-          )}
-        </div>
+        {loading ? (
+          <div className="h-8 w-20 animate-pulse bg-muted rounded" />
+        ) : (
+          <Heading level={3} size="2xl" weight="bold" className="tabular-nums">
+            {value}
+          </Heading>
+        )}
         {change && !loading && (
-          <div className="flex items-center space-x-2 text-xs text-muted-foreground mt-1">
+          <div className="flex items-center space-x-2 mt-1">
             {change.type === "increase" ? (
-              <TrendingUp className="h-3 w-3 text-green-500" />
+              <TrendingUp className="h-3 w-3 text-success-500" />
             ) : (
-              <TrendingDown className="h-3 w-3 text-red-500" />
+              <TrendingDown className="h-3 w-3 text-error-500" />
             )}
-            <span className={cn(
-              change.type === "increase" ? "text-green-500" : "text-red-500"
-            )}>
+            <Text weight="semibold" color={change.type === "increase" ? "success" : "error"} size="xs">
               {change.value > 0 ? "+" : ""}{change.value}%
-            </span>
+            </Text>
             {change.period && (
               <>
-                <span>•</span>
-                <span>{change.period}</span>
+                <Text size="xs" color="muted">•</Text>
+                <Text size="xs" color="muted">{change.period}</Text>
               </>
             )}
           </div>
@@ -98,11 +118,11 @@ export function StatsCard({
 }
 
 // Preset variations for common use cases
-export function RevenueCard({ 
-  value, 
-  change, 
-  loading = false, 
-  onClick 
+export function RevenueCard({
+  value,
+  change,
+  loading = false,
+  onClick
 }: {
   value: string | number
   change?: { value: number; type: "increase" | "decrease"; period?: string }
@@ -121,11 +141,11 @@ export function RevenueCard({
   )
 }
 
-export function UsersCard({ 
-  value, 
-  change, 
-  loading = false, 
-  onClick 
+export function UsersCard({
+  value,
+  change,
+  loading = false,
+  onClick
 }: {
   value: string | number
   change?: { value: number; type: "increase" | "decrease"; period?: string }
@@ -144,11 +164,11 @@ export function UsersCard({
   )
 }
 
-export function OrdersCard({ 
-  value, 
-  change, 
-  loading = false, 
-  onClick 
+export function OrdersCard({
+  value,
+  change,
+  loading = false,
+  onClick
 }: {
   value: string | number
   change?: { value: number; type: "increase" | "decrease"; period?: string }
@@ -167,11 +187,11 @@ export function OrdersCard({
   )
 }
 
-export function PendingCard({ 
-  value, 
-  change, 
-  loading = false, 
-  onClick 
+export function PendingCard({
+  value,
+  change,
+  loading = false,
+  onClick
 }: {
   value: string | number
   change?: { value: number; type: "increase" | "decrease"; period?: string }

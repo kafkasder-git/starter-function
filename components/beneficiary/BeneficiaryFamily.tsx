@@ -1,16 +1,18 @@
 /**
  * @fileoverview BeneficiaryFamily Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
 
-import { Edit3, Heart, Plus, Trash2, User, Users } from 'lucide-react';
-import { useState } from 'react';
+import { Heart, Plus, User, Users } from 'lucide-react';
+import { actionIcons } from '../../lib/design-system/icons';
+import React, { useState } from 'react';
 import { toast } from 'sonner';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { Tooltip, TooltipTrigger, TooltipContent } from '../ui/tooltip';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '../ui/dialog';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
@@ -35,7 +37,7 @@ interface BeneficiaryFamilyProps {
 
 /**
  * BeneficiaryFamily function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -225,8 +227,8 @@ export function BeneficiaryFamily({
                       <div className="flex-1">
                         <h4 className="font-semibold text-gray-900 text-lg">{member.name}</h4>
                         <div className="flex items-center gap-3 mt-1">
-                          <Badge 
-                            variant="outline" 
+                          <Badge
+                            variant="outline"
                             className="text-xs font-medium px-2 py-1 bg-blue-50 text-blue-700 border-blue-200"
                           >
                             {member.relationship}
@@ -252,8 +254,8 @@ export function BeneficiaryFamily({
                         )}
                         {member.healthStatus && member.healthStatus !== 'Sağlıklı' && (
                           <div className="mt-2">
-                            <Badge 
-                              variant="secondary" 
+                            <Badge
+                              variant="secondary"
                               className="text-xs font-medium px-2 py-1 bg-orange-50 text-orange-700 border-orange-200"
                             >
                               <Heart className="w-3 h-3 mr-1" />
@@ -266,26 +268,38 @@ export function BeneficiaryFamily({
 
                     {editMode && (
                       <div className="flex items-center gap-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => {
-                            handleEditMember(member);
-                          }}
-                          className="hover:bg-blue-50 text-blue-600 hover:text-blue-700 p-2 rounded-lg transition-all duration-200"
-                        >
-                          <Edit3 className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => {
-                            handleDeleteMember(member.id);
-                          }}
-                          className="hover:bg-red-50 text-red-600 hover:text-red-700 p-2 rounded-lg transition-all duration-200"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                handleEditMember(member);
+                              }}
+                              className="hover:bg-blue-50 text-blue-600 hover:text-blue-700 p-2 rounded-lg transition-all duration-200"
+                              aria-label={`Edit family member ${member.name}`}
+                            >
+                              {React.createElement(actionIcons.edit, { className: 'w-4 h-4' })}
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Düzenle</TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                handleDeleteMember(member.id);
+                              }}
+                              className="hover:bg-red-50 text-red-600 hover:text-red-700 p-2 rounded-lg transition-all duration-200"
+                              aria-label={`Delete family member ${member.name}`}
+                            >
+                              {React.createElement(actionIcons.delete, { className: 'w-4 h-4' })}
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Sil</TooltipContent>
+                        </Tooltip>
                       </div>
                     )}
                   </div>

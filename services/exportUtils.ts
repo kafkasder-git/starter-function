@@ -1,6 +1,6 @@
 /**
  * @fileoverview exportUtils Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -10,10 +10,11 @@
 import { ExportFormat, type ChartConfig, type AnalyticsData } from '../types/reporting';
 
 import { logger } from '../lib/logging/logger';
+import { formatDate as formatDateUtil } from '../lib/utils/dateFormatter';
 // Chart data interfaces
 /**
  * ChartDataPoint Interface
- * 
+ *
  * @interface ChartDataPoint
  */
 export interface ChartDataPoint {
@@ -24,7 +25,7 @@ export interface ChartDataPoint {
 
 /**
  * ChartDataset Interface
- * 
+ *
  * @interface ChartDataset
  */
 export interface ChartDataset<T extends ChartDataPoint = ChartDataPoint> {
@@ -38,7 +39,7 @@ export interface ChartDataset<T extends ChartDataPoint = ChartDataPoint> {
 // Chart export utilities
 /**
  * ChartExportOptions Interface
- * 
+ *
  * @interface ChartExportOptions
  */
 export interface ChartExportOptions {
@@ -51,7 +52,7 @@ export interface ChartExportOptions {
 
 /**
  * ExportDataOptions Interface
- * 
+ *
  * @interface ExportDataOptions
  */
 export interface ExportDataOptions {
@@ -65,7 +66,7 @@ export interface ExportDataOptions {
 
 /**
  * OptimizationOptions Interface
- * 
+ *
  * @interface OptimizationOptions
  */
 export interface OptimizationOptions {
@@ -80,9 +81,9 @@ export interface OptimizationOptions {
  */
 /**
  * ChartExportUtils Service
- * 
+ *
  * Service class for handling chartexportutils operations
- * 
+ *
  * @class ChartExportUtils
  */
 export class ChartExportUtils {
@@ -143,31 +144,34 @@ export class ChartExportUtils {
       // Create SVG structure
       const svg = this.createSVGElement(width, height, backgroundColor);
 
+      // Extract data array from dataset if needed
+      const dataArray: T[] = Array.isArray(chartData) ? chartData : chartData.data;
+
       // Add chart elements based on type
       switch (chartConfig.type) {
         case 'bar':
-          this.addBarChartToSVG(svg, chartData, chartConfig, width, height);
+          this.addBarChartToSVG(svg, dataArray, chartConfig, width, height);
           break;
         case 'line':
-          this.addLineChartToSVG(svg, chartData, chartConfig, width, height);
+          this.addLineChartToSVG(svg, dataArray, chartConfig, width, height);
           break;
         case 'pie':
-          this.addPieChartToSVG(svg, chartData, chartConfig, width, height);
+          this.addPieChartToSVG(svg, dataArray, chartConfig, width, height);
           break;
         case 'doughnut':
-          this.addDoughnutChartToSVG(svg, chartData, chartConfig, width, height);
+          this.addDoughnutChartToSVG(svg, dataArray, chartConfig, width, height);
           break;
         case 'area':
-          this.addAreaChartToSVG(svg, chartData, chartConfig, width, height);
+          this.addAreaChartToSVG(svg, dataArray, chartConfig, width, height);
           break;
         case 'scatter':
-          this.addScatterChartToSVG(svg, chartData, chartConfig, width, height);
+          this.addScatterChartToSVG(svg, dataArray, chartConfig, width, height);
           break;
         case 'heatmap':
-          this.addHeatmapChartToSVG(svg, chartData, chartConfig, width, height);
+          this.addHeatmapChartToSVG(svg, dataArray, chartConfig, width, height);
           break;
         case 'treemap':
-          this.addTreemapChartToSVG(svg, chartData, chartConfig, width, height);
+          this.addTreemapChartToSVG(svg, dataArray, chartConfig, width, height);
           break;
         default:
           throw new Error(`Unsupported chart type: ${chartConfig.type}`);
@@ -380,6 +384,197 @@ export class ChartExportUtils {
       currentAngle = endAngle;
     });
   }
+
+  private static addDoughnutChartToSVG<T extends ChartDataPoint>(
+    svg: SVGSVGElement,
+    data: T[],
+    config: ChartConfig,
+    width: number,
+    height: number,
+  ): void {
+    // Similar to pie chart but with inner radius
+    const centerX = width / 2;
+    const centerY = height / 2;
+    const outerRadius = Math.min(width, height) / 2 - 20;
+    const innerRadius = outerRadius * 0.6;
+
+    const total = data.reduce((sum, item) => sum + item.value, 0);
+    let currentAngle = 0;
+
+    data.forEach((item, index) => {
+      const sliceAngle = (item.value / total) * 2 * Math.PI;
+      const endAngle = currentAngle + sliceAngle;
+
+      const x1Outer = centerX + outerRadius * Math.cos(currentAngle);
+      const y1Outer = centerY + outerRadius * Math.sin(currentAngle);
+      const x2Outer = centerX + outerRadius * Math.cos(endAngle);
+      const y2Outer = centerY + outerRadius * Math.sin(endAngle);
+
+      const x1Inner = centerX + innerRadius * Math.cos(currentAngle);
+      const y1Inner = centerY + innerRadius * Math.sin(currentAngle);
+      const x2Inner = centerX + innerRadius * Math.cos(endAngle);
+      const y2Inner = centerY + innerRadius * Math.sin(endAngle);
+
+      const largeArcFlag = sliceAngle > Math.PI ? 1 : 0;
+
+      const pathData = [
+        `M ${x1Outer} ${y1Outer}`,
+        `A ${outerRadius} ${outerRadius} 0 ${largeArcFlag} 1 ${x2Outer} ${y2Outer}`,
+        `L ${x2Inner} ${y2Inner}`,
+        `A ${innerRadius} ${innerRadius} 0 ${largeArcFlag} 0 ${x1Inner} ${y1Inner}`,
+        'Z',
+      ].join(' ');
+
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', pathData);
+      path.setAttribute(
+        'fill',
+        config.colors?.[index % config.colors.length] ||
+          `hsl(${(index * 360) / data.length}, 70%, 50%)`,
+      );
+
+      svg.appendChild(path);
+      currentAngle = endAngle;
+    });
+  }
+
+  private static addAreaChartToSVG<T extends ChartDataPoint>(
+    svg: SVGSVGElement,
+    data: T[],
+    config: ChartConfig,
+    width: number,
+    height: number,
+  ): void {
+    const margin = { top: 20, right: 20, bottom: 40, left: 60 };
+    const chartWidth = width - margin.left - margin.right;
+    const chartHeight = height - margin.top - margin.bottom;
+
+    const chartGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    chartGroup.setAttribute('transform', `translate(${margin.left}, ${margin.top})`);
+
+    const maxValue = Math.max(...data.map((d) => d.value));
+    const points = data
+      .map((item, index) => {
+        const x = (chartWidth / (data.length - 1)) * index;
+        const y = chartHeight - (item.value / maxValue) * chartHeight;
+        return `${x},${y}`;
+      })
+      .join(' ');
+
+    const areaPath = `${points.split(' ').map((p, i) =>
+      i === 0 ? `M ${p}` : `L ${p}`
+    ).join(' ')} L ${chartWidth},${chartHeight} L 0,${chartHeight} Z`;
+
+    const area = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    area.setAttribute('d', areaPath);
+    area.setAttribute('fill', config.colors?.[0] || '#3b82f6');
+    area.setAttribute('opacity', '0.3');
+
+    chartGroup.appendChild(area);
+    svg.appendChild(chartGroup);
+  }
+
+  private static addScatterChartToSVG<T extends ChartDataPoint>(
+    svg: SVGSVGElement,
+    data: T[],
+    config: ChartConfig,
+    width: number,
+    height: number,
+  ): void {
+    const margin = { top: 20, right: 20, bottom: 40, left: 60 };
+    const chartWidth = width - margin.left - margin.right;
+    const chartHeight = height - margin.top - margin.bottom;
+
+    const chartGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    chartGroup.setAttribute('transform', `translate(${margin.left}, ${margin.top})`);
+
+    const maxValue = Math.max(...data.map((d) => d.value));
+
+    data.forEach((item, index) => {
+      const x = (chartWidth / data.length) * index;
+      const y = chartHeight - (item.value / maxValue) * chartHeight;
+
+      const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      circle.setAttribute('cx', x.toString());
+      circle.setAttribute('cy', y.toString());
+      circle.setAttribute('r', '4');
+      circle.setAttribute('fill', config.colors?.[index % config.colors.length] || '#3b82f6');
+
+      chartGroup.appendChild(circle);
+    });
+
+    svg.appendChild(chartGroup);
+  }
+
+  private static addHeatmapChartToSVG<T extends ChartDataPoint>(
+    svg: SVGSVGElement,
+    data: T[],
+    _config: ChartConfig,
+    width: number,
+    height: number,
+  ): void {
+    const cellSize = Math.min(width, height) / Math.ceil(Math.sqrt(data.length));
+    const cols = Math.ceil(width / cellSize);
+
+    const maxValue = Math.max(...data.map((d) => d.value));
+
+    data.forEach((item, index) => {
+      const row = Math.floor(index / cols);
+      const col = index % cols;
+      const x = col * cellSize;
+      const y = row * cellSize;
+
+      const intensity = item.value / maxValue;
+      const hue = 200 - (intensity * 60); // Blue to red gradient
+
+      const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      rect.setAttribute('x', x.toString());
+      rect.setAttribute('y', y.toString());
+      rect.setAttribute('width', cellSize.toString());
+      rect.setAttribute('height', cellSize.toString());
+      rect.setAttribute('fill', `hsl(${hue}, 70%, 50%)`);
+      rect.setAttribute('stroke', '#fff');
+
+      svg.appendChild(rect);
+    });
+  }
+
+  private static addTreemapChartToSVG<T extends ChartDataPoint>(
+    svg: SVGSVGElement,
+    data: T[],
+    config: ChartConfig,
+    width: number,
+    height: number,
+  ): void {
+    // Simplified treemap implementation
+    const total = data.reduce((sum, item) => sum + item.value, 0);
+    let x = 0;
+    let y = 0;
+
+    data.forEach((item, index) => {
+      const area = (item.value / total) * width * height;
+      const rectWidth = Math.sqrt(area * (width / height));
+      const rectHeight = area / rectWidth;
+
+      const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      rect.setAttribute('x', x.toString());
+      rect.setAttribute('y', y.toString());
+      rect.setAttribute('width', rectWidth.toString());
+      rect.setAttribute('height', rectHeight.toString());
+      rect.setAttribute('fill', config.colors?.[index % config.colors.length] ||
+        `hsl(${(index * 360) / data.length}, 70%, 50%)`);
+      rect.setAttribute('stroke', '#fff');
+      rect.setAttribute('stroke-width', '2');
+
+      svg.appendChild(rect);
+
+      x += rectWidth;
+      if (x >= width) {
+        x = 0;
+        y += rectHeight;
+      }
+    });
+  }
 }
 
 /**
@@ -387,9 +582,9 @@ export class ChartExportUtils {
  */
 /**
  * DataFormattingUtils Service
- * 
+ *
  * Service class for handling dataformattingutils operations
- * 
+ *
  * @class DataFormattingUtils
  */
 export class DataFormattingUtils {
@@ -504,7 +699,7 @@ export class DataFormattingUtils {
   // Private helper methods
   private static escapeCSVField(field: string | number | boolean | Date | null | undefined): string {
     // Handle null/undefined values
-    if (field === null ?? field === undefined) {
+    if (field === null || field === undefined) {
       return '';
     }
 
@@ -566,11 +761,14 @@ export class DataFormattingUtils {
   }
 
   private static formatDate(date: Date, format = 'YYYY-MM-DD'): string {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-
-    return format.replace('YYYY', year.toString()).replace('MM', month).replace('DD', day);
+    // Map format string to date-fns format
+    const formatMap: Record<string, string> = {
+      'YYYY-MM-DD': 'yyyy-MM-dd',
+      'DD.MM.YYYY': 'dd.MM.yyyy',
+      'DD/MM/YYYY': 'dd/MM/yyyy',
+    };
+    const dateFnsFormat = formatMap[format] ?? 'yyyy-MM-dd';
+    return formatDateUtil(date, dateFnsFormat);
   }
 
   private static formatNumber(value: number | string, format = '0.00'): string {
@@ -590,9 +788,9 @@ export class DataFormattingUtils {
  */
 /**
  * OptimizationUtils Service
- * 
+ *
  * Service class for handling optimizationutils operations
- * 
+ *
  * @class OptimizationUtils
  */
 export class OptimizationUtils {
@@ -620,8 +818,8 @@ export class OptimizationUtils {
       // Check memory usage
       if (this.getMemoryUsage() > maxMemoryUsage) {
         // Force garbage collection if available (Node.js only)
-        if (typeof global !== 'undefined' && typeof global.gc === 'function') {
-          global.gc();
+        if (typeof globalThis !== 'undefined' && 'gc' in globalThis && typeof (globalThis as any).gc === 'function') {
+          (globalThis as any).gc();
         }
 
         // Wait a bit to allow memory cleanup
@@ -685,8 +883,11 @@ export class OptimizationUtils {
   // Private helper methods
   private static getMemoryUsage(): number {
     // Use real Node.js memory usage when available
-    if (typeof process !== 'undefined' && process.memoryUsage) {
-      return process.memoryUsage().rss; // Resident Set Size in bytes
+    if (typeof globalThis !== 'undefined' && 'process' in globalThis) {
+      const proc = (globalThis as any).process;
+      if (proc && typeof proc.memoryUsage === 'function') {
+        return proc.memoryUsage().rss; // Resident Set Size in bytes
+      }
     }
 
     // Fallback for browser environments - estimate based on performance API
@@ -697,9 +898,9 @@ export class OptimizationUtils {
         jsHeapSizeLimit: number;
       };
     }
-    
+
     if (typeof performance !== 'undefined' && (performance as PerformanceWithMemory).memory) {
-      return (performance as PerformanceWithMemory).memory!.usedJSHeapSize ?? 0;
+      return (performance as PerformanceWithMemory).memory?.usedJSHeapSize ?? 0;
     }
 
     // Last resort fallback
@@ -773,9 +974,9 @@ export class OptimizationUtils {
  */
 /**
  * ExportTemplateUtils Service
- * 
+ *
  * Service class for handling exporttemplateutils operations
- * 
+ *
  * @class ExportTemplateUtils
  */
 export class ExportTemplateUtils {

@@ -1,3 +1,4 @@
+import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import './index.css';
@@ -58,14 +59,19 @@ if (typeof window !== 'undefined') {
 
 try {
   // Initialize React App
-  ReactDOM.createRoot(document.getElementById('root')!).render(
+  const rootElement = document.getElementById('root');
+  if (!rootElement) {
+    throw new Error('Root element not found');
+  }
+
+  ReactDOM.createRoot(rootElement).render(
     <React.StrictMode>
       <App />
     </React.StrictMode>,
   );
 } catch (error) {
-  // Log error to console
-  console.error('Failed to initialize app:', error);
+  // Log error using logger
+  logger.error('Failed to initialize app:', error);
 
   // Fallback UI for critical errors
   const root = document.getElementById('root');
@@ -93,7 +99,7 @@ try {
             Uygulama Başlatılamadı
           </h1>
           <p style="color: #6b7280; margin-bottom: 24px; line-height: 1.6;">
-            Teknik bir sorun nedeniyle uygulama şu anda başlatılamıyor. 
+            Teknik bir sorun nedeniyle uygulama şu anda başlatılamıyor.
             Lütfen sayfayı yenileyin veya daha sonra tekrar deneyin.
           </p>
           <button

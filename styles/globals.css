@@ -13,15 +13,61 @@
   }
 }
 
+/* Success/Error State Animations */
+@keyframes checkmark {
+  0% {
+    stroke-dashoffset: 16;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-4px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(4px);
+  }
+}
+
+@keyframes scale-in {
+  0% {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Animation Utility Classes */
+.animate-checkmark {
+  animation: checkmark 500ms ease-out;
+}
+
+.animate-shake {
+  animation: shake 500ms ease-in-out;
+}
+
+.animate-scale-in {
+  animation: scale-in 300ms ease-out;
+}
+
 /* Dark mode variant handled by standard CSS selectors */
 
 :root {
   --font-size: 16px;
-  
+
   /* Enhanced Typography System */
   --font-family-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --font-family-mono: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
-  
+
   /* Typography Scale */
   --text-xs: 0.75rem;      /* 12px */
   --text-sm: 0.875rem;     /* 14px */
@@ -31,21 +77,21 @@
   --text-2xl: 1.5rem;      /* 24px */
   --text-3xl: 1.875rem;    /* 30px */
   --text-4xl: 2.25rem;     /* 36px */
-  
+
   /* Font Weights */
   --font-light: 300;
   --font-normal: 400;
   --font-medium: 500;
   --font-semibold: 600;
   --font-bold: 700;
-  
+
   /* Line Heights */
   --leading-tight: 1.25;
   --leading-snug: 1.375;
   --leading-normal: 1.5;
   --leading-relaxed: 1.625;
   --leading-loose: 2;
-  
+
   /* Corporate Background Colors - Warmer, more professional */
   --background: #fafbfc;
   --foreground: #1a202c;
@@ -90,11 +136,11 @@
   --radius-md: 0.5rem;
   --radius-lg: 0.75rem;
   --radius-xl: 1rem;
-  
+
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  
+
   /* Animation Tokens */
   --transition-fast: 150ms ease-in-out;
   --transition-base: 200ms ease-in-out;
@@ -454,7 +500,7 @@
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  
+
   .animate-fade-in,
   .animate-fade-out,
   .animate-slide-in,
@@ -463,7 +509,9 @@
   .animate-scale-out,
   .animate-bounce-subtle,
   .animate-pulse-subtle,
-  .animate-shimmer {
+  .animate-shimmer,
+  .animate-checkmark,
+  .animate-shake {
     animation: none !important;
     transition: none !important;
   }
@@ -474,7 +522,7 @@
   .animate-bounce-subtle {
     animation-duration: 0.3s;
   }
-  
+
   .animate-pulse-subtle {
     animation-duration: 1s;
   }
@@ -521,7 +569,7 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-  
+
   /* Neutral color scale */
   --color-neutral-50: hsl(var(--neutral-50));
   --color-neutral-100: hsl(var(--neutral-100));
@@ -588,6 +636,7 @@ h4 {
 }
 
 /* Form Typography */
+/* Deprecated: Use labelVariants from design system */
 .form-label {
   font-size: var(--text-sm);
   font-weight: var(--font-medium);
@@ -597,6 +646,7 @@ h4 {
   display: block;
 }
 
+/* Deprecated: Use labelVariants from design system */
 .form-label.required::after {
   content: ' *';
   color: var(--destructive);
@@ -609,6 +659,7 @@ h4 {
   line-height: var(--leading-normal);
 }
 
+/* Deprecated: Use helperTextVariants({ variant: 'default' }) from design system */
 .form-helper-text {
   font-size: var(--text-xs);
   color: var(--muted-foreground);
@@ -616,6 +667,7 @@ h4 {
   margin-top: 0.25rem;
 }
 
+/* Deprecated: Use helperTextVariants({ variant: 'error' }) from design system */
 .form-error-text {
   font-size: var(--text-xs);
   color: var(--destructive);
@@ -1979,6 +2031,62 @@ body {
 [data-progress-width] {
   width: attr(data-progress-width);
   transition: width 0.3s ease;
+}
+
+/* ========================================================================
+   Accessibility: Global Enhancements
+   ======================================================================== */
+
+/* Enhanced focus indicators for keyboard navigation */
+*:focus-visible {
+  outline: 2px solid hsl(var(--primary-500));
+  outline-offset: 2px;
+}
+
+/* Remove focus outline for mouse users */
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  * {
+    border-color: currentColor !important;
+  }
+
+  button,
+  a,
+  [role="button"] {
+    border: 2px solid currentColor !important;
+  }
+}
+
+/* Skip links accessibility */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: hsl(var(--info-600));
+  color: white;
+  padding: 8px;
+  text-decoration: none;
+  z-index: 1600;
+}
+
+.skip-link:focus {
+  top: 0;
 }
 
 /* Print styles for desktop */

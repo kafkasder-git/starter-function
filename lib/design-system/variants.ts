@@ -1,8 +1,28 @@
 /**
  * Component Variant System
- * 
+ *
  * Centralized variant definitions using Class Variance Authority (CVA) patterns.
  * These variants ensure consistent styling across all components.
+ *
+ * All focus rings follow design system tokens:
+ * - Width: 2px (ring-2)
+ * - Offset: 2px (ring-offset-2)
+ * - Color: Semantic color at 500 shade
+ * - Trigger: focus-visible (keyboard only)
+ *
+ * Key Variant Collections:
+ * - buttonVariants: Used by Button and LoadingButton components
+ * - toastVariants: Used by enhanced toast system in sonner.tsx
+ * - skeletonVariants: Used by Skeleton component with shimmer animation
+ * - spinnerVariants: Used by LoadingSpinner component
+ *
+ * Toast Variants (used by enhanced toast system):
+ * - success: Green theme (success-50 bg, success-200 border, success-900 text)
+ * - destructive: Red theme (error-50 bg, error-200 border, error-900 text)
+ * - warning: Yellow theme (warning-50 bg, warning-200 border, warning-900 text)
+ * - info: Blue theme (info-50 bg, info-200 border, info-900 text)
+ *
+ * All semantic colors ensure proper contrast ratios for WCAG AA compliance.
  */
 
 import { type VariantProps, cva } from 'class-variance-authority';
@@ -153,7 +173,7 @@ export const cardVariants = cva(
         xl: 'p-8',
       },
       interactive: {
-        true: 'cursor-pointer hover:shadow-md transition-all duration-200',
+        true: 'cursor-pointer hover:shadow-md transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2',
         false: '',
       },
     },
@@ -169,7 +189,7 @@ export const cardVariants = cva(
 export const badgeVariants = cva(
   [
     'inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold',
-    'transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2',
+    'transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
   ],
   {
     variants: {

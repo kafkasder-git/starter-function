@@ -1,6 +1,6 @@
 /**
  * @fileoverview LawsuitTrackingPage Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -18,6 +18,7 @@ import {
   Timer,
   User,
 } from 'lucide-react';
+import { formatDate as formatDateUtil } from '../../lib/utils/dateFormatter';
 import { useState } from 'react';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
@@ -58,7 +59,7 @@ interface Lawsuit {
 
 /**
  * LawsuitTrackingPage function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -152,10 +153,6 @@ export function LawsuitTrackingPage() {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(amount);
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('tr-TR');
   };
 
   const activeCases = lawsuits.filter((l) => l.status === 'devam').length;
@@ -356,12 +353,12 @@ export function LawsuitTrackingPage() {
                     </div>
                     <div className="flex items-center gap-2 text-sm">
                       <Calendar className="w-4 h-4 text-muted-foreground" />
-                      <span className="truncate">Başlangıç: {formatDate(lawsuit.startDate)}</span>
+                      <span className="truncate">Başlangıç: {formatDateUtil(lawsuit.startDate)}</span>
                     </div>
                     {lawsuit.nextHearing && (
                       <div className="flex items-center gap-2 text-sm">
                         <Clock className="w-4 h-4 text-muted-foreground" />
-                        <span className="truncate">Duruşma: {formatDate(lawsuit.nextHearing)}</span>
+                        <span className="truncate">Duruşma: {formatDateUtil(lawsuit.nextHearing)}</span>
                       </div>
                     )}
                   </div>
@@ -447,14 +444,14 @@ export function LawsuitTrackingPage() {
                     <label className="text-sm font-medium text-muted-foreground">
                       Başlangıç Tarihi
                     </label>
-                    <p>{formatDate(selectedLawsuit.startDate)}</p>
+                    <p>{formatDateUtil(selectedLawsuit.startDate)}</p>
                   </div>
                   {selectedLawsuit.nextHearing && (
                     <div>
                       <label className="text-sm font-medium text-muted-foreground">
                         Sonraki Duruşma
                       </label>
-                      <p>{formatDate(selectedLawsuit.nextHearing)}</p>
+                      <p>{formatDateUtil(selectedLawsuit.nextHearing)}</p>
                     </div>
                   )}
                 </div>

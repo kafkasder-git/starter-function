@@ -1,6 +1,6 @@
 /**
  * @fileoverview BeneficiaryPersonalInfo Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -11,6 +11,7 @@ import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Textarea } from '../ui/textarea';
+import { formatDate } from '../../lib/utils/dateFormatter';
 
 interface BeneficiaryPersonalInfoProps {
   beneficiary: any;
@@ -20,7 +21,7 @@ interface BeneficiaryPersonalInfoProps {
 
 /**
  * BeneficiaryPersonalInfo function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -117,11 +118,7 @@ export function BeneficiaryPersonalInfo({
                 <div className="p-3 bg-gray-50 rounded-lg">
                   <p className="text-sm font-medium text-gray-900">
                     {beneficiary?.birthDate
-                      ? new Date(beneficiary.birthDate).toLocaleDateString('tr-TR', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric'
-                        })
+                      ? formatDate(beneficiary.birthDate, 'long')
                       : '-'}
                   </p>
                 </div>

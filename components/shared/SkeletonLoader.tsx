@@ -1,6 +1,29 @@
 /**
  * @fileoverview SkeletonLoader Module - Application module
- * 
+ *
+ * Reference implementation for skeleton loading states using the Skeleton component
+ * which implements skeletonVariants from the design system. All skeleton elements
+ * properly use the Skeleton component with shimmer animation from design tokens.
+ *
+ * Usage Examples:
+ * - table: Use for data tables with rows and columns
+ * - cards: Use for grid layouts with card-based content
+ * - dashboard: Use for full dashboard page with stats and charts
+ * - detail: Use for detail pages with sidebar and main content
+ * - form: Use for form pages with input fields
+ *
+ * @example
+ * ```tsx
+ * // Table skeleton with 10 rows
+ * <SkeletonLoader variant="table" rows={10} />
+ *
+ * // Card grid skeleton with 6 cards
+ * <SkeletonLoader variant="cards" rows={6} />
+ *
+ * // Full dashboard skeleton
+ * <DashboardSkeleton />
+ * ```
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -16,7 +39,7 @@ interface SkeletonLoaderProps {
 
 /**
  * SkeletonLoader function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -98,7 +121,7 @@ export function SkeletonLoader({
           <CardContent className="pt-0">
             <div className="space-y-4">
               {/* Table Header */}
-              <div className="grid grid-cols-6 gap-4 pb-4 border-b border-slate-200">
+              <div className="grid grid-cols-6 gap-4 pb-4 border-b border-neutral-200">
                 {Array.from({ length: 6 }).map((_, i) => (
                   <Skeleton key={i} className="h-4 w-full" />
                 ))}

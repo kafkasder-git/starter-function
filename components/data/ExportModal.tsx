@@ -18,6 +18,7 @@ import {
   AlertCircle,
   Loader2,
 } from 'lucide-react';
+import { formatDate } from '../../lib/utils/dateFormatter';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../ui/dialog';
 import { Button } from '../ui/button';
 import { Label } from '../ui/label';
@@ -283,7 +284,7 @@ export function ExportModal({
             <PopoverTrigger asChild>
               <Button variant="outline" className="flex-1 justify-start text-left">
                 <Calendar className="w-4 h-4 mr-2" />
-                {dateRange.start ? dateRange.start.toLocaleDateString('tr-TR') : 'Başlangıç'}
+                {dateRange.start ? formatDate(dateRange.start) : 'Başlangıç'}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
@@ -302,7 +303,7 @@ export function ExportModal({
             <PopoverTrigger asChild>
               <Button variant="outline" className="flex-1 justify-start text-left">
                 <Calendar className="w-4 h-4 mr-2" />
-                {dateRange.end ? dateRange.end.toLocaleDateString('tr-TR') : 'Bitiş'}
+                {dateRange.end ? formatDate(dateRange.end) : 'Bitiş'}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
@@ -439,8 +440,8 @@ export function ExportModal({
               <p>
                 • Tarih aralığı:{' '}
                 <strong>
-                  {config.dateRange.start.toLocaleDateString('tr-TR')} -{' '}
-                  {config.dateRange.end.toLocaleDateString('tr-TR')}
+                  {formatDate(config.dateRange.start)} -{' '}
+                  {formatDate(config.dateRange.end)}
                 </strong>
               </p>
             )}

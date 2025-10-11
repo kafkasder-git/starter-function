@@ -82,12 +82,12 @@ export function DesktopStatsCard({
   className,
 }: DesktopStatsCardProps) {
   const colorClasses = {
-    blue: 'text-blue-600 bg-blue-50',
-    green: 'text-green-600 bg-green-50',
-    yellow: 'text-yellow-600 bg-yellow-50',
-    red: 'text-red-600 bg-red-50',
-    purple: 'text-purple-600 bg-purple-50',
-    gray: 'text-gray-600 bg-gray-50',
+    blue: 'text-info-600 bg-info-50',
+    green: 'text-success-600 bg-success-50',
+    yellow: 'text-warning-600 bg-warning-50',
+    red: 'text-error-600 bg-error-50',
+    purple: 'text-primary-600 bg-primary-50',
+    gray: 'text-neutral-600 bg-neutral-50',
   };
 
   return (

@@ -11,6 +11,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Badge } from '../ui/badge';
+import { StatusBadge, PriorityBadge } from '../ui/status-badge';
+import { Tooltip, TooltipTrigger, TooltipContent } from '../ui/tooltip';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
@@ -18,13 +20,14 @@ import {
   Search,
   Plus,
   Download,
-  Eye,
-  Edit,
   HelpingHand,
   Clock,
   CheckCircle,
   XCircle,
+  Eye,
+  Edit,
 } from 'lucide-react';
+import { actionIcons } from '../../lib/design-system/icons';
 import { PageLoading } from '../shared/LoadingSpinner';
 import { logger } from '../../lib/logging/logger';
 import { aidRequestsService } from '../../services/aidRequestsService';
@@ -151,7 +154,6 @@ export function AidPage() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [priorityFilter, setPriorityFilter] = useState('all');
   const [aidRequests, setAidRequests] = useState<AidRequest[]>([]);
-  const [showNewRequestDialog, setShowNewRequestDialog] = useState(false);
 
   // Load aid requests on mount
   useEffect(() => {
@@ -230,43 +232,30 @@ export function AidPage() {
   });
 
   const getStatusBadge = (status: AidRequest['status']) => {
-    const variants = {
-      Yeni: 'bg-blue-100 text-blue-800 hover:bg-blue-100',
-      İnceleniyor: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-100',
-      Onaylandı: 'bg-green-100 text-green-800 hover:bg-green-100',
-      Reddedildi: 'bg-red-100 text-red-800 hover:bg-red-100',
-      Tamamlandı: 'bg-purple-100 text-purple-800 hover:bg-purple-100',
+    const statusMap: Record<AidRequest['status'], 'success' | 'error' | 'warning' | 'info' | 'pending'> = {
+      'Yeni': 'info',
+      'İnceleniyor': 'pending',
+      'Onaylandı': 'success',
+      'Reddedildi': 'error',
+      'Tamamlandı': 'success',
     };
 
-    const icons = {
-      Yeni: <HelpingHand className="w-3 h-3 mr-1" />,
-      İnceleniyor: <Clock className="w-3 h-3 mr-1" />,
-      Onaylandı: <CheckCircle className="w-3 h-3 mr-1" />,
-      Reddedildi: <XCircle className="w-3 h-3 mr-1" />,
-      Tamamlandı: <CheckCircle className="w-3 h-3 mr-1" />,
-    };
+    const statusType = statusMap[status] || 'pending';
 
-    return (
-      <Badge className={`${variants[status]} flex items-center`}>
-        {icons[status]}
-        {status}
-      </Badge>
-    );
+    return <StatusBadge status={statusType}>{status}</StatusBadge>;
   };
 
   const getPriorityBadge = (priority: AidRequest['priority']) => {
-    const variants = {
-      Düşük: 'bg-gray-100 text-gray-800',
-      Orta: 'bg-blue-100 text-blue-800',
-      Yüksek: 'bg-orange-100 text-orange-800',
-      Acil: 'bg-red-100 text-red-800',
+    const priorityMap: Record<AidRequest['priority'], 'high' | 'medium' | 'low'> = {
+      'Düşük': 'low',
+      'Orta': 'medium',
+      'Yüksek': 'high',
+      'Acil': 'high',
     };
 
-    return (
-      <Badge variant="secondary" className={variants[priority]}>
-        {priority}
-      </Badge>
-    );
+    const priorityType = priorityMap[priority] || 'low';
+
+    return <PriorityBadge priority={priorityType}>{priority}</PriorityBadge>;
   };
 
   const getRequestTypeBadge = (type: AidRequest['requestType']) => {

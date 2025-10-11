@@ -18,6 +18,7 @@ import {
   Server,
   Globe,
 } from 'lucide-react';
+import { formatTime } from '../lib/utils/dateFormatter';
 import {
   NetworkManager,
   type NetworkDiagnostics,
@@ -190,7 +191,7 @@ export function NetworkStatus({
             <RefreshCw className={`h-3 w-3 ${isChecking ? 'animate-spin' : ''}`} />
           </Button>
         </CardTitle>
-        <CardDescription>Son kontrol: {lastCheck.toLocaleTimeString('tr-TR')}</CardDescription>
+        <CardDescription>Son kontrol: {formatTime(lastCheck)}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
         {/* Overall Status */}

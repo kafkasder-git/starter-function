@@ -7,6 +7,7 @@
 
 import { ArrowRight, Search, Menu, Home } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { getTouchTargetClasses } from '@/lib/design-system/accessibility';
 
 interface SkipLink {
   id: string;
@@ -78,7 +79,11 @@ export function SkipLinks() {
   if (!isVisible) return null;
 
   return (
-    <div className="fixed top-0 left-0 z-50 w-full bg-blue-600 text-white shadow-lg">
+    <div
+      className="fixed top-0 left-0 z-[1600] w-full bg-info-600 text-white shadow-lg"
+      role="navigation"
+      aria-label="Skip links"
+    >
       <div className="container mx-auto px-4 py-2">
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-sm font-medium">Hızlı erişim:</span>
@@ -86,7 +91,7 @@ export function SkipLinks() {
             <button
               key={link.id}
               onClick={() => { handleSkip(link.target); }}
-              className="flex items-center gap-1 px-3 py-1 text-sm bg-blue-700 hover:bg-blue-800 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-600"
+              className={`flex items-center gap-1 px-3 py-1 text-sm ${getTouchTargetClasses()} bg-info-700 hover:bg-info-800 rounded transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-info-600`}
             >
               {link.icon}
               {link.label}
@@ -98,38 +103,5 @@ export function SkipLinks() {
   );
 }
 
-// Focus trap hook for modals
-export function useFocusTrap(isActive: boolean) {
-  useEffect(() => {
-    if (!isActive) return;
-
-    const focusableElements = document.querySelectorAll(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-    );
-    const firstElement = focusableElements[0] as HTMLElement;
-    const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
-
-    const handleTabKey = (e: KeyboardEvent) => {
-      if (e.key !== 'Tab') return;
-
-      if (e.shiftKey) {
-        if (document.activeElement === firstElement) {
-          e.preventDefault();
-          lastElement?.focus();
-        }
-      } else {
-        if (document.activeElement === lastElement) {
-          e.preventDefault();
-          firstElement?.focus();
-        }
-      }
-    };
-
-    document.addEventListener('keydown', handleTabKey);
-    firstElement?.focus();
-
-    return () => {
-      document.removeEventListener('keydown', handleTabKey);
-    };
-  }, [isActive]);
-}
+// Note: useFocusTrap has been moved to lib/design-system/accessibility.ts
+// Import it from there if needed: import { useFocusTrap } from '@/lib/design-system/accessibility';

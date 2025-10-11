@@ -1,6 +1,6 @@
 /**
  * @fileoverview form Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -21,6 +21,7 @@ import {
 
 import { cn } from './utils';
 import { Label } from './label';
+import { helperTextVariants } from '../../lib/design-system/variants';
 import { FormFieldContext, FormItemContext } from '../../contexts/FormContexts';
 import { useFormField } from '../../hooks/use-form-field';
 
@@ -56,7 +57,7 @@ function FormLabel({ className, ...props }: React.ComponentProps<typeof LabelPri
     <Label
       data-slot="form-label"
       data-error={Boolean(error)}
-      className={cn('data-[error=true]:text-destructive', className)}
+      className={cn('data-[error=true]:text-error-600', className)}
       htmlFor={formItemId}
       {...props}
     />
@@ -90,9 +91,22 @@ function FormDescription({ className, ...props }: React.ComponentProps<'p'>) {
   );
 }
 
-function FormMessage({ className, ...props }: React.ComponentProps<'p'>) {
+function FormHelperText({ className, variant = 'default', ...props }: React.ComponentProps<'p'> & { variant?: 'default' | 'error' | 'success' | 'warning' }) {
+  const { formDescriptionId } = useFormField();
+  return (
+    <p
+      data-slot="form-helper-text"
+      id={`${formDescriptionId}-helper`}
+      className={cn(helperTextVariants({ variant }), className)}
+      {...props}
+    />
+  );
+}
+
+function FormMessage({ className, variant, ...props }: React.ComponentProps<'p'> & { variant?: 'error' | 'success' | 'warning' }) {
   const { error, formMessageId } = useFormField();
   const body = error ? String(error.message ?? '') : props.children;
+  const messageVariant = variant || (error ? 'error' : 'default');
 
   if (!body) {
     return null;
@@ -102,7 +116,13 @@ function FormMessage({ className, ...props }: React.ComponentProps<'p'>) {
     <p
       data-slot="form-message"
       id={formMessageId}
-      className={cn('text-destructive text-sm', className)}
+      className={cn(
+        messageVariant === 'error' && 'text-error-600',
+        messageVariant === 'success' && 'text-success-600',
+        messageVariant === 'warning' && 'text-warning-600',
+        'text-sm',
+        className
+      )}
       {...props}
     >
       {body}
@@ -117,6 +137,7 @@ export {
   FormLabel,
   FormControl,
   FormDescription,
+  FormHelperText,
   FormMessage,
   FormField,
 };

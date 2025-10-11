@@ -5,33 +5,30 @@
  * @version 1.0.0
  */
 
+import React, { useCallback, useEffect, useState } from 'react';
 import {
-  CheckCircle,
+  CheckCircle2,
   Clock,
   DollarSign,
   Download,
-  Eye,
   Loader2,
   Plus,
   Search,
-  Trash2,
   TrendingUp,
   XCircle,
 } from 'lucide-react';
-import { Skeleton } from '../ui/skeleton';
-import { useCallback, useEffect, useState } from 'react';
+import { actionIcons } from '../../lib/design-system/icons';
+import { formatDate } from '../../lib/utils/dateFormatter';
 import { toast } from 'sonner';
 import { useFormValidation } from '../../hooks/useFormValidation';
 import { VALIDATION_SCHEMAS } from '../../lib/security/validation';
-import {
-  donationsService,
-  type Donation,
-  type DonationsFilters,
-} from '../../services/donationsService';
+import { donationsService } from '../../services/donationsService';
+import type { Donation, DonationsFilters } from '../../types/donation';
 import { PageLoading } from '../shared/LoadingSpinner';
 import { PageLayout } from '../layouts/PageLayout';
-import { Badge } from '../ui/badge';
+import { StatusBadge } from '../ui/status-badge';
 import { Button } from '../ui/button';
+import { Tooltip, TooltipTrigger, TooltipContent } from '../ui/tooltip';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import {
   Dialog,
@@ -44,8 +41,9 @@ import {
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
+import { ResponsiveTable, type ColumnDef } from '../ui/responsive-table';
 import { Textarea } from '../ui/textarea';
+import { EmptyState } from '../shared/EmptyState';
 
 import { logger } from '../../lib/logging/logger';
 interface DonationFormData {
@@ -86,7 +84,7 @@ export function DonationsPage() {
   });
   // Form validation
   const donationForm = useFormValidation({
-    schema: VALIDATION_SCHEMAS.donation,
+    schema: VALIDATION_SCHEMAS.donation as any,
     initialValues: {
       donor_name: '',
       donor_email: '',
@@ -123,7 +121,11 @@ export function DonationsPage() {
         return;
       }
 
-      setDonations(result.data ?? []);
+      if (result.data && Array.isArray(result.data)) {
+        setDonations(result.data);
+      } else {
+        setDonations([]);
+      }
     } catch (error) {
       logger.error('Error loading donations:', error);
       setDonations([]);
@@ -172,32 +174,26 @@ export function DonationsPage() {
   }, [searchTerm, statusFilter, donationTypeFilter, paymentMethodFilter, loadDonations]);
 
   const getStatusBadge = (status: Donation['status']) => {
-    const statusMapping = {
-      pending: {
-        label: 'Beklemede',
-        variant: 'warning' as const,
-      },
-      approved: {
-        label: 'Onaylandı',
-        variant: 'success' as const,
-      },
-      rejected: {
-        label: 'Reddedildi',
-        variant: 'destructive' as const,
-      },
-      processing: {
-        label: 'İşleniyor',
-        variant: 'info' as const,
-      },
-      completed: {
-        label: 'Tamamlandı',
-        variant: 'success' as const,
-      },
+    const statusMap: Record<string, 'success' | 'error' | 'warning' | 'info' | 'pending'> = {
+      approved: 'success',
+      rejected: 'error',
+      pending: 'pending',
+      processing: 'info',
+      completed: 'success',
     };
 
-    const statusInfo = statusMapping[status] ?? statusMapping.pending;
+    const statusLabels: Record<string, string> = {
+      approved: 'Onaylandı',
+      rejected: 'Reddedildi',
+      pending: 'Beklemede',
+      processing: 'İşleniyor',
+      completed: 'Tamamlandı',
+    };
 
-    return <Badge variant={statusInfo.variant}>{statusInfo.label}</Badge>;
+    const statusType = statusMap[status] || 'pending';
+    const statusLabel = statusLabels[status] || status;
+
+    return <StatusBadge status={statusType}>{statusLabel}</StatusBadge>;
   };
 
   const handleCreateDonation = async (values?: DonationFormData) => {
@@ -247,7 +243,7 @@ export function DonationsPage() {
 
   const handleUpdateStatus = async (id: string, newStatus: Donation['status']) => {
     try {
-      const result = await donationsService.updateDonation(parseInt(id), { status: newStatus });
+      const result = await donationsService.updateDonation(id, { status: newStatus });
 
       if (result.error) {
         throw new Error(result.error);
@@ -268,7 +264,7 @@ export function DonationsPage() {
     }
 
     try {
-      const result = await donationsService.deleteDonation(parseInt(id));
+      const result = await donationsService.deleteDonation(id);
 
       if (result.error) {
         throw new Error(result.error);
@@ -282,6 +278,220 @@ export function DonationsPage() {
       toast.error('Bağış silinemedi');
     }
   };
+
+  // Column definitions for ResponsiveTable
+  const donationColumns: ColumnDef<Donation>[] = [
+    {
+      key: 'donor_name',
+      title: 'Bağışçı',
+      mobileLabel: 'Bağışçı',
+      render: (_: any, row: Donation) => (
+        <div>
+          <div className="font-medium">{row.donor_name}</div>
+          {row.donor_email && <div className="text-sm text-gray-500">{row.donor_email}</div>}
+        </div>
+      ),
+    },
+    {
+      key: 'amount',
+      title: 'Tutar',
+      mobileLabel: 'Tutar',
+      render: (value: number) => (
+        <span className="font-semibold text-green-600">₺{value.toLocaleString()}</span>
+      ),
+    },
+    {
+      key: 'created_at',
+      title: 'Tarih',
+      mobileLabel: 'Tarih',
+      render: (value: string) => (
+        <span className="text-gray-500">
+          {formatDate(value)}
+        </span>
+      ),
+    },
+    {
+      key: 'status',
+      title: 'Durum',
+      mobileLabel: 'Durum',
+      render: (value: Donation['status']) => getStatusBadge(value),
+    },
+    {
+      key: 'payment_method',
+      title: 'Yöntem',
+      mobileLabel: 'Ödeme',
+      hideOnMobile: true,
+      render: (value: string) => <span className="text-gray-600">{value}</span>,
+    },
+    {
+      key: 'donation_type',
+      title: 'Tür',
+      mobileLabel: 'Tür',
+      hideOnMobile: true,
+      render: (value: string) => <span className="text-gray-600">{value}</span>,
+    },
+    {
+      key: 'actions',
+      title: 'İşlemler',
+      mobileLabel: 'İşlemler',
+      hideOnMobile: true,
+      render: (_: any, row: Donation) => {
+        const ViewIcon = actionIcons.view;
+        const DeleteIcon = actionIcons.delete;
+
+        return (
+          <div className="flex items-center justify-center gap-2">
+            {row.status === 'pending' && (
+              <>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0 text-green-600 hover:bg-green-50 hover:text-green-700"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleUpdateStatus(row.id, 'approved');
+                      }}
+                      aria-label={`Approve donation from ${row.donor_name}`}
+                    >
+                      <CheckCircle2 className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Onayla</TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0 text-red-600 hover:bg-red-50 hover:text-red-700"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleUpdateStatus(row.id, 'rejected');
+                      }}
+                      aria-label={`Reject donation from ${row.donor_name}`}
+                    >
+                      <XCircle className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Reddet</TooltipContent>
+                </Tooltip>
+              </>
+            )}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0 text-blue-600 hover:bg-blue-50 hover:text-blue-700"
+                  aria-label={`View donation from ${row.donor_name}`}
+                >
+                  <ViewIcon className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Detayları Görüntüle</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0 text-red-600 hover:bg-red-50 hover:text-red-700"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteDonation(row.id);
+                  }}
+                  aria-label={`Delete donation from ${row.donor_name}`}
+                >
+                  <DeleteIcon className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Sil</TooltipContent>
+            </Tooltip>
+          </div>
+        );
+      },
+    },
+  ];
+
+  // Custom mobile card renderer
+  const renderDonationMobileCard = (row: Donation) => (
+    <Card key={row.id} className="border border-gray-200 transition-shadow hover:shadow-md">
+      <CardContent className="p-4">
+        <div className="mb-3 flex items-start justify-between">
+          <div className="flex-1">
+            <h3 className="font-medium text-gray-900">{row.donor_name}</h3>
+            <p className="text-sm text-gray-600">{row.category ?? row.donation_type}</p>
+          </div>
+          <div className="text-right">
+            <div className="text-lg font-semibold text-green-600">
+              ₺{row.amount.toLocaleString()}
+            </div>
+            {getStatusBadge(row.status)}
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between text-sm text-gray-500">
+          <span>{row.payment_method}</span>
+          <span>{formatDate(row.created_at)}</span>
+        </div>
+
+        <div className="mt-3 flex flex-wrap justify-end gap-2">
+          {row.status === 'pending' && (
+            <>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="min-h-[44px] min-w-[44px] p-2 text-green-600 hover:bg-green-50 hover:text-green-700"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleUpdateStatus(row.id, 'approved');
+                    }}
+                    aria-label={`Approve donation from ${row.donor_name}`}
+                  >
+                    <CheckCircle2 className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Onayla</TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="min-h-[44px] min-w-[44px] p-2 text-red-600 hover:bg-red-50 hover:text-red-700"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleUpdateStatus(row.id, 'rejected');
+                    }}
+                    aria-label={`Reject donation from ${row.donor_name}`}
+                  >
+                    <XCircle className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Reddet</TooltipContent>
+              </Tooltip>
+            </>
+          )}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="min-h-[44px] min-w-[44px] p-2 text-red-600 hover:bg-red-50 hover:text-red-700"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDeleteDonation(row.id);
+            }}
+            aria-label="Sil"
+          >
+            {React.createElement(actionIcons.delete, { className: 'h-4 w-4' })}
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
 
   if (loading && donations.length === 0) {
     return <PageLoading />;
@@ -326,7 +536,7 @@ export function DonationsPage() {
                     d.donation_type,
                     d.payment_method,
                     d.status,
-                    new Date(d.created_at).toLocaleDateString('tr-TR'),
+                    formatDate(d.created_at),
                   ]);
 
                   const csv = [headers, ...csvData].map((row) => row.join(',')).join('\n');
@@ -651,7 +861,7 @@ export function DonationsPage() {
                   </div>
                   <p className="text-xs font-medium text-gray-600 sm:text-sm">Ortalama</p>
                 </div>
-                <CheckCircle className="h-8 w-8 text-emerald-500 opacity-80" />
+                <CheckCircle2 className="h-8 w-8 text-emerald-500 opacity-80" />
               </div>
             </CardContent>
           </Card>
@@ -726,217 +936,20 @@ export function DonationsPage() {
           </CardHeader>
 
           <CardContent className="p-0">
-            {/* Mobile Card View for small screens */}
-            <div className="block sm:hidden">
-              {donations.length > 0 ? (
-                <div className="space-y-3 p-4">
-                  {donations.map((donation) => (
-                    <Card
-                      key={donation.id}
-                      className="border border-gray-200 transition-shadow hover:shadow-md"
-                    >
-                      <CardContent className="p-4">
-                        <div className="mb-3 flex items-start justify-between">
-                          <div className="flex-1">
-                            <h3 className="font-medium text-gray-900">{donation.donor_name}</h3>
-                            <p className="text-sm text-gray-600">
-                              {donation.category ?? donation.donation_type}
-                            </p>
-                          </div>
-                          <div className="text-right">
-                            <div className="text-lg font-semibold text-green-600">
-                              ₺{donation.amount.toLocaleString()}
-                            </div>
-                            {getStatusBadge(donation.status)}
-                          </div>
-                        </div>
-
-                        <div className="flex items-center justify-between text-sm text-gray-500">
-                          <span>{donation.payment_method}</span>
-                          <span>{new Date(donation.created_at).toLocaleDateString('tr-TR')}</span>
-                        </div>
-
-                        <div className="mt-3 flex flex-wrap justify-end gap-2">
-                          {donation.status === 'pending' && (
-                            <>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="min-h-[44px] min-w-[44px] p-2 text-green-600 hover:bg-green-50 hover:text-green-700"
-                                onClick={() => handleUpdateStatus(donation.id, 'approved')}
-                                aria-label="Onayla"
-                              >
-                                <CheckCircle className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="min-h-[44px] min-w-[44px] p-2 text-red-600 hover:bg-red-50 hover:text-red-700"
-                                onClick={() => handleUpdateStatus(donation.id, 'rejected')}
-                                aria-label="Reddet"
-                              >
-                                <XCircle className="h-4 w-4" />
-                              </Button>
-                            </>
-                          )}
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="min-h-[44px] min-w-[44px] p-2 text-red-600 hover:bg-red-50 hover:text-red-700"
-                            onClick={() => handleDeleteDonation(donation.id)}
-                            aria-label="Sil"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              ) : (
-                <div className="p-6 text-center">
-                  <Plus className="mx-auto mb-4 h-12 w-12 text-gray-300" />
-                  <p className="mb-2 text-gray-600">Henüz bağış kaydı bulunmuyor</p>
-                  <p className="text-sm text-gray-400">
-                    Yeni bağış eklemek için &quot;Yeni Bağış&quot; butonunu kullanın
-                  </p>
-                </div>
-              )}
-            </div>
-
-            {/* Desktop Table View */}
-            <div className="hidden overflow-x-auto sm:block">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-gray-50/50">
-                    <TableHead className="min-w-[150px] p-3 sm:p-4">Bağışçı</TableHead>
-                    <TableHead className="min-w-[100px] p-3 sm:p-4">Miktar</TableHead>
-                    <TableHead className="min-w-[100px] p-3 sm:p-4">Tarih</TableHead>
-                    <TableHead className="min-w-[100px] p-3 sm:p-4">Durum</TableHead>
-                    <TableHead className="hidden min-w-[100px] p-3 sm:p-4 lg:table-cell">
-                      Yöntem
-                    </TableHead>
-                    <TableHead className="hidden min-w-[100px] p-3 sm:p-4 lg:table-cell">
-                      Tür
-                    </TableHead>
-                    <TableHead className="min-w-[120px] p-3 text-center sm:p-4">İşlemler</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {loading ? (
-                    Array.from({ length: 5 }).map((_, i) => (
-                      <TableRow key={i}>
-                        <TableCell className="p-3 sm:p-4">
-                          <Skeleton className="h-4 w-32" />
-                        </TableCell>
-                        <TableCell className="p-3 sm:p-4">
-                          <Skeleton className="h-4 w-20" />
-                        </TableCell>
-                        <TableCell className="p-3 sm:p-4">
-                          <Skeleton className="h-4 w-24" />
-                        </TableCell>
-                        <TableCell className="p-3 sm:p-4">
-                          <Skeleton className="h-6 w-20" />
-                        </TableCell>
-                        <TableCell className="hidden p-3 sm:p-4 lg:table-cell">
-                          <Skeleton className="h-4 w-24" />
-                        </TableCell>
-                        <TableCell className="hidden p-3 sm:p-4 lg:table-cell">
-                          <Skeleton className="h-4 w-16" />
-                        </TableCell>
-                        <TableCell className="p-3 sm:p-4">
-                          <div className="flex justify-center gap-2">
-                            <Skeleton className="h-8 w-8" />
-                            <Skeleton className="h-8 w-8" />
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  ) : donations.length > 0 ? (
-                    donations.map((donation) => (
-                      <TableRow key={donation.id} className="transition-colors hover:bg-gray-50/50">
-                        <TableCell className="p-3 font-medium sm:p-4">
-                          <div>
-                            <div className="font-medium">{donation.donor_name}</div>
-                            {donation.donor_email && (
-                              <div className="text-sm text-gray-500">{donation.donor_email}</div>
-                            )}
-                          </div>
-                        </TableCell>
-                        <TableCell className="p-3 font-semibold text-green-600 sm:p-4">
-                          ₺{donation.amount.toLocaleString()}
-                        </TableCell>
-                        <TableCell className="p-3 text-gray-500 sm:p-4">
-                          {new Date(donation.created_at).toLocaleDateString('tr-TR')}
-                        </TableCell>
-                        <TableCell className="p-3 sm:p-4">
-                          {getStatusBadge(donation.status)}
-                        </TableCell>
-                        <TableCell className="hidden p-3 text-gray-600 sm:p-4 lg:table-cell">
-                          {donation.payment_method}
-                        </TableCell>
-                        <TableCell className="hidden p-3 text-gray-600 sm:p-4 lg:table-cell">
-                          {donation.donation_type}
-                        </TableCell>
-                        <TableCell className="p-3 text-center sm:p-4">
-                          <div className="flex items-center justify-center gap-2">
-                            {donation.status === 'pending' && (
-                              <>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="h-8 w-8 p-0 text-green-600 hover:bg-green-50 hover:text-green-700"
-                                  onClick={() => handleUpdateStatus(donation.id, 'approved')}
-                                  aria-label="Onayla"
-                                >
-                                  <CheckCircle className="h-4 w-4" />
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="h-8 w-8 p-0 text-red-600 hover:bg-red-50 hover:text-red-700"
-                                  onClick={() => handleUpdateStatus(donation.id, 'rejected')}
-                                  aria-label="Reddet"
-                                >
-                                  <XCircle className="h-4 w-4" />
-                                </Button>
-                              </>
-                            )}
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 w-8 p-0 text-blue-600 hover:bg-blue-50 hover:text-blue-700"
-                              aria-label={`${donation.donor_name} bağışını görüntüle`}
-                            >
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 w-8 p-0 text-red-600 hover:bg-red-50 hover:text-red-700"
-                              onClick={() => handleDeleteDonation(donation.id)}
-                              aria-label="Sil"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={7} className="py-8 text-center text-gray-500">
-                        <Plus className="mx-auto mb-4 h-12 w-12 text-gray-300" />
-                        <p className="mb-2 text-gray-600">Henüz bağış kaydı bulunmuyor</p>
-                        <p className="text-sm text-gray-400">
-                          Yeni bağış eklemek için &quot;Yeni Bağış&quot; butonunu kullanın
-                        </p>
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </div>
+            {/* Responsive Table - Automatically switches between mobile cards and desktop table */}
+            <ResponsiveTable<Donation>
+              data={donations}
+              columns={donationColumns}
+              loading={loading}
+              mobileCardRenderer={renderDonationMobileCard}
+              stickyHeader={true}
+              emptyState={
+                <EmptyState
+                  title="Henüz bağış kaydı bulunmuyor"
+                  description='Yeni bağış eklemek için "Yeni Bağış" butonunu kullanın'
+                />
+              }
+            />
           </CardContent>
         </Card>
       </div>

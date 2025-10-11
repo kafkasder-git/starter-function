@@ -8,20 +8,22 @@ import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
 import { Progress } from "@/components/ui/progress"
+import { Heading } from "@/components/ui/heading"
+import { Text } from "@/components/ui/text"
 
 export function CardExamples() {
   return (
     <div className="container mx-auto p-6 space-y-8">
       <div className="text-center space-y-2">
-        <h1 className="text-3xl font-bold">Card Component Examples</h1>
-        <p className="text-muted-foreground">
+        <Heading level={1} size="3xl" weight="bold">Card Component Examples</Heading>
+        <Text color="muted">
           Various implementations of the shadcn/ui Card component
-        </p>
+        </Text>
       </div>
 
       {/* Basic Card */}
       <section className="space-y-4">
-        <h2 className="text-2xl font-semibold">Basic Card</h2>
+        <Heading level={2} size="2xl" weight="semibold">Basic Card</Heading>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           <Card>
             <CardHeader>
@@ -86,7 +88,7 @@ export function CardExamples() {
 
       {/* Profile Card */}
       <section className="space-y-4">
-        <h2 className="text-2xl font-semibold">Profile Card</h2>
+        <Heading level={2} size="2xl" weight="semibold">Profile Card</Heading>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           <Card>
             <CardHeader>
@@ -149,7 +151,7 @@ export function CardExamples() {
 
       {/* Stats Cards */}
       <section className="space-y-4">
-        <h2 className="text-2xl font-semibold">Statistics Cards</h2>
+        <Heading level={2} size="2xl" weight="semibold">Statistics Cards</Heading>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -207,7 +209,7 @@ export function CardExamples() {
 
       {/* Feature Cards */}
       <section className="space-y-4">
-        <h2 className="text-2xl font-semibold">Feature Cards</h2>
+        <Heading level={2} size="2xl" weight="semibold">Feature Cards</Heading>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           <Card className="border-2 border-dashed border-muted-foreground/25">
             <CardHeader>
@@ -301,7 +303,7 @@ export function CardExamples() {
 
       {/* Timeline Card */}
       <section className="space-y-4">
-        <h2 className="text-2xl font-semibold">Timeline Card</h2>
+        <Heading level={2} size="2xl" weight="semibold">Timeline Card</Heading>
         <Card>
           <CardHeader>
             <CardTitle>Project Timeline</CardTitle>

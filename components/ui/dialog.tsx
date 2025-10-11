@@ -1,6 +1,6 @@
 /**
  * @fileoverview dialog Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -12,6 +12,7 @@ import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { XIcon } from 'lucide-react';
 
 import { cn } from './utils';
+import { getTouchTargetClasses } from '@/lib/design-system/accessibility';
 
 const Dialog = DialogPrimitive.Root;
 
@@ -56,15 +57,19 @@ const DialogContent = React.forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       data-slot="dialog-content"
+      aria-modal="true"
       className={cn(
-        'bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-1rem)] sm:max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border border-border/20 p-4 sm:p-6 shadow-lg duration-200 sm:max-w-lg md:max-w-xl lg:max-w-2xl',
+        'bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-1rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border border-border/20 p-4 sm:p-6 shadow-lg duration-200 sm:max-w-lg md:max-w-xl lg:max-w-2xl',
         'max-h-[90vh] overflow-y-auto',
         className,
       )}
       {...props}
     >
       {children}
-      <DialogPrimitive.Close className="ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute top-3 right-3 sm:top-4 sm:right-4 rounded-sm opacity-70 transition-all duration-200 hover:opacity-100 hover:bg-secondary focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 min-h-[44px] min-w-[44px] flex items-center justify-center">
+      <DialogPrimitive.Close className={cn(
+        'ring-offset-background data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute top-3 right-3 sm:top-4 sm:right-4 rounded-sm opacity-70 transition-all duration-200 hover:opacity-100 hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*=\'size-\'])]:size-4 flex items-center justify-center',
+        getTouchTargetClasses()
+      )}>
         <XIcon />
         <span className="sr-only">Kapat</span>
       </DialogPrimitive.Close>

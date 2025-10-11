@@ -1,6 +1,6 @@
 /**
  * @fileoverview useDataExport Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -8,6 +8,7 @@
 import { useCallback, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { DATA_FORMATTERS, EXPORT_LIMITS, EXPORT_TEMPLATES, type ExportConfig, type ExportResult } from '../types/data';
+import { validateDateRange } from '../lib/utils/dateFormatter';
 
 // Specific types for different data structures
 interface MemberData {
@@ -53,7 +54,7 @@ interface UseDataExportProps {
 
 /**
  * useDataExport function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -186,7 +187,8 @@ export function useDataExport({ onProgress, onComplete, onError }: UseDataExport
     const filteredData = config.fields
       ? data.map((item) => {
           const filtered: ExportableData = {};
-          config.fields!.forEach((field) => {
+          const fields = config.fields || [];
+          fields.forEach((field) => {
             filtered[field] = getNestedValue(item, field);
           });
           return filtered;
@@ -235,8 +237,11 @@ export function useDataExport({ onProgress, onComplete, onError }: UseDataExport
       errors.push('En az bir alan seçilmelidir');
     }
 
-    if (config.dateRange && config.dateRange.start > config.dateRange.end) {
-      errors.push('Başlangıç tarihi bitiş tarihinden büyük olamaz');
+    if (config.dateRange) {
+      const validation = validateDateRange(config.dateRange.start, config.dateRange.end);
+      if (!validation.valid) {
+        errors.push(validation.error ?? 'Geçersiz tarih aralığı');
+      }
     }
 
     return errors;
@@ -273,13 +278,14 @@ export function useDataExport({ onProgress, onComplete, onError }: UseDataExport
         // Apply date range filter if specified
         let filteredData = data;
         if (config.dateRange) {
+          const { start, end } = config.dateRange;
           filteredData = data.filter((item) => {
             const dateValue =
               (item as Record<string, unknown>).date ||
               (item as Record<string, unknown>).createdAt ||
               (item as Record<string, unknown>).timestamp;
             const itemDate = new Date(dateValue as string | number | Date);
-            return itemDate >= config.dateRange!.start && itemDate <= config.dateRange!.end;
+            return itemDate >= start && itemDate <= end;
           });
         }
 

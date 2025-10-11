@@ -1,6 +1,6 @@
 /**
  * @fileoverview FormField Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -18,11 +18,12 @@ import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 import { Switch } from '../ui/switch';
 import { Button } from '../ui/button';
 import { cn } from '../ui/utils';
+import { helperTextVariants } from '../../lib/design-system/variants';
 import type { ValidationError, ValidationWarning } from '../../types/validation';
 
 /**
  * FormFieldProps Interface
- * 
+ *
  * @interface FormFieldProps
  */
 export interface FormFieldProps {
@@ -57,6 +58,8 @@ export interface FormFieldProps {
   inputClassName?: string;
   errorClassName?: string;
   description?: string;
+  helperText?: string;
+  helperTextVariant?: 'default' | 'error' | 'success' | 'warning';
   tooltip?: string;
   prefix?: ReactNode;
   suffix?: ReactNode;
@@ -103,6 +106,8 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
       inputClassName,
       errorClassName,
       description,
+      helperText,
+      helperTextVariant,
       prefix,
       suffix,
       errors = [],
@@ -128,13 +133,19 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
     const [isFocused, setIsFocused] = useState(false);
     const [asyncErrors, setAsyncErrors] = useState<ValidationError[]>([]);
     const [isAsyncValidating, setIsAsyncValidating] = useState(false);
-    
+
     // Debounce the value for async validation
     const debouncedValue = useDebounce(value, validationDelay);
 
     // Async validation effect
+    // Runs on non-empty values, or on empty values when required is true
     useEffect(() => {
-      if (!asyncValidator || !debouncedValue || disabled || readOnly) {
+      if (!asyncValidator || disabled || readOnly) {
+        return;
+      }
+
+      // Skip validation if value is empty and field is not required
+      if (!debouncedValue && !required) {
         return;
       }
 
@@ -148,14 +159,14 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
           onValidationComplete?.(validationErrors);
         } catch {
           // console.error('Async validation error:', error);
-          setAsyncErrors([{ 
-            field: name, 
+          setAsyncErrors([{
+            field: name,
             message: 'Validation failed. Please try again.',
             code: 'ASYNC_VALIDATION_ERROR',
             severity: 'error'
           }]);
-          onValidationComplete?.([{ 
-            field: name, 
+          onValidationComplete?.([{
+            field: name,
             message: 'Validation failed. Please try again.',
             code: 'ASYNC_VALIDATION_ERROR',
             severity: 'error'
@@ -166,7 +177,7 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
       };
 
       runAsyncValidation();
-    }, [debouncedValue, asyncValidator, name, disabled, readOnly, onValidationStart, onValidationComplete]);
+    }, [debouncedValue, asyncValidator, name, disabled, readOnly, required, onValidationStart, onValidationComplete]);
 
     // Clear async errors when value changes (before debounce)
     useEffect(() => {
@@ -200,15 +211,15 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
       if (!showValidationIcon) return null;
 
       if (isCurrentlyValidating) {
-        return <Loader2 className="w-4 h-4 text-blue-500 animate-spin" />;
+        return <Loader2 className="w-4 h-4 text-info-500 animate-spin" />;
       }
 
       if (hasError) {
-        return <AlertCircle className="w-4 h-4 text-red-500" />;
+        return <AlertCircle className="w-4 h-4 text-error-500" />;
       }
 
       if (isValid) {
-        return <CheckCircle className="w-4 h-4 text-green-500" />;
+        return <CheckCircle className="w-4 h-4 text-success-500" />;
       }
 
       return null;
@@ -231,9 +242,9 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
         onBlur: handleBlur,
         className: cn(
           'transition-all duration-200',
-          hasError && 'border-red-300 focus:border-red-400 focus:ring-red-200',
-          hasWarning && 'border-amber-300 focus:border-amber-400 focus:ring-amber-200',
-          isValid && 'border-green-300 focus:border-green-400 focus:ring-green-200',
+          hasError && 'border-error-300 focus:border-error-400 focus:ring-error-200',
+          hasWarning && 'border-warning-300 focus:border-warning-400 focus:ring-warning-200',
+          isValid && 'border-success-300 focus:border-success-400 focus:ring-success-200',
           disabled && 'opacity-50 cursor-not-allowed',
           inputClassName,
         ),
@@ -258,9 +269,9 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
               <SelectTrigger
                 className={cn(
                   'transition-all duration-200',
-                  hasError && 'border-red-300 focus:border-red-400 focus:ring-red-200',
-                  hasWarning && 'border-amber-300 focus:border-amber-400 focus:ring-amber-200',
-                  isValid && 'border-green-300 focus:border-green-400 focus:ring-green-200',
+                  hasError && 'border-error-300 focus:border-error-400 focus:ring-error-200',
+                  hasWarning && 'border-warning-300 focus:border-warning-400 focus:ring-warning-200',
+                  isValid && 'border-success-300 focus:border-success-400 focus:ring-success-200',
                   inputClassName,
                 )}
                 onFocus={handleFocus}
@@ -290,7 +301,7 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
                 onFocus={handleFocus}
                 onBlur={handleBlur}
                 className={cn(
-                  hasError && 'border-red-300 data-[state=checked]:bg-red-500',
+                  hasError && 'border-error-300 data-[state=checked]:bg-error-500',
                   inputClassName,
                 )}
               />
@@ -304,7 +315,7 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
                   )}
                 >
                   {label}
-                  {required && <span className="text-red-500 ml-1">*</span>}
+                  {required && <span className="text-error-500 ml-1">*</span>}
                 </Label>
               )}
             </div>
@@ -324,7 +335,7 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
                     value={option.value}
                     id={`${id}-${option.value}`}
                     disabled={option.disabled}
-                    className={cn(hasError && 'border-red-300 text-red-500', inputClassName)}
+                    className={cn(hasError && 'border-error-300 text-error-500', inputClassName)}
                   />
                   <Label
                     htmlFor={`${id}-${option.value}`}
@@ -360,7 +371,7 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
                   )}
                 >
                   {label}
-                  {required && <span className="text-red-500 ml-1">*</span>}
+                  {required && <span className="text-error-500 ml-1">*</span>}
                 </Label>
               )}
             </div>
@@ -395,7 +406,7 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
 
               {/* Prefix */}
               {prefix && (
-                <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-500">
+                <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-500">
                   {prefix}
                 </div>
               )}
@@ -414,14 +425,14 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
                     tabIndex={-1}
                   >
                     {showPassword ? (
-                      <EyeOff className="w-4 h-4 text-slate-500" />
+                      <EyeOff className="w-4 h-4 text-neutral-500" />
                     ) : (
-                      <Eye className="w-4 h-4 text-slate-500" />
+                      <Eye className="w-4 h-4 text-neutral-500" />
                     )}
                   </Button>
                 )}
 
-                {suffix && <div className="text-slate-500">{suffix}</div>}
+                {suffix && <div className="text-neutral-500">{suffix}</div>}
                 {renderValidationIcon()}
               </div>
             </div>
@@ -444,7 +455,7 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
 
               {/* Prefix */}
               {prefix && (
-                <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-500">
+                <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-500">
                   {prefix}
                 </div>
               )}
@@ -463,14 +474,14 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
                     tabIndex={-1}
                   >
                     {showPassword ? (
-                      <EyeOff className="w-4 h-4 text-slate-500" />
+                      <EyeOff className="w-4 h-4 text-neutral-500" />
                     ) : (
-                      <Eye className="w-4 h-4 text-slate-500" />
+                      <Eye className="w-4 h-4 text-neutral-500" />
                     )}
                   </Button>
                 )}
 
-                {suffix && <div className="text-slate-500">{suffix}</div>}
+                {suffix && <div className="text-neutral-500">{suffix}</div>}
                 {renderValidationIcon()}
               </div>
             </div>
@@ -479,14 +490,14 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
     };
 
     return (
-      <div className={cn('space-y-2', containerClassName)}>
+      <div className={cn('space-y-2', containerClassName)} data-field-name={name}>
         {/* Label */}
         {label && variant !== 'checkbox' && variant !== 'switch' && (
           <Label
             htmlFor={id}
             className={cn(
-              'text-sm font-medium text-slate-700 block',
-              required && "after:content-['*'] after:text-red-500 after:ml-1",
+              'text-sm font-medium text-neutral-700 block',
+              required && "after:content-['*'] after:text-error-500 after:ml-1",
               disabled && 'opacity-50',
               labelClassName,
             )}
@@ -510,18 +521,25 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
                 className={cn(
                   'absolute inset-0 rounded-md pointer-events-none',
                   hasError
-                    ? 'ring-2 ring-red-200'
+                    ? 'ring-2 ring-error-200'
                     : hasWarning
-                      ? 'ring-2 ring-amber-200'
-                      : 'ring-2 ring-blue-200',
+                      ? 'ring-2 ring-warning-200'
+                      : 'ring-2 ring-info-200',
                 )}
               />
             )}
           </AnimatePresence>
         </div>
 
+        {/* Helper Text */}
+        {helperText && (
+          <p className={helperTextVariants({ variant: helperTextVariant || (hasError ? 'error' : hasWarning ? 'warning' : 'default') })}>
+            {helperText}
+          </p>
+        )}
+
         {/* Description */}
-        {description && <p className="text-sm text-slate-600">{description}</p>}
+        {description && <p className="text-sm text-neutral-600">{description}</p>}
 
         {/* Validation Messages */}
         <AnimatePresence mode="wait">
@@ -538,7 +556,7 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
                 <div
                   key={index}
                   id={`${id}-error`}
-                  className="flex items-center gap-2 text-sm text-red-600"
+                  className="flex items-center gap-2 text-sm text-error-600"
                   role="alert"
                 >
                   <AlertCircle className="w-4 h-4 flex-shrink-0" />
@@ -558,7 +576,7 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
               className="space-y-1"
             >
               {warnings.map((warning, index) => (
-                <div key={index} className="flex items-center gap-2 text-sm text-amber-600">
+                <div key={index} className="flex items-center gap-2 text-sm text-warning-600">
                   <AlertCircle className="w-4 h-4 flex-shrink-0" />
                   <span>{warning.message}</span>
                 </div>

@@ -1,6 +1,6 @@
 /**
  * @fileoverview BeneficiaryDocuments Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -16,6 +16,7 @@ import {
   Trash2,
   Upload,
 } from 'lucide-react';
+import { formatDate } from '../../lib/utils/dateFormatter';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { Badge } from '../ui/badge';
@@ -51,7 +52,7 @@ interface BeneficiaryDocumentsProps {
 
 /**
  * BeneficiaryDocuments function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -286,7 +287,7 @@ export function BeneficiaryDocuments({
                           {file.size ? (file.size / 1024).toFixed(1) : '0'} KB
                         </Badge>
                         <span className="text-xs text-gray-500">
-                          {file.uploadDate ? new Date(file.uploadDate).toLocaleDateString('tr-TR') : 'N/A'}
+                          {file.uploadDate ? formatDate(file.uploadDate) : 'N/A'}
                         </span>
                       </div>
                     </div>
@@ -303,9 +304,9 @@ export function BeneficiaryDocuments({
                     >
                       <Eye className="w-4 h-4" />
                     </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={() => handleDeleteFile(file.id)}
                       className="hover:bg-red-50 text-red-600 hover:text-red-700 p-2 rounded-lg transition-all duration-200"
                       disabled={isUploading}
@@ -450,7 +451,7 @@ export function BeneficiaryDocuments({
                         <p className="text-sm font-medium">{file.name}</p>
                         <p className="text-xs text-gray-500">
                           {file.size ? (file.size / 1024).toFixed(1) : '0'} KB •{' '}
-                          {file.uploadDate ? new Date(file.uploadDate).toLocaleDateString('tr-TR') : 'N/A'}
+                          {file.uploadDate ? formatDate(file.uploadDate) : 'N/A'}
                         </p>
                       </div>
                     </div>
@@ -466,10 +467,10 @@ export function BeneficiaryDocuments({
                       >
                         <Eye className="w-4 h-4" />
                       </Button>
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        onClick={() => file.bucket && file.path && handleDownload(file.bucket, file.path)} 
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => file.bucket && file.path && handleDownload(file.bucket, file.path)}
                         disabled={isUploading || !file.bucket || !file.path}
                       >
                         <Download className="w-4 h-4" />
@@ -517,8 +518,8 @@ export function BeneficiaryDocuments({
                 <div className="text-center py-8">
                   <FileText className="w-16 h-16 mx-auto mb-4 text-gray-400" />
                   <p>Bu dosya türü önizlenemez</p>
-                  <Button 
-                    className="mt-2" 
+                  <Button
+                    className="mt-2"
                     onClick={() => previewFile.bucket && previewFile.path && handleDownload(previewFile.bucket, previewFile.path)}
                     disabled={!previewFile.bucket || !previewFile.path}
                   >

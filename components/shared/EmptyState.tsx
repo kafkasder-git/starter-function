@@ -1,14 +1,17 @@
 /**
  * @fileoverview EmptyState Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
 
 import type { ReactNode } from 'react';
-import { Search, Users, Heart, Package, FileX, Database, Inbox, Calendar } from 'lucide-react';
-import { Button } from './ui/button';
-import { Card, CardContent } from './ui/card';
+import { Search, Users, Heart, Package, FileX, Database, Inbox, Calendar, WifiOff, SearchX, AlertTriangle } from 'lucide-react';
+import { Button } from '../ui/button';
+import { Card, CardContent } from '../ui/card';
+import { Heading } from '../ui/heading';
+import { Text } from '../ui/text';
+import { motion } from 'motion/react';
 
 interface EmptyStateProps {
   icon?: ReactNode;
@@ -18,13 +21,14 @@ interface EmptyStateProps {
     label: string;
     onClick: () => void;
   };
-  variant?: 'default' | 'search' | 'error';
+  variant?: 'default' | 'search' | 'error' | 'offline' | 'no-results';
   className?: string;
+  animated?: boolean;
 }
 
 /**
  * EmptyState function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -35,51 +39,83 @@ export function EmptyState({
   action,
   variant = 'default',
   className = '',
+  animated = true,
 }: EmptyStateProps) {
   const getVariantStyles = () => {
     switch (variant) {
       case 'search':
         return {
-          background: 'bg-gradient-to-br from-blue-50 to-indigo-50',
-          iconBg: 'bg-gradient-to-br from-blue-500 to-indigo-600',
+          background: 'bg-gradient-to-br from-info-50 to-info-100',
+          iconBg: 'bg-gradient-to-br from-info-500 to-info-600',
           buttonBg:
-            'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700',
+            'bg-gradient-to-r from-info-600 to-info-700 hover:from-info-700 hover:to-info-800',
         };
       case 'error':
         return {
-          background: 'bg-gradient-to-br from-red-50 to-orange-50',
-          iconBg: 'bg-gradient-to-br from-red-500 to-orange-600',
+          background: 'bg-gradient-to-br from-error-50 to-error-100',
+          iconBg: 'bg-gradient-to-br from-error-500 to-error-600',
           buttonBg:
-            'bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700',
+            'bg-gradient-to-r from-error-600 to-error-700 hover:from-error-700 hover:to-error-800',
+        };
+      case 'offline':
+        return {
+          background: 'bg-gradient-to-br from-neutral-50 to-neutral-100',
+          iconBg: 'bg-gradient-to-br from-neutral-500 to-neutral-600',
+          buttonBg:
+            'bg-gradient-to-r from-neutral-600 to-neutral-700 hover:from-neutral-700 hover:to-neutral-800',
+        };
+      case 'no-results':
+        return {
+          background: 'bg-gradient-to-br from-warning-50 to-warning-100',
+          iconBg: 'bg-gradient-to-br from-warning-500 to-warning-600',
+          buttonBg:
+            'bg-gradient-to-r from-warning-600 to-warning-700 hover:from-warning-700 hover:to-warning-800',
         };
       case 'default':
       default:
         return {
-          background: 'bg-gradient-to-br from-slate-50 to-gray-50',
-          iconBg: 'bg-gradient-to-br from-slate-500 to-gray-600',
+          background: 'bg-gradient-to-br from-neutral-50 to-neutral-100',
+          iconBg: 'bg-gradient-to-br from-neutral-500 to-neutral-600',
           buttonBg:
-            'bg-gradient-to-r from-slate-600 to-gray-600 hover:from-slate-700 hover:to-gray-700',
+            'bg-gradient-to-r from-neutral-600 to-neutral-700 hover:from-neutral-700 hover:to-neutral-800',
         };
     }
   };
 
   const styles = getVariantStyles();
 
-  return (
-    <Card className={`border-0 shadow-lg ${styles.background} ${className}`}>
+  const getDefaultIcon = () => {
+    switch (variant) {
+      case 'offline':
+        return <WifiOff className="w-10 h-10" />;
+      case 'no-results':
+        return <SearchX className="w-10 h-10" />;
+      case 'error':
+        return <AlertTriangle className="w-10 h-10" />;
+      case 'search':
+        return <SearchX className="w-10 h-10" />;
+      case 'default':
+        return <FileX className="w-10 h-10" />;
+      default:
+        return <FileX className="w-10 h-10" />;
+    }
+  };
+
+  const content = (
+    <Card className={`border-0 shadow-lg ${styles.background} ${className}`} role="status" aria-live="polite">
       <CardContent className="p-12 text-center">
         <div className="flex flex-col items-center space-y-6">
           {/* Icon */}
           <div
             className={`w-20 h-20 ${styles.iconBg} rounded-2xl flex items-center justify-center shadow-lg`}
           >
-            <div className="text-white">{icon ?? <FileX className="w-10 h-10" />}</div>
+            <div className="text-white" aria-hidden="true">{icon ?? getDefaultIcon()}</div>
           </div>
 
           {/* Text Content */}
           <div className="space-y-3 max-w-md">
-            <h3 className="text-2xl font-semibold text-slate-800">{title}</h3>
-            <p className="text-slate-600 leading-relaxed">{description}</p>
+            <Heading level={2} size="2xl" weight="semibold" color="neutral">{title}</Heading>
+            <Text color="neutral" className="leading-relaxed">{description}</Text>
           </div>
 
           {/* Action Button */}
@@ -87,6 +123,7 @@ export function EmptyState({
             <Button
               onClick={action.onClick}
               className={`h-12 px-6 ${styles.buttonBg} rounded-xl shadow-lg transition-all duration-300 hover:scale-105`}
+              aria-label={action.label}
             >
               {action.label}
             </Button>
@@ -95,6 +132,20 @@ export function EmptyState({
       </CardContent>
     </Card>
   );
+
+  if (animated) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, ease: 'easeOut' }}
+      >
+        {content}
+      </motion.div>
+    );
+  }
+
+  return content;
 }
 
 // Predefined empty states for common scenarios
@@ -113,7 +164,46 @@ export const NoSearchResults = ({
       label: 'Aramayı Temizle',
       onClick: onClearSearch,
     }}
-    variant="search"
+    variant="no-results"
+  />
+);
+
+export const NoInternetConnection = ({ onRetry }: { onRetry?: () => void }) => (
+  <EmptyState
+    icon={<WifiOff className="w-10 h-10" />}
+    title="İnternet Bağlantısı Yok"
+    description="İnternet bağlantınızı kontrol edin ve tekrar deneyin."
+    action={onRetry ? {
+      label: 'Tekrar Dene',
+      onClick: onRetry,
+    } : undefined}
+    variant="offline"
+  />
+);
+
+export const NoResultsFound = ({ onClearFilters }: { onClearFilters?: () => void }) => (
+  <EmptyState
+    icon={<SearchX className="w-10 h-10" />}
+    title="Sonuç Bulunamadı"
+    description="Arama kriterlerinizi değiştirerek tekrar deneyin."
+    action={onClearFilters ? {
+      label: 'Filtreleri Temizle',
+      onClick: onClearFilters,
+    } : undefined}
+    variant="no-results"
+  />
+);
+
+export const ServerError = ({ onRetry }: { onRetry?: () => void }) => (
+  <EmptyState
+    icon={<AlertTriangle className="w-10 h-10" />}
+    title="Sunucu Hatası"
+    description="Bir şeyler yanlış gitti. Lütfen daha sonra tekrar deneyin."
+    action={onRetry ? {
+      label: 'Tekrar Dene',
+      onClick: onRetry,
+    } : undefined}
+    variant="error"
   />
 );
 

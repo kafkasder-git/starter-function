@@ -10,6 +10,7 @@ import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { NetworkManager } from '../lib/networkDiagnostics';
 import { logger } from '../lib/logging/logger';
+import { formatTime } from '../lib/utils/dateFormatter';
 
 interface NetworkErrorHandlerProps {
   error?: Error;
@@ -129,7 +130,7 @@ export function NetworkErrorHandler({
 
   const getSuggestedActions = () => {
     const actions = [];
-    
+
     if (!networkStatus.isOnline) {
       actions.push('İnternet bağlantınızı kontrol edin');
       actions.push('Wi-Fi veya mobil veri bağlantısını kontrol edin');
@@ -140,7 +141,7 @@ export function NetworkErrorHandler({
       actions.push('Sayfayı yenileyin (F5)');
       actions.push('Tarayıcı önbelleğini temizleyin');
     }
-    
+
     return actions;
   };
 
@@ -158,7 +159,7 @@ export function NetworkErrorHandler({
             {getErrorMessage()}
           </CardDescription>
         </CardHeader>
-        
+
         <CardContent className="space-y-4">
           {/* Network Status */}
           <div className="space-y-2">
@@ -175,7 +176,7 @@ export function NetworkErrorHandler({
               </span>
             </div>
             <div className="text-xs text-gray-500 text-center">
-              Son kontrol: {lastCheck.toLocaleTimeString('tr-TR')}
+              Son kontrol: {formatTime(lastCheck)}
             </div>
           </div>
 
@@ -194,7 +195,7 @@ export function NetworkErrorHandler({
 
           {/* Action Buttons */}
           <div className="flex flex-col space-y-2">
-            <Button 
+            <Button
               onClick={handleRetry}
               disabled={isRetrying}
               className="w-full"
@@ -211,9 +212,9 @@ export function NetworkErrorHandler({
                 </>
               )}
             </Button>
-            
-            <Button 
-              variant="outline" 
+
+            <Button
+              variant="outline"
               onClick={handleGoHome}
               className="w-full"
             >

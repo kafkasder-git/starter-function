@@ -1,41 +1,45 @@
 /**
  * @fileoverview Campaign Management Page - Create and manage fundraising campaigns
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
 
 import { useState, useCallback, useEffect } from 'react';
 import { Plus, TrendingUp, Calendar, Target, DollarSign, Users, Eye } from 'lucide-react';
+import { validateDateRange, formatDate } from '../../lib/utils/dateFormatter';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
-import { Badge } from '../ui/badge';
+import { StatusBadge } from '../ui/status-badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { Progress } from '../ui/progress';
 import { toast } from 'sonner';
 import { PageLayout } from '../layouts/PageLayout';
-import { campaignsService, type Campaign as ServiceCampaign, type CampaignStats } from '../../services/campaignsService';
+import { campaignsService } from '../../services/campaignsService';
+import type { Campaign, CampaignStats } from '../../types/campaign';
 import { useAuthStore } from '../../stores/authStore';
 import { logger } from '../../lib/logging/logger';
 import { LoadingSpinner } from '../shared/LoadingSpinner';
 
-// Use ServiceCampaign type from the service
-type Campaign = ServiceCampaign;
-
 /**
  * CampaignManagementPage Component
- * 
+ *
  * Manages fundraising campaigns with progress tracking and donor management.
  */
 export function CampaignManagementPage() {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState<CampaignStats | null>(null);
+  const [currentPage] = useState(1);
+  const [, setTotalCount] = useState(0);
   const pageSize = 10;
-  
+
+  // Form state for creating campaigns
+  const [isSaving, setIsSaving] = useState(false);
+
   interface NewCampaignForm {
     name: string;
     description: string;
@@ -111,15 +115,15 @@ export function CampaignManagementPage() {
     }
 
     // Date validation
-    
     const trimmedEndDate = newCampaign.endDate?.trim();
     if (trimmedEndDate) {
-      const startDateStr = newCampaign.startDate?.trim() || new Date().toISOString().split('T')[0];
+      const startDateStr = newCampaign.startDate?.trim() ?? new Date().toISOString().split('T')[0];
       const start = new Date(startDateStr);
       const end = new Date(trimmedEndDate);
-      
-      if (end <= start) {
-        toast.error('Bitiş tarihi başlangıç tarihinden sonra olmalıdır');
+
+      const validation = validateDateRange(start, end);
+      if (!validation.valid) {
+        toast.error(validation.error ?? 'Geçersiz tarih aralığı');
         return;
       }
     }
@@ -130,18 +134,24 @@ export function CampaignManagementPage() {
       return;
     }
 
-    setSaving(true);
+    setIsSaving(true);
     try {
-      const startDate = (newCampaign.startDate?.trim() || new Date().toISOString().split('T')[0]);
-      const endDate = newCampaign.endDate?.trim() ? newCampaign.endDate.trim() : null;
-      
+      const startDate = newCampaign.startDate?.trim() ?? new Date().toISOString().split('T')[0];
+      const endDate = newCampaign.endDate?.trim() ?? null;
+
       const result = await campaignsService.createCampaign({
         name: newCampaign.name,
         description: newCampaign.description || '',
         goal_amount: parseFloat(newCampaign.goalAmount),
+        current_amount: 0,
+        currency: 'TRY',
         start_date: startDate,
         end_date: endDate,
+        status: 'draft' as const,
         category: newCampaign.category || 'Genel',
+        image_url: null,
+        featured: false,
+        deleted_at: null,
         created_by: user.id
       });
 
@@ -168,19 +178,31 @@ export function CampaignManagementPage() {
       toast.error('Kampanya oluşturulurken beklenmeyen bir hata oluştu');
       logger.error('Campaign creation error:', error);
     } finally {
-      setSaving(false);
+      setIsSaving(false);
     }
   };
 
   const getStatusBadge = (status: Campaign['status']) => {
-    const statusConfig = {
-      active: { label: 'Aktif', className: 'bg-green-100 text-green-800' },
-      completed: { label: 'Tamamlandı', className: 'bg-blue-100 text-blue-800' },
-      draft: { label: 'Taslak', className: 'bg-gray-100 text-gray-800' },
-      paused: { label: 'Duraklatıldı', className: 'bg-yellow-100 text-yellow-800' },
+    const statusMap: Record<string, 'success' | 'error' | 'warning' | 'info' | 'pending'> = {
+      active: 'success',
+      completed: 'info',
+      draft: 'pending',
+      paused: 'warning',
+      cancelled: 'error',
     };
-    const config = statusConfig[status];
-    return <Badge className={config.className}>{config.label}</Badge>;
+
+    const statusLabels: Record<string, string> = {
+      active: 'Aktif',
+      completed: 'Tamamlandı',
+      draft: 'Taslak',
+      paused: 'Duraklatıldı',
+      cancelled: 'İptal Edildi',
+    };
+
+    const statusType = statusMap[status] || 'pending';
+    const statusLabel = statusLabels[status] || status;
+
+    return <StatusBadge status={statusType}>{statusLabel}</StatusBadge>;
   };
 
   const calculateProgress = (current: number, goal: number) => {
@@ -273,11 +295,18 @@ export function CampaignManagementPage() {
               </div>
             </div>
             <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => { setIsDialogOpen(false); }}>
+              <Button
+                variant="outline"
+                onClick={() => { setIsDialogOpen(false); }}
+                disabled={isSaving}
+              >
                 İptal
               </Button>
-              <Button onClick={handleCreateCampaign}>
-                Kampanya Oluştur
+              <Button
+                onClick={handleCreateCampaign}
+                disabled={isSaving}
+              >
+                {isSaving ? 'Oluşturuluyor...' : 'Kampanya Oluştur'}
               </Button>
             </div>
           </DialogContent>
@@ -392,7 +421,7 @@ export function CampaignManagementPage() {
                       <TableCell>
                         <div className="flex items-center gap-1 text-sm">
                           <Calendar className="w-4 h-4 text-gray-400" />
-                          {new Date(campaign.start_date).toLocaleDateString('tr-TR')}
+                          {formatDate(campaign.start_date)}
                         </div>
                       </TableCell>
                       <TableCell>{getStatusBadge(campaign.status)}</TableCell>

@@ -1,8 +1,30 @@
 /**
  * Animation System
- * 
+ *
  * Centralized animation configurations for consistent motion design.
  * Includes keyframes, transitions, and animation utilities.
+ *
+ * This file is the single source of truth for all animations in the application.
+ * Animations are automatically integrated into Tailwind via tailwindAnimationConfig.
+ *
+ * Key Animation Features:
+ * - Success checkmark animation for LoadingButton success states
+ * - Shake animation for LoadingButton error states
+ * - Scale-in animation for LoadingButton state transitions
+ * - All animations respect prefers-reduced-motion preference
+ *
+ * Usage in LoadingButton:
+ * - checkmark: Applied to success icon when state is 'success'
+ * - shake: Applied to button content when state is 'error'
+ * - scaleIn: Applied to button wrapper during success transition
+ *
+ * @example
+ * ```tsx
+ * // Tailwind class usage
+ * <div className="animate-checkmark">Success!</div>
+ * <div className="animate-shake">Error!</div>
+ * <div className="animate-scale-in">Appearing!</div>
+ * ```
  */
 
 // Animation Duration Constants
@@ -22,13 +44,13 @@ export const easingFunctions = {
   easeIn: 'cubic-bezier(0.4, 0, 1, 1)',
   easeOut: 'cubic-bezier(0, 0, 0.2, 1)',
   easeInOut: 'cubic-bezier(0.4, 0, 0.2, 1)',
-  
+
   // Custom easing curves
   bounce: 'cubic-bezier(0.68, -0.55, 0.265, 1.55)',
   smooth: 'cubic-bezier(0.4, 0, 0.2, 1)',
   snappy: 'cubic-bezier(0.4, 0, 0.6, 1)',
   elastic: 'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-  
+
   // Material Design easing
   standard: 'cubic-bezier(0.4, 0.0, 0.2, 1)',
   decelerate: 'cubic-bezier(0.0, 0.0, 0.2, 1)',
@@ -47,7 +69,7 @@ export const keyframes = {
     '0%': { opacity: '1' },
     '100%': { opacity: '0' },
   },
-  
+
   // Slide animations
   slideInFromTop: {
     '0%': { transform: 'translateY(-100%)', opacity: '0' },
@@ -81,7 +103,7 @@ export const keyframes = {
     '0%': { transform: 'translateX(0)', opacity: '1' },
     '100%': { transform: 'translateX(100%)', opacity: '0' },
   },
-  
+
   // Scale animations
   scaleIn: {
     '0%': { transform: 'scale(0.95)', opacity: '0' },
@@ -91,7 +113,7 @@ export const keyframes = {
     '0%': { transform: 'scale(1)', opacity: '1' },
     '100%': { transform: 'scale(0.95)', opacity: '0' },
   },
-  
+
   // Zoom animations
   zoomIn: {
     '0%': { transform: 'scale(0)', opacity: '0' },
@@ -101,7 +123,7 @@ export const keyframes = {
     '0%': { transform: 'scale(1)', opacity: '1' },
     '100%': { transform: 'scale(0)', opacity: '0' },
   },
-  
+
   // Bounce animations
   bounceIn: {
     '0%': { transform: 'scale(0.3)', opacity: '0' },
@@ -115,14 +137,14 @@ export const keyframes = {
     '50%': { transform: 'scale(1.02)' },
     '100%': { transform: 'scale(0)', opacity: '0' },
   },
-  
+
   // Shake animation for errors
   shake: {
     '0%, 100%': { transform: 'translateX(0)' },
     '10%, 30%, 50%, 70%, 90%': { transform: 'translateX(-4px)' },
     '20%, 40%, 60%, 80%': { transform: 'translateX(4px)' },
   },
-  
+
   // Pulse animations
   pulse: {
     '0%, 100%': { opacity: '1' },
@@ -132,25 +154,25 @@ export const keyframes = {
     '0%, 100%': { opacity: '1' },
     '50%': { opacity: '0.8' },
   },
-  
+
   // Spin animation
   spin: {
     '0%': { transform: 'rotate(0deg)' },
     '100%': { transform: 'rotate(360deg)' },
   },
-  
+
   // Shimmer effect for skeleton loaders
   shimmer: {
     '0%': { transform: 'translateX(-100%)' },
     '100%': { transform: 'translateX(100%)' },
   },
-  
+
   // Progress bar animation
   progress: {
     '0%': { transform: 'translateX(-100%)' },
     '100%': { transform: 'translateX(0%)' },
   },
-  
+
   // Accordion animations
   accordionDown: {
     '0%': { height: '0', opacity: '0' },
@@ -160,7 +182,7 @@ export const keyframes = {
     '0%': { height: 'var(--radix-accordion-content-height)', opacity: '1' },
     '100%': { height: '0', opacity: '0' },
   },
-  
+
   // Collapsible animations
   collapsibleDown: {
     '0%': { height: '0' },
@@ -170,7 +192,7 @@ export const keyframes = {
     '0%': { height: 'var(--radix-collapsible-content-height)' },
     '100%': { height: '0' },
   },
-  
+
   // Toast animations
   toastSlideInFromTop: {
     '0%': { transform: 'translateY(-100%)', opacity: '0' },
@@ -188,13 +210,13 @@ export const keyframes = {
     '0%': { transform: 'translateY(0)', opacity: '1' },
     '100%': { transform: 'translateY(100%)', opacity: '0' },
   },
-  
+
   // Success checkmark animation
   checkmark: {
     '0%': { strokeDashoffset: '16' },
     '100%': { strokeDashoffset: '0' },
   },
-  
+
   // Loading dots animation
   loadingDots: {
     '0%, 80%, 100%': { transform: 'scale(0)', opacity: '0.5' },
@@ -213,7 +235,7 @@ export const animations = {
   scaleIn: `scaleIn ${animationDuration.fast} ${easingFunctions.easeOut}`,
   zoomIn: `zoomIn ${animationDuration.normal} ${easingFunctions.bounce}`,
   bounceIn: `bounceIn ${animationDuration.slow} ${easingFunctions.easeOut}`,
-  
+
   // Exit animations
   fadeOut: `fadeOut ${animationDuration.fast} ${easingFunctions.easeIn}`,
   slideOutToTop: `slideOutToTop ${animationDuration.fast} ${easingFunctions.easeIn}`,
@@ -223,29 +245,29 @@ export const animations = {
   scaleOut: `scaleOut ${animationDuration.fast} ${easingFunctions.easeIn}`,
   zoomOut: `zoomOut ${animationDuration.fast} ${easingFunctions.easeIn}`,
   bounceOut: `bounceOut ${animationDuration.normal} ${easingFunctions.easeIn}`,
-  
+
   // Feedback animations
   shake: `shake ${animationDuration.slow} ${easingFunctions.easeInOut}`,
   pulse: `pulse ${animationDuration.slower} ${easingFunctions.easeInOut} infinite`,
   pulseSubtle: `pulseSubtle 2s ${easingFunctions.easeInOut} infinite`,
-  
+
   // Loading animations
   spin: `spin 1s ${easingFunctions.linear} infinite`,
   shimmer: `shimmer 2s ${easingFunctions.linear} infinite`,
   loadingDots: `loadingDots 1.4s ${easingFunctions.easeInOut} infinite`,
-  
+
   // Component-specific animations
   accordionDown: `accordionDown ${animationDuration.normal} ${easingFunctions.easeOut}`,
   accordionUp: `accordionUp ${animationDuration.normal} ${easingFunctions.easeOut}`,
   collapsibleDown: `collapsibleDown ${animationDuration.normal} ${easingFunctions.easeOut}`,
   collapsibleUp: `collapsibleUp ${animationDuration.normal} ${easingFunctions.easeOut}`,
-  
+
   // Toast animations
   toastSlideInFromTop: `toastSlideInFromTop ${animationDuration.normal} ${easingFunctions.easeOut}`,
   toastSlideInFromBottom: `toastSlideInFromBottom ${animationDuration.normal} ${easingFunctions.easeOut}`,
   toastSlideOutToTop: `toastSlideOutToTop ${animationDuration.fast} ${easingFunctions.easeIn}`,
   toastSlideOutToBottom: `toastSlideOutToBottom ${animationDuration.fast} ${easingFunctions.easeIn}`,
-  
+
   // Success animation
   checkmark: `checkmark ${animationDuration.slow} ${easingFunctions.easeOut}`,
 } as const;
@@ -258,11 +280,11 @@ export const transitions = {
   opacity: `opacity ${animationDuration.fast} ${easingFunctions.easeInOut}`,
   shadow: `box-shadow ${animationDuration.fast} ${easingFunctions.easeInOut}`,
   transform: `transform ${animationDuration.fast} ${easingFunctions.easeInOut}`,
-  
+
   // Hover transitions
   hover: `all ${animationDuration.fast} ${easingFunctions.easeOut}`,
   hoverSlow: `all ${animationDuration.normal} ${easingFunctions.easeOut}`,
-  
+
   // Focus transitions
   focus: `all ${animationDuration.fast} ${easingFunctions.easeOut}`,
 } as const;
@@ -278,7 +300,7 @@ export const animationUtils = {
       animation: none;
     }
   `,
-  
+
   // Animation delay utilities
   delay: {
     none: '0ms',
@@ -291,7 +313,7 @@ export const animationUtils = {
     700: '700ms',
     1000: '1000ms',
   },
-  
+
   // Animation fill modes
   fillMode: {
     none: 'none',
@@ -299,7 +321,7 @@ export const animationUtils = {
     backwards: 'backwards',
     both: 'both',
   },
-  
+
   // Animation iteration counts
   iterationCount: {
     1: '1',
@@ -307,7 +329,7 @@ export const animationUtils = {
     3: '3',
     infinite: 'infinite',
   },
-  
+
   // Animation play states
   playState: {
     running: 'running',
@@ -319,7 +341,7 @@ export const animationUtils = {
 export const staggerAnimations = {
   // Stagger delays for list items
   staggerDelay: (index: number, baseDelay: number = 50) => `${index * baseDelay}ms`,
-  
+
   // Stagger animation for multiple elements
   createStaggeredAnimation: (
     animation: string,
@@ -338,7 +360,7 @@ export const staggerAnimations = {
 export const performanceUtils = {
   // GPU acceleration
   gpuAcceleration: 'transform: translateZ(0)',
-  
+
   // Will-change optimization
   willChange: {
     auto: 'auto',
@@ -347,7 +369,7 @@ export const performanceUtils = {
     transform: 'transform',
     opacity: 'opacity',
   },
-  
+
   // Contain property for performance
   contain: {
     none: 'none',
@@ -373,7 +395,7 @@ export const tailwindAnimationConfig = {
     'scale-in': animations.scaleIn,
     'zoom-in': animations.zoomIn,
     'bounce-in': animations.bounceIn,
-    
+
     // Exit animations
     'fade-out': animations.fadeOut,
     'slide-out-to-top': animations.slideOutToTop,
@@ -383,29 +405,29 @@ export const tailwindAnimationConfig = {
     'scale-out': animations.scaleOut,
     'zoom-out': animations.zoomOut,
     'bounce-out': animations.bounceOut,
-    
+
     // Feedback animations
     'shake': animations.shake,
     'pulse': animations.pulse,
     'pulse-subtle': animations.pulseSubtle,
-    
+
     // Loading animations
     'spin': animations.spin,
     'shimmer': animations.shimmer,
     'loading-dots': animations.loadingDots,
-    
+
     // Component animations
     'accordion-down': animations.accordionDown,
     'accordion-up': animations.accordionUp,
     'collapsible-down': animations.collapsibleDown,
     'collapsible-up': animations.collapsibleUp,
-    
+
     // Toast animations
     'toast-slide-in-from-top': animations.toastSlideInFromTop,
     'toast-slide-in-from-bottom': animations.toastSlideInFromBottom,
     'toast-slide-out-to-top': animations.toastSlideOutToTop,
     'toast-slide-out-to-bottom': animations.toastSlideOutToBottom,
-    
+
     // Success animation
     'checkmark': animations.checkmark,
   },

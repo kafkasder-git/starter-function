@@ -1,6 +1,6 @@
 /**
  * @fileoverview calendar Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -10,6 +10,7 @@
 import * as React from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { DayPicker } from 'react-day-picker';
+import { tr } from 'date-fns/locale';
 
 import { cn } from './utils';
 import { buttonVariants } from './button';
@@ -23,6 +24,7 @@ function Calendar({
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
+      locale={props.locale ?? tr}
       className={cn('p-3', className)}
       classNames={{
         months: 'flex flex-col sm:flex-row gap-2',

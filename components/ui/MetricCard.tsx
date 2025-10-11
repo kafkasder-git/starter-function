@@ -1,6 +1,6 @@
 /**
  * @fileoverview MetricCard Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -9,6 +9,8 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { TrendingUp, TrendingDown, Activity } from 'lucide-react';
 import { Card, CardContent } from './card';
+import { Heading } from './heading';
+import { Text } from './text';
 
 interface MetricCardProps {
   title: string;
@@ -26,40 +28,40 @@ interface MetricCardProps {
 
 const colorClasses = {
   blue: {
-    bg: 'bg-blue-600',
-    light: 'bg-blue-50',
-    text: 'text-blue-700',
-    ring: 'ring-blue-500/20',
+    bg: 'bg-info-600',
+    light: 'bg-info-50',
+    text: 'text-info-700',
+    ring: 'ring-info-500/20',
   },
   green: {
-    bg: 'bg-emerald-600',
-    light: 'bg-emerald-50',
-    text: 'text-emerald-700',
-    ring: 'ring-emerald-500/20',
+    bg: 'bg-success-600',
+    light: 'bg-success-50',
+    text: 'text-success-700',
+    ring: 'ring-success-500/20',
   },
   purple: {
-    bg: 'bg-purple-600',
-    light: 'bg-purple-50',
-    text: 'text-purple-700',
-    ring: 'ring-purple-500/20',
+    bg: 'bg-primary-600',
+    light: 'bg-primary-50',
+    text: 'text-primary-700',
+    ring: 'ring-primary-500/20',
   },
   orange: {
-    bg: 'bg-orange-600',
-    light: 'bg-orange-50',
-    text: 'text-orange-700',
-    ring: 'ring-orange-500/20',
+    bg: 'bg-warning-600',
+    light: 'bg-warning-50',
+    text: 'text-warning-700',
+    ring: 'ring-warning-500/20',
   },
   red: {
-    bg: 'bg-red-600',
-    light: 'bg-red-50',
-    text: 'text-red-700',
-    ring: 'ring-red-500/20',
+    bg: 'bg-error-600',
+    light: 'bg-error-50',
+    text: 'text-error-700',
+    ring: 'ring-error-500/20',
   },
 };
 
 /**
  * MetricCard function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -100,16 +102,17 @@ export function MetricCard({
               {/* Header */}
               <div className="flex items-start justify-between">
                 <div className="space-y-1">
-                  <p className="text-sm font-medium text-gray-600 leading-tight">{title}</p>
+                  <Text variant="label" size="sm" color="neutral" className="leading-tight">{title}</Text>
                   <div className="flex items-baseline gap-2">
-                    <motion.span
-                      className="text-2xl font-bold text-gray-900"
+                    <motion.div
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.1 }}
                     >
-                      {value}
-                    </motion.span>
+                      <Heading as="span" level={3} size="2xl" weight="bold" className="tabular-nums">
+                        {value}
+                      </Heading>
+                    </motion.div>
                   </div>
                 </div>
 
@@ -133,8 +136,8 @@ export function MetricCard({
                   <div
                     className={`flex items-center gap-1 px-2 py-1 rounded-full ${
                       change.type === 'increase'
-                        ? 'bg-emerald-100 text-emerald-700'
-                        : 'bg-red-100 text-red-700'
+                        ? 'bg-success-100 text-success-700'
+                        : 'bg-error-100 text-error-700'
                     }`}
                   >
                     {change.type === 'increase' ? (
@@ -142,22 +145,22 @@ export function MetricCard({
                     ) : (
                       <TrendingDown className="w-3 h-3" />
                     )}
-                    <span className="text-xs font-semibold">{Math.abs(change.value)}%</span>
+                    <Text weight="semibold" size="xs">{Math.abs(change.value)}%</Text>
                   </div>
-                  <span className="text-xs text-gray-500">{change.period}</span>
+                  <Text size="xs" color="muted">{change.period}</Text>
                 </motion.div>
               )}
 
               {/* Activity Indicator */}
               <div className="flex items-center gap-2 pt-2 border-t border-gray-100">
                 <Activity className="w-3 h-3 text-gray-400" />
-                <span className="text-xs text-gray-500">
+                <Text size="xs" color="muted">
                   Güncellendi:{' '}
                   {new Date().toLocaleTimeString('tr-TR', {
                     hour: '2-digit',
                     minute: '2-digit',
                   })}
-                </span>
+                </Text>
               </div>
             </div>
           )}

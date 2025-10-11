@@ -42,7 +42,7 @@ export default {
             shadeAcc[shade] = `hsl(${value})`;
             return shadeAcc;
           }, {} as Record<string, string>);
-          
+
           // Add alpha variants for semantic colors
           if (['primary', 'success', 'error', 'warning', 'info'].includes(colorName)) {
             acc[colorName]['alpha-10'] = `hsl(${colorShades['500']} / 0.1)`;
@@ -51,10 +51,10 @@ export default {
             acc[colorName]['alpha-40'] = `hsl(${colorShades['500']} / 0.4)`;
             acc[colorName]['alpha-50'] = `hsl(${colorShades['500']} / 0.5)`;
           }
-          
+
           return acc;
         }, {} as Record<string, Record<string, string>>),
-        
+
         // Compatibility with existing shadcn/ui colors
         destructive: {
           DEFAULT: `hsl(${colorTokens.error[500]})`,
@@ -135,7 +135,7 @@ export default {
     // Design token CSS variables injection
     function({ addBase }: { addBase: any }) {
       const cssVariables: Record<string, Record<string, string>> = {};
-      
+
       // Generate CSS variables for colors
       Object.entries(colorTokens).forEach(([colorName, shades]) => {
         const colorShades = shades as Record<string, string>;
@@ -146,10 +146,10 @@ export default {
           cssVariables[':root'][`--${colorName}-${shade}`] = value;
         });
       });
-      
+
       addBase(cssVariables);
     },
-    
+
     // Typography utilities plugin
     function({ addUtilities }: { addUtilities: any }) {
       const newUtilities = {
@@ -173,7 +173,7 @@ export default {
             'word-break': 'break-word',
           },
         },
-        
+
         // Accessibility utilities
         '.sr-only': {
           position: 'absolute',
@@ -196,7 +196,7 @@ export default {
           clip: 'auto',
           whiteSpace: 'normal',
         },
-        
+
         // Focus utilities
         '.focus-ring': {
           '&:focus-visible': {
@@ -204,7 +204,40 @@ export default {
             outlineOffset: '2px',
           },
         },
-        
+        '.focus-ring-error': {
+          '&:focus-visible': {
+            outline: '2px solid hsl(var(--error-500))',
+            outlineOffset: '2px',
+          },
+        },
+        '.focus-ring-success': {
+          '&:focus-visible': {
+            outline: '2px solid hsl(var(--success-500))',
+            outlineOffset: '2px',
+          },
+        },
+        '.focus-ring-warning': {
+          '&:focus-visible': {
+            outline: '2px solid hsl(var(--warning-500))',
+            outlineOffset: '2px',
+          },
+        },
+        '.focus-ring-info': {
+          '&:focus-visible': {
+            outline: '2px solid hsl(var(--info-500))',
+            outlineOffset: '2px',
+          },
+        },
+
+        // High contrast mode support
+        '@media (prefers-contrast: high)': {
+          '.focus-ring, .focus-ring-error, .focus-ring-success, .focus-ring-warning, .focus-ring-info': {
+            '&:focus-visible': {
+              outline: '3px solid currentColor',
+            },
+          },
+        },
+
         // Touch target utilities
         '.touch-target': {
           minHeight: '44px',
@@ -214,7 +247,7 @@ export default {
           minHeight: '48px',
           minWidth: '48px',
         },
-        
+
         // Animation utilities with reduced motion support
         '.animate-with-motion-preference': {
           '@media (prefers-reduced-motion: reduce)': {

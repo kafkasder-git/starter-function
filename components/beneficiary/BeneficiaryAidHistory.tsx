@@ -1,6 +1,6 @@
 /**
  * @fileoverview BeneficiaryAidHistory Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -11,6 +11,7 @@ import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Input } from '../ui/input';
+import { formatDate } from '../../lib/utils/dateFormatter';
 
 interface AidRecord {
   id: string;
@@ -30,7 +31,7 @@ interface BeneficiaryAidHistoryProps {
 
 /**
  * BeneficiaryAidHistory function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -222,16 +223,16 @@ export function BeneficiaryAidHistory({
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
                         <h4 className="font-semibold text-gray-900 text-lg">{record.category}</h4>
-                        <Badge 
-                          variant="outline" 
+                        <Badge
+                          variant="outline"
                           className="text-xs font-medium px-2 py-1 bg-blue-50 text-blue-700 border-blue-200"
                         >
                           {record.type}
                         </Badge>
-                        <Badge 
-                          variant={getStatusColor(record.status) as any} 
+                        <Badge
+                          variant={getStatusColor(record.status) as any}
                           className={`text-xs font-medium px-2 py-1 ${
-                            record.status === 'Tamamlandı' 
+                            record.status === 'Tamamlandı'
                               ? 'bg-green-100 text-green-700 border-green-200'
                               : record.status === 'Beklemede'
                                 ? 'bg-yellow-100 text-yellow-700 border-yellow-200'
@@ -245,7 +246,7 @@ export function BeneficiaryAidHistory({
                       <div className="flex items-center gap-4 text-xs text-gray-500">
                         <span className="flex items-center gap-1">
                           <Calendar className="w-3 h-3" />
-                          {new Date(record.date).toLocaleDateString('tr-TR')}
+                          {formatDate(record.date)}
                         </span>
                         <span>Onaylayan: {record.approvedBy}</span>
                       </div>
@@ -260,9 +261,9 @@ export function BeneficiaryAidHistory({
                         </p>
                       </div>
                     )}
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       className="hover:bg-blue-50 text-blue-600 hover:text-blue-700 p-2 rounded-lg transition-all duration-200"
                     >
                       <FileText className="w-4 h-4" />

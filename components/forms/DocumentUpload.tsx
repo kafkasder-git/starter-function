@@ -1,15 +1,18 @@
 /**
  * @fileoverview Document Upload Component - Secure file upload with validation
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
 
 import { useState, useRef } from 'react';
 import { Upload, X, FileText, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { formatTime } from '../../lib/utils/dateFormatter';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Progress } from '../ui/progress';
+import { Heading } from '../ui/heading';
+import { Text } from '../ui/text';
 import { toast } from 'sonner';
 import { useAuthStore } from '../../stores/authStore';
 import { fileStorageService, type FileUploadOptions } from '../../services/fileStorageService';
@@ -61,7 +64,7 @@ const MIME_TYPE_LABELS: Record<string, string> = {
 
 /**
  * DocumentUpload Component
- * 
+ *
  * Provides secure file upload functionality with:
  * - MIME type validation
  * - File size validation
@@ -288,17 +291,17 @@ export function DocumentUpload({
           onChange={(e) => handleFileSelect(e.target.files)}
           className="hidden"
         />
-        
+
         <Upload className="w-12 h-12 mx-auto text-gray-400 mb-4" />
-        
+
         <p className="text-gray-700 font-medium mb-2">
           Dosyaları buraya sürükleyin veya tıklayın
         </p>
-        
+
         <p className="text-sm text-gray-500 mb-4">
           Maksimum {maxFiles} dosya, dosya başına max {maxSizePerFile} MB
         </p>
-        
+
         <Button
           type="button"
           variant="outline"
@@ -306,7 +309,7 @@ export function DocumentUpload({
         >
           Dosya Seç
         </Button>
-        
+
         <p className="text-xs text-gray-400 mt-4">
           İzin verilen formatlar: {allowedTypes.map(t => MIME_TYPE_LABELS[t] || t).join(', ')}
         </p>
@@ -315,7 +318,7 @@ export function DocumentUpload({
       {/* File List */}
       {files.length > 0 && (
         <div className="space-y-2">
-          <h3 className="text-sm font-medium text-gray-700">Yüklenen Dosyalar ({files.length})</h3>
+          <Heading level={3} size="sm" weight="medium" color="neutral">Yüklenen Dosyalar ({files.length})</Heading>
           {files.map((file) => (
             <Card key={file.id} className="p-4">
               <div className="flex items-center gap-3">
@@ -331,13 +334,13 @@ export function DocumentUpload({
                   <div className="flex items-center justify-between mb-1">
                     <div className="flex items-center gap-2">
                       <FileText className="w-4 h-4 text-gray-400" />
-                      <span className="text-sm font-medium text-gray-900 truncate">
+                      <Text size="sm" weight="medium" className="truncate">
                         {file.name}
-                      </span>
+                      </Text>
                     </div>
-                    <span className="text-xs text-gray-500">
+                    <Text size="xs" color="muted">
                       {formatFileSize(file.size)}
-                    </span>
+                    </Text>
                   </div>
 
                   {/* Progress Bar */}
@@ -347,14 +350,14 @@ export function DocumentUpload({
 
                   {/* Error Message */}
                   {file.status === 'error' && (
-                    <p className="text-xs text-red-600 mt-1">{file.errorMessage}</p>
+                    <Text size="xs" className="text-red-600 mt-1">{file.errorMessage}</Text>
                   )}
 
                   {/* Success Info */}
                   {file.status === 'success' && (
-                    <p className="text-xs text-green-600 mt-1">
-                      Başarıyla yüklendi • {file.uploadedAt.toLocaleTimeString('tr-TR')}
-                    </p>
+                    <Text size="xs" className="text-green-600 mt-1">
+                      Başarıyla yüklendi • {formatTime(file.uploadedAt)}
+                    </Text>
                   )}
                 </div>
 

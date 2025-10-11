@@ -1,7 +1,18 @@
 /**
  * Design System Index
- * 
+ *
  * Central export point for all design system components and utilities.
+ *
+ * This module provides:
+ * - tokens: Color, spacing, typography, etc.
+ * - variants: Component variant definitions (CVA)
+ * - animations: Animation keyframes and configurations
+ * - accessibility: Accessibility utilities and helpers
+ * - icons: Centralized icon mapping guide
+ *
+ * @example
+ * import { actionIcons, statusIcons } from '@/lib/design-system';
+ * import { buttonVariants } from '@/lib/design-system';
  */
 
 // Export all tokens
@@ -12,6 +23,9 @@ export * from './variants.js';
 
 // Export all animations
 export * from './animations.js';
+
+// Export all icons
+export * from './icons.js';
 
 // Re-export commonly used utilities
 export {

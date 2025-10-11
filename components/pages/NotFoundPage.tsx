@@ -8,6 +8,8 @@ import { Home, Search, ArrowLeft } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '../ui/button';
 import { Card, CardContent } from '../ui/card';
+import { Heading } from '../ui/heading';
+import { Text } from '../ui/text';
 
 /**
  * NotFoundPage Component
@@ -31,13 +33,13 @@ export function NotFoundPage() {
           </div>
 
           {/* Error Message */}
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">
+          <Heading level={1} size="3xl" weight="bold" className="mb-4">
             Sayfa Bulunamadı
-          </h1>
-          <p className="text-gray-600 mb-8 max-w-md mx-auto">
-            Aradığınız sayfa mevcut değil, taşınmış veya silinmiş olabilir. 
+          </Heading>
+          <Text color="neutral" className="mb-8 max-w-md mx-auto">
+            Aradığınız sayfa mevcut değil, taşınmış veya silinmiş olabilir.
             Lütfen URL&apos;yi kontrol edin veya ana sayfaya dönün.
-          </p>
+          </Text>
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -49,7 +51,7 @@ export function NotFoundPage() {
               <ArrowLeft className="w-4 h-4" />
               Geri Dön
             </Button>
-            
+
             <Link to="/">
               <Button className="gap-2 w-full sm:w-auto">
                 <Home className="w-4 h-4" />
