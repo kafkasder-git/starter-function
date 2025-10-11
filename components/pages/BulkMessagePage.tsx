@@ -24,7 +24,6 @@ import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Textarea } from '../ui/textarea';
 import { Badge } from '../ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 
 interface MessageTemplate {
   id: string;
@@ -69,18 +68,18 @@ export function BulkMessagePage() {
     }
 
     setIsSending(true);
-    
+
     try {
       // Simüle edilmiş gönderme işlemi
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
       toast.success(`${recipientGroup} grubuna ${messageType} mesajı başarıyla gönderildi`);
-      
+
       // Formu temizle
       setSubject('');
       setMessage('');
       setSelectedTemplate('');
-    } catch (_error) {
+    } catch {
       toast.error('Mesaj gönderilirken hata oluştu');
     } finally {
       setIsSending(false);
@@ -88,7 +87,7 @@ export function BulkMessagePage() {
   };
 
   const handleTemplateSelect = (templateId: string) => {
-    const template = messageTemplates.find(t => t.id === templateId);
+    const template = messageTemplates.find((t) => t.id === templateId);
     if (template) {
       setMessage(template.content);
       setMessageType(template.type);
@@ -138,11 +137,11 @@ export function BulkMessagePage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-100 rounded-lg">
+              <div className="rounded-lg bg-blue-100 p-2">
                 <Mail className="h-5 w-5 text-blue-600" />
               </div>
               <div>
@@ -155,7 +154,7 @@ export function BulkMessagePage() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-green-100 rounded-lg">
+              <div className="rounded-lg bg-green-100 p-2">
                 <Phone className="h-5 w-5 text-green-600" />
               </div>
               <div>
@@ -168,7 +167,7 @@ export function BulkMessagePage() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-purple-100 rounded-lg">
+              <div className="rounded-lg bg-purple-100 p-2">
                 <MessageSquare className="h-5 w-5 text-purple-600" />
               </div>
               <div>
@@ -181,7 +180,7 @@ export function BulkMessagePage() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-orange-100 rounded-lg">
+              <div className="rounded-lg bg-orange-100 p-2">
                 <Send className="h-5 w-5 text-orange-600" />
               </div>
               <div>
@@ -193,7 +192,7 @@ export function BulkMessagePage() {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Message Form */}
         <div className="lg:col-span-2">
           <Card>
@@ -204,7 +203,12 @@ export function BulkMessagePage() {
               {/* Message Type */}
               <div className="space-y-2">
                 <Label>Mesaj Türü</Label>
-                <Select value={messageType} onValueChange={(value: any) => setMessageType(value)}>
+                <Select
+                  value={messageType}
+                  onValueChange={(value: any) => {
+                    setMessageType(value);
+                  }}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Mesaj türü seçin" />
                   </SelectTrigger>
@@ -255,7 +259,9 @@ export function BulkMessagePage() {
                   <Input
                     placeholder="Email konusu"
                     value={subject}
-                    onChange={(e) => setSubject(e.target.value)}
+                    onChange={(e) => {
+                      setSubject(e.target.value);
+                    }}
                   />
                 </div>
               )}
@@ -266,12 +272,12 @@ export function BulkMessagePage() {
                 <Textarea
                   placeholder="Mesajınızı yazın..."
                   value={message}
-                  onChange={(e) => setMessage(e.target.value)}
+                  onChange={(e) => {
+                    setMessage(e.target.value);
+                  }}
                   rows={6}
                 />
-                <div className="text-sm text-gray-500">
-                  {message.length} karakter
-                </div>
+                <div className="text-sm text-gray-500">{message.length} karakter</div>
               </div>
 
               {/* Send Button */}
@@ -282,12 +288,12 @@ export function BulkMessagePage() {
               >
                 {isSending ? (
                   <>
-                    <Clock className="h-4 w-4 mr-2 animate-spin" />
+                    <Clock className="mr-2 h-4 w-4 animate-spin" />
                     Gönderiliyor...
                   </>
                 ) : (
                   <>
-                    <Send className="h-4 w-4 mr-2" />
+                    <Send className="mr-2 h-4 w-4" />
                     Mesaj Gönder
                   </>
                 )}
@@ -307,7 +313,7 @@ export function BulkMessagePage() {
               {messageTemplates.map((template) => (
                 <div
                   key={template.id}
-                  className={`p-3 border rounded-lg cursor-pointer transition-colors ${
+                  className={`cursor-pointer rounded-lg border p-3 transition-colors ${
                     selectedTemplate === template.id
                       ? 'border-blue-500 bg-blue-50'
                       : 'border-gray-200 hover:border-gray-300'
@@ -317,15 +323,13 @@ export function BulkMessagePage() {
                     handleTemplateSelect(template.id);
                   }}
                 >
-                  <div className="flex items-center justify-between mb-2">
+                  <div className="mb-2 flex items-center justify-between">
                     <h4 className="font-medium">{template.name}</h4>
                     <Badge className={getMessageTypeColor(template.type)}>
                       {getMessageTypeIcon(template.type)}
                     </Badge>
                   </div>
-                  <p className="text-sm text-gray-600 line-clamp-2">
-                    {template.content}
-                  </p>
+                  <p className="line-clamp-2 text-sm text-gray-600">{template.content}</p>
                 </div>
               ))}
             </CardContent>
@@ -349,7 +353,7 @@ export function BulkMessagePage() {
                 <CheckCircle className="h-4 w-4 text-green-600" />
                 <span>Bildirim: 1,250 alıcı</span>
               </div>
-              <div className="pt-2 border-t">
+              <div className="border-t pt-2">
                 <div className="flex items-center gap-2 text-sm text-gray-600">
                   <AlertCircle className="h-4 w-4" />
                   <span>Mesajlar anında gönderilir</span>

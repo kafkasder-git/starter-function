@@ -17,7 +17,7 @@ import {
   TrendingUp,
 } from 'lucide-react';
 import { motion } from 'motion/react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import { toast } from 'sonner';
 import { useIsMobile } from '../../hooks/useTouchDevice';
 import { MobileInfoCard, ResponsiveCardGrid, TouchActionCard } from '../shared/ResponsiveCard';
@@ -32,6 +32,22 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../ui/dialog';
 import { aidRequestsService } from '../../services/aidRequestsService';
 import { logger } from '../../lib/logging/logger';
+import type { AppwriteDocument } from '../../types/appwrite';
+
+// Type for the actual Appwrite document structure
+type AidRequestDocument = AppwriteDocument & {
+  applicant_name: string;
+  applicant_email?: string;
+  applicant_phone?: string;
+  applicant_address: string;
+  aid_type: string;
+  description: string;
+  requested_amount?: number;
+  status: string;
+  urgency: string;
+  reason: string;
+  created_at: string;
+};
 
 interface Student {
   id: string;
@@ -69,7 +85,6 @@ export function BursStudentsPage() {
   const [showApplicationDialog, setShowApplicationDialog] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [students, setStudents] = useState<Student[]>([]);
-  const [_loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     student_name: '',
     email: '',
@@ -82,52 +97,52 @@ export function BursStudentsPage() {
     notes: '',
   });
 
-  useEffect(() => {
-    loadStudents();
-  }, []);
-
-  const loadStudents = async () => {
+  const loadStudents = useCallback(async () => {
     try {
       const result = await aidRequestsService.getAidRequests(1, 1000, { aidType: 'education' });
-      if (result.data) {
-        const mappedStudents = result.data.data.map(mapAidRequestToStudent);
-        setStudents(mappedStudents);
-      }
+      const mappedStudents = (result.data as unknown as AidRequestDocument[]).map(
+        mapAidRequestToStudent,
+      );
+      setStudents(mappedStudents);
     } catch (error) {
       logger.error('Failed to load students', error);
       toast.error('Öğrenciler yüklenirken hata oluştu');
     } finally {
-      setLoading(false);
+      // Students loaded
     }
-  };
+  }, []);
 
-  const mapAidRequestToStudent = (req: any): Student => {
+  useEffect(() => {
+    loadStudents();
+  }, [loadStudents]);
+
+  const mapAidRequestToStudent = (req: AidRequestDocument): Student => {
     const descParts = req.description.split(' - ');
-    const school = descParts[0] || '';
-    const grade = descParts[1] || '';
-    const program = descParts[2] || '';
-    const gpaPart = descParts.find((p: string) => p.startsWith('GPA:')) || 'GPA: 0';
+    const school = descParts[0] ?? '';
+    const grade = descParts[1] ?? '';
+    const program = descParts[2] ?? '';
+    const gpaPart = descParts.find((p: string) => p.startsWith('GPA:')) ?? 'GPA: 0';
     const gpa = parseFloat(gpaPart.replace('GPA: ', '')) || 0;
 
     const statusMap: Record<string, Student['status']> = {
-      'approved': 'active',
-      'completed': 'graduated',
-      'rejected': 'dropped',
-      'pending': 'suspended',
-      'under_review': 'suspended',
+      approved: 'active',
+      completed: 'graduated',
+      rejected: 'dropped',
+      pending: 'suspended',
+      under_review: 'suspended',
     };
 
     return {
       id: req.$id,
       name: req.applicant_name,
-      email: req.applicant_email || '',
-      phone: req.applicant_phone,
+      email: req.applicant_email ?? '',
+      phone: req.applicant_phone ?? '',
       school,
       grade,
       program,
-      scholarshipAmount: req.requested_amount || 0,
-      status: statusMap[req.status] || 'active',
-      startDate: req.created_at,
+      scholarshipAmount: req.requested_amount ?? 0,
+      status: statusMap[req.status] ?? 'active',
+      startDate: req.$createdAt,
       gpa,
       avatar: undefined,
     };
@@ -168,7 +183,7 @@ export function BursStudentsPage() {
       suspended: { label: 'Askıda', variant: 'outline' as const, color: 'bg-yellow-500' },
     };
 
-    return statusConfig[status] ?? statusConfig.active;
+    return statusConfig[status];
   };
 
   const handleViewStudent = (studentId: string) => {
@@ -201,6 +216,9 @@ export function BursStudentsPage() {
         urgency: 'medium',
         description: `${formData.school} - ${formData.grade} - ${formData.program} - GPA: ${formData.gpa} - ${formData.notes}`,
         reason: 'Scholarship application',
+        status: 'pending',
+        follow_up_required: true,
+        created_by: 'system', // This should be replaced with actual user ID
       });
 
       if (result.error) {
