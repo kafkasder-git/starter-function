@@ -5,35 +5,6 @@ export default {
     './index.html',
     './**/*.{js,ts,jsx,tsx}',
   ],
-  // Performance optimizations
-  purge: {
-    enabled: process.env.NODE_ENV === 'production',
-    content: [
-      './index.html',
-      './**/*.{js,ts,jsx,tsx}',
-    ],
-    options: {
-      safelist: [
-        // Keep dynamic classes
-        /^animate-/,
-        /^transition-/,
-        /^duration-/,
-        /^ease-/,
-        // Keep data attributes
-        /^data-/,
-        // Keep focus states
-        /^focus-/,
-        /^hover-/,
-        /^active-/,
-        // Keep responsive prefixes
-        /^sm:/,
-        /^md:/,
-        /^lg:/,
-        /^xl:/,
-        /^2xl:/,
-      ],
-    },
-  },
   theme: {
     extend: {
       // Design Tokens - Spacing Scale
@@ -42,7 +13,7 @@ export default {
         '88': '22rem',
         '128': '32rem',
       },
-      
+
       // Typography Scale
       fontSize: {
         'xs': ['0.75rem', { lineHeight: '1rem' }],
@@ -56,7 +27,7 @@ export default {
         '5xl': ['3rem', { lineHeight: '1' }],
         '6xl': ['3.75rem', { lineHeight: '1' }],
       },
-      
+
       // Animation Presets
       animation: {
         'fade-in': 'fadeIn 0.2s ease-in-out',
@@ -69,7 +40,7 @@ export default {
         'pulse-subtle': 'pulseSubtle 2s ease-in-out infinite',
         'shimmer': 'shimmer 2s linear infinite',
       },
-      
+
       // Keyframes for animations
       keyframes: {
         fadeIn: {
@@ -109,9 +80,23 @@ export default {
           '100%': { transform: 'translateX(100%)' },
         },
       },
-      
+
       // Enhanced Color Palette
       colors: {
+        // Comprehensive neutral color scale
+        neutral: {
+          50: 'hsl(var(--neutral-50))',
+          100: 'hsl(var(--neutral-100))',
+          200: 'hsl(var(--neutral-200))',
+          300: 'hsl(var(--neutral-300))',
+          400: 'hsl(var(--neutral-400))',
+          500: 'hsl(var(--neutral-500))',
+          600: 'hsl(var(--neutral-600))',
+          700: 'hsl(var(--neutral-700))',
+          800: 'hsl(var(--neutral-800))',
+          900: 'hsl(var(--neutral-900))',
+          950: 'hsl(var(--neutral-950))',
+        },
         // Semantic color scales
         primary: {
           DEFAULT: 'hsl(var(--primary))',
@@ -127,6 +112,12 @@ export default {
           800: 'hsl(var(--primary-800))',
           900: 'hsl(var(--primary-900))',
           950: 'hsl(var(--primary-950))',
+          // Alpha variants for overlays and subtle backgrounds
+          'alpha-10': 'hsl(var(--primary-500) / 0.1)',
+          'alpha-20': 'hsl(var(--primary-500) / 0.2)',
+          'alpha-30': 'hsl(var(--primary-500) / 0.3)',
+          'alpha-40': 'hsl(var(--primary-500) / 0.4)',
+          'alpha-50': 'hsl(var(--primary-500) / 0.5)',
         },
         success: {
           50: 'hsl(var(--success-50))',
@@ -140,6 +131,10 @@ export default {
           800: 'hsl(var(--success-800))',
           900: 'hsl(var(--success-900))',
           950: 'hsl(var(--success-950))',
+          // Alpha variants
+          'alpha-10': 'hsl(var(--success-500) / 0.1)',
+          'alpha-20': 'hsl(var(--success-500) / 0.2)',
+          'alpha-30': 'hsl(var(--success-500) / 0.3)',
         },
         warning: {
           50: 'hsl(var(--warning-50))',
@@ -153,6 +148,10 @@ export default {
           800: 'hsl(var(--warning-800))',
           900: 'hsl(var(--warning-900))',
           950: 'hsl(var(--warning-950))',
+          // Alpha variants
+          'alpha-10': 'hsl(var(--warning-500) / 0.1)',
+          'alpha-20': 'hsl(var(--warning-500) / 0.2)',
+          'alpha-30': 'hsl(var(--warning-500) / 0.3)',
         },
         error: {
           50: 'hsl(var(--error-50))',
@@ -166,6 +165,10 @@ export default {
           800: 'hsl(var(--error-800))',
           900: 'hsl(var(--error-900))',
           950: 'hsl(var(--error-950))',
+          // Alpha variants
+          'alpha-10': 'hsl(var(--error-500) / 0.1)',
+          'alpha-20': 'hsl(var(--error-500) / 0.2)',
+          'alpha-30': 'hsl(var(--error-500) / 0.3)',
         },
         destructive: {
           DEFAULT: 'hsl(var(--error-500))',
@@ -197,7 +200,7 @@ export default {
           foreground: 'hsl(222.2 84% 4.9%)',
         },
       },
-      
+
       // Enhanced Shadows
       boxShadow: {
         'xs': '0 1px 2px 0 rgb(0 0 0 / 0.05)',
@@ -213,7 +216,7 @@ export default {
         'elevation-4': '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
         'elevation-5': '0 25px 50px -12px rgb(0 0 0 / 0.25)',
       },
-      
+
       // Container Queries Support
       container: {
         center: true,
@@ -226,12 +229,12 @@ export default {
           '2xl': '1400px',
         },
       },
-      
+
       // Custom Utilities
       backdropBlur: {
         xs: '2px',
       },
-      
+
       // Transition Timing Functions
       transitionTimingFunction: {
         'bounce-in': 'cubic-bezier(0.68, -0.55, 0.265, 1.55)',

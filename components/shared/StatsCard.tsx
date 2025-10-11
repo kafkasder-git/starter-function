@@ -43,9 +43,9 @@ export function StatsCard({
 }: StatsCardProps) {
   const handleClick = () => {
     if (onClick && !loading) {
-      onClick()
+      onClick();
     }
-  }
+  };
 
   return (
     <Card 

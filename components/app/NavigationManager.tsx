@@ -120,7 +120,7 @@ export function NavigationProvider({
       monitoringService.trackFeatureUsage('navigation', 'module_change', { moduleId });
       updatePreference('lastModule', moduleId);
     },
-    [navigationState.activeModule, updatePreference],
+    [updatePreference],
   );
 
   const setCurrentPage = useCallback(

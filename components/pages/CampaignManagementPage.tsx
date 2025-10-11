@@ -33,9 +33,6 @@ type Campaign = ServiceCampaign;
 export function CampaignManagementPage() {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [totalCount, setTotalCount] = useState(0);
-  const [currentPage, setCurrentPage] = useState(1);
   const [stats, setStats] = useState<CampaignStats | null>(null);
   const pageSize = 10;
   

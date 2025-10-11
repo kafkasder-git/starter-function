@@ -8,9 +8,9 @@
 import { useState, useRef, type KeyboardEvent } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Search, X, Filter, Clock, TrendingUp, Loader2, Command, History } from 'lucide-react';
-import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
+import { Input } from '../ui/input';
 
 
 import { useSearchContext } from './SearchProvider';
@@ -40,7 +40,6 @@ export function EnhancedSearchInput({
   placeholder = 'Arama yapın...',
   className,
   module = 'member',
-  showFilters = true,
   showShortcuts = true,
   autoFocus = false,
   size = 'md',
@@ -62,7 +61,7 @@ export function EnhancedSearchInput({
 
   // Recent searches from localStorage
   const addToHistory = (query: string) => {
-    if (!query.trim() ?? searchHistory.includes(query)) return;
+    if (!query.trim() || searchHistory.includes(query)) return;
 
     const newHistory = [query, ...searchHistory.slice(0, 9)]; // Keep last 10
     setSearchHistory(newHistory);
@@ -82,7 +81,7 @@ export function EnhancedSearchInput({
   // Handle input change
   const handleInputChange = (value: string) => {
     setQuery(value);
-    setShowSuggestions(value.length > 0 ?? searchHistory.length > 0);
+    setShowSuggestions(value.length > 0 || searchHistory.length > 0);
   };
 
   // Handle suggestion click

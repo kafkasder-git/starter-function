@@ -12,8 +12,7 @@ import { Card } from '../ui/card';
 import { Progress } from '../ui/progress';
 import { toast } from 'sonner';
 import { useAuthStore } from '../../stores/authStore';
-import type { FileUploadOptions } from '../../services/fileStorageService';
-import { fileStorageService } from '../../services/fileStorageService';
+import { fileStorageService, type FileUploadOptions } from '../../services/fileStorageService';
 
 interface UploadedFile {
   id: string;
@@ -174,17 +173,17 @@ export function DocumentUpload({
 
       // Create final file from result metadata
       const finalFile: UploadedFile = {
-        id: result.file!.id,
-        name: result.file!.name,
-        size: result.file!.size,
-        type: result.file!.type,
+        id: result.file?.id ?? '',
+        name: result.file?.name ?? '',
+        size: result.file?.size ?? 0,
+        type: result.file?.type ?? '',
         uploadedAt: new Date(),
         status: 'success',
         progress: 100,
-        url: result.file!.url,
-        bucket: result.file!.bucket,
-        path: result.file!.path,
-        metadata: result.file!.metadata,
+        url: result.file?.url ?? '',
+        bucket: result.file?.bucket ?? '',
+        path: result.file?.path ?? '',
+        metadata: result.file?.metadata ?? {},
       };
 
       setFiles((prev) =>

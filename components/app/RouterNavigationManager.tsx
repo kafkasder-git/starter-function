@@ -102,7 +102,7 @@ export function RouterNavigationProvider({ children }: RouterNavigationProviderP
       loading: false,
       selectedBeneficiaryId,
     };
-  }, [location.pathname, params.id]);
+  }, [params.id, location]);
 
   // Sync with preferences
   useEffect(() => {

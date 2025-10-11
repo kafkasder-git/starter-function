@@ -9,11 +9,11 @@ import React from 'react';
 
 // Lazy loaded page components with better organization
 export const createLazyComponent = (
-  importFn: () => Promise<{ default: any }>,
+  importFn: () => Promise<{ default: React.ComponentType<Record<string, unknown>> }>,
   displayName: string,
 ) => {
   const Component = React.lazy(importFn);
-  (Component as any).displayName = displayName;
+  (Component as React.ComponentType<Record<string, unknown>> & { displayName: string }).displayName = displayName;
   return Component;
 };
 
@@ -172,7 +172,7 @@ export const EventsPage = createLazyComponent(
 export const LegalConsultationPage = createLazyComponent(
   () =>
     import('../pages/LegalConsultationPage').then((m) => ({
-      default: m.LegalConsultationPage ?? m.default,
+      default: m.LegalConsultationPage,
     })),
   'LegalConsultationPage',
 );
@@ -180,7 +180,7 @@ export const LegalConsultationPage = createLazyComponent(
 export const LawyerAssignmentsPage = createLazyComponent(
   () =>
     import('../pages/LawyerAssignmentsPage').then((m) => ({
-      default: m.LawyerAssignmentsPage ?? m.default,
+      default: m.LawyerAssignmentsPage,
     })),
   'LawyerAssignmentsPage',
 );
@@ -188,7 +188,7 @@ export const LawyerAssignmentsPage = createLazyComponent(
 export const LawsuitTrackingPage = createLazyComponent(
   () =>
     import('../pages/LawsuitTrackingPage').then((m) => ({
-      default: m.LawsuitTrackingPage ?? m.default,
+      default: m.LawsuitTrackingPage,
     })),
   'LawsuitTrackingPage',
 );
@@ -196,7 +196,7 @@ export const LawsuitTrackingPage = createLazyComponent(
 export const LegalDocumentsPage = createLazyComponent(
   () =>
     import('../pages/LegalDocumentsPage').then((m) => ({
-      default: m.LegalDocumentsPage ?? m.default,
+      default: m.LegalDocumentsPage,
     })),
   'LegalDocumentsPage',
 );
@@ -242,8 +242,8 @@ export const EnhancedDashboard = createLazyComponent(
  * @interface RouteConfig
  */
 export interface RouteConfig {
-  component: React.LazyExoticComponent<any>;
-  props?: Record<string, any>;
+  component: React.LazyExoticComponent<React.ComponentType<Record<string, unknown>>>;
+  props?: Record<string, unknown>;
   skeletonVariant?: 'detail' | 'table' | 'form' | 'dashboard';
 }
 

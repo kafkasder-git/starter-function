@@ -83,8 +83,27 @@ export const MobileFormField = forwardRef<
           case 'search':
             mobileProps.inputMode = 'search';
             break;
+          case 'time':
+            mobileProps.inputMode = 'numeric';
+            break;
+          case 'text':
+            mobileProps.inputMode = 'text';
+            break;
+          case 'date':
+            mobileProps.inputMode = 'numeric';
+            break;
+          case 'password':
+            mobileProps.inputMode = 'text';
+            break;
+          case 'datetime-local':
+            mobileProps.inputMode = 'numeric';
+            break;
+          case undefined:
+            mobileProps.inputMode = 'text';
+            break;
           default:
             mobileProps.inputMode = 'text';
+            break;
         }
       }
 
@@ -98,6 +117,36 @@ export const MobileFormField = forwardRef<
             break;
           case 'number':
             mobileProps.pattern = '[0-9]*';
+            break;
+          case 'email':
+            mobileProps.pattern = '[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}';
+            break;
+          case 'url':
+            mobileProps.pattern = 'https?://.+';
+            break;
+          case 'search':
+            mobileProps.pattern = '.*';
+            break;
+          case 'time':
+            mobileProps.pattern = '[0-9]{2}:[0-9]{2}';
+            break;
+          case 'text':
+            mobileProps.pattern = '.*';
+            break;
+          case 'date':
+            mobileProps.pattern = '[0-9]{4}-[0-9]{2}-[0-9]{2}';
+            break;
+          case 'password':
+            mobileProps.pattern = '.*';
+            break;
+          case 'datetime-local':
+            mobileProps.pattern = '[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}';
+            break;
+          case undefined:
+            mobileProps.pattern = '.*';
+            break;
+          default:
+            mobileProps.pattern = '.*';
             break;
         }
       }

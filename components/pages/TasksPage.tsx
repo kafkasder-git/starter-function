@@ -10,9 +10,6 @@ import { useState } from 'react';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
-import { Input } from '../ui/input';
-import { Textarea } from '../ui/textarea';
-import { Label } from '../ui/label';
 
 interface Task {
   id: string;

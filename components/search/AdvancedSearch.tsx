@@ -251,7 +251,20 @@ export function AdvancedSearch({
           />
         );
 
-      default: // text
+      case 'text':
+        return (
+          <Input
+            type="text"
+            value={String(value ?? '')}
+            onChange={(e) => {
+              handleFilterChange(filter.key, e.target.value);
+            }}
+            placeholder={filter.placeholder || `${filter.label} girin`}
+            className="w-full"
+          />
+        );
+
+      default:
         return (
           <Input
             type="text"

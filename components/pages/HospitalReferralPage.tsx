@@ -72,7 +72,6 @@ interface HospitalReferral {
 export function HospitalReferralPage() {
   const { user } = useAuthStore();
   const [referrals, setReferrals] = useState<HospitalReferral[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [urgencyFilter, setUrgencyFilter] = useState<string>('all');

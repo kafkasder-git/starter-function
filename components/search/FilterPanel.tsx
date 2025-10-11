@@ -15,8 +15,6 @@ import {
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Switch } from '../ui/switch';
 import {
@@ -31,8 +29,9 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../ui/colla
 import { useSearchContext } from './SearchProvider';
 import { useIsMobile } from '../../hooks/useTouchDevice';
 import { cn } from '../ui/utils';
-import type { FilterConfig, FilterValue } from '../../types/search';
-import { DATE_RANGE_PRESETS } from '../../types/search';
+import { DATE_RANGE_PRESETS, type FilterConfig, type FilterValue } from '../../types/search';
+import { Label } from '../ui/label';
+import { Input } from '../ui/input';
 
 interface FilterPanelProps {
   filters: FilterConfig[];
@@ -59,7 +58,6 @@ export function FilterPanel({
 }: FilterPanelProps) {
   const isMobile = useIsMobile();
   const [isOpen, setIsOpen] = useState(!collapsible);
-  const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set());
 
   const { searchState, addFilter, removeFilter, clearFilters, hasActiveFilters } =
     useSearchContext();
@@ -78,25 +76,13 @@ export function FilterPanel({
     value: any,
     operator: FilterValue['operator'] = 'eq',
   ) => {
-    if (value === undefined ?? value === null ?? value === '') {
+    if (value === undefined || value === null || value === '') {
       removeFilter(field);
     } else {
       addFilter({ field, value, operator });
     }
   };
 
-  // Toggle section collapse
-  const toggleSection = (sectionId: string) => {
-    setCollapsedSections((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(sectionId)) {
-        newSet.delete(sectionId);
-      } else {
-        newSet.add(sectionId);
-      }
-      return newSet;
-    });
-  };
 
   // Render filter control based on type
   const renderFilterControl = (filter: FilterConfig) => {
@@ -284,6 +270,8 @@ export function FilterPanel({
           </div>
         );
 
+      case 'range':
+        return null;
       default:
         return null;
     }

@@ -84,7 +84,6 @@ const mapUrgencyForDisplay = (urgency: AidRequest['urgency']): string => {
  */
 export function AidApplicationsPage() {
   const [applications, setApplications] = useState<AidRequest[]>([]);
-  const [_loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [priorityFilter, setPriorityFilter] = useState<string>('all');

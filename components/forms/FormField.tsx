@@ -68,6 +68,7 @@ export interface FormFieldProps {
   validateOnBlur?: boolean;
   validateOnChange?: boolean;
   debounceMs?: number;
+  inputSize?: 'sm' | 'md' | 'lg';
   onChange?: (value: any) => void;
   onBlur?: () => void;
   onFocus?: () => void;
@@ -103,6 +104,7 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
       touched = false,
       isValidating = false,
       showValidationIcon = true,
+      inputSize = 'md',
       onChange,
       onBlur,
       onFocus,
@@ -307,6 +309,7 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
             <Input
               {...baseInputProps}
               type="file"
+              inputSize={inputSize}
               onChange={(e) => {
                 handleChange(e.target.files);
               }}
@@ -321,6 +324,7 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
                 {...baseInputProps}
                 type={type === 'password' && showPassword ? 'text' : type}
                 ref={ref as React.RefObject<HTMLInputElement>}
+                inputSize={inputSize}
                 className={cn(
                   ((prefix ?? suffix) || type === 'password' || showValidationIcon) && 'pr-10',
                   prefix && 'pl-10',
@@ -369,6 +373,7 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
                 {...baseInputProps}
                 type={type === 'password' && showPassword ? 'text' : type}
                 ref={ref as React.RefObject<HTMLInputElement>}
+                inputSize={inputSize}
                 className={cn(
                   ((prefix ?? suffix) || type === 'password' || showValidationIcon) && 'pr-10',
                   prefix && 'pl-10',

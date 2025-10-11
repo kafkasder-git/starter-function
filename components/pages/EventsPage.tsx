@@ -56,7 +56,6 @@ export function EventsPage() {
   });
 
   const [events, setEvents] = useState<Event[]>([]);
-  const [loading, setLoading] = useState(true);
 
   const loadEvents = async () => {
     setLoading(true);

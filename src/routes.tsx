@@ -16,6 +16,8 @@ import { FormExamplesPage } from '../components/pages/FormExamplesPage';
 import BursStudentsPage from '../components/pages/BursStudentsPage';
 import BursApplicationsPage from '../components/pages/BursApplicationsPage';
 import BulkMessagePage from '../components/pages/BulkMessagePage';
+import { FinanceIncomePage } from '../components/pages/FinanceIncomePage';
+import ApplicationWorkflowPage from '../components/pages/ApplicationWorkflowPage';
 import LegalDocumentsPage from '../components/pages/LegalDocumentsPage';
 import TasksPage from '../components/pages/TasksPage';
 import MeetingsPage from '../components/pages/MeetingsPage';
@@ -108,6 +110,15 @@ export const protectedRoutes: RouteObject[] = [
         path: 'burs/basvurular',
         element: <BursApplicationsPage />,
       },
+      // Finance module
+      {
+        path: 'fon',
+        element: <FinanceIncomePage />,
+      },
+      {
+        path: 'fon/raporlar',
+        element: <FinanceIncomePage />,
+      },
       // Message module
       {
         path: 'mesaj',
@@ -155,6 +166,10 @@ export const protectedRoutes: RouteObject[] = [
       {
         path: 'partner/liste',
         element: <PartnersPage />,
+      },
+      {
+        path: 'partner/bagiscilar',
+        element: <ApplicationWorkflowPage />,
       },
       // User management
       {

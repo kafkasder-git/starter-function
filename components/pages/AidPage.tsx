@@ -151,7 +151,6 @@ export function AidPage() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [priorityFilter, setPriorityFilter] = useState('all');
   const [aidRequests, setAidRequests] = useState<AidRequest[]>([]);
-  const [_showNewRequestDialog, setShowNewRequestDialog] = useState(false);
 
   // Load aid requests on mount
   useEffect(() => {

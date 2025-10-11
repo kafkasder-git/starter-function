@@ -66,7 +66,6 @@ export function BursApplicationsPage() {
   const [showApplicationDialog, setShowApplicationDialog] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [applications, setApplications] = useState<Application[]>([]);
-  const [_loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     applicantName: '',
     email: '',
@@ -94,7 +93,7 @@ export function BursApplicationsPage() {
       logger.error('Failed to load applications', error);
       toast.error('Başvurular yüklenirken hata oluştu');
     } finally {
-      setLoading(false);
+      // Applications loaded
     }
   };
 

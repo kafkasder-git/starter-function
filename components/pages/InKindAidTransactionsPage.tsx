@@ -223,7 +223,7 @@ export function InKindAidTransactionsPage() {
         updated_at: new Date().toISOString(),
       };
 
-      const { data, error } = await db.create(collections.FINANCE_TRANSACTIONS, transactionData);
+      const { error } = await db.create(collections.FINANCE_TRANSACTIONS, transactionData);
 
       if (error) {
         logger.error('Error creating in-kind transaction:', error);

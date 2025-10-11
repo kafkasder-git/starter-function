@@ -85,9 +85,9 @@ function CodeBlock({ children, title }: { children: string; title: string }) {
   const [copied, setCopied] = React.useState(false)
 
   const copyToClipboard = async () => {
-    await navigator.clipboard.writeText(children)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+    await navigator.clipboard.writeText(children);
+    setCopied(true);
+    setTimeout(() => { setCopied(false); }, 2000);
   }
 
   return (

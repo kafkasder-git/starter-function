@@ -3,7 +3,7 @@
  * @description Handles NetworkError cases with user-friendly messages and recovery options
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { AlertTriangle, WifiOff, RefreshCw, Home, Wifi } from 'lucide-react';
 import { Button } from './ui/button';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
@@ -42,7 +42,7 @@ export function NetworkErrorHandler({
 
   const networkManager = NetworkManager.getInstance();
 
-  const checkNetworkStatus = async () => {
+  const checkNetworkStatus = useCallback(async () => {
     try {
       const diagnostics = await networkManager.testConnectivity();
       setNetworkStatus(diagnostics);
@@ -50,7 +50,7 @@ export function NetworkErrorHandler({
     } catch (err) {
       logger.error('Network status check failed:', err);
     }
-  };
+  }, [networkManager]);
 
   useEffect(() => {
     checkNetworkStatus();

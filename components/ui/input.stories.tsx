@@ -1,5 +1,13 @@
+/**
+ * @fileoverview Input Component Stories
+ * 
+ * @author Dernek Yönetim Sistemi Team
+ * @version 1.0.0
+ */
+
 import type { Meta, StoryObj } from '@storybook/react';
-import { Input } from './input';
+import { Mail, Lock, Search, DollarSign, User } from 'lucide-react';
+import { Input, FloatingLabelInput, InputGroup, InputAddon } from './input';
 
 const meta = {
   title: 'UI/Input',
@@ -8,30 +16,37 @@ const meta = {
     layout: 'centered',
   },
   tags: ['autodocs'],
-  argTypes: {
-    type: {
-      control: 'select',
-      options: ['text', 'email', 'password', 'number', 'tel', 'url', 'search'],
-    },
-    disabled: {
-      control: 'boolean',
-    },
-  },
 } satisfies Meta<typeof Input>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+// Basic Input Stories
 export const Default: Story = {
   args: {
     placeholder: 'Enter text...',
   },
 };
 
-export const Email: Story = {
+export const WithPrefixIcon: Story = {
   args: {
-    type: 'email',
-    placeholder: 'email@example.com',
+    placeholder: 'Search...',
+    prefixIcon: <Search />,
+  },
+};
+
+export const WithSuffixIcon: Story = {
+  args: {
+    placeholder: 'Enter email',
+    suffixIcon: <Mail />,
+  },
+};
+
+export const Clearable: Story = {
+  args: {
+    placeholder: 'Type to see clear button',
+    clearable: true,
+    defaultValue: 'Clear me',
   },
 };
 
@@ -39,27 +54,194 @@ export const Password: Story = {
   args: {
     type: 'password',
     placeholder: 'Enter password',
+    prefixIcon: <Lock />,
   },
 };
 
-export const Number: Story = {
+export const Loading: Story = {
   args: {
-    type: 'number',
-    placeholder: '0',
+    placeholder: 'Loading...',
+    loading: true,
+    prefixIcon: <Search />,
   },
 };
 
-export const Phone: Story = {
+// Size Variants
+export const SmallSize: Story = {
   args: {
+    inputSize: 'sm',
+    placeholder: 'Small input',
+    prefixIcon: <Search />,
+  },
+};
+
+export const MediumSize: Story = {
+  args: {
+    inputSize: 'md',
+    placeholder: 'Medium input (default)',
+    prefixIcon: <Search />,
+  },
+};
+
+export const LargeSize: Story = {
+  args: {
+    inputSize: 'lg',
+    placeholder: 'Large input',
+    prefixIcon: <Search />,
+  },
+};
+
+// Validation States
+export const ErrorState: Story = {
+  args: {
+    placeholder: 'Enter email',
+    error: true,
+    errorText: 'This email is already taken',
+    prefixIcon: <Mail />,
+  },
+};
+
+export const WarningState: Story = {
+  args: {
+    placeholder: 'Enter password',
+    warning: true,
+    warningText: 'Password strength is weak',
+    prefixIcon: <Lock />,
+  },
+};
+
+export const SuccessState: Story = {
+  args: {
+    placeholder: 'Enter username',
+    success: true,
+    successText: 'Username is available',
+    prefixIcon: <User />,
+  },
+};
+
+export const WithHelperText: Story = {
+  args: {
+    placeholder: 'Enter email',
+    helperText: "We'll never share your email",
+    prefixIcon: <Mail />,
+  },
+};
+
+export const WithCharacterCount: Story = {
+  args: {
+    placeholder: 'Enter bio',
+    maxLength: 100,
+    showCharacterCount: true,
+    helperText: 'Tell us about yourself',
+  },
+};
+
+// Floating Label Stories
+export const FloatingLabelDefault: StoryObj<typeof FloatingLabelInput> = {
+  render: (args) => <FloatingLabelInput {...args} />,
+  args: {
+    label: 'Email Address',
+    type: 'email',
+  },
+};
+
+export const FloatingLabelRequired: StoryObj<typeof FloatingLabelInput> = {
+  render: (args) => <FloatingLabelInput {...args} />,
+  args: {
+    label: 'Email Address',
+    type: 'email',
+    required: true,
+  },
+};
+
+export const FloatingLabelWithError: StoryObj<typeof FloatingLabelInput> = {
+  render: (args) => <FloatingLabelInput {...args} />,
+  args: {
+    label: 'Email',
+    type: 'email',
+    error: true,
+    errorText: 'Invalid email format',
+  },
+};
+
+export const FloatingLabelWithWarning: StoryObj<typeof FloatingLabelInput> = {
+  render: (args) => <FloatingLabelInput {...args} />,
+  args: {
+    label: 'Username',
+    warning: true,
+    warningText: 'Username should be at least 6 characters',
+  },
+};
+
+export const FloatingLabelSmall: StoryObj<typeof FloatingLabelInput> = {
+  render: (args) => <FloatingLabelInput {...args} />,
+  args: {
+    label: 'Search',
+    inputSize: 'sm',
+  },
+};
+
+export const FloatingLabelLarge: StoryObj<typeof FloatingLabelInput> = {
+  render: (args) => <FloatingLabelInput {...args} />,
+  args: {
+    label: 'Phone Number',
     type: 'tel',
-    placeholder: '0555 123 45 67',
+    inputSize: 'lg',
   },
 };
 
-export const Search: Story = {
+// Input Group Stories
+export const InputGroupWebsite: StoryObj<typeof InputGroup> = {
+  render: () => (
+    <InputGroup>
+      <InputAddon>https://</InputAddon>
+      <Input placeholder="example.com" />
+      <InputAddon>.com</InputAddon>
+    </InputGroup>
+  ),
+};
+
+export const InputGroupPrice: StoryObj<typeof InputGroup> = {
+  render: () => (
+    <InputGroup>
+      <InputAddon>
+        <DollarSign className="h-4 w-4" />
+      </InputAddon>
+      <Input type="number" placeholder="0.00" />
+      <InputAddon>USD</InputAddon>
+    </InputGroup>
+  ),
+};
+
+export const InputGroupSmall: StoryObj<typeof InputGroup> = {
+  render: () => (
+    <InputGroup inputSize="sm">
+      <InputAddon>@</InputAddon>
+      <Input placeholder="username" />
+    </InputGroup>
+  ),
+};
+
+export const InputGroupLarge: StoryObj<typeof InputGroup> = {
+  render: () => (
+    <InputGroup inputSize="lg">
+      <Input type="number" placeholder="0.00" />
+      <InputAddon>₺</InputAddon>
+    </InputGroup>
+  ),
+};
+
+// Combined Features
+export const AllFeaturesCombined: Story = {
   args: {
-    type: 'search',
-    placeholder: 'Ara...',
+    type: 'email',
+    placeholder: 'Enter your email',
+    prefixIcon: <Mail />,
+    clearable: true,
+    maxLength: 50,
+    showCharacterCount: true,
+    helperText: "We'll never share your email",
+    inputSize: 'md',
   },
 };
 
@@ -67,69 +249,14 @@ export const Disabled: Story = {
   args: {
     placeholder: 'Disabled input',
     disabled: true,
+    prefixIcon: <User />,
   },
 };
 
-export const WithLabel: Story = {
-  render: () => (
-    <div className="w-[300px] space-y-2">
-      <label className="text-sm font-medium">Email Address</label>
-      <Input type="email" placeholder="email@example.com" />
-      <p className="text-sm text-muted-foreground">
-        We&apos;ll never share your email.
-      </p>
-    </div>
-  ),
-};
-
-export const WithError: Story = {
-  render: () => (
-    <div className="w-[300px] space-y-2">
-      <label className="text-sm font-medium">Email Address</label>
-      <Input
-        type="email"
-        placeholder="email@example.com"
-        className="border-red-500"
-      />
-      <p className="text-sm text-red-500">
-        Please enter a valid email address.
-      </p>
-    </div>
-  ),
-};
-
-export const FormExample: Story = {
-  render: () => (
-    <div className="w-[400px] space-y-4">
-      <div className="space-y-2">
-        <label className="text-sm font-medium">Ad Soyad</label>
-        <Input placeholder="Ahmet Yılmaz" />
-      </div>
-      
-      <div className="space-y-2">
-        <label className="text-sm font-medium">E-posta</label>
-        <Input type="email" placeholder="ahmet@example.com" />
-      </div>
-      
-      <div className="space-y-2">
-        <label className="text-sm font-medium">Telefon</label>
-        <Input type="tel" placeholder="0555 123 45 67" />
-      </div>
-      
-      <div className="space-y-2">
-        <label className="text-sm font-medium">TC Kimlik No</label>
-        <Input type="text" placeholder="12345678901" maxLength={11} />
-      </div>
-    </div>
-  ),
-};
-
-export const Sizes: Story = {
-  render: () => (
-    <div className="w-[400px] space-y-4">
-      <Input placeholder="Default size" />
-      <Input placeholder="Small size" className="h-8 text-sm" />
-      <Input placeholder="Large size" className="h-12 text-lg" />
-    </div>
-  ),
+export const ReadOnly: Story = {
+  args: {
+    value: 'Read-only value',
+    readOnly: true,
+    prefixIcon: <User />,
+  },
 };

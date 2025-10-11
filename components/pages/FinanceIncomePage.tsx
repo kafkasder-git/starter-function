@@ -67,7 +67,6 @@ function FinanceIncomePageContent() {
   const [showTransactionDialog, setShowTransactionDialog] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     type: 'income' as 'income' | 'expense',
     category: '',

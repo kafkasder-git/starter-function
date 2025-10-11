@@ -11,14 +11,12 @@ import { Checkbox } from "@/components/ui/checkbox"
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 
 const loginSchema = z.object({
@@ -39,8 +37,7 @@ export function LoginForm() {
     },
   })
 
-  const onSubmit = (data: LoginFormValues) => {
-    console.log("Login data:", data)
+  const onSubmit = () => {
     // Handle login logic here
   }
 

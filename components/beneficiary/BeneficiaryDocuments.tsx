@@ -23,8 +23,7 @@ import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '../ui/dialog';
 import { Input } from '../ui/input';
-import type { FileUploadResult } from '../../services/fileStorageService';
-import { fileStorageService } from '../../services/fileStorageService';
+import { fileStorageService, type FileUploadResult } from '../../services/fileStorageService';
 import { beneficiariesService } from '../../services/beneficiariesService';
 import { useAuthStore } from '../../stores/authStore';
 
@@ -56,12 +55,12 @@ export function BeneficiaryDocuments({
   onDocumentDelete,
 }: BeneficiaryDocumentsProps) {
   const [isDocumentModalOpen, setIsDocumentModalOpen] = useState(false);
-  const [uploadedFiles, setUploadedFiles] = useState<any[]>([]);
+  const [uploadedFiles, setUploadedFiles] = useState<FileUploadResult[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFileType, setSelectedFileType] = useState('all');
-  const [previewFile, setPreviewFile] = useState<any>(null);
+  const [previewFile, setPreviewFile] = useState<FileUploadResult | null>(null);
   const [isLoadingDocuments, setIsLoadingDocuments] = useState(false);
 
   useEffect(() => {
@@ -76,8 +75,8 @@ export function BeneficiaryDocuments({
             const urlParts = url.split('/');
             const bucket = urlParts[urlParts.length - 2];
             const path = urlParts.slice(-2).join('/');
-            const name = path.split('/').pop() || 'Unknown';
-            const type = name.split('.').pop() || 'application/octet-stream'; // Rough guess
+            const name = path.split('/').pop() ?? 'Unknown';
+            const type = name.split('.').pop() ?? 'application/octet-stream'; // Rough guess
             return {
               id: `${beneficiaryId}-${index}`,
               name,
@@ -104,7 +103,7 @@ export function BeneficiaryDocuments({
   }, [beneficiaryId]);
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files || []);
+    const files = Array.from(event.target.files ?? []);
     if (files.length === 0) return;
 
     setIsUploading(true);
@@ -133,17 +132,17 @@ export function BeneficiaryDocuments({
 
       // Process Results
       const successfulUploads = results.filter(result => result.success);
-      const newDocumentUrls = successfulUploads.map(result => result.url || '').filter(url => url);
+      const newDocumentUrls = successfulUploads.map(result => result.url ?? '').filter(url => url);
       const newFiles = successfulUploads.map((result, index) => ({
-        id: result.file?.id || `${Date.now()}-${index}`,
-        name: result.file?.name || files[index]?.name || 'unknown',
-        size: result.file?.size || files[index]?.size || 0,
-        type: result.file?.type || files[index]?.type || 'application/octet-stream',
-        url: result.file?.url || '',
+        id: result.file?.id ?? `${Date.now()}-${index}`,
+        name: result.file?.name ?? files[index]?.name ?? 'unknown',
+        size: result.file?.size ?? files[index]?.size ?? 0,
+        type: result.file?.type ?? files[index]?.type ?? 'application/octet-stream',
+        url: result.file?.url ?? '',
         uploadDate: new Date(),
-        bucket: result.file?.bucket || 'documents',
-        path: result.file?.path || '',
-        uploadedBy: user?.id || 'system',
+        bucket: result.file?.bucket ?? 'documents',
+        path: result.file?.path ?? '',
+        uploadedBy: user?.id ?? 'system',
       }));
 
       // Update Database

@@ -246,7 +246,7 @@ export function PartnersPage() {
               <Input
                 placeholder="Partner ara..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => { setSearchQuery(e.target.value); }}
                 className="pl-10"
               />
             </div>

@@ -36,7 +36,7 @@ export function NotFoundPage() {
           </h1>
           <p className="text-gray-600 mb-8 max-w-md mx-auto">
             Aradığınız sayfa mevcut değil, taşınmış veya silinmiş olabilir. 
-            Lütfen URL'yi kontrol edin veya ana sayfaya dönün.
+            Lütfen URL&apos;yi kontrol edin veya ana sayfaya dönün.
           </p>
 
           {/* Action Buttons */}

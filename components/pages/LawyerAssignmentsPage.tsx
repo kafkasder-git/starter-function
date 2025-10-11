@@ -40,8 +40,6 @@ const LAWYER_SEARCH_CONFIG: SearchConfig = {
 export function LawyerAssignmentsPage() {
   const [consultations, setConsultations] = useState<Consultation[]>([]);
   const [lawyers, setLawyers] = useState<Lawyer[]>([]);
-  const [loadingConsultations, setLoadingConsultations] = useState(true);
-  const [loadingLawyers, setLoadingLawyers] = useState(true);
   const [selectedLawyer, setSelectedLawyer] = useState<Lawyer | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<TabKey>('all');

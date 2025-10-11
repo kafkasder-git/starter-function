@@ -48,8 +48,8 @@ export function PageRenderer({ onQuickAction }: PageRendererProps) {
     );
 
     const renderPageWithTransition = (
-      PageComponent: React.ComponentType<any>,
-      props: any = {},
+      PageComponent: React.ComponentType<Record<string, unknown>>,
+      props: Record<string, unknown> = {},
       skeletonVariant: 'detail' | 'table' | 'form' | 'dashboard' = 'detail',
     ) => (
       <Suspense fallback={getSkeletonFallback(skeletonVariant)}>
@@ -69,7 +69,7 @@ export function PageRenderer({ onQuickAction }: PageRendererProps) {
     if (specialPages[currentPage as keyof typeof specialPages]) {
       const routeConfig = getRouteConfig(currentPage);
       const { variant } = specialPages[currentPage as keyof typeof specialPages];
-      return renderPageWithTransition(routeConfig.component, routeConfig.props || {}, variant);
+      return renderPageWithTransition(routeConfig.component, routeConfig.props ?? {}, variant);
     }
 
     // Aid management module with detail page handling

@@ -66,7 +66,6 @@ export function LegalConsultationPage() {
     setQuery,
     setFilters,
     clearFilters,
-    hasResults,
     isEmpty,
   } = useSearch<Consultation>({
     config: CONSULTATION_SEARCH_CONFIG,

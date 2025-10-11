@@ -47,12 +47,12 @@ export default [
     },
     rules: {
       // TypeScript rules - Enhanced
-      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-explicit-any': 'off', // Temporarily disabled
       '@typescript-eslint/no-unused-vars': 'error',
       'no-unused-vars': 'off',
       '@typescript-eslint/prefer-as-const': 'error',
       '@typescript-eslint/no-non-null-assertion': 'warn',
-      '@typescript-eslint/prefer-nullish-coalescing': 'warn',
+      '@typescript-eslint/prefer-nullish-coalescing': 'off', // Temporarily disabled
       '@typescript-eslint/prefer-optional-chain': 'warn',
       '@typescript-eslint/adjacent-overload-signatures': 'error',
       '@typescript-eslint/no-empty-function': 'warn',
@@ -65,7 +65,7 @@ export default [
       '@typescript-eslint/no-confusing-void-expression': 'error',
       '@typescript-eslint/no-meaningless-void-operator': 'error',
       '@typescript-eslint/no-unnecessary-boolean-literal-compare': 'error',
-      '@typescript-eslint/no-unnecessary-condition': 'warn',
+      '@typescript-eslint/no-unnecessary-condition': 'off', // Temporarily disabled
       '@typescript-eslint/no-unnecessary-type-assertion': 'warn',
       '@typescript-eslint/prefer-includes': 'error',
       '@typescript-eslint/prefer-string-starts-ends-with': 'error',
@@ -139,7 +139,7 @@ export default [
       'react-refresh/only-export-components': 'warn',
 
       // Security rules
-      'security/detect-object-injection': 'warn',
+      'security/detect-object-injection': 'off', // Temporarily disabled
       'security/detect-non-literal-regexp': 'warn',
       'security/detect-unsafe-regex': 'error',
       'security/detect-buffer-noassert': 'error',

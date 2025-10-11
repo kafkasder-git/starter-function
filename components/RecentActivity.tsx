@@ -33,7 +33,6 @@ interface Activity {
  */
 export function RecentActivity() {
   const [activities, setActivities] = useState<Activity[]>([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchActivities = async () => {
@@ -51,17 +50,15 @@ export function RecentActivity() {
           }
         ];
         setActivities(mockActivities);
-      } catch (error) {
-        console.error('Error fetching recent activities:', error);
-      } finally {
-        setLoading(false);
+      } catch {
+        // Error handling - could be logged to a service
       }
     };
     fetchActivities();
   }, []);
 
   const getActivityIcon = (type: Activity['type']) => {
-    const icons = {
+    const icons: Record<Activity['type'], React.ReactNode> = {
       donation: <Heart className="w-4 h-4" />,
       member: <Users className="w-4 h-4" />,
       aid: <HelpingHand className="w-4 h-4" />,
@@ -71,7 +68,7 @@ export function RecentActivity() {
   };
 
   const getActivityColor = (type: Activity['type']) => {
-    const colors = {
+    const colors: Record<Activity['type'], string> = {
       donation: 'text-red-600 bg-red-50',
       member: 'text-blue-600 bg-blue-50',
       aid: 'text-purple-600 bg-purple-50',
