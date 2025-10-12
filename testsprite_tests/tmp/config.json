@@ -1,0 +1,18 @@
+{
+  "status": "commited",
+  "type": "frontend",
+  "scope": "codebase",
+  "localEndpoint": "http://localhost:5173",
+  "loginUser": "isahamid095@gmail.com",
+  "loginPassword": "Vadalov95.",
+  "executionArgs": {
+    "projectName": "starter-function",
+    "projectPath": "/Users/mac/starter-function",
+    "testIds": [],
+    "additionalInstruction": "",
+    "envs": {
+      "API_KEY": "sk-user-kxFUG4niX4bN9n5kM0Wsx2f9fuDeijcAYwjsRy3xYe0athcdcoWvMp-XGGKgOCZHvw2xb2lpdEOH6BydEqC3OwdbrpflQ7MYCmqXkPJYqW8aegqK4UXFtumm6c1gBTVQZGg"
+    }
+  },
+  "proxy": "http://58542dab-d3c2-4eca-ab75-a4fdc3d57c1a:22vOwavspedDa0o0jM6wATQ0bTcfq3zN@tun.testsprite.com:8080"
+}
