@@ -13,9 +13,12 @@ import notificationService from './notificationService';
 import fileStorageService from './fileStorageService';
 import monitoring from './monitoringService';
 import exportService from './exportService';
-// AI services removed
 import performanceMonitoringService from './performanceMonitoringService';
 import { enhancedAppwrite } from './enhancedAppwriteService';
+import { authService } from '../lib/auth/authService';
+import { storageService } from '../lib/storage/storageService';
+import { functionsService } from '../lib/functions/functionsService';
+import { serviceManager } from '../lib/services/serviceManager';
 
 // =============================================================================
 // CORE SERVICES
@@ -181,7 +184,6 @@ export type {
 
 // Service factory for creating service instances with configuration
 export const createServices = () => {
-  // TODO: Use _config parameter for service configuration
   // Return configured service instances
   return {
     // Core Appwrite services
@@ -207,10 +209,14 @@ export const createServices = () => {
     monitoring,
     export: exportService,
 
-    // AI services removed
+    // Performance
+    performanceMonitoring: performanceMonitoringService,
 
     // Native features
     native: nativeFeaturesService,
+
+    // Enhanced Appwrite
+    enhancedAppwrite: enhancedAppwrite,
   };
 };
 
@@ -240,7 +246,7 @@ export const checkServiceHealth = async () => {
     { name: 'auth', service: authService, method: 'initialize' },
     { name: 'storage', service: storageService, method: 'testStorage' },
     { name: 'functions', service: functionsService, method: 'testFunctions' },
-    
+
     // Business logic services
     { name: 'userManagement', service: userManagementService, method: 'getUsers' },
     { name: 'donations', service: donationsService, method: 'getDonations' },
@@ -259,16 +265,17 @@ export const checkServiceHealth = async () => {
     const startTime = Date.now();
 
     try {
+      const serviceObj = service as unknown as ServiceWithMethod;
+      const methodFunc = serviceObj[method];
+
       // Call a lightweight method to test service health
-      if (method === 'trackEvent') {
-        (service as unknown as ServiceWithMethod)[method]('health_check', { service: name });
-      } else if (method === 'testConfiguration' || method === 'testStorage') {
-        await (service as unknown as ServiceWithMethod)[method]();
-      } else {
+      if (method === 'trackEvent' && typeof methodFunc === 'function') {
+        methodFunc('health_check', { service: name });
+      } else if ((method === 'testConfiguration' || method === 'testStorage') && typeof methodFunc === 'function') {
+        await methodFunc();
+      } else if (typeof methodFunc === 'function') {
         // For data services, just check if method exists and call it
-        if (typeof (service as unknown as ServiceWithMethod)[method] === 'function') {
-          await (service as unknown as ServiceWithMethod)[method]();
-        }
+        await methodFunc();
       }
 
       health.services[name] = {
@@ -276,14 +283,12 @@ export const checkServiceHealth = async () => {
         responseTime: Date.now() - startTime,
       };
     } catch (error) {
-      const errorMessage = (error as Error).message;
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       health.services[name] = {
         status: 'unhealthy',
         error: errorMessage,
         responseTime: Date.now() - startTime,
       };
-
-      // Service health tracking removed
     }
   }
 
