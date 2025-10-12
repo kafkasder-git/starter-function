@@ -6,7 +6,6 @@
 import emailSMSService from './emailSMSService';
 import nativeFeaturesService from './nativeFeaturesService';
 import userManagementService from './userManagementService';
-import membersService from './membersService';
 import donationsService from './donationsService';
 import { beneficiariesService } from './beneficiariesService';
 import kumbaraService from './kumbaraService';
@@ -37,7 +36,6 @@ export { default as userManagementService } from './userManagementService';
 // =============================================================================
 
 // Main entity services
-export { default as membersService } from './membersService';
 export { default as donationsService } from './donationsService';
 export { beneficiariesService } from './beneficiariesService';
 export { default as kumbaraService } from './kumbaraService';
@@ -62,19 +60,8 @@ export { storageService, StorageService } from '../lib/storage/storageService';
 export { functionsService, FunctionsService } from '../lib/functions/functionsService';
 export { serviceManager, ServiceManager } from '../lib/services/serviceManager';
 
-// Service convenience functions
-export {
-  uploadFile,
-  uploadFiles,
-  listFiles,
-  getFileInfo,
-  downloadFile,
-  getFileUrl,
-  deleteFile,
-  copyFile,
-  getStorageStats,
-  testFileStorage,
-} from '../lib/storage/storageService';
+// Service convenience functions - Use storageService directly
+// export { ... } from '../lib/storage/storageService';
 
 export {
   executeFunction,
@@ -91,17 +78,7 @@ export {
 // =============================================================================
 
 // Email/SMS notification service
-export {
-  emailSMSService,
-  sendEmail,
-  sendSMS,
-  sendWithTemplate,
-  getNotificationTemplates,
-  testNotificationConfig,
-  type NotificationData,
-  type NotificationTemplate,
-  type NotificationResult,
-} from './emailSMSService';
+export { default as emailSMSService } from './emailSMSService';
 
 // In-app notifications
 export { default as notificationService } from './notificationService';
@@ -113,16 +90,6 @@ export { default as notificationService } from './notificationService';
 // File storage service
 export {
   fileStorageService,
-  uploadFile,
-  uploadFiles,
-  listFiles,
-  getFileInfo,
-  downloadFile,
-  getFileUrl,
-  deleteFile,
-  copyFile,
-  getStorageStats,
-  testFileStorage,
   type FileUploadOptions,
   type FileListOptions,
   type FileListResult,
@@ -146,18 +113,7 @@ export {
 // 3. Use useQuery/useMutation hooks in components
 
 // Performance monitoring service
-export {
-  performanceMonitoringService,
-  getPerformanceReport,
-  getActiveAlerts,
-  getMetricsHistory,
-  exportPerformanceData,
-  updatePerformanceConfig,
-  type PerformanceMetrics,
-  type PerformanceAlert,
-  type PerformanceReport,
-  type PerformanceConfig,
-} from './performanceMonitoringService';
+export { default as performanceMonitoringService } from './performanceMonitoringService';
 
 // =============================================================================
 // UTILITY SERVICES
@@ -166,13 +122,6 @@ export {
 // AI services removed
 
 // Monitoring and analytics
-export {
-  trackEvent,
-  trackError,
-  trackAnalytics,
-  trackPageView,
-  trackFeatureUsage,
-} from './monitoringService';
 export { default as monitoring } from './monitoringService';
 
 // Export service
@@ -243,7 +192,6 @@ export const createServices = () => {
 
     // Business logic services
     userManagement: userManagementService,
-    members: membersService,
     donations: donationsService,
     beneficiaries: beneficiariesService,
     kumbara: kumbaraService,
@@ -295,7 +243,6 @@ export const checkServiceHealth = async () => {
     
     // Business logic services
     { name: 'userManagement', service: userManagementService, method: 'getUsers' },
-    { name: 'members', service: membersService, method: 'getMembers' },
     { name: 'donations', service: donationsService, method: 'getDonations' },
     { name: 'beneficiaries', service: beneficiariesService, method: 'getBeneficiaries' },
     { name: 'emailSMS', service: emailSMSService, method: 'testConfiguration' },
