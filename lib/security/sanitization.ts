@@ -255,7 +255,7 @@ export function sanitizeText(input: string): string {
  */
 export function sanitizeObject<T extends Record<string, any>>(
   obj: T,
-  options: SanitizeOptions = {},
+  options: SanitizeOptions = {}
 ): T {
   const sanitized: any = {};
 
@@ -270,7 +270,7 @@ export function sanitizeObject<T extends Record<string, any>>(
           ? sanitize(item, options)
           : typeof item === 'object'
             ? sanitizeObject(item, options)
-            : item,
+            : item
       );
     } else if (typeof value === 'object') {
       sanitized[key] = sanitizeObject(value, options);
@@ -287,7 +287,7 @@ export function sanitizeObject<T extends Record<string, any>>(
  */
 export function sanitizeArray<T extends Record<string, any>>(
   array: T[],
-  options: SanitizeOptions = {},
+  options: SanitizeOptions = {}
 ): T[] {
   return array.map((item) => sanitizeObject(item, options));
 }
@@ -337,7 +337,7 @@ export function sanitizeFormData(formData: Record<string, unknown>): Record<stri
  */
 export function createSafeHTML(
   html: string | null | undefined,
-  allowRich = false,
+  allowRich = false
 ): { __html: string } {
   const sanitized = allowRich ? sanitizeRichText(html) : sanitizeHTML(html);
   return { __html: sanitized };
@@ -370,7 +370,7 @@ export function containsMaliciousContent(input: string): boolean {
 export class InputSanitizer {
   static sanitize(
     input: unknown,
-    type: 'text' | 'html' | 'email' | 'phone' | 'url' | 'filepath' = 'text',
+    type: 'text' | 'html' | 'email' | 'phone' | 'url' | 'filepath' = 'text'
   ): string {
     if (input === null || input === undefined) return '';
 

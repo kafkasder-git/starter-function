@@ -35,9 +35,7 @@ interface BeneficiaryAidHistoryProps {
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
-export function BeneficiaryAidHistory({
-  aidHistory = [],
-}: BeneficiaryAidHistoryProps) {
+export function BeneficiaryAidHistory({ aidHistory = [] }: BeneficiaryAidHistoryProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
@@ -135,7 +133,9 @@ export function BeneficiaryAidHistory({
             <div className="flex items-center justify-center w-12 h-12 bg-green-100 rounded-full mx-auto mb-4">
               <DollarSign className="w-6 h-6 text-green-600" />
             </div>
-            <p className="text-3xl font-bold text-green-700 mb-1">{totalCashAid.toLocaleString('tr-TR')} ₺</p>
+            <p className="text-3xl font-bold text-green-700 mb-1">
+              {totalCashAid.toLocaleString('tr-TR')} ₺
+            </p>
             <p className="text-sm font-medium text-green-600">Nakdi Yardım</p>
           </CardContent>
         </Card>
@@ -145,7 +145,9 @@ export function BeneficiaryAidHistory({
             <div className="flex items-center justify-center w-12 h-12 bg-purple-100 rounded-full mx-auto mb-4">
               <Package className="w-6 h-6 text-purple-600" />
             </div>
-            <p className="text-3xl font-bold text-purple-700 mb-1">{records.filter((r) => r.type === 'Ayni').length}</p>
+            <p className="text-3xl font-bold text-purple-700 mb-1">
+              {records.filter((r) => r.type === 'Ayni').length}
+            </p>
             <p className="text-sm font-medium text-purple-600">Ayni Yardım</p>
           </CardContent>
         </Card>
@@ -277,8 +279,12 @@ export function BeneficiaryAidHistory({
               <div className="flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mx-auto mb-4">
                 <HandHeart className="w-8 h-8 text-gray-400" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Yardım geçmişi bulunmuyor</h3>
-              <p className="text-gray-500">Bu ihtiyaç sahibi için henüz yardım kaydı oluşturulmamış</p>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                Yardım geçmişi bulunmuyor
+              </h3>
+              <p className="text-gray-500">
+                Bu ihtiyaç sahibi için henüz yardım kaydı oluşturulmamış
+              </p>
             </div>
           )}
         </CardContent>

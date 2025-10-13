@@ -90,7 +90,9 @@ export function SkipLinks() {
           {SKIP_LINKS.map((link) => (
             <button
               key={link.id}
-              onClick={() => { handleSkip(link.target); }}
+              onClick={() => {
+                handleSkip(link.target);
+              }}
               className={`flex items-center gap-1 px-3 py-1 text-sm ${getTouchTargetClasses()} bg-info-700 hover:bg-info-800 rounded transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-info-600`}
             >
               {link.icon}

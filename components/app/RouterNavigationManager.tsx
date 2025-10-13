@@ -4,7 +4,14 @@
  * @version 2.0.0
  */
 
-import React, { createContext, useCallback, useContext, useEffect, useMemo, startTransition } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  startTransition,
+} from 'react';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { useUserPreferences } from '../../hooks/useLocalStorage';
 import monitoringService from '../../services/monitoringService';
@@ -73,7 +80,7 @@ export function RouterNavigationProvider({ children }: RouterNavigationProviderP
   const navigationState = useMemo<NavigationState>(() => {
     const { pathname } = location;
     const pathParts = pathname.split('/').filter(Boolean);
-    
+
     // Determine active module from path
     let activeModule = 'genel';
     let currentPage = 'list';
@@ -83,10 +90,10 @@ export function RouterNavigationProvider({ children }: RouterNavigationProviderP
     if (pathParts.length > 0) {
       const firstPart = `/${pathParts[0]}`;
       activeModule = routeToModule[firstPart] ?? pathParts[0] ?? 'genel';
-      
+
       if (pathParts.length > 1) {
         currentSubPage = `/${pathParts.slice(0, 2).join('/')}`;
-        
+
         // Check for detail pages (e.g., /yardim/ihtiyac-sahipleri/123)
         if (pathParts.length > 2 && params.id) {
           currentPage = 'detail';
@@ -120,16 +127,13 @@ export function RouterNavigationProvider({ children }: RouterNavigationProviderP
       });
       monitoringService.trackFeatureUsage('navigation', 'module_change', { moduleId });
     },
-    [navigate],
+    [navigate]
   );
 
-  const setCurrentPage = useCallback(
-    (page: string) => {
-      // This is handled by route navigation
-      logger.debug('setCurrentPage called with:', page);
-    },
-    [],
-  );
+  const setCurrentPage = useCallback((page: string) => {
+    // This is handled by route navigation
+    logger.debug('setCurrentPage called with:', page);
+  }, []);
 
   const setCurrentSubPage = useCallback(
     (subPage: string) => {
@@ -137,7 +141,7 @@ export function RouterNavigationProvider({ children }: RouterNavigationProviderP
         navigate(subPage);
       });
     },
-    [navigate],
+    [navigate]
   );
 
   const setLoading = useCallback((isLoading: boolean) => {
@@ -153,7 +157,7 @@ export function RouterNavigationProvider({ children }: RouterNavigationProviderP
         });
       }
     },
-    [navigate],
+    [navigate]
   );
 
   const navigateToBeneficiaryDetail = useCallback(
@@ -163,7 +167,7 @@ export function RouterNavigationProvider({ children }: RouterNavigationProviderP
         navigate(`/yardim/ihtiyac-sahipleri/${id}`);
       });
     },
-    [navigate],
+    [navigate]
   );
 
   const backToBeneficiariesList = useCallback(() => {
@@ -178,14 +182,14 @@ export function RouterNavigationProvider({ children }: RouterNavigationProviderP
         navigate(href);
       });
     },
-    [navigate],
+    [navigate]
   );
 
   const moduleChange = useCallback(
     (moduleId: string) => {
       setActiveModule(moduleId);
     },
-    [setActiveModule],
+    [setActiveModule]
   );
 
   const navigateToProfile = useCallback(() => {
@@ -250,7 +254,7 @@ export function RouterNavigationProvider({ children }: RouterNavigationProviderP
       navigateToSettings,
       backToMain,
       navigateToUserManagement,
-    ],
+    ]
   );
 
   return <NavigationContext.Provider value={contextValue}>{children}</NavigationContext.Provider>;

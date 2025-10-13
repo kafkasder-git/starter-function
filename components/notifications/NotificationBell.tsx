@@ -107,7 +107,7 @@ export function NotificationBell({
         className={cn(
           config.button,
           'focus-corporate relative min-h-[44px] min-w-[44px] rounded-lg transition-all duration-200 hover:bg-slate-100/80',
-          isAnimating && 'animate-pulse',
+          isAnimating && 'animate-pulse'
         )}
         onClick={(e) => {
           e.preventDefault();
@@ -154,7 +154,7 @@ export function NotificationBell({
                   config.badge,
                   'border-2 border-white shadow-sm',
                   'flex items-center justify-center rounded-full',
-                  store.unreadCount > 99 && 'px-1',
+                  store.unreadCount > 99 && 'px-1'
                 )}
               >
                 {store.unreadCount > 99 ? '99+' : store.unreadCount}

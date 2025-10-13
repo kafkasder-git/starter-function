@@ -1,6 +1,6 @@
 /**
  * @fileoverview useKumbara Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -26,7 +26,7 @@ import type {
 // Hook options interface
 /**
  * UseKumbaraOptions Interface
- * 
+ *
  * @interface UseKumbaraOptions
  */
 export interface UseKumbaraOptions {
@@ -40,7 +40,7 @@ export interface UseKumbaraOptions {
 // Hook return type
 /**
  * UseKumbaraReturn Interface
- * 
+ *
  * @interface UseKumbaraReturn
  */
 export interface UseKumbaraReturn {
@@ -86,7 +86,7 @@ export interface UseKumbaraReturn {
  */
 /**
  * useKumbara function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -123,7 +123,7 @@ export function useKumbara(options: UseKumbaraOptions = {}): UseKumbaraReturn {
         toast.error(errorMessage);
       }
     },
-    [onError],
+    [onError]
   );
 
   // Success handler
@@ -135,7 +135,7 @@ export function useKumbara(options: UseKumbaraOptions = {}): UseKumbaraReturn {
         toast.success(message);
       }
     },
-    [onSuccess],
+    [onSuccess]
   );
 
   // Clear error
@@ -159,7 +159,7 @@ export function useKumbara(options: UseKumbaraOptions = {}): UseKumbaraReturn {
         setLoading(false);
       }
     },
-    [filters, handleError],
+    [filters, handleError]
   );
 
   // Fetch single kumbara
@@ -177,7 +177,7 @@ export function useKumbara(options: UseKumbaraOptions = {}): UseKumbaraReturn {
         setLoading(false);
       }
     },
-    [handleError],
+    [handleError]
   );
 
   // Create kumbara
@@ -207,7 +207,7 @@ export function useKumbara(options: UseKumbaraOptions = {}): UseKumbaraReturn {
         setCreating(false);
       }
     },
-    [handleError, handleSuccess],
+    [handleError, handleSuccess]
   );
 
   // Update kumbara
@@ -235,7 +235,7 @@ export function useKumbara(options: UseKumbaraOptions = {}): UseKumbaraReturn {
         setUpdating(false);
       }
     },
-    [kumbara, handleError, handleSuccess],
+    [kumbara, handleError, handleSuccess]
   );
 
   // Delete kumbara
@@ -266,7 +266,7 @@ export function useKumbara(options: UseKumbaraOptions = {}): UseKumbaraReturn {
         setDeleting(false);
       }
     },
-    [kumbara, handleError, handleSuccess],
+    [kumbara, handleError, handleSuccess]
   );
 
   // Record collection
@@ -290,7 +290,7 @@ export function useKumbara(options: UseKumbaraOptions = {}): UseKumbaraReturn {
                   totalAmount: prev.totalAmount + data.amount,
                   lastCollection: data.collection_date ?? new Date().toISOString(),
                 }
-              : prev,
+              : prev
           );
         }
 
@@ -303,8 +303,8 @@ export function useKumbara(options: UseKumbaraOptions = {}): UseKumbaraReturn {
                   totalAmount: k.totalAmount + data.amount,
                   lastCollection: data.collection_date ?? new Date().toISOString(),
                 }
-              : k,
-          ),
+              : k
+          )
         );
 
         handleSuccess('Toplama kaydı başarıyla oluşturuldu');
@@ -316,7 +316,7 @@ export function useKumbara(options: UseKumbaraOptions = {}): UseKumbaraReturn {
         setCollecting(false);
       }
     },
-    [kumbara, handleError, handleSuccess],
+    [kumbara, handleError, handleSuccess]
   );
 
   // Fetch dashboard stats
@@ -349,7 +349,7 @@ export function useKumbara(options: UseKumbaraOptions = {}): UseKumbaraReturn {
         setLoading(false);
       }
     },
-    [handleError],
+    [handleError]
   );
 
   // Fetch alerts
@@ -386,8 +386,8 @@ export function useKumbara(options: UseKumbaraOptions = {}): UseKumbaraReturn {
                     acknowledged_by: acknowledgedBy,
                     acknowledged_at: new Date().toISOString(),
                   }
-                : alert,
-            ),
+                : alert
+            )
           );
 
           handleSuccess('Uyarı başarıyla onaylandı');
@@ -399,7 +399,7 @@ export function useKumbara(options: UseKumbaraOptions = {}): UseKumbaraReturn {
         return false;
       }
     },
-    [handleError, handleSuccess],
+    [handleError, handleSuccess]
   );
 
   // Export kumbaras
@@ -430,7 +430,7 @@ export function useKumbara(options: UseKumbaraOptions = {}): UseKumbaraReturn {
         setLoading(false);
       }
     },
-    [handleError, handleSuccess],
+    [handleError, handleSuccess]
   );
 
   // Validate kumbara data
@@ -530,7 +530,7 @@ export function useKumbara(options: UseKumbaraOptions = {}): UseKumbaraReturn {
       clearError,
       refresh,
       validateKumbara,
-    ],
+    ]
   );
 }
 
@@ -539,7 +539,7 @@ export function useKumbara(options: UseKumbaraOptions = {}): UseKumbaraReturn {
  */
 /**
  * useKumbaraDetail function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -586,7 +586,7 @@ export function useKumbaraDetail(id: string) {
  */
 /**
  * useKumbaraDashboard function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -627,7 +627,7 @@ export function useKumbaraDashboard() {
  */
 /**
  * useKumbaraAnalytics function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */

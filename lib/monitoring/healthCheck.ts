@@ -47,7 +47,7 @@ interface PerformanceMetrics {
  */
 async function checkDatabase(): Promise<HealthCheck> {
   const startTime = Date.now();
-  
+
   try {
     if (!environment.appwrite.databaseId) {
       return {
@@ -98,7 +98,7 @@ async function checkDatabase(): Promise<HealthCheck> {
  */
 async function checkAuthentication(): Promise<HealthCheck> {
   const startTime = Date.now();
-  
+
   try {
     if (!environment.appwrite.projectId) {
       return {
@@ -140,7 +140,7 @@ async function checkAuthentication(): Promise<HealthCheck> {
  */
 async function checkStorage(): Promise<HealthCheck> {
   const startTime = Date.now();
-  
+
   try {
     if (!environment.appwrite.projectId) {
       return {
@@ -225,7 +225,7 @@ function getMemoryMetrics(): MemoryMetrics | null {
     return null;
   }
 
-  const {memory} = (performance as any);
+  const { memory } = performance as any;
   return {
     used: memory.usedJSHeapSize,
     total: memory.totalJSHeapSize,
@@ -242,7 +242,7 @@ function getPerformanceMetrics(): PerformanceMetrics | null {
   }
 
   const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
-  
+
   if (!navigation) {
     return null;
   }
@@ -278,8 +278,8 @@ export async function performHealthCheck(): Promise<HealthStatus> {
 
   // Determine overall status
   const checks = { database, authentication, storage, environment };
-  const hasFailure = Object.values(checks).some(check => check.status === 'fail');
-  const hasWarning = Object.values(checks).some(check => check.status === 'warn');
+  const hasFailure = Object.values(checks).some((check) => check.status === 'fail');
+  const hasWarning = Object.values(checks).some((check) => check.status === 'warn');
 
   let status: 'healthy' | 'degraded' | 'unhealthy';
   if (hasFailure) {
@@ -311,7 +311,7 @@ export function startHealthMonitoring(interval = 60000) {
 
   const check = async () => {
     const health = await performHealthCheck();
-    
+
     // Log health status
     if (health.status === 'unhealthy') {
       logger.error('System unhealthy', health);

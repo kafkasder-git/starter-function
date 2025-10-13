@@ -180,29 +180,32 @@ const mockBeneficiaries: Beneficiary[] = [
 /**
  * Hook to fetch beneficiaries list with filters
  */
-export const useBeneficiariesList = (filters?: {
-  status?: string;
-  priority?: string;
-  city?: string;
-  district?: string;
-  search?: string;
-  limit?: number;
-  offset?: number;
-}, options?: {
-  enabled?: boolean;
-  staleTime?: number;
-  refetchInterval?: number;
-}) => {
+export const useBeneficiariesList = (
+  filters?: {
+    status?: string;
+    priority?: string;
+    city?: string;
+    district?: string;
+    search?: string;
+    limit?: number;
+    offset?: number;
+  },
+  options?: {
+    enabled?: boolean;
+    staleTime?: number;
+    refetchInterval?: number;
+  }
+) => {
   const limit = filters?.limit || 20;
   const offset = filters?.offset || 0;
-  
+
   return useQuery({
     queryKey: beneficiariesKeys.list(filters || {}),
     queryFn: async (): Promise<{ data: Beneficiary[]; total: number }> => {
       try {
         // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 800));
-        
+        await new Promise((resolve) => setTimeout(resolve, 800));
+
         // In real implementation, this would be an API call
         // const queryParams = new URLSearchParams();
         // if (filters?.status) queryParams.append('status', filters.status);
@@ -212,65 +215,65 @@ export const useBeneficiariesList = (filters?: {
         // if (filters?.search) queryParams.append('search', filters.search);
         // if (filters?.limit) queryParams.append('limit', filters.limit.toString());
         // if (filters?.offset) queryParams.append('offset', filters.offset.toString());
-        // 
+        //
         // const response = await fetch(`/api/beneficiaries?${queryParams}`);
         // const data = await response.json();
         // return data;
-        
+
         // Filter mock data
         let filteredBeneficiaries = [...mockBeneficiaries];
-        
+
         if (filters?.status) {
           filteredBeneficiaries = filteredBeneficiaries.filter(
-            beneficiary => beneficiary.status === filters.status
+            (beneficiary) => beneficiary.status === filters.status
           );
         }
-        
+
         if (filters?.priority) {
           filteredBeneficiaries = filteredBeneficiaries.filter(
-            beneficiary => beneficiary.priority === filters.priority
+            (beneficiary) => beneficiary.priority === filters.priority
           );
         }
-        
+
         if (filters?.city) {
-          filteredBeneficiaries = filteredBeneficiaries.filter(
-            beneficiary => beneficiary.city.toLowerCase().includes(filters.city!.toLowerCase())
+          filteredBeneficiaries = filteredBeneficiaries.filter((beneficiary) =>
+            beneficiary.city.toLowerCase().includes(filters.city!.toLowerCase())
           );
         }
-        
+
         if (filters?.district) {
-          filteredBeneficiaries = filteredBeneficiaries.filter(
-            beneficiary => beneficiary.district.toLowerCase().includes(filters.district!.toLowerCase())
+          filteredBeneficiaries = filteredBeneficiaries.filter((beneficiary) =>
+            beneficiary.district.toLowerCase().includes(filters.district!.toLowerCase())
           );
         }
-        
+
         if (filters?.search) {
           const searchTerm = filters.search.toLowerCase();
           filteredBeneficiaries = filteredBeneficiaries.filter(
-            beneficiary => 
+            (beneficiary) =>
               beneficiary.firstName.toLowerCase().includes(searchTerm) ||
               beneficiary.lastName.toLowerCase().includes(searchTerm) ||
               beneficiary.email?.toLowerCase().includes(searchTerm) ||
               beneficiary.phone?.includes(searchTerm)
           );
         }
-        
+
         // Sort by priority and registration date
         filteredBeneficiaries.sort((a, b) => {
           const priorityOrder = { urgent: 4, high: 3, medium: 2, low: 1 };
           const aPriority = priorityOrder[a.priority] || 0;
           const bPriority = priorityOrder[b.priority] || 0;
-          
+
           if (aPriority !== bPriority) {
             return bPriority - aPriority;
           }
-          
+
           return b.registrationDate.getTime() - a.registrationDate.getTime();
         });
-        
+
         const total = filteredBeneficiaries.length;
         const paginatedData = filteredBeneficiaries.slice(offset, offset + limit);
-        
+
         return {
           data: paginatedData,
           total,
@@ -295,24 +298,27 @@ export const useBeneficiariesList = (filters?: {
 /**
  * Hook to fetch beneficiary details by ID
  */
-export const useBeneficiaryDetails = (beneficiaryId: string, options?: {
-  enabled?: boolean;
-  staleTime?: number;
-}) => {
+export const useBeneficiaryDetails = (
+  beneficiaryId: string,
+  options?: {
+    enabled?: boolean;
+    staleTime?: number;
+  }
+) => {
   return useQuery({
     queryKey: beneficiariesKeys.detail(beneficiaryId),
     queryFn: async (): Promise<Beneficiary | null> => {
       try {
         // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
         // In real implementation, this would be an API call
         // const response = await fetch(`/api/beneficiaries/${beneficiaryId}`);
         // const data = await response.json();
         // return data;
-        
+
         // Find mock beneficiary by ID
-        const beneficiary = mockBeneficiaries.find(b => b.id === beneficiaryId);
+        const beneficiary = mockBeneficiaries.find((b) => b.id === beneficiaryId);
         return beneficiary || null;
       } catch (error) {
         console.error(`Failed to fetch beneficiary details for ID ${beneficiaryId}:`, error);
@@ -332,10 +338,7 @@ export const useBeneficiaryDetails = (beneficiaryId: string, options?: {
 /**
  * Hook to fetch beneficiaries statistics
  */
-export const useBeneficiariesStats = (options?: {
-  enabled?: boolean;
-  staleTime?: number;
-}) => {
+export const useBeneficiariesStats = (options?: { enabled?: boolean; staleTime?: number }) => {
   return useQuery({
     queryKey: beneficiariesKeys.stats(),
     queryFn: async (): Promise<{
@@ -350,27 +353,33 @@ export const useBeneficiariesStats = (options?: {
     }> => {
       try {
         // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 400));
-        
+        await new Promise((resolve) => setTimeout(resolve, 400));
+
         // Calculate stats from mock data
         const total = mockBeneficiaries.length;
-        const active = mockBeneficiaries.filter(b => b.status === 'active').length;
-        const pending = mockBeneficiaries.filter(b => b.status === 'pending').length;
-        const inactive = mockBeneficiaries.filter(b => b.status === 'inactive').length;
-        
-        const byPriority = mockBeneficiaries.reduce((acc, b) => {
-          acc[b.priority] = (acc[b.priority] || 0) + 1;
-          return acc;
-        }, {} as Record<string, number>);
-        
-        const byCity = mockBeneficiaries.reduce((acc, b) => {
-          acc[b.city] = (acc[b.city] || 0) + 1;
-          return acc;
-        }, {} as Record<string, number>);
-        
+        const active = mockBeneficiaries.filter((b) => b.status === 'active').length;
+        const pending = mockBeneficiaries.filter((b) => b.status === 'pending').length;
+        const inactive = mockBeneficiaries.filter((b) => b.status === 'inactive').length;
+
+        const byPriority = mockBeneficiaries.reduce(
+          (acc, b) => {
+            acc[b.priority] = (acc[b.priority] || 0) + 1;
+            return acc;
+          },
+          {} as Record<string, number>
+        );
+
+        const byCity = mockBeneficiaries.reduce(
+          (acc, b) => {
+            acc[b.city] = (acc[b.city] || 0) + 1;
+            return acc;
+          },
+          {} as Record<string, number>
+        );
+
         const totalAidAmount = mockBeneficiaries.reduce((sum, b) => sum + b.totalAidAmount, 0);
         const averageAidAmount = totalAidAmount / total;
-        
+
         return {
           total,
           active,

@@ -56,10 +56,7 @@ export const buttonVariants = cva(
           'bg-neutral-100 text-neutral-900 shadow-sm hover:bg-neutral-200',
           'focus-visible:ring-neutral-500/20',
         ],
-        ghost: [
-          'hover:bg-neutral-100 hover:text-neutral-900',
-          'focus-visible:ring-neutral-500/20',
-        ],
+        ghost: ['hover:bg-neutral-100 hover:text-neutral-900', 'focus-visible:ring-neutral-500/20'],
         link: [
           'text-primary-500 underline-offset-4 hover:underline',
           'focus-visible:ring-primary-500/20 min-h-0',
@@ -122,10 +119,7 @@ export const inputVariants = cva(
   {
     variants: {
       variant: {
-        default: [
-          'border-neutral-200 focus-visible:ring-primary-500',
-          'hover:border-neutral-300',
-        ],
+        default: ['border-neutral-200 focus-visible:ring-primary-500', 'hover:border-neutral-300'],
         error: [
           'border-error-300 bg-error-50 focus-visible:ring-error-500',
           'placeholder:text-error-400',
@@ -154,10 +148,7 @@ export const inputVariants = cva(
 
 // Card Variants
 export const cardVariants = cva(
-  [
-    'rounded-lg border bg-white text-neutral-950 shadow-sm',
-    'transition-shadow duration-200',
-  ],
+  ['rounded-lg border bg-white text-neutral-950 shadow-sm', 'transition-shadow duration-200'],
   {
     variants: {
       variant: {
@@ -296,9 +287,7 @@ export const skeletonVariants = cva(
 
 // Loading Spinner Variants
 export const spinnerVariants = cva(
-  [
-    'animate-spin rounded-full border-2 border-current border-t-transparent',
-  ],
+  ['animate-spin rounded-full border-2 border-current border-t-transparent'],
   {
     variants: {
       size: {
@@ -322,28 +311,21 @@ export const spinnerVariants = cva(
 );
 
 // Form Field Variants
-export const formFieldVariants = cva(
-  [
-    'space-y-2',
-  ],
-  {
-    variants: {
-      variant: {
-        default: '',
-        inline: 'flex items-center space-y-0 space-x-3',
-      },
+export const formFieldVariants = cva(['space-y-2'], {
+  variants: {
+    variant: {
+      default: '',
+      inline: 'flex items-center space-y-0 space-x-3',
     },
-    defaultVariants: {
-      variant: 'default',
-    },
-  }
-);
+  },
+  defaultVariants: {
+    variant: 'default',
+  },
+});
 
 // Label Variants
 export const labelVariants = cva(
-  [
-    'text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70',
-  ],
+  ['text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'],
   {
     variants: {
       variant: {
@@ -365,24 +347,19 @@ export const labelVariants = cva(
 );
 
 // Helper Text Variants
-export const helperTextVariants = cva(
-  [
-    'text-xs leading-tight',
-  ],
-  {
-    variants: {
-      variant: {
-        default: 'text-neutral-600',
-        error: 'text-error-600',
-        success: 'text-success-600',
-        warning: 'text-warning-600',
-      },
+export const helperTextVariants = cva(['text-xs leading-tight'], {
+  variants: {
+    variant: {
+      default: 'text-neutral-600',
+      error: 'text-error-600',
+      success: 'text-success-600',
+      warning: 'text-warning-600',
     },
-    defaultVariants: {
-      variant: 'default',
-    },
-  }
-);
+  },
+  defaultVariants: {
+    variant: 'default',
+  },
+});
 
 // Export variant prop types for TypeScript
 export type ButtonVariants = VariantProps<typeof buttonVariants>;

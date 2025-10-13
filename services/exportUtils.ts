@@ -92,7 +92,7 @@ export class ChartExportUtils {
    */
   static async chartToPNG(
     chartElement: HTMLElement | string,
-    options: ChartExportOptions = { format: 'png' },
+    options: ChartExportOptions = { format: 'png' }
   ): Promise<string> {
     const { width = 800, height = 600, backgroundColor = '#ffffff', quality = 0.9 } = options;
 
@@ -125,7 +125,7 @@ export class ChartExportUtils {
       return canvas.toDataURL('image/png', quality);
     } catch (error) {
       throw new Error(
-        `PNG export failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `PNG export failed: ${error instanceof Error ? error.message : 'Unknown error'}`
       );
     }
   }
@@ -136,7 +136,7 @@ export class ChartExportUtils {
   static async chartToSVG<T extends ChartDataPoint>(
     chartData: ChartDataset<T> | T[],
     chartConfig: ChartConfig,
-    options: ChartExportOptions = { format: 'svg' },
+    options: ChartExportOptions = { format: 'svg' }
   ): Promise<string> {
     const { width = 800, height = 600, backgroundColor = '#ffffff' } = options;
 
@@ -180,7 +180,7 @@ export class ChartExportUtils {
       return svg.outerHTML;
     } catch (error) {
       throw new Error(
-        `SVG export failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `SVG export failed: ${error instanceof Error ? error.message : 'Unknown error'}`
       );
     }
   }
@@ -190,7 +190,7 @@ export class ChartExportUtils {
    */
   static async chartToPDF(
     chartElement: HTMLElement | string,
-    options: ChartExportOptions = { format: 'pdf' },
+    options: ChartExportOptions = { format: 'pdf' }
   ): Promise<string> {
     // For PDF, we'll convert to high-quality PNG first
     const pngData = await this.chartToPNG(chartElement, {
@@ -207,7 +207,7 @@ export class ChartExportUtils {
   private static async svgStringToImage(
     svgString: string,
     _width: number,
-    _height: number,
+    _height: number
   ): Promise<HTMLImageElement> {
     return new Promise((resolve, reject) => {
       const img = new Image();
@@ -233,7 +233,7 @@ export class ChartExportUtils {
     element: HTMLElement,
     ctx: CanvasRenderingContext2D,
     width: number,
-    height: number,
+    height: number
   ): Promise<void> {
     // Simplified implementation - in real app, use html2canvas library
     const rect = element.getBoundingClientRect();
@@ -253,7 +253,7 @@ export class ChartExportUtils {
   private static createSVGElement(
     width: number,
     height: number,
-    backgroundColor: string,
+    backgroundColor: string
   ): SVGSVGElement {
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('width', width.toString());
@@ -275,7 +275,7 @@ export class ChartExportUtils {
     data: T[],
     config: ChartConfig,
     width: number,
-    height: number,
+    height: number
   ): void {
     const margin = { top: 20, right: 20, bottom: 40, left: 60 };
     const chartWidth = width - margin.left - margin.right;
@@ -310,7 +310,7 @@ export class ChartExportUtils {
     data: T[],
     config: ChartConfig,
     width: number,
-    height: number,
+    height: number
   ): void {
     const margin = { top: 20, right: 20, bottom: 40, left: 60 };
     const chartWidth = width - margin.left - margin.right;
@@ -345,7 +345,7 @@ export class ChartExportUtils {
     data: T[],
     config: ChartConfig,
     width: number,
-    height: number,
+    height: number
   ): void {
     const centerX = width / 2;
     const centerY = height / 2;
@@ -377,7 +377,7 @@ export class ChartExportUtils {
       path.setAttribute(
         'fill',
         config.colors?.[index % config.colors.length] ||
-          `hsl(${(index * 360) / data.length}, 70%, 50%)`,
+          `hsl(${(index * 360) / data.length}, 70%, 50%)`
       );
 
       svg.appendChild(path);
@@ -390,7 +390,7 @@ export class ChartExportUtils {
     data: T[],
     config: ChartConfig,
     width: number,
-    height: number,
+    height: number
   ): void {
     // Similar to pie chart but with inner radius
     const centerX = width / 2;
@@ -430,7 +430,7 @@ export class ChartExportUtils {
       path.setAttribute(
         'fill',
         config.colors?.[index % config.colors.length] ||
-          `hsl(${(index * 360) / data.length}, 70%, 50%)`,
+          `hsl(${(index * 360) / data.length}, 70%, 50%)`
       );
 
       svg.appendChild(path);
@@ -443,7 +443,7 @@ export class ChartExportUtils {
     data: T[],
     config: ChartConfig,
     width: number,
-    height: number,
+    height: number
   ): void {
     const margin = { top: 20, right: 20, bottom: 40, left: 60 };
     const chartWidth = width - margin.left - margin.right;
@@ -461,9 +461,10 @@ export class ChartExportUtils {
       })
       .join(' ');
 
-    const areaPath = `${points.split(' ').map((p, i) =>
-      i === 0 ? `M ${p}` : `L ${p}`
-    ).join(' ')} L ${chartWidth},${chartHeight} L 0,${chartHeight} Z`;
+    const areaPath = `${points
+      .split(' ')
+      .map((p, i) => (i === 0 ? `M ${p}` : `L ${p}`))
+      .join(' ')} L ${chartWidth},${chartHeight} L 0,${chartHeight} Z`;
 
     const area = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     area.setAttribute('d', areaPath);
@@ -479,7 +480,7 @@ export class ChartExportUtils {
     data: T[],
     config: ChartConfig,
     width: number,
-    height: number,
+    height: number
   ): void {
     const margin = { top: 20, right: 20, bottom: 40, left: 60 };
     const chartWidth = width - margin.left - margin.right;
@@ -511,7 +512,7 @@ export class ChartExportUtils {
     data: T[],
     _config: ChartConfig,
     width: number,
-    height: number,
+    height: number
   ): void {
     const cellSize = Math.min(width, height) / Math.ceil(Math.sqrt(data.length));
     const cols = Math.ceil(width / cellSize);
@@ -525,7 +526,7 @@ export class ChartExportUtils {
       const y = row * cellSize;
 
       const intensity = item.value / maxValue;
-      const hue = 200 - (intensity * 60); // Blue to red gradient
+      const hue = 200 - intensity * 60; // Blue to red gradient
 
       const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
       rect.setAttribute('x', x.toString());
@@ -544,7 +545,7 @@ export class ChartExportUtils {
     data: T[],
     config: ChartConfig,
     width: number,
-    height: number,
+    height: number
   ): void {
     // Simplified treemap implementation
     const total = data.reduce((sum, item) => sum + item.value, 0);
@@ -561,8 +562,11 @@ export class ChartExportUtils {
       rect.setAttribute('y', y.toString());
       rect.setAttribute('width', rectWidth.toString());
       rect.setAttribute('height', rectHeight.toString());
-      rect.setAttribute('fill', config.colors?.[index % config.colors.length] ||
-        `hsl(${(index * 360) / data.length}, 70%, 50%)`);
+      rect.setAttribute(
+        'fill',
+        config.colors?.[index % config.colors.length] ||
+          `hsl(${(index * 360) / data.length}, 70%, 50%)`
+      );
       rect.setAttribute('stroke', '#fff');
       rect.setAttribute('stroke-width', '2');
 
@@ -591,7 +595,10 @@ export class DataFormattingUtils {
   /**
    * Format data for CSV export
    */
-  static formatForCSV<T extends Record<string, unknown>>(data: T[], options: ExportDataOptions = {}): string {
+  static formatForCSV<T extends Record<string, unknown>>(
+    data: T[],
+    options: ExportDataOptions = {}
+  ): string {
     const {
       includeHeaders = true,
       delimiter = ',',
@@ -615,7 +622,10 @@ export class DataFormattingUtils {
     data.forEach((row) => {
       const values = headers.map((header) => {
         const value = row[header];
-        return this.formatCSVValue(value as string | number | boolean | Date | null | undefined, { dateFormat, numberFormat });
+        return this.formatCSVValue(value as string | number | boolean | Date | null | undefined, {
+          dateFormat,
+          numberFormat,
+        });
       });
       rows.push(values.map((value) => this.escapeCSVField(value)).join(delimiter));
     });
@@ -626,7 +636,10 @@ export class DataFormattingUtils {
   /**
    * Format data for Excel export
    */
-  static formatForExcel<T extends Record<string, unknown>>(data: T[], options: ExportDataOptions = {}): unknown[][] {
+  static formatForExcel<T extends Record<string, unknown>>(
+    data: T[],
+    options: ExportDataOptions = {}
+  ): unknown[][] {
     const {
       includeHeaders = true,
       dateFormat = 'YYYY-MM-DD',
@@ -650,7 +663,11 @@ export class DataFormattingUtils {
     data.forEach((row) => {
       const values = headers.map((header) => {
         const value = row[header];
-        return this.formatExcelValue(value as string | number | boolean | Date | null | undefined, { dateFormat, numberFormat, currencySymbol });
+        return this.formatExcelValue(value as string | number | boolean | Date | null | undefined, {
+          dateFormat,
+          numberFormat,
+          currencySymbol,
+        });
       });
       result.push(values);
     });
@@ -663,7 +680,7 @@ export class DataFormattingUtils {
    */
   static formatAnalyticsData(
     analyticsData: AnalyticsData,
-    options: ExportDataOptions = {},
+    options: ExportDataOptions = {}
   ): {
     metrics: Record<string, string>[];
     timeSeries: Record<string, unknown>[];
@@ -697,7 +714,9 @@ export class DataFormattingUtils {
   }
 
   // Private helper methods
-  private static escapeCSVField(field: string | number | boolean | Date | null | undefined): string {
+  private static escapeCSVField(
+    field: string | number | boolean | Date | null | undefined
+  ): string {
     // Handle null/undefined values
     if (field === null || field === undefined) {
       return '';
@@ -724,7 +743,7 @@ export class DataFormattingUtils {
 
   private static formatCSVValue(
     value: string | number | boolean | Date | null | undefined,
-    options: { dateFormat?: string; numberFormat?: string },
+    options: { dateFormat?: string; numberFormat?: string }
   ): string {
     if (value === null || value === undefined) {
       return '';
@@ -743,7 +762,7 @@ export class DataFormattingUtils {
 
   private static formatExcelValue(
     value: string | number | boolean | Date | null | undefined,
-    _options: { dateFormat?: string; numberFormat?: string; currencySymbol?: string },
+    _options: { dateFormat?: string; numberFormat?: string; currencySymbol?: string }
   ): string | number | Date {
     if (value === null || value === undefined) {
       return '';
@@ -778,7 +797,7 @@ export class DataFormattingUtils {
       return String(value);
     }
 
-    const decimals = format.includes('.') ? (format.split('.')[1]?.length || 0) : 0;
+    const decimals = format.includes('.') ? format.split('.')[1]?.length || 0 : 0;
     return num.toFixed(decimals);
   }
 }
@@ -800,7 +819,7 @@ export class OptimizationUtils {
   static async processInChunks<T, R>(
     data: T[],
     processor: (chunk: T[]) => Promise<R[]> | R[],
-    options: OptimizationOptions = {},
+    options: OptimizationOptions = {}
   ): Promise<R[]> {
     const {
       chunkSize = 1000,
@@ -818,7 +837,11 @@ export class OptimizationUtils {
       // Check memory usage
       if (this.getMemoryUsage() > maxMemoryUsage) {
         // Force garbage collection if available (Node.js only)
-        if (typeof globalThis !== 'undefined' && 'gc' in globalThis && typeof (globalThis as any).gc === 'function') {
+        if (
+          typeof globalThis !== 'undefined' &&
+          'gc' in globalThis &&
+          typeof (globalThis as any).gc === 'function'
+        ) {
           (globalThis as any).gc();
         }
 
@@ -844,7 +867,7 @@ export class OptimizationUtils {
   static streamExport(
     data: Record<string, unknown>[] | ChartDataset[] | ChartDataPoint[],
     format: ExportFormat,
-    options: OptimizationOptions = {},
+    options: OptimizationOptions = {}
   ): Promise<ReadableStream> {
     const { streamingThreshold = 10000, chunkSize = 1000 } = options;
 
@@ -854,11 +877,13 @@ export class OptimizationUtils {
     }
 
     // For large datasets, create streaming export
-    return Promise.resolve(new ReadableStream({
-      start(controller) {
-        OptimizationUtils.processLargeDataset(data, format, chunkSize, controller);
-      },
-    }));
+    return Promise.resolve(
+      new ReadableStream({
+        start(controller) {
+          OptimizationUtils.processLargeDataset(data, format, chunkSize, controller);
+        },
+      })
+    );
   }
 
   /**
@@ -866,7 +891,7 @@ export class OptimizationUtils {
    */
   static async compressData(
     data: string | Uint8Array,
-    options: OptimizationOptions = {},
+    options: OptimizationOptions = {}
   ): Promise<Uint8Array> {
     const { compressionLevel = 6 } = options;
 
@@ -908,7 +933,10 @@ export class OptimizationUtils {
     return 0;
   }
 
-  private static createSimpleStream(data: Record<string, unknown>[] | ChartDataset[] | ChartDataPoint[], format: ExportFormat): ReadableStream {
+  private static createSimpleStream(
+    data: Record<string, unknown>[] | ChartDataset[] | ChartDataPoint[],
+    format: ExportFormat
+  ): ReadableStream {
     let index = 0;
 
     return new ReadableStream({
@@ -929,7 +957,7 @@ export class OptimizationUtils {
     data: Record<string, unknown>[] | ChartDataset[] | ChartDataPoint[],
     format: ExportFormat,
     chunkSize: number,
-    controller: ReadableStreamDefaultController,
+    controller: ReadableStreamDefaultController
   ): Promise<void> {
     try {
       for (let i = 0; i < data.length; i += chunkSize) {
@@ -950,7 +978,10 @@ export class OptimizationUtils {
     }
   }
 
-  private static formatChunk(chunk: Record<string, unknown>[] | ChartDataset[] | ChartDataPoint[], format: ExportFormat): Uint8Array {
+  private static formatChunk(
+    chunk: Record<string, unknown>[] | ChartDataset[] | ChartDataPoint[],
+    format: ExportFormat
+  ): Uint8Array {
     let formatted: string;
 
     switch (format) {

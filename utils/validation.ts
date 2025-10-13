@@ -76,9 +76,15 @@ export const commonSchemas = {
       if (digits.every((d) => d === digits[0])) return false;
 
       // Checksum validation
-      const checksum1 = ((digits[0] ?? 0) + (digits[2] ?? 0) + (digits[4] ?? 0) + (digits[6] ?? 0) + (digits[8] ?? 0)) * 7;
+      const checksum1 =
+        ((digits[0] ?? 0) +
+          (digits[2] ?? 0) +
+          (digits[4] ?? 0) +
+          (digits[6] ?? 0) +
+          (digits[8] ?? 0)) *
+        7;
       const checksum2 = (digits[1] ?? 0) + (digits[3] ?? 0) + (digits[5] ?? 0) + (digits[7] ?? 0);
-      const digit10 = ((checksum1 - checksum2) % 10 + 10) % 10;
+      const digit10 = (((checksum1 - checksum2) % 10) + 10) % 10;
       const digit11 =
         ((digits[0] ?? 0) +
           (digits[1] ?? 0) +
@@ -107,7 +113,7 @@ export const commonSchemas = {
     .min(8, 'Şifre en az 8 karakter olmalı')
     .regex(
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-      'Şifre en az bir küçük harf, bir büyük harf ve bir rakam içermeli',
+      'Şifre en az bir küçük harf, bir büyük harf ve bir rakam içermeli'
     ),
 
   // Name validation
@@ -137,17 +143,18 @@ export const commonSchemas = {
     .string()
     .refine(
       (type) => ['image/jpeg', 'image/png', 'image/gif', 'application/pdf'].includes(type),
-      'Desteklenmeyen dosya türü',
+      'Desteklenmeyen dosya türü'
     ),
 
   // Date range validation
-  dateRange: z.object({
-    start: z.date(),
-    end: z.date(),
-  }).refine(
-    (data) => validateDateRange(data.start, data.end).valid,
-    { message: 'Başlangıç tarihi bitiş tarihinden sonra olamaz' }
-  ),
+  dateRange: z
+    .object({
+      start: z.date(),
+      end: z.date(),
+    })
+    .refine((data) => validateDateRange(data.start, data.end).valid, {
+      message: 'Başlangıç tarihi bitiş tarihinden sonra olamaz',
+    }),
 };
 
 // =============================================================================
@@ -353,11 +360,13 @@ export class ValidationService {
       if (!result.valid) {
         return {
           success: false,
-          errors: [{
-            field: 'dateRange',
-            message: result.error ?? 'Geçersiz tarih aralığı',
-            code: 'INVALID_DATE_RANGE',
-          }],
+          errors: [
+            {
+              field: 'dateRange',
+              message: result.error ?? 'Geçersiz tarih aralığı',
+              code: 'INVALID_DATE_RANGE',
+            },
+          ],
         };
       }
       return {
@@ -370,11 +379,13 @@ export class ValidationService {
     } catch (error) {
       return {
         success: false,
-        errors: [{
-          field: 'dateRange',
-          message: 'Tarih aralığı doğrulanamadı',
-          code: 'DATE_RANGE_VALIDATION_ERROR',
-        }],
+        errors: [
+          {
+            field: 'dateRange',
+            message: 'Tarih aralığı doğrulanamadı',
+            code: 'DATE_RANGE_VALIDATION_ERROR',
+          },
+        ],
       };
     }
   }
@@ -426,7 +437,7 @@ export class ValidationService {
             code: err.code,
             value: err.path.reduce(
               (obj: unknown, key: unknown) => (obj as Record<string, unknown>)[String(key)],
-              data,
+              data
             ),
           })),
         };
@@ -483,7 +494,7 @@ export class ValidationService {
       value: unknown;
       validator: (value: unknown) => ValidationResult;
       field: string;
-    }[],
+    }[]
   ): ValidationResult {
     const allErrors: ValidationError[] = [];
 
@@ -494,7 +505,7 @@ export class ValidationService {
           ...result.errors.map((error) => ({
             ...error,
             field: `${validation.field}.${(error as { field?: string }).field ?? 'unknown'}`,
-          })),
+          }))
         );
       }
     }
@@ -570,6 +581,7 @@ export const getFirstError = (result: ValidationResult): string | null => {
 };
 
 // Helper function for date range validation
-export const validateDateRangeHelper = (start: Date | string, end: Date | string) => ValidationService.validateDateRange(start, end);
+export const validateDateRangeHelper = (start: Date | string, end: Date | string) =>
+  ValidationService.validateDateRange(start, end);
 
 export default ValidationService;

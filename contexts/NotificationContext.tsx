@@ -1,6 +1,6 @@
 /**
  * @fileoverview NotificationContext Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -25,10 +25,10 @@ interface NotificationContextType {
 
   // System integration methods
   triggerSystemNotification: (
-    type: 'donation' | 'member' | 'aid' | 'system' | 'event',
+    type: 'donation' | 'member' | 'aid' | 'system' | 'event'
   ) => Promise<void>;
   simulateWorkflow: (
-    workflowType: 'donation-process' | 'aid-application' | 'member-registration',
+    workflowType: 'donation-process' | 'aid-application' | 'member-registration'
   ) => Promise<void>;
 
   // Statistics
@@ -39,7 +39,7 @@ const NotificationContext = createContext<NotificationContextType | undefined>(u
 
 /**
  * NotificationProvider function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -158,7 +158,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         toast.error('Sistem bildirimi oluşturulurken hata oluştu');
       }
     },
-    [store, notify],
+    [store, notify]
   );
 
   // Simulate complex workflows
@@ -262,7 +262,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         toast.error('İş akışı simülasyonu sırasında hata oluştu');
       }
     },
-    [store, notify],
+    [store, notify]
   );
 
   // Get notification statistics
@@ -291,7 +291,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
 /**
  * useNotifications function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */

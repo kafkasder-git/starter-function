@@ -41,7 +41,7 @@ export function ProtectedRoute({
     if (!user) return null;
 
     // Try to get role from user metadata
-    const role = user.metadata?.role as UserRole || user.role;
+    const role = (user.metadata?.role as UserRole) || user.role;
     if (role && Object.values(UserRole).includes(role)) {
       return role;
     }
@@ -156,7 +156,7 @@ export function PermissionGuard({
   }
 
   // Get user role
-  const role = user?.metadata?.role as UserRole || user?.role;
+  const role = (user?.metadata?.role as UserRole) || user?.role;
   const userRole = role && Object.values(UserRole).includes(role) ? role : UserRole.VIEWER;
 
   // Check permission

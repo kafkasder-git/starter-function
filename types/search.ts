@@ -269,7 +269,7 @@ export interface UseSearchProps<T = unknown> {
   onSearch?: (
     query: string,
     filters: FilterValue[],
-    sort: SortConfig,
+    sort: SortConfig
   ) => Promise<SearchResult<T>> | SearchResult<T>;
   initialQuery?: string;
   initialFilters?: FilterValue[];

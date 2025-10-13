@@ -7,7 +7,15 @@ import { logger } from '@/lib/logging/logger';
 
 export interface ParsedError {
   id: string;
-  type: 'compilation' | 'test' | 'dependency' | 'runtime' | 'security' | 'lint' | 'deployment' | 'unknown';
+  type:
+    | 'compilation'
+    | 'test'
+    | 'dependency'
+    | 'runtime'
+    | 'security'
+    | 'lint'
+    | 'deployment'
+    | 'unknown';
   severity: 'info' | 'warning' | 'error' | 'critical';
   message: string;
   location?: {
@@ -94,13 +102,13 @@ class GitHubActionsErrorParser {
           message: /error TS(\d+): (.+)/i,
           file: /^(.+?)\((\d+),(\d+)\): error TS\d+:/i,
           line: /^(.+?)\((\d+),(\d+)\): error TS\d+:/i,
-          column: /^(.+?)\((\d+),(\d+)\): error TS\d+:/i
+          column: /^(.+?)\((\d+),(\d+)\): error TS\d+:/i,
         },
         suggestions: [
           'Check TypeScript configuration',
           'Verify type definitions',
-          'Update dependencies if needed'
-        ]
+          'Update dependencies if needed',
+        ],
       },
 
       // JavaScript syntax errors
@@ -113,13 +121,13 @@ class GitHubActionsErrorParser {
           message: /(.+)/i,
           file: /^(.+?):\d+:\d+: error:/i,
           line: /^(.+?):(\d+):\d+: error:/i,
-          column: /^(.+?):\d+:(\d+): error:/i
+          column: /^(.+?):\d+:(\d+): error:/i,
         },
         suggestions: [
           'Check syntax in the specified file',
           'Verify brackets and parentheses',
-          'Check for missing semicolons'
-        ]
+          'Check for missing semicolons',
+        ],
       },
 
       // Test failures
@@ -132,13 +140,9 @@ class GitHubActionsErrorParser {
           message: /(.+)/i,
           file: /at (.+?):\d+:\d+/i,
           line: /at .+?:(\d+):\d+/i,
-          function: /at (.+?) \(.+?:\d+:\d+\)/i
+          function: /at (.+?) \(.+?:\d+:\d+\)/i,
         },
-        suggestions: [
-          'Review test logic',
-          'Check test data and mocks',
-          'Verify expected outcomes'
-        ]
+        suggestions: ['Review test logic', 'Check test data and mocks', 'Verify expected outcomes'],
       },
 
       // Dependency errors
@@ -149,13 +153,13 @@ class GitHubActionsErrorParser {
         severity: 'error',
         extractors: {
           message: /(.+)/i,
-          command: /npm|yarn|pnpm/i
+          command: /npm|yarn|pnpm/i,
         },
         suggestions: [
           'Check package.json dependencies',
           'Clear node_modules and reinstall',
-          'Verify package versions'
-        ]
+          'Verify package versions',
+        ],
       },
 
       // Runtime errors
@@ -168,13 +172,13 @@ class GitHubActionsErrorParser {
           message: /(.+)/i,
           file: /at (.+?):\d+:\d+/i,
           line: /at .+?:(\d+):\d+/i,
-          function: /at (.+?) \(.+?:\d+:\d+\)/i
+          function: /at (.+?) \(.+?:\d+:\d+\)/i,
         },
         suggestions: [
           'Check for null/undefined values',
           'Verify object properties',
-          'Add error handling'
-        ]
+          'Add error handling',
+        ],
       },
 
       // Security vulnerabilities
@@ -184,13 +188,13 @@ class GitHubActionsErrorParser {
         type: 'security',
         severity: 'critical',
         extractors: {
-          message: /(.+)/i
+          message: /(.+)/i,
         },
         suggestions: [
           'Update vulnerable dependencies',
           'Review security patches',
-          'Run npm audit fix'
-        ]
+          'Run npm audit fix',
+        ],
       },
 
       // Lint errors
@@ -203,13 +207,13 @@ class GitHubActionsErrorParser {
           message: /(.+)/i,
           file: /^(.+?):\d+:\d+:/i,
           line: /^(.+?):(\d+):\d+:/i,
-          column: /^(.+?):\d+:(\d+):/i
+          column: /^(.+?):\d+:(\d+):/i,
         },
         suggestions: [
           'Fix code style issues',
           'Run linting with --fix flag',
-          'Update ESLint configuration'
-        ]
+          'Update ESLint configuration',
+        ],
       },
 
       // Deployment errors
@@ -220,14 +224,14 @@ class GitHubActionsErrorParser {
         severity: 'error',
         extractors: {
           message: /(.+)/i,
-          command: /deploy|build|docker|kubectl/i
+          command: /deploy|build|docker|kubectl/i,
         },
         suggestions: [
           'Check deployment configuration',
           'Verify build environment',
-          'Review deployment logs'
-        ]
-      }
+          'Review deployment logs',
+        ],
+      },
     ];
   }
 
@@ -251,7 +255,7 @@ class GitHubActionsErrorParser {
     try {
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
-        
+
         // Skip empty lines and GitHub Actions markers
         if (!line.trim() || line.startsWith('##[')) {
           continue;
@@ -278,9 +282,8 @@ class GitHubActionsErrorParser {
         success: true,
         errors,
         warnings,
-        statistics
+        statistics,
       };
-
     } catch (error) {
       logger.error('Failed to parse GitHub Actions log', error);
       return {
@@ -291,8 +294,8 @@ class GitHubActionsErrorParser {
           totalErrors: 0,
           errorsByType: {},
           errorsBySeverity: {},
-          uniqueErrors: 0
-        }
+          uniqueErrors: 0,
+        },
       };
     }
   }
@@ -315,7 +318,7 @@ class GitHubActionsErrorParser {
         message: this.extractMessage(line, pattern),
         context,
         metadata: {},
-        suggestions: [...pattern.suggestions]
+        suggestions: [...pattern.suggestions],
       };
 
       // Extract location information
@@ -337,7 +340,6 @@ class GitHubActionsErrorParser {
       }
 
       return error;
-
     } catch (error) {
       logger.error('Failed to parse individual error', error);
       return null;
@@ -447,20 +449,20 @@ class GitHubActionsErrorParser {
    */
   private extractStackTrace(allLines: string[], lineIndex: number): string | null {
     const stackLines: string[] = [];
-    
+
     // Look ahead for stack trace
     for (let i = lineIndex + 1; i < Math.min(allLines.length, lineIndex + 20); i++) {
       const line = allLines[i];
-      
+
       if (line.trim() === '' || line.startsWith('##[')) {
         break;
       }
-      
+
       if (line.includes('at ') || line.includes('Error:') || line.includes('Exception:')) {
         stackLines.push(line);
       }
     }
-    
+
     return stackLines.length > 0 ? stackLines.join('\n') : null;
   }
 
@@ -472,13 +474,13 @@ class GitHubActionsErrorParser {
     const errorsBySeverity: Record<string, number> = {};
     const uniqueMessages = new Set<string>();
 
-    errors.forEach(error => {
+    errors.forEach((error) => {
       // Count by type
       errorsByType[error.type] = (errorsByType[error.type] || 0) + 1;
-      
+
       // Count by severity
       errorsBySeverity[error.severity] = (errorsBySeverity[error.severity] || 0) + 1;
-      
+
       // Count unique messages
       uniqueMessages.add(error.message);
     });
@@ -487,7 +489,7 @@ class GitHubActionsErrorParser {
       totalErrors: errors.length,
       errorsByType,
       errorsBySeverity,
-      uniqueErrors: uniqueMessages.size
+      uniqueErrors: uniqueMessages.size,
     };
   }
 
@@ -528,9 +530,9 @@ class GitHubActionsErrorParser {
   exportConfiguration(): string {
     const config = {
       patterns: this.patterns,
-      exportedAt: new Date().toISOString()
+      exportedAt: new Date().toISOString(),
     };
-    
+
     return JSON.stringify(config, null, 2);
   }
 }

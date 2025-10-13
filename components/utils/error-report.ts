@@ -1,6 +1,6 @@
 /**
  * @fileoverview error-report Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -10,7 +10,7 @@ import type { ErrorInfo } from 'react';
 import { logger } from '../../lib/logging/logger';
 /**
  * StorageLike Interface
- * 
+ *
  * @interface StorageLike
  */
 export interface StorageLike {
@@ -19,7 +19,7 @@ export interface StorageLike {
 
 /**
  * EnvironmentSource Interface
- * 
+ *
  * @interface EnvironmentSource
  */
 export interface EnvironmentSource {
@@ -31,7 +31,7 @@ export interface EnvironmentSource {
 
 /**
  * ErrorEnvironment Interface
- * 
+ *
  * @interface ErrorEnvironment
  */
 export interface ErrorEnvironment {
@@ -42,7 +42,7 @@ export interface ErrorEnvironment {
 
 /**
  * ErrorReport Interface
- * 
+ *
  * @interface ErrorReport
  */
 export interface ErrorReport {
@@ -63,7 +63,7 @@ const DEFAULT_ENVIRONMENT_SOURCE: Required<Pick<EnvironmentSource, 'dateFactory'
 };
 
 const mergeEnvironmentSource = (
-  source?: EnvironmentSource,
+  source?: EnvironmentSource
 ): Required<Pick<EnvironmentSource, 'dateFactory'>> & EnvironmentSource => ({
   navigator: source?.navigator ?? DEFAULT_ENVIRONMENT_SOURCE.navigator,
   location: source?.location ?? DEFAULT_ENVIRONMENT_SOURCE.location,
@@ -85,7 +85,7 @@ export const getEnvironmentInfo = (source?: EnvironmentSource): ErrorEnvironment
       : 'unknown';
 
   let userId = 'anonymous';
-  const {storage} = merged;
+  const { storage } = merged;
 
   if (storage?.getItem) {
     try {

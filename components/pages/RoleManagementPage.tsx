@@ -143,12 +143,12 @@ export const RoleManagementPage: React.FC = () => {
               const resource = parts[0];
               if (resource && typeof resource === 'string') {
                 const safeResource = resource.trim();
-                 
+
                 acc[safeResource] = (acc[safeResource] ?? 0) + 1;
               }
               return acc;
             },
-            {} as Record<string, number>,
+            {} as Record<string, number>
           );
 
           return (

@@ -7,7 +7,7 @@ const config: StorybookConfig = {
     '../components/**/*.stories.@(js|jsx|ts|tsx|mdx)',
     '../stories/**/*.stories.@(js|jsx|ts|tsx|mdx)',
   ],
-  
+
   addons: [
     '@storybook/addon-links',
     '@storybook/addon-essentials',
@@ -16,16 +16,16 @@ const config: StorybookConfig = {
     '@storybook/addon-viewport',
     '@storybook/addon-themes',
   ],
-  
+
   framework: {
     name: '@storybook/react-vite',
     options: {},
   },
-  
+
   docs: {
     autodocs: 'tag',
   },
-  
+
   async viteFinal(config) {
     return mergeConfig(config, {
       resolve: {
@@ -35,7 +35,7 @@ const config: StorybookConfig = {
       },
     });
   },
-  
+
   staticDirs: ['../public'],
 };
 

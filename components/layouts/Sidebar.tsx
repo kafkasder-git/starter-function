@@ -1,6 +1,6 @@
 /**
  * @fileoverview Sidebar Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -53,7 +53,7 @@ interface SidebarProps {
 
 /**
  * Sidebar function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -126,6 +126,7 @@ export function Sidebar({
       subPages: [
         { name: 'Öğrenci Listesi', href: '/burs/ogrenciler' },
         { name: 'Burs Başvuruları', href: '/burs/basvurular' },
+        { name: 'Yetim Listesi', href: '/burs/yetim' },
       ],
     },
     {
@@ -194,25 +195,7 @@ export function Sidebar({
         { name: 'İzinler', href: '/user-management/permissions' },
       ],
     },
-    // Conditionally show reporting module based on permissions
-    ...(canViewReports
-      ? [
-          {
-            id: 'raporlama',
-            name: 'Raporlama & Analitik',
-            icon: <BarChart3 className="w-5 h-5" />,
-            subPages: [
-              { name: 'Ana Dashboard', href: '/raporlama/dashboard' },
-              { name: 'Mali Raporlar', href: '/raporlama/mali' },
-              { name: 'Bağış Analitiği', href: '/raporlama/bagis' },
-              { name: 'Üye Analitiği', href: '/raporlama/uye' },
-              { name: 'Sosyal Etki', href: '/raporlama/etki' },
-              { name: 'Rapor Oluşturucu', href: '/raporlama/builder' },
-              { name: 'Zamanlanmış Raporlar', href: '/raporlama/zamanli' },
-            ],
-          },
-        ]
-      : []),
+    // Reporting module removed
   ];
 
   // Timing refs for better control
@@ -303,7 +286,7 @@ export function Sidebar({
     setOpenPopover(null);
     setHoveredModule(null);
     setIsPopoverHovered(false);
-    
+
     // Close mobile menu if open
     if (isMobileOpen) {
       onMobileToggle?.();
@@ -314,7 +297,7 @@ export function Sidebar({
       navigate(href);
     });
   };
-  
+
   // Get current location for active state
   const location = useLocation();
   const navigate = useNavigate();
@@ -345,7 +328,7 @@ export function Sidebar({
       {/* Mobile Overlay */}
       {isMobileOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
           onClick={onMobileToggle}
         />
       )}
@@ -387,14 +370,20 @@ export function Sidebar({
                               handleModuleClick(module.id);
                             }}
                             className={cn(
-                              'group relative flex w-full items-center justify-center rounded-lg p-4 transition-all duration-200',
+                              'group relative flex w-full items-center justify-center rounded-lg p-3 transition-all duration-200',
                               // Check if any subpage of this module is active
-                              module.subPages.some(sp => currentPath === sp.href || currentPath.startsWith(`${sp.href  }/`))
+                              module.subPages.some(
+                                (sp) =>
+                                  currentPath === sp.href || currentPath.startsWith(`${sp.href}/`)
+                              )
                                 ? 'bg-neutral-800 text-white shadow-inner'
                                 : 'text-neutral-400 hover:bg-neutral-800 hover:text-neutral-100',
                               hoveredModule === module.id &&
-                                !module.subPages.some(sp => currentPath === sp.href || currentPath.startsWith(`${sp.href  }/`)) &&
-                                'bg-neutral-800/80',
+                                !module.subPages.some(
+                                  (sp) =>
+                                    currentPath === sp.href || currentPath.startsWith(`${sp.href}/`)
+                                ) &&
+                                'bg-neutral-800/80'
                             )}
                             aria-label={module.name}
                           >
@@ -414,7 +403,10 @@ export function Sidebar({
 
                             <span className="sr-only">{module.name}</span>
 
-                            {module.subPages.some(sp => currentPath === sp.href || currentPath.startsWith(`${sp.href  }/`)) && (
+                            {module.subPages.some(
+                              (sp) =>
+                                currentPath === sp.href || currentPath.startsWith(`${sp.href}/`)
+                            ) && (
                               <div className="absolute left-0 top-1/2 h-8 w-1 -translate-y-1/2 rounded-r-full bg-primary-500" />
                             )}
                           </button>
@@ -433,7 +425,7 @@ export function Sidebar({
                   <PopoverContent
                     side="right"
                     align="start"
-                    className="ml-3 w-auto border border-neutral-200 bg-white p-0 animate-in slide-in-from-left-2 fade-in-0 duration-200 dark:border-neutral-700 dark:bg-neutral-900"
+                    className="ml-3 w-auto border border-neutral-200 bg-white p-1 animate-in slide-in-from-left-2 fade-in-0 duration-200 dark:border-neutral-700 dark:bg-neutral-900"
                     sideOffset={8}
                     onMouseEnter={handlePopoverMouseEnter}
                     onMouseLeave={handlePopoverMouseLeave}
@@ -461,36 +453,52 @@ export function Sidebar({
                       {/* Menu Items */}
                       <div className="space-y-1 p-2">
                         {module.subPages.map((subPage, index) => {
-                          const isActive = currentPath === subPage.href || currentPath.startsWith(`${subPage.href  }/`);
+                          const isActive =
+                            currentPath === subPage.href ||
+                            currentPath.startsWith(`${subPage.href}/`);
                           return (
                             <button
                               key={subPage.href}
-                              onClick={() => { handleSubPageClick(subPage.href); }}
+                              onClick={() => {
+                                handleSubPageClick(subPage.href);
+                              }}
                               className={cn(
                                 'group flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left text-sm transition-all duration-200 animate-in fade-in-0 slide-in-from-left-1 animate-fill-both',
-                                isActive 
-                                  ? 'bg-neutral-200 font-semibold text-neutral-900 dark:bg-neutral-800 dark:text-neutral-50' 
+                                isActive
+                                  ? 'bg-neutral-200 font-semibold text-neutral-900 dark:bg-neutral-800 dark:text-neutral-50'
                                   : 'text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-200 dark:hover:bg-neutral-800 dark:hover:text-neutral-50',
-                                index === 0 ? 'animate-delay-0' :
-                                index === 1 ? 'animate-delay-50' :
-                                index === 2 ? 'animate-delay-100' :
-                                index === 3 ? 'animate-delay-150' :
-                                index === 4 ? 'animate-delay-200' :
-                                index === 5 ? 'animate-delay-250' :
-                                index === 6 ? 'animate-delay-300' :
-                                index === 7 ? 'animate-delay-350' :
-                                index === 8 ? 'animate-delay-400' :
-                                index === 9 ? 'animate-delay-450' :
-                                'animate-delay-500'
+                                index === 0
+                                  ? 'animate-delay-0'
+                                  : index === 1
+                                    ? 'animate-delay-50'
+                                    : index === 2
+                                      ? 'animate-delay-100'
+                                      : index === 3
+                                        ? 'animate-delay-150'
+                                        : index === 4
+                                          ? 'animate-delay-200'
+                                          : index === 5
+                                            ? 'animate-delay-250'
+                                            : index === 6
+                                              ? 'animate-delay-300'
+                                              : index === 7
+                                                ? 'animate-delay-350'
+                                                : index === 8
+                                                  ? 'animate-delay-400'
+                                                  : index === 9
+                                                    ? 'animate-delay-450'
+                                                    : 'animate-delay-500'
                               )}
                             >
                               <span className="font-medium">{subPage.name}</span>
-                              <div className={cn(
-                                'h-1.5 w-1.5 rounded-full transition-all duration-200',
-                                isActive 
-                                  ? 'bg-primary-600 opacity-100' 
-                                  : 'bg-neutral-400 opacity-0 group-hover:opacity-100'
-                              )} />
+                              <div
+                                className={cn(
+                                  'h-1.5 w-1.5 rounded-full transition-all duration-200',
+                                  isActive
+                                    ? 'bg-primary-600 opacity-100'
+                                    : 'bg-neutral-400 opacity-0 group-hover:opacity-100'
+                                )}
+                              />
                             </button>
                           );
                         })}

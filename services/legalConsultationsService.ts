@@ -74,18 +74,20 @@ class LegalConsultationsService {
   /**
    * Get all consultations
    */
-  async getConsultations(filters: {
-    status?: string;
-    category?: string;
-    priority?: string;
-    assignedLawyer?: string;
-    limit?: number;
-    offset?: number;
-  } = {}): Promise<ApiResponse<LegalConsultation[]>> {
+  async getConsultations(
+    filters: {
+      status?: string;
+      category?: string;
+      priority?: string;
+      assignedLawyer?: string;
+      limit?: number;
+      offset?: number;
+    } = {}
+  ): Promise<ApiResponse<LegalConsultation[]>> {
     try {
       const queries = [
         queryHelpers.orderDesc('requested_at'),
-        queryHelpers.limit(filters.limit || 50)
+        queryHelpers.limit(filters.limit || 50),
       ];
 
       if (filters.status) {
@@ -114,10 +116,10 @@ class LegalConsultationsService {
         return { data: null, error: 'Failed to fetch consultations', success: false };
       }
 
-      const consultations = data?.documents?.map(doc => this.mapDocumentToConsultation(doc)) || [];
+      const consultations =
+        data?.documents?.map((doc) => this.mapDocumentToConsultation(doc)) || [];
 
       return { data: consultations, error: null, success: true };
-
     } catch (error) {
       logger.error('Failed to get consultations', error);
       return { data: null, error: 'Failed to fetch consultations', success: false };
@@ -129,7 +131,10 @@ class LegalConsultationsService {
    */
   async getConsultationById(consultationId: string): Promise<ApiResponse<LegalConsultation>> {
     try {
-      const { data, error } = await db.get<LegalConsultationDocument>(collections.LEGAL_CONSULTATIONS, consultationId);
+      const { data, error } = await db.get<LegalConsultationDocument>(
+        collections.LEGAL_CONSULTATIONS,
+        consultationId
+      );
 
       if (error || !data) {
         return { data: null, error: 'Consultation not found', success: false };
@@ -137,7 +142,6 @@ class LegalConsultationsService {
 
       const consultation = this.mapDocumentToConsultation(data);
       return { data: consultation, error: null, success: true };
-
     } catch (error) {
       logger.error('Failed to get consultation by ID', error);
       return { data: null, error: 'Failed to fetch consultation', success: false };
@@ -147,7 +151,9 @@ class LegalConsultationsService {
   /**
    * Create new consultation
    */
-  async createConsultation(consultationData: CreateConsultationData): Promise<ApiResponse<LegalConsultation>> {
+  async createConsultation(
+    consultationData: CreateConsultationData
+  ): Promise<ApiResponse<LegalConsultation>> {
     try {
       const consultationDoc: Omit<LegalConsultationDocument, keyof Models.Document> = {
         title: consultationData.title,
@@ -161,10 +167,14 @@ class LegalConsultationsService {
         documents: consultationData.documents || [],
         notes: consultationData.notes,
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       };
 
-      const { data, error } = await db.create(collections.LEGAL_CONSULTATIONS, consultationDoc, ID.unique());
+      const { data, error } = await db.create(
+        collections.LEGAL_CONSULTATIONS,
+        consultationDoc,
+        ID.unique()
+      );
 
       if (error || !data) {
         return { data: null, error: 'Failed to create consultation', success: false };
@@ -172,7 +182,6 @@ class LegalConsultationsService {
 
       const consultation = this.mapDocumentToConsultation(data);
       return { data: consultation, error: null, success: true };
-
     } catch (error) {
       logger.error('Failed to create consultation', error);
       return { data: null, error: 'Failed to create consultation', success: false };
@@ -182,15 +191,22 @@ class LegalConsultationsService {
   /**
    * Assign lawyer to consultation
    */
-  async assignLawyer(consultationId: string, lawyerId: string): Promise<ApiResponse<LegalConsultation>> {
+  async assignLawyer(
+    consultationId: string,
+    lawyerId: string
+  ): Promise<ApiResponse<LegalConsultation>> {
     try {
       const updateData = {
         assigned_lawyer: lawyerId,
         status: 'in_progress',
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       };
 
-      const { data, error } = await db.update(collections.LEGAL_CONSULTATIONS, consultationId, updateData);
+      const { data, error } = await db.update(
+        collections.LEGAL_CONSULTATIONS,
+        consultationId,
+        updateData
+      );
 
       if (error || !data) {
         return { data: null, error: 'Failed to assign lawyer', success: false };
@@ -198,7 +214,6 @@ class LegalConsultationsService {
 
       const consultation = this.mapDocumentToConsultation(data);
       return { data: consultation, error: null, success: true };
-
     } catch (error) {
       logger.error('Failed to assign lawyer', error);
       return { data: null, error: 'Failed to assign lawyer', success: false };
@@ -208,18 +223,25 @@ class LegalConsultationsService {
   /**
    * Update consultation status
    */
-  async updateConsultationStatus(consultationId: string, status: LegalConsultation['status']): Promise<ApiResponse<LegalConsultation>> {
+  async updateConsultationStatus(
+    consultationId: string,
+    status: LegalConsultation['status']
+  ): Promise<ApiResponse<LegalConsultation>> {
     try {
       const updateData = {
         status,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       };
 
       if (status === 'completed') {
-        updateData.completed_at = new Date().toISOString();
+        (updateData as any).completed_at = new Date().toISOString();
       }
 
-      const { data, error } = await db.update(collections.LEGAL_CONSULTATIONS, consultationId, updateData);
+      const { data, error } = await db.update(
+        collections.LEGAL_CONSULTATIONS,
+        consultationId,
+        updateData
+      );
 
       if (error || !data) {
         return { data: null, error: 'Failed to update consultation status', success: false };
@@ -227,7 +249,6 @@ class LegalConsultationsService {
 
       const consultation = this.mapDocumentToConsultation(data);
       return { data: consultation, error: null, success: true };
-
     } catch (error) {
       logger.error('Failed to update consultation status', error);
       return { data: null, error: 'Failed to update consultation status', success: false };
@@ -239,19 +260,18 @@ class LegalConsultationsService {
    */
   async getAvailableLawyers(): Promise<ApiResponse<Lawyer[]>> {
     try {
-      const { data, error } = await db.list(collections.LAWYERS, [
+      const { data, error } = await db.list('lawyers', [
         queryHelpers.equal('is_available', true),
-        queryHelpers.orderAsc('current_workload')
+        queryHelpers.orderAsc('current_workload'),
       ]);
 
       if (error) {
         return { data: null, error: 'Failed to fetch lawyers', success: false };
       }
 
-      const lawyers = data?.documents?.map(doc => this.mapDocumentToLawyer(doc)) || [];
+      const lawyers = data?.documents?.map((doc) => this.mapDocumentToLawyer(doc)) || [];
 
       return { data: lawyers, error: null, success: true };
-
     } catch (error) {
       logger.error('Failed to get available lawyers', error);
       return { data: null, error: 'Failed to fetch lawyers', success: false };
@@ -269,15 +289,15 @@ class LegalConsultationsService {
       category: doc.category,
       priority: doc.priority,
       status: doc.status,
-      requestedBy: doc.requested_by,
-      assignedLawyer: doc.assigned_lawyer,
-      requestedAt: doc.requested_at,
-      dueDate: doc.due_date,
-      completedAt: doc.completed_at,
-      documents: doc.documents,
-      notes: doc.notes,
-      createdAt: doc.created_at,
-      updatedAt: doc.updated_at
+      requestedBy: (doc as any).requested_by,
+      assignedLawyer: (doc as any).assigned_lawyer,
+      requestedAt: (doc as any).requested_at,
+      dueDate: (doc as any).due_date,
+      completedAt: (doc as any).completed_at,
+      documents: (doc as any).documents,
+      notes: (doc as any).notes,
+      createdAt: (doc as any).created_at,
+      updatedAt: (doc as any).updated_at,
     };
   }
 
@@ -295,7 +315,7 @@ class LegalConsultationsService {
       rating: doc.rating || 0,
       isAvailable: doc.is_available || false,
       currentWorkload: doc.current_workload || 0,
-      maxWorkload: doc.max_workload || 10
+      maxWorkload: doc.max_workload || 10,
     };
   }
 }

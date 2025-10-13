@@ -39,7 +39,7 @@ export function MessageList({
   onReply: _onReply,
   onDelete: _onDelete,
   onDownloadAttachment: _onDownloadAttachment,
-  className
+  className,
 }: MessageListProps) {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -92,11 +92,13 @@ export function MessageList({
     messages.forEach((message, index) => {
       const prevMessage = index > 0 ? messages[index - 1] : null;
       // const nextMessage = index < messages.length - 1 ? messages[index + 1] : null;
-      
+
       // Determine if we should show avatar
-      const showAvatar = !prevMessage || 
+      const showAvatar =
+        !prevMessage ||
         prevMessage.senderId !== message.senderId ||
-        (new Date(message.createdAt).getTime() - new Date(prevMessage.createdAt).getTime()) > 5 * 60 * 1000; // 5 minutes gap
+        new Date(message.createdAt).getTime() - new Date(prevMessage.createdAt).getTime() >
+          5 * 60 * 1000; // 5 minutes gap
 
       // Add to existing group or create new group
       if (groups.length > 0 && groups[groups.length - 1]?.senderId === message.senderId) {
@@ -105,7 +107,7 @@ export function MessageList({
         groups.push({
           senderId: message.senderId,
           messages: [message],
-          showAvatar
+          showAvatar,
         });
       }
     });
@@ -126,11 +128,7 @@ export function MessageList({
 
   return (
     <div className={cn('flex flex-col h-full', className)}>
-      <ScrollArea
-        ref={scrollAreaRef}
-        className="flex-1 px-4"
-        onScrollCapture={handleScroll}
-      >
+      <ScrollArea ref={scrollAreaRef} className="flex-1 px-4" onScrollCapture={handleScroll}>
         <div className="py-4">
           {/* Load more button */}
           {hasMoreMessages && (
@@ -157,12 +155,35 @@ export function MessageList({
           {/* Messages */}
           {groupedMessages.map((group, groupIndex) => (
             <div key={`group-${groupIndex}`} className="mb-4">
-              {group.messages.map((message, _messageIndex) => (
-                <div key={message.id} className="p-2 border rounded mb-1">
-                  <div className="font-medium">{message.content}</div>
-                  <div className="text-sm text-gray-500">{new Date(message.createdAt).toLocaleTimeString()}</div>
-                </div>
-              ))}
+              {group.messages.map((message, messageIndex) => {
+                const isOwnMessage = message.senderId === currentUserId;
+                const isLastInGroup = messageIndex === group.messages.length - 1;
+                
+                return (
+                  <div
+                    key={message.id}
+                    className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'} mb-1`}
+                  >
+                    <div
+                      className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl shadow-sm ${
+                        isOwnMessage
+                          ? 'bg-blue-500 text-white rounded-br-md'
+                          : 'bg-white text-gray-900 rounded-bl-md border border-gray-200'
+                      }`}
+                    >
+                      <p className="text-sm leading-relaxed">{message.content}</p>
+                      <p className={`text-xs mt-1 ${
+                        isOwnMessage ? 'text-blue-100' : 'text-gray-500'
+                      }`}>
+                        {new Date(message.createdAt).toLocaleTimeString('tr-TR', {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           ))}
 
@@ -181,11 +202,7 @@ export function MessageList({
       {/* Scroll to bottom button */}
       {!isScrolledToBottom && (
         <div className="absolute bottom-20 right-6">
-          <Button
-            onClick={scrollToBottom}
-            size="sm"
-            className="h-10 w-10 rounded-full shadow-lg"
-          >
+          <Button onClick={scrollToBottom} size="sm" className="h-10 w-10 rounded-full shadow-lg">
             <ArrowUp className="h-4 w-4" />
           </Button>
         </div>

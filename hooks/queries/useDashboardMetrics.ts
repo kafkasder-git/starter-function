@@ -23,7 +23,7 @@ export interface DashboardMetrics {
 export const dashboardKeys = {
   all: ['dashboard'] as const,
   metrics: () => [...dashboardKeys.all, 'metrics'] as const,
-  metricsWithFilters: (filters: Record<string, any>) => 
+  metricsWithFilters: (filters: Record<string, any>) =>
     [...dashboardKeys.metrics(), filters] as const,
 };
 
@@ -41,7 +41,7 @@ export const useDashboardMetrics = (options?: {
       try {
         // Use the existing intelligent stats service
         const stats = await intelligentStatsService.getStats();
-        
+
         // Transform the data to match our interface
         return {
           totalDonations: stats.totalDonations || 0,
@@ -55,7 +55,7 @@ export const useDashboardMetrics = (options?: {
         };
       } catch (error) {
         console.error('Failed to fetch dashboard metrics:', error);
-        
+
         // Return fallback data on error
         return {
           totalDonations: 0,
@@ -87,7 +87,7 @@ export const useDashboardMetrics = (options?: {
  */
 export const usePrefetchDashboardMetrics = () => {
   const queryClient = useQueryClient();
-  
+
   return useCallback(() => {
     queryClient.prefetchQuery({
       queryKey: dashboardKeys.metrics(),

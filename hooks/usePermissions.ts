@@ -24,7 +24,12 @@ import { rolesService } from '../services/rolesService';
  * @returns Object with permission checking utilities
  */
 export function usePermissions() {
-  const { user, hasRole, hasPermission: hasPermissionFn, checkPermission: checkPermissionFn } = useAuthStore() as any;
+  const {
+    user,
+    hasRole,
+    hasPermission: hasPermissionFn,
+    checkPermission: checkPermissionFn,
+  } = useAuthStore() as any;
   const check = (permission: Permission): boolean => {
     const fn = checkPermissionFn ?? hasPermissionFn;
     return typeof fn === 'function' ? fn(permission) : false;
@@ -204,7 +209,6 @@ export const useRole = (roles: string | string[]): boolean => {
  * const { role, permissions, isLoading } = useUserRole();
  */
 export const useUserRole = () => {
-   
   const [role, setRole] = useState<any | null>(null);
   const [permissions, setPermissions] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);

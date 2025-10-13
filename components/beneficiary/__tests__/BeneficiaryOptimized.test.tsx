@@ -107,7 +107,7 @@ describe('BeneficiaryOptimized', () => {
     await waitFor(() => {
       expect(beneficiariesService.updateBeneficiary).toHaveBeenCalledWith(
         'test-1',
-        expect.any(Object),
+        expect.any(Object)
       );
     });
   });

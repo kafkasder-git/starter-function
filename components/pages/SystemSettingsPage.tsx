@@ -15,7 +15,10 @@ import { Switch } from '../ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { toast } from 'sonner';
 import { PageLayout } from '../layouts/PageLayout';
-import { systemSettingsService, type SystemSettings as ServiceSystemSettings } from '../../services/systemSettingsService';
+import {
+  systemSettingsService,
+  type SystemSettings as ServiceSystemSettings,
+} from '../../services/systemSettingsService';
 import { logger } from '../../lib/logging/logger';
 import { LoadingSpinner } from '../shared/LoadingSpinner';
 import { Alert, AlertDescription } from '../ui/alert';
@@ -91,7 +94,7 @@ export function SystemSettingsPage() {
     setIsSaving(true);
     try {
       const result = await systemSettingsService.updateSettings(settings);
-      
+
       if (result.error) {
         if (result.error.includes('tablosu bulunamadı')) {
           setTableError(result.error);
@@ -118,21 +121,30 @@ export function SystemSettingsPage() {
     }));
   };
 
-  const updateNotificationSettings = (field: keyof SystemSettings['notifications'], value: boolean) => {
+  const updateNotificationSettings = (
+    field: keyof SystemSettings['notifications'],
+    value: boolean
+  ) => {
     setSettings((prev) => ({
       ...prev,
       notifications: { ...prev.notifications, [field]: value },
     }));
   };
 
-  const updateSecuritySettings = (field: keyof SystemSettings['security'], value: string | number | boolean) => {
+  const updateSecuritySettings = (
+    field: keyof SystemSettings['security'],
+    value: string | number | boolean
+  ) => {
     setSettings((prev) => ({
       ...prev,
       security: { ...prev.security, [field]: value },
     }));
   };
 
-  const updateDatabaseSettings = (field: keyof SystemSettings['database'], value: string | number | boolean) => {
+  const updateDatabaseSettings = (
+    field: keyof SystemSettings['database'],
+    value: string | number | boolean
+  ) => {
     setSettings((prev) => ({
       ...prev,
       database: { ...prev.database, [field]: value },
@@ -194,7 +206,9 @@ export function SystemSettingsPage() {
                       <Input
                         id="orgName"
                         value={settings.general.organizationName}
-                        onChange={(e) => { updateGeneralSettings('organizationName', e.target.value); }}
+                        onChange={(e) => {
+                          updateGeneralSettings('organizationName', e.target.value);
+                        }}
                         placeholder="Dernek adını giriniz"
                       />
                     </div>
@@ -204,7 +218,9 @@ export function SystemSettingsPage() {
                         id="orgEmail"
                         type="email"
                         value={settings.general.organizationEmail}
-                        onChange={(e) => { updateGeneralSettings('organizationEmail', e.target.value); }}
+                        onChange={(e) => {
+                          updateGeneralSettings('organizationEmail', e.target.value);
+                        }}
                         placeholder="info@dernek.org"
                       />
                     </div>
@@ -213,7 +229,9 @@ export function SystemSettingsPage() {
                       <Input
                         id="orgPhone"
                         value={settings.general.organizationPhone}
-                        onChange={(e) => { updateGeneralSettings('organizationPhone', e.target.value); }}
+                        onChange={(e) => {
+                          updateGeneralSettings('organizationPhone', e.target.value);
+                        }}
                         placeholder="+90 XXX XXX XX XX"
                       />
                     </div>
@@ -222,7 +240,9 @@ export function SystemSettingsPage() {
                       <Input
                         id="orgAddress"
                         value={settings.general.organizationAddress}
-                        onChange={(e) => { updateGeneralSettings('organizationAddress', e.target.value); }}
+                        onChange={(e) => {
+                          updateGeneralSettings('organizationAddress', e.target.value);
+                        }}
                         placeholder="Kurum adresi"
                       />
                     </div>
@@ -242,12 +262,16 @@ export function SystemSettingsPage() {
                     <div className="flex items-center justify-between">
                       <div>
                         <Label htmlFor="emailNotif">E-posta Bildirimleri</Label>
-                        <p className="text-sm text-gray-500">Önemli olaylar için e-posta gönderin</p>
+                        <p className="text-sm text-gray-500">
+                          Önemli olaylar için e-posta gönderin
+                        </p>
                       </div>
                       <Switch
                         id="emailNotif"
                         checked={settings.notifications.emailNotifications}
-                        onCheckedChange={(checked) => { updateNotificationSettings('emailNotifications', checked); }}
+                        onCheckedChange={(checked) => {
+                          updateNotificationSettings('emailNotifications', checked);
+                        }}
                       />
                     </div>
                     <div className="flex items-center justify-between">
@@ -258,7 +282,9 @@ export function SystemSettingsPage() {
                       <Switch
                         id="smsNotif"
                         checked={settings.notifications.smsNotifications}
-                        onCheckedChange={(checked) => { updateNotificationSettings('smsNotifications', checked); }}
+                        onCheckedChange={(checked) => {
+                          updateNotificationSettings('smsNotifications', checked);
+                        }}
                       />
                     </div>
                     <div className="flex items-center justify-between">
@@ -269,7 +295,9 @@ export function SystemSettingsPage() {
                       <Switch
                         id="pushNotif"
                         checked={settings.notifications.pushNotifications}
-                        onCheckedChange={(checked) => { updateNotificationSettings('pushNotifications', checked); }}
+                        onCheckedChange={(checked) => {
+                          updateNotificationSettings('pushNotifications', checked);
+                        }}
                       />
                     </div>
                     <div className="flex items-center justify-between">
@@ -280,7 +308,9 @@ export function SystemSettingsPage() {
                       <Switch
                         id="auditNotif"
                         checked={settings.notifications.auditLogNotifications}
-                        onCheckedChange={(checked) => { updateNotificationSettings('auditLogNotifications', checked); }}
+                        onCheckedChange={(checked) => {
+                          updateNotificationSettings('auditLogNotifications', checked);
+                        }}
                       />
                     </div>
                   </div>
@@ -299,12 +329,16 @@ export function SystemSettingsPage() {
                     <div className="flex items-center justify-between">
                       <div>
                         <Label htmlFor="mfa">İki Faktörlü Doğrulama (2FA)</Label>
-                        <p className="text-sm text-gray-500">Tüm kullanıcılar için 2FA zorunluluğu</p>
+                        <p className="text-sm text-gray-500">
+                          Tüm kullanıcılar için 2FA zorunluluğu
+                        </p>
                       </div>
                       <Switch
                         id="mfa"
                         checked={settings.security.mfaEnabled}
-                        onCheckedChange={(checked) => { updateSecuritySettings('mfaEnabled', checked); }}
+                        onCheckedChange={(checked) => {
+                          updateSecuritySettings('mfaEnabled', checked);
+                        }}
                       />
                     </div>
                     <div>
@@ -313,7 +347,9 @@ export function SystemSettingsPage() {
                         id="sessionTimeout"
                         type="number"
                         value={settings.security.sessionTimeout}
-                        onChange={(e) => { updateSecuritySettings('sessionTimeout', parseInt(e.target.value)); }}
+                        onChange={(e) => {
+                          updateSecuritySettings('sessionTimeout', parseInt(e.target.value));
+                        }}
                         placeholder="30"
                       />
                     </div>
@@ -323,7 +359,9 @@ export function SystemSettingsPage() {
                         id="passwordExpiry"
                         type="number"
                         value={settings.security.passwordExpiry}
-                        onChange={(e) => { updateSecuritySettings('passwordExpiry', parseInt(e.target.value)); }}
+                        onChange={(e) => {
+                          updateSecuritySettings('passwordExpiry', parseInt(e.target.value));
+                        }}
                         placeholder="90"
                       />
                     </div>
@@ -332,7 +370,9 @@ export function SystemSettingsPage() {
                       <Input
                         id="ipWhitelist"
                         value={settings.security.ipWhitelist}
-                        onChange={(e) => { updateSecuritySettings('ipWhitelist', e.target.value); }}
+                        onChange={(e) => {
+                          updateSecuritySettings('ipWhitelist', e.target.value);
+                        }}
                         placeholder="192.168.1.1, 10.0.0.1"
                       />
                       <p className="text-sm text-gray-500 mt-1">Virgülle ayrılmış IP adresleri</p>
@@ -356,7 +396,9 @@ export function SystemSettingsPage() {
                         id="backupFreq"
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                         value={settings.database.backupFrequency}
-                        onChange={(e) => { updateDatabaseSettings('backupFrequency', e.target.value); }}
+                        onChange={(e) => {
+                          updateDatabaseSettings('backupFrequency', e.target.value);
+                        }}
                       >
                         <option value="hourly">Saatlik</option>
                         <option value="daily">Günlük</option>
@@ -370,7 +412,9 @@ export function SystemSettingsPage() {
                         id="retention"
                         type="number"
                         value={settings.database.dataRetentionDays}
-                        onChange={(e) => { updateDatabaseSettings('dataRetentionDays', parseInt(e.target.value)); }}
+                        onChange={(e) => {
+                          updateDatabaseSettings('dataRetentionDays', parseInt(e.target.value));
+                        }}
                         placeholder="365"
                       />
                     </div>
@@ -382,7 +426,9 @@ export function SystemSettingsPage() {
                       <Switch
                         id="archiving"
                         checked={settings.database.enableArchiving}
-                        onCheckedChange={(checked) => { updateDatabaseSettings('enableArchiving', checked); }}
+                        onCheckedChange={(checked) => {
+                          updateDatabaseSettings('enableArchiving', checked);
+                        }}
                       />
                     </div>
                   </div>

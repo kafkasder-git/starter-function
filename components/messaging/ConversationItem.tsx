@@ -27,10 +27,10 @@ export function ConversationItem({
   isSelected = false,
   currentUserId,
   onClick,
-  onMenuClick
+  onMenuClick,
 }: ConversationItemProps) {
   // Get other participants (exclude current user)
-  const otherParticipants = conversation.participants.filter(p => p.userId !== currentUserId);
+  const otherParticipants = conversation.participants.filter((p) => p.userId !== currentUserId);
   const primaryParticipant = otherParticipants[0];
 
   // Get conversation display name
@@ -38,11 +38,11 @@ export function ConversationItem({
     if (conversation.type === 'group' && conversation.name) {
       return conversation.name;
     }
-    
+
     if (primaryParticipant) {
       return primaryParticipant.userName;
     }
-    
+
     return 'Konuşma';
   };
 
@@ -53,11 +53,11 @@ export function ConversationItem({
       const groupName = conversation.name || primaryParticipant?.userName || 'G';
       return groupName.charAt(0).toUpperCase();
     }
-    
+
     if (primaryParticipant) {
       return primaryParticipant.userName.charAt(0).toUpperCase();
     }
-    
+
     return '?';
   };
 
@@ -68,7 +68,7 @@ export function ConversationItem({
     }
 
     const message = conversation.lastMessage;
-    
+
     switch (message.type) {
       case 'text':
         return message.content || 'Mesaj';
@@ -94,25 +94,24 @@ export function ConversationItem({
     const diffInHours = (now.getTime() - messageTime.getTime()) / (1000 * 60 * 60);
 
     if (diffInHours < 1) {
-      return messageTime.toLocaleTimeString('tr-TR', { 
-        hour: '2-digit', 
-        minute: '2-digit' 
+      return messageTime.toLocaleTimeString('tr-TR', {
+        hour: '2-digit',
+        minute: '2-digit',
       });
     } else if (diffInHours < 24) {
-      return messageTime.toLocaleTimeString('tr-TR', { 
-        hour: '2-digit', 
-        minute: '2-digit' 
+      return messageTime.toLocaleTimeString('tr-TR', {
+        hour: '2-digit',
+        minute: '2-digit',
       });
     } else if (diffInHours < 24 * 7) {
-      return messageTime.toLocaleDateString('tr-TR', { 
-        weekday: 'short' 
+      return messageTime.toLocaleDateString('tr-TR', {
+        weekday: 'short',
       });
-    } 
-      return messageTime.toLocaleDateString('tr-TR', { 
-        day: '2-digit', 
-        month: '2-digit' 
-      });
-    
+    }
+    return messageTime.toLocaleDateString('tr-TR', {
+      day: '2-digit',
+      month: '2-digit',
+    });
   };
 
   // Check if last message is read
@@ -121,18 +120,18 @@ export function ConversationItem({
       return true; // Own messages are considered read
     }
 
-    return conversation.lastMessage.readBy.some(read => read.userId === currentUserId);
+    return conversation.lastMessage.readBy.some((read) => read.userId === currentUserId);
   };
 
   // Check if participant is online
   const isParticipantOnline = () => {
-    return otherParticipants.some(p => p.isOnline);
+    return otherParticipants.some((p) => p.isOnline);
   };
 
   return (
     <div
       className={cn(
-        'flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors hover:bg-gray-50',
+        'flex items-center gap-3 p-3 cursor-pointer transition-all duration-200 hover:bg-gray-50',
         isSelected && 'bg-blue-50 border-l-4 border-blue-500'
       )}
       onClick={onClick}
@@ -140,11 +139,11 @@ export function ConversationItem({
       {/* Avatar */}
       <div className="relative">
         <Avatar className="h-12 w-12">
-          <AvatarFallback className="bg-blue-100 text-blue-600">
+          <AvatarFallback className="bg-blue-100 text-blue-600 font-semibold text-lg">
             {getDisplayAvatar()}
           </AvatarFallback>
         </Avatar>
-        
+
         {/* Online indicator for direct messages */}
         {conversation.type === 'direct' && isParticipantOnline() && (
           <div className="absolute -bottom-1 -right-1 h-4 w-4 bg-green-500 border-2 border-white rounded-full" />
@@ -154,23 +153,19 @@ export function ConversationItem({
       {/* Conversation info */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between mb-1">
-          <h3 className="font-medium text-gray-900 truncate">
-            {getDisplayName()}
-          </h3>
+          <h3 className="font-semibold text-gray-900 truncate">{getDisplayName()}</h3>
           <div className="flex items-center gap-2">
             {/* Last message time */}
             {conversation.lastMessageAt && (
-              <span className="text-xs text-gray-500">
-                {formatLastMessageTime()}
-              </span>
+              <span className="text-xs text-gray-500 font-medium">{formatLastMessageTime()}</span>
             )}
-            
+
             {/* Menu button */}
             {onMenuClick && (
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-6 w-6 p-0"
+                className="h-6 w-6 p-0 text-gray-400 hover:text-gray-600"
                 onClick={(e) => {
                   e.stopPropagation();
                   onMenuClick(conversation);
@@ -184,24 +179,23 @@ export function ConversationItem({
 
         <div className="flex items-center justify-between">
           {/* Last message preview */}
-          <p className="text-sm text-gray-600 truncate flex-1">
-            {getLastMessagePreview()}
-          </p>
+          <p className="text-sm text-gray-600 truncate flex-1">{getLastMessagePreview()}</p>
 
           {/* Unread count and read status */}
           <div className="flex items-center gap-1 ml-2">
             {conversation.unreadCount > 0 && (
-              <Badge variant="destructive" className="h-5 w-5 p-0 text-xs flex items-center justify-center">
+              <Badge
+                variant="destructive"
+                className="h-5 w-5 p-0 text-xs flex items-center justify-center bg-red-500 text-white rounded-full"
+              >
                 {conversation.unreadCount > 99 ? '99+' : conversation.unreadCount}
               </Badge>
             )}
-            
+
             {/* Read status indicator */}
-            {conversation.lastMessage && 
-             conversation.lastMessage.senderId === currentUserId && 
-             isLastMessageRead() && (
-              <CheckCheck className="h-4 w-4 text-blue-500" />
-            )}
+            {conversation.lastMessage &&
+              conversation.lastMessage.senderId === currentUserId &&
+              isLastMessageRead() && <CheckCheck className="h-4 w-4 text-blue-500" />}
           </div>
         </div>
       </div>

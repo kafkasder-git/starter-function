@@ -1,6 +1,6 @@
 /**
  * @fileoverview AppNavigation Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -10,10 +10,12 @@ import React from 'react';
 // Lazy loaded page components with better organization
 export const createLazyComponent = (
   importFn: () => Promise<{ default: React.ComponentType<Record<string, unknown>> }>,
-  displayName: string,
+  displayName: string
 ) => {
   const Component = React.lazy(importFn);
-  (Component as unknown as React.ComponentType<Record<string, unknown>> & { displayName: string }).displayName = displayName;
+  (
+    Component as unknown as React.ComponentType<Record<string, unknown>> & { displayName: string }
+  ).displayName = displayName;
   return Component;
 };
 
@@ -27,7 +29,7 @@ export const BeneficiariesPage = createLazyComponent(
     import('../pages/BeneficiariesPageEnhanced').then((m) => ({
       default: m.default,
     })),
-  'BeneficiariesPage',
+  'BeneficiariesPage'
 );
 
 export const BeneficiaryDetailPageComprehensive = createLazyComponent(
@@ -35,28 +37,28 @@ export const BeneficiaryDetailPageComprehensive = createLazyComponent(
     import('../pages/BeneficiaryDetailPageComprehensive').then((m) => ({
       default: m.default,
     })),
-  'BeneficiaryDetailPageComprehensive',
+  'BeneficiaryDetailPageComprehensive'
 );
 
 export const AidApplicationsPage = createLazyComponent(
   () => import('../pages/AidApplicationsPage').then((m) => ({ default: m.default })),
-  'AidApplicationsPage',
+  'AidApplicationsPage'
 );
 
 export const AllAidListPage = createLazyComponent(
   () => import('../pages/AllAidListPage').then((m) => ({ default: m.default })),
-  'AllAidListPage',
+  'AllAidListPage'
 );
 
 export const CashAidVaultPage = createLazyComponent(
   () => import('../pages/CashAidVaultPage').then((m) => ({ default: m.CashAidVaultPage })),
-  'CashAidVaultPage',
+  'CashAidVaultPage'
 );
 
 export const BankPaymentOrdersPage = createLazyComponent(
   () =>
     import('../pages/BankPaymentOrdersPage').then((m) => ({ default: m.BankPaymentOrdersPage })),
-  'BankPaymentOrdersPage',
+  'BankPaymentOrdersPage'
 );
 
 export const CashAidTransactionsPage = createLazyComponent(
@@ -64,7 +66,7 @@ export const CashAidTransactionsPage = createLazyComponent(
     import('../pages/CashAidTransactionsPage').then((m) => ({
       default: m.CashAidTransactionsPage,
     })),
-  'CashAidTransactionsPage',
+  'CashAidTransactionsPage'
 );
 
 export const InKindAidTransactionsPage = createLazyComponent(
@@ -72,78 +74,82 @@ export const InKindAidTransactionsPage = createLazyComponent(
     import('../pages/InKindAidTransactionsPage').then((m) => ({
       default: m.InKindAidTransactionsPage,
     })),
-  'InKindAidTransactionsPage',
+  'InKindAidTransactionsPage'
 );
 
 export const ServiceTrackingPage = createLazyComponent(
   () => import('../pages/ServiceTrackingPage').then((m) => ({ default: m.ServiceTrackingPage })),
-  'ServiceTrackingPage',
+  'ServiceTrackingPage'
 );
 
 export const HospitalReferralPage = createLazyComponent(
   () => import('../pages/HospitalReferralPage').then((m) => ({ default: m.HospitalReferralPage })),
-  'HospitalReferralPage',
+  'HospitalReferralPage'
 );
 
 export const ApplicationWorkflowPage = createLazyComponent(
   () => import('../pages/ApplicationWorkflowPage'),
-  'ApplicationWorkflowPage',
+  'ApplicationWorkflowPage'
 );
 
 export const DocumentManagementPage = createLazyComponent(
   () => import('../pages/DocumentManagementPage'),
-  'DocumentManagementPage',
+  'DocumentManagementPage'
 );
 
 export const InventoryManagementPage = createLazyComponent(
   () => import('../pages/InventoryManagementPage'),
-  'InventoryManagementPage',
+  'InventoryManagementPage'
 );
 
 export const AppointmentSchedulingPage = createLazyComponent(
   () => import('../pages/AppointmentSchedulingPage'),
-  'AppointmentSchedulingPage',
+  'AppointmentSchedulingPage'
 );
 
 export const CaseManagementPage = createLazyComponent(
   () => import('../pages/CaseManagementPage'),
-  'CaseManagementPage',
+  'CaseManagementPage'
 );
 
 export const DistributionTrackingPage = createLazyComponent(
   () => import('../pages/DistributionTrackingPage'),
-  'DistributionTrackingPage',
+  'DistributionTrackingPage'
 );
 
 // Donations (Bağış) Module
 export const DonationsPage = createLazyComponent(
   () => import('../pages/DonationsPage').then((m) => ({ default: m.default })),
-  'DonationsPage',
+  'DonationsPage'
 );
 
 export const KumbaraPage = createLazyComponent(
   () => import('../pages/KumbaraPage').then((m) => ({ default: m.default })),
-  'KumbaraPage',
+  'KumbaraPage'
 );
 
 // DonationReportsPage removed
 
-
 // Scholarship (Burs) Module
 export const BursStudentsPage = createLazyComponent(
   () => import('../pages/BursStudentsPage').then((m) => ({ default: m.default })),
-  'BursStudentsPage',
+  'BursStudentsPage'
 );
 
 export const BursApplicationsPage = createLazyComponent(
   () => import('../pages/BursApplicationsPage').then((m) => ({ default: m.default })),
-  'BursApplicationsPage',
+  'BursApplicationsPage'
+);
+
+export const OrphanListPage = createLazyComponent(
+  () => import('../pages/OrphanListPage').then((m) => ({ default: m.default })),
+  'OrphanListPage'
 );
 
 // Finance (Fon) Module
 export const FinanceIncomePage = createLazyComponent(
   () => import('../pages/FinanceIncomePage').then((m) => ({ default: m.default })),
-  'FinanceIncomePage',
+  'FinanceIncomePage'
 );
 
 // FinanceReportsPage removed
@@ -151,15 +157,14 @@ export const FinanceIncomePage = createLazyComponent(
 // Communication (Mesaj) Module
 
 export const InternalMessagingPage = createLazyComponent(
-  () =>
-    import('../pages/InternalMessagingPage').then((m) => ({ default: m.default })),
-  'InternalMessagingPage',
+  () => import('../pages/InternalMessagingPage').then((m) => ({ default: m.default })),
+  'InternalMessagingPage'
 );
 
 // Work/Events (İş) Module
 export const EventsPage = createLazyComponent(
   () => import('../pages/EventsPage').then((m) => ({ default: m.EventsPage })),
-  'EventsPage',
+  'EventsPage'
 );
 
 // MeetingsPage removed
@@ -174,7 +179,7 @@ export const LegalConsultationPage = createLazyComponent(
     import('../pages/LegalConsultationPage').then((m) => ({
       default: m.default,
     })),
-  'LegalConsultationPage',
+  'LegalConsultationPage'
 );
 
 export const LawyerAssignmentsPage = createLazyComponent(
@@ -182,7 +187,7 @@ export const LawyerAssignmentsPage = createLazyComponent(
     import('../pages/LawyerAssignmentsPage').then((m) => ({
       default: m.default,
     })),
-  'LawyerAssignmentsPage',
+  'LawyerAssignmentsPage'
 );
 
 export const LawsuitTrackingPage = createLazyComponent(
@@ -190,7 +195,7 @@ export const LawsuitTrackingPage = createLazyComponent(
     import('../pages/LawsuitTrackingPage').then((m) => ({
       default: m.default,
     })),
-  'LawsuitTrackingPage',
+  'LawsuitTrackingPage'
 );
 
 export const LegalDocumentsPage = createLazyComponent(
@@ -198,27 +203,25 @@ export const LegalDocumentsPage = createLazyComponent(
     import('../pages/LegalDocumentsPage').then((m) => ({
       default: m.default,
     })),
-  'LegalDocumentsPage',
+  'LegalDocumentsPage'
 );
 
 // LegalReportsPage removed
 
-
 // System Management Module
 export const ProfilePage = createLazyComponent(
   () => import('../pages/ProfilePage').then((m) => ({ default: m.default })),
-  'ProfilePage',
+  'ProfilePage'
 );
 
 export const SystemSettingsPage = createLazyComponent(
   () => import('../pages/SystemSettingsPage').then((m) => ({ default: m.default })),
-  'SystemSettingsPage',
+  'SystemSettingsPage'
 );
 
 export const UserManagementPage = createLazyComponent(
-  () =>
-    import('../pages/UserManagementPageReal').then((m) => ({ default: m.default })),
-  'UserManagementPage',
+  () => import('../pages/UserManagementPageReal').then((m) => ({ default: m.default })),
+  'UserManagementPage'
 );
 
 // Data Management
@@ -228,7 +231,7 @@ export const UserManagementPage = createLazyComponent(
 // Enhanced Dashboard
 export const EnhancedDashboard = createLazyComponent(
   () => import('../ui/EnhancedDashboard'),
-  'EnhancedDashboard',
+  'EnhancedDashboard'
 );
 
 // Reporting & Analytics Module - Removed (components deleted)
@@ -238,7 +241,7 @@ export const EnhancedDashboard = createLazyComponent(
  */
 /**
  * RouteConfig Interface
- * 
+ *
  * @interface RouteConfig
  */
 export interface RouteConfig {
@@ -337,10 +340,10 @@ export const ROUTE_REGISTRY: Record<string, Record<string, RouteConfig>> = {
     default: { component: DonationsPage, skeletonVariant: 'table' },
   },
 
-
   burs: {
     '/burs/ogrenciler': { component: BursStudentsPage, skeletonVariant: 'table' },
     '/burs/basvurular': { component: BursApplicationsPage, skeletonVariant: 'table' },
+    '/burs/yetim': { component: OrphanListPage, skeletonVariant: 'table' },
     default: { component: BursStudentsPage, skeletonVariant: 'table' },
   },
 
@@ -384,7 +387,6 @@ export const ROUTE_REGISTRY: Record<string, Record<string, RouteConfig>> = {
     default: { component: UserManagementPage, skeletonVariant: 'table' },
   },
 
-
   // Demo routes removed
 };
 
@@ -393,7 +395,7 @@ export const ROUTE_REGISTRY: Record<string, Record<string, RouteConfig>> = {
  */
 /**
  * getRouteConfig function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */

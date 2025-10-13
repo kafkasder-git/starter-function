@@ -612,11 +612,11 @@ export const useUIStore = create<UIStore>()(
             performanceMonitoring: state.performanceMonitoring,
           }),
           version: 1,
-        },
+        }
       ),
-      'ui-store',
-    ),
-  ),
+      'ui-store'
+    )
+  )
 );
 
 // Initialize theme on store creation

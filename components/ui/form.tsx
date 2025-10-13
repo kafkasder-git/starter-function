@@ -90,7 +90,11 @@ function FormDescription({ className, ...props }: React.ComponentProps<'p'>) {
   );
 }
 
-function FormHelperText({ className, variant = 'default', ...props }: React.ComponentProps<'p'> & { variant?: 'default' | 'error' | 'success' | 'warning' }) {
+function FormHelperText({
+  className,
+  variant = 'default',
+  ...props
+}: React.ComponentProps<'p'> & { variant?: 'default' | 'error' | 'success' | 'warning' }) {
   const { formDescriptionId } = useFormField();
   return (
     <p
@@ -102,7 +106,11 @@ function FormHelperText({ className, variant = 'default', ...props }: React.Comp
   );
 }
 
-function FormMessage({ className, variant, ...props }: React.ComponentProps<'p'> & { variant?: 'error' | 'success' | 'warning' }) {
+function FormMessage({
+  className,
+  variant,
+  ...props
+}: React.ComponentProps<'p'> & { variant?: 'error' | 'success' | 'warning' }) {
   const { error, formMessageId } = useFormField();
   const body = error ? String(error.message ?? '') : props.children;
   const messageVariant = variant || (error ? 'error' : 'default');

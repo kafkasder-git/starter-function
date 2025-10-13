@@ -40,7 +40,7 @@ export const VALIDATION_PATTERNS = {
 export const validateField = {
   required: (
     value: string | number | undefined | null,
-    fieldName: string,
+    fieldName: string
   ): FieldValidationResult => {
     if (!value || (typeof value === 'string' && value.trim() === '')) {
       return {
@@ -129,7 +129,7 @@ export const validateField = {
     value: string | number,
     min?: number,
     max?: number,
-    fieldName?: string,
+    fieldName?: string
   ): FieldValidationResult => {
     const numValue = typeof value === 'string' ? parseFloat(value) : value;
 
@@ -181,7 +181,8 @@ export const validateField = {
     return { isValid: true };
   },
 
-  futureDate: (value: string, fieldName?: string): FieldValidationResult => {
+  // Common date validation helper
+  private validateDate(value: string, fieldName?: string, comparison?: 'future' | 'past'): FieldValidationResult => {
     const date = new Date(value);
     const now = new Date();
 
@@ -192,28 +193,14 @@ export const validateField = {
       };
     }
 
-    if (date <= now) {
+    if (comparison === 'future' && date <= now) {
       return {
         isValid: false,
         error: `${fieldName ?? 'Tarih'} gelecek bir tarih olmalıdır`,
       };
     }
 
-    return { isValid: true };
-  },
-
-  pastDate: (value: string, fieldName?: string): FieldValidationResult => {
-    const date = new Date(value);
-    const now = new Date();
-
-    if (isNaN(date.getTime())) {
-      return {
-        isValid: false,
-        error: `${fieldName ?? 'Tarih'} geçerli bir tarih olmalıdır`,
-      };
-    }
-
-    if (date >= now) {
+    if (comparison === 'past' && date >= now) {
       return {
         isValid: false,
         error: `${fieldName ?? 'Tarih'} geçmiş bir tarih olmalıdır`,
@@ -221,6 +208,14 @@ export const validateField = {
     }
 
     return { isValid: true };
+  },
+
+  futureDate: (value: string, fieldName?: string): FieldValidationResult => {
+    return this.validateDate(value, fieldName, 'future');
+  },
+
+  pastDate: (value: string, fieldName?: string): FieldValidationResult => {
+    return this.validateDate(value, fieldName, 'past');
   },
 
   url: (value: string): FieldValidationResult => {
@@ -264,7 +259,7 @@ export type ValidationSchema = Record<
  */
 export const validateForm = (
   data: Record<string, string | number | boolean>,
-  schema: ValidationSchema,
+  schema: ValidationSchema
 ): ValidationResult => {
   const errors: string[] = [];
 
@@ -281,7 +276,7 @@ export const validateForm = (
     if (rules.required) {
       const result = validateField.required(
         typeof sanitizedValue === 'boolean' ? sanitizedValue.toString() : sanitizedValue,
-        fieldName,
+        fieldName
       );
       if (!result.isValid) {
         errors.push(result.error!);

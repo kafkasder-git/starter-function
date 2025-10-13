@@ -161,7 +161,7 @@ export function safeJsonParse<T>(json: string, fallback: T): T {
  */
 export function debounce<T extends (...args: unknown[]) => unknown>(
   func: T,
-  wait: number,
+  wait: number
 ): (...args: Parameters<T>) => void {
   let timeout: number;
   return (...args: Parameters<T>) => {

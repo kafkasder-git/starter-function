@@ -24,20 +24,20 @@ const SHORTCUTS: Shortcut[] = [
   { keys: ['Ctrl', 'S'], description: 'Kaydet', category: 'navigation' },
   { keys: ['Ctrl', 'Z'], description: 'Geri al', category: 'navigation' },
   { keys: ['Ctrl', 'Y'], description: 'İleri al', category: 'navigation' },
-  
+
   // Actions
   { keys: ['Enter'], description: 'Onayla/Seç', category: 'actions' },
   { keys: ['Escape'], description: 'İptal/Kapat', category: 'actions' },
   { keys: ['Tab'], description: 'İleri', category: 'actions' },
   { keys: ['Shift', 'Tab'], description: 'Geri', category: 'actions' },
   { keys: ['Delete'], description: 'Sil', category: 'actions' },
-  
+
   // Search
   { keys: ['/', 'F'], description: 'Arama yap', category: 'search' },
   { keys: ['Ctrl', 'F'], description: 'Sayfada ara', category: 'search' },
   { keys: ['F3'], description: 'Sonraki sonuç', category: 'search' },
   { keys: ['Shift', 'F3'], description: 'Önceki sonuç', category: 'search' },
-  
+
   // System
   { keys: ['F5'], description: 'Sayfayı yenile', category: 'system' },
   { keys: ['Ctrl', 'R'], description: 'Sayfayı yenile', category: 'system' },
@@ -77,13 +77,15 @@ export function KeyboardShortcuts({ isOpen, onClose }: KeyboardShortcutsProps) {
 
     if (isOpen) {
       document.addEventListener('keydown', handleKeyDown);
-      return () => { document.removeEventListener('keydown', handleKeyDown); };
+      return () => {
+        document.removeEventListener('keydown', handleKeyDown);
+      };
     }
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
-  const filteredShortcuts = SHORTCUTS.filter(shortcut => shortcut.category === selectedCategory);
+  const filteredShortcuts = SHORTCUTS.filter((shortcut) => shortcut.category === selectedCategory);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
@@ -112,7 +114,9 @@ export function KeyboardShortcuts({ isOpen, onClose }: KeyboardShortcutsProps) {
                 key={key}
                 variant={selectedCategory === key ? 'default' : 'outline'}
                 size="sm"
-                onClick={() => { setSelectedCategory(key as Shortcut['category']); }}
+                onClick={() => {
+                  setSelectedCategory(key as Shortcut['category']);
+                }}
                 className="text-xs"
               >
                 {label}
@@ -177,12 +181,18 @@ export function useKeyboardShortcuts() {
     };
 
     document.addEventListener('keydown', handleKeyDown);
-    return () => { document.removeEventListener('keydown', handleKeyDown); };
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
   }, []);
 
   return {
     isOpen,
-    openShortcuts: () => { setIsOpen(true); },
-    closeShortcuts: () => { setIsOpen(false); },
+    openShortcuts: () => {
+      setIsOpen(true);
+    },
+    closeShortcuts: () => {
+      setIsOpen(false);
+    },
   };
 }

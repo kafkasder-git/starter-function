@@ -100,7 +100,7 @@ export function usePagination({
       setCurrentPage(page);
       onPageChange?.(page);
     },
-    [totalPages, onPageChange],
+    [totalPages, onPageChange]
   );
 
   const goToFirstPage = useCallback(() => {
@@ -136,7 +136,7 @@ export function usePagination({
       const endIndex = startIndex + itemsPerPage;
       return items.slice(startIndex, endIndex);
     },
-    [currentPage, itemsPerPage],
+    [currentPage, itemsPerPage]
   );
 
   // Reset to first page (useful when filters change)
@@ -157,7 +157,7 @@ export function usePagination({
       setCurrentPage(newPage);
       onPageChange?.(newPage);
     },
-    [currentPage, itemsPerPage, onPageChange],
+    [currentPage, itemsPerPage, onPageChange]
   );
 
   // Get pagination info for display

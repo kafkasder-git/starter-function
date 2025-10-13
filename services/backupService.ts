@@ -44,16 +44,18 @@ class BackupService {
   /**
    * Create a full database backup
    */
-  async createBackup(options: BackupOptions = {}): Promise<{ data: BackupData | null; error: Error | null }> {
+  async createBackup(
+    options: BackupOptions = {}
+  ): Promise<{ data: BackupData | null; error: Error | null }> {
     try {
       logger.info('Starting database backup...');
-      
+
       const {
         collections: targetCollections = Object.values(collections),
         includeMetadata = true,
         compress = false,
         encrypt = false,
-        password
+        password,
       } = options;
 
       const backupId = ID.unique();
@@ -71,16 +73,16 @@ class BackupService {
           totalCollections: 0,
           version: '1.0.0',
           appVersion: this.APP_VERSION,
-        }
+        },
       };
 
       // Backup each collection
       for (const collectionId of targetCollections) {
         try {
           logger.info(`Backing up collection: ${collectionId}`);
-          
+
           const { data: documents, error } = await this.backupCollection(collectionId);
-          
+
           if (error) {
             logger.error(`Error backing up collection ${collectionId}:`, error);
             continue;
@@ -89,7 +91,6 @@ class BackupService {
           backupData.collections[collectionId] = documents || [];
           backupData.metadata.totalDocuments += documents?.length || 0;
           backupData.metadata.totalCollections++;
-
         } catch (error) {
           logger.error(`Error backing up collection ${collectionId}:`, error);
         }
@@ -114,21 +115,20 @@ class BackupService {
   /**
    * Backup a specific collection
    */
-  private async backupCollection(collectionId: string): Promise<{ data: any[] | null; error: Error | null }> {
+  private async backupCollection(
+    collectionId: string
+  ): Promise<{ data: any[] | null; error: Error | null }> {
     try {
       const documents: any[] = [];
       let offset = 0;
       const limit = 100;
 
       while (true) {
-        const result = await db.list(
-          collectionId,
-          [
-            queryHelpers.offset(offset),
-            queryHelpers.limit(limit),
-            queryHelpers.orderAsc('$createdAt')
-          ]
-        );
+        const result = await db.list(collectionId, [
+          queryHelpers.offset(offset),
+          queryHelpers.limit(limit),
+          queryHelpers.orderAsc('$createdAt'),
+        ]);
 
         if (result.error) {
           logger.error(`Error listing documents from ${collectionId}:`, result.error);
@@ -171,11 +171,7 @@ class BackupService {
         created_at: new Date().toISOString(),
       };
 
-      await db.create(
-        this.BACKUP_COLLECTION,
-        metadata,
-        ID.unique()
-      );
+      await db.create(this.BACKUP_COLLECTION, metadata, ID.unique());
 
       return { error: null };
     } catch (error) {
@@ -187,15 +183,18 @@ class BackupService {
   /**
    * Restore database from backup
    */
-  async restoreBackup(backupData: BackupData, options: RestoreOptions = {}): Promise<{ error: Error | null }> {
+  async restoreBackup(
+    backupData: BackupData,
+    options: RestoreOptions = {}
+  ): Promise<{ error: Error | null }> {
     try {
       logger.info(`Starting restore from backup: ${backupData.name}`);
-      
+
       const {
         collections: targetCollections = Object.keys(backupData.collections),
         overwriteExisting = false,
         validateData = true,
-        createMissingCollections = true
+        createMissingCollections = true,
       } = options;
 
       let restoredDocuments = 0;
@@ -210,7 +209,7 @@ class BackupService {
 
         try {
           logger.info(`Restoring collection: ${collectionId}`);
-          
+
           const { error } = await this.restoreCollection(
             collectionId,
             backupData.collections[collectionId],
@@ -224,13 +223,14 @@ class BackupService {
 
           restoredDocuments += backupData.collections[collectionId].length;
           restoredCollections++;
-
         } catch (error) {
           logger.error(`Error restoring collection ${collectionId}:`, error);
         }
       }
 
-      logger.info(`Restore completed: ${restoredCollections} collections, ${restoredDocuments} documents`);
+      logger.info(
+        `Restore completed: ${restoredCollections} collections, ${restoredDocuments} documents`
+      );
       return { error: null };
     } catch (error) {
       logger.error('Error restoring backup:', error);
@@ -273,17 +273,12 @@ class BackupService {
           const { $id, $createdAt, $updatedAt, $permissions, ...docData } = doc;
 
           // Create document
-          const result = await db.create(
-            collectionId,
-            docData,
-            $id
-          );
+          const result = await db.create(collectionId, docData, $id);
 
           if (result.error) {
             logger.error(`Error creating document ${$id}:`, result.error);
             continue;
           }
-
         } catch (error) {
           logger.error(`Error processing document ${doc.$id}:`, error);
         }
@@ -328,13 +323,10 @@ class BackupService {
    */
   async listBackups(): Promise<{ data: any[] | null; error: Error | null }> {
     try {
-      const result = await db.list(
-        this.BACKUP_COLLECTION,
-        [
-          queryHelpers.orderDesc('timestamp'),
-          queryHelpers.limit(50)
-        ]
-      );
+      const result = await db.list(this.BACKUP_COLLECTION, [
+        queryHelpers.orderDesc('timestamp'),
+        queryHelpers.limit(50),
+      ]);
 
       if (result.error) {
         logger.error('Error listing backups:', result.error);
@@ -353,10 +345,9 @@ class BackupService {
    */
   async getBackup(backupId: string): Promise<{ data: any | null; error: Error | null }> {
     try {
-      const result = await db.list(
-        this.BACKUP_COLLECTION,
-        [queryHelpers.equal('backup_id', backupId)]
-      );
+      const result = await db.list(this.BACKUP_COLLECTION, [
+        queryHelpers.equal('backup_id', backupId),
+      ]);
 
       if (result.error) {
         logger.error(`Error getting backup ${backupId}:`, result.error);
@@ -376,10 +367,9 @@ class BackupService {
    */
   async deleteBackup(backupId: string): Promise<{ error: Error | null }> {
     try {
-      const result = await db.list(
-        this.BACKUP_COLLECTION,
-        [queryHelpers.equal('backup_id', backupId)]
-      );
+      const result = await db.list(this.BACKUP_COLLECTION, [
+        queryHelpers.equal('backup_id', backupId),
+      ]);
 
       if (result.error) {
         logger.error(`Error finding backup ${backupId}:`, result.error);
@@ -392,7 +382,7 @@ class BackupService {
       }
 
       const deleteResult = await db.delete(this.BACKUP_COLLECTION, backup.$id);
-      
+
       if (deleteResult.error) {
         logger.error(`Error deleting backup ${backupId}:`, deleteResult.error);
         return { error: deleteResult.error };
@@ -409,7 +399,10 @@ class BackupService {
   /**
    * Export backup to file
    */
-  async exportBackup(backupData: BackupData, format: 'json' | 'csv' = 'json'): Promise<{ data: string | null; error: Error | null }> {
+  async exportBackup(
+    backupData: BackupData,
+    format: 'json' | 'csv' = 'json'
+  ): Promise<{ data: string | null; error: Error | null }> {
     try {
       if (format === 'json') {
         const jsonData = JSON.stringify(backupData, null, 2);
@@ -431,25 +424,30 @@ class BackupService {
    */
   private convertToCSV(backupData: BackupData): string {
     const lines: string[] = [];
-    
+
     // Add metadata
     lines.push('Collection,Document ID,Created At,Updated At,Data');
-    
+
     // Add documents
     for (const [collectionId, documents] of Object.entries(backupData.collections)) {
       for (const doc of documents) {
         const data = JSON.stringify(doc).replace(/"/g, '""');
-        lines.push(`"${collectionId}","${doc.$id}","${doc.$createdAt}","${doc.$updatedAt}","${data}"`);
+        lines.push(
+          `"${collectionId}","${doc.$id}","${doc.$createdAt}","${doc.$updatedAt}","${data}"`
+        );
       }
     }
-    
+
     return lines.join('\n');
   }
 
   /**
    * Import backup from file
    */
-  async importBackup(fileContent: string, format: 'json' | 'csv' = 'json'): Promise<{ data: BackupData | null; error: Error | null }> {
+  async importBackup(
+    fileContent: string,
+    format: 'json' | 'csv' = 'json'
+  ): Promise<{ data: BackupData | null; error: Error | null }> {
     try {
       if (format === 'json') {
         const backupData = JSON.parse(fileContent) as BackupData;
@@ -472,18 +470,20 @@ class BackupService {
   private parseFromCSV(csvContent: string): BackupData {
     const lines = csvContent.split('\n');
     const collections: Record<string, any[]> = {};
-    
+
     // Skip header line
     for (let i = 1; i < lines.length; i++) {
       const line = lines[i].trim();
       if (!line) continue;
-      
-      const [collectionId, docId, createdAt, updatedAt, data] = line.split('","').map(s => s.replace(/"/g, ''));
-      
+
+      const [collectionId, docId, createdAt, updatedAt, data] = line
+        .split('","')
+        .map((s) => s.replace(/"/g, ''));
+
       if (!collections[collectionId]) {
         collections[collectionId] = [];
       }
-      
+
       try {
         const doc = JSON.parse(data);
         collections[collectionId].push(doc);
@@ -491,7 +491,7 @@ class BackupService {
         logger.error('Error parsing document data:', error);
       }
     }
-    
+
     return {
       id: ID.unique(),
       name: `imported_backup_${new Date().toISOString()}`,
@@ -502,7 +502,7 @@ class BackupService {
         totalCollections: Object.keys(collections).length,
         version: '1.0.0',
         appVersion: this.APP_VERSION,
-      }
+      },
     };
   }
 
@@ -513,7 +513,7 @@ class BackupService {
     try {
       // This would integrate with a cron service or scheduled function
       logger.info(`Scheduled backup with cron: ${cronExpression}`);
-      
+
       // Store schedule in database
       await db.create(
         'backup_schedules',
@@ -538,10 +538,7 @@ class BackupService {
    */
   async getBackupStats(): Promise<{ data: any | null; error: Error | null }> {
     try {
-      const result = await db.list(
-        this.BACKUP_COLLECTION,
-        [queryHelpers.limit(1)]
-      );
+      const result = await db.list(this.BACKUP_COLLECTION, [queryHelpers.limit(1)]);
 
       if (result.error) {
         logger.error('Error getting backup stats:', result.error);
@@ -557,13 +554,10 @@ class BackupService {
 
       // Get last backup details
       if (stats.totalBackups > 0) {
-        const lastBackupResult = await db.list(
-          this.BACKUP_COLLECTION,
-          [
-            queryHelpers.orderDesc('timestamp'),
-            queryHelpers.limit(1)
-          ]
-        );
+        const lastBackupResult = await db.list(this.BACKUP_COLLECTION, [
+          queryHelpers.orderDesc('timestamp'),
+          queryHelpers.limit(1),
+        ]);
 
         if (lastBackupResult.data?.documents?.[0]) {
           stats.lastBackup = lastBackupResult.data.documents[0];

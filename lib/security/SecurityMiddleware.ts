@@ -23,7 +23,7 @@ export class SecureAPIClient {
   static async secureRequest(
     endpoint: string,
     options: RequestInit = {},
-    requiredPermission?: Permission,
+    requiredPermission?: Permission
   ): Promise<Response> {
     // Permission check
     if (requiredPermission && !PermissionManager.hasPermission(requiredPermission)) {
@@ -121,7 +121,7 @@ export class SecureAPIClient {
         method: 'POST',
         body: JSON.stringify(data),
       },
-      requiredPermission,
+      requiredPermission
     );
     return response.json();
   }
@@ -134,7 +134,7 @@ export class SecureAPIClient {
         method: 'PUT',
         body: JSON.stringify(data),
       },
-      requiredPermission,
+      requiredPermission
     );
     return response.json();
   }
@@ -303,7 +303,7 @@ export const useSecurityValidation = (initialData: Record<string, any> = {}) => 
     (
       field: string,
       value: any,
-      type: 'text' | 'html' | 'url' | 'email' | 'phone' | 'tcKimlik' | 'iban' = 'text',
+      type: 'text' | 'html' | 'url' | 'email' | 'phone' | 'tcKimlik' | 'iban' = 'text'
     ) => {
       // Sanitize input
       const sanitizedValue = InputSanitizer.sanitizeUserInput(value, type);
@@ -333,7 +333,7 @@ export const useSecurityValidation = (initialData: Record<string, any> = {}) => 
 
       setData((prev) => ({ ...prev, [field]: sanitizedValue }));
     },
-    [],
+    []
   );
 
   const validateAll = React.useCallback(() => {

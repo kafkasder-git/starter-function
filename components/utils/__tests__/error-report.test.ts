@@ -48,7 +48,7 @@ describe('getEnvironmentInfo', () => {
     expect(environment.userId).toBe('anonymous');
     expect(warnSpy).toHaveBeenCalledWith(
       '[EnhancedErrorBoundary] Unable to access user_id from storage:',
-      expect.any(Error),
+      expect.any(Error)
     );
 
     warnSpy.mockRestore();

@@ -6,25 +6,31 @@ vi.mock('../../lib/database', () => ({
     from: vi.fn(() => ({
       select: vi.fn(() => ({
         eq: vi.fn(() => ({
-          single: vi.fn(() => Promise.resolve({
-            data: { id: '1', amount: 1000, donor_name: 'Test Donor' },
+          single: vi.fn(() =>
+            Promise.resolve({
+              data: { id: '1', amount: 1000, donor_name: 'Test Donor' },
+              error: null,
+            })
+          ),
+        })),
+        order: vi.fn(() =>
+          Promise.resolve({
+            data: [
+              { id: '1', amount: 1000, donor_name: 'Test Donor' },
+              { id: '2', amount: 2000, donor_name: 'John Doe' },
+            ],
             error: null,
-          })),
-        })),
-        order: vi.fn(() => Promise.resolve({
-          data: [
-            { id: '1', amount: 1000, donor_name: 'Test Donor' },
-            { id: '2', amount: 2000, donor_name: 'John Doe' },
-          ],
-          error: null,
-        })),
+          })
+        ),
       })),
       insert: vi.fn(() => ({
         select: vi.fn(() => ({
-          single: vi.fn(() => Promise.resolve({
-            data: { id: '3', amount: 500, donor_name: 'New Donor' },
-            error: null,
-          })),
+          single: vi.fn(() =>
+            Promise.resolve({
+              data: { id: '3', amount: 500, donor_name: 'New Donor' },
+              error: null,
+            })
+          ),
         })),
       })),
     })),
@@ -39,7 +45,7 @@ describe('DonationsService', () => {
   describe('getDonations', () => {
     it('should fetch all donations', async () => {
       const result = await donationsService.getDonations();
-      
+
       expect(result.data).toBeDefined();
       expect(Array.isArray(result.data)).toBe(true);
       expect(result.error).toBeNull();
@@ -50,7 +56,7 @@ describe('DonationsService', () => {
         startDate: '2024-01-01',
         endDate: '2024-12-31',
       };
-      
+
       const result = await donationsService.getDonations(filters);
       expect(result.data).toBeDefined();
     });
@@ -59,7 +65,7 @@ describe('DonationsService', () => {
       const filters = {
         donor_type: 'Bireysel',
       };
-      
+
       const result = await donationsService.getDonations(filters);
       expect(result.data).toBeDefined();
     });
@@ -68,7 +74,7 @@ describe('DonationsService', () => {
   describe('getDonation', () => {
     it('should fetch single donation', async () => {
       const result = await donationsService.getDonation('1');
-      
+
       expect(result.data).toBeDefined();
       expect(result.data?.id).toBe('1');
       expect(result.error).toBeNull();
@@ -85,9 +91,9 @@ describe('DonationsService', () => {
         payment_method: 'Nakit',
         payment_date: '2024-01-15',
       };
-      
+
       const result = await donationsService.createDonation(donationData);
-      
+
       expect(result.data).toBeDefined();
       expect(result.data?.amount).toBe(500);
       expect(result.error).toBeNull();
@@ -98,7 +104,7 @@ describe('DonationsService', () => {
         donor_name: 'Test',
         amount: -100,
       };
-      
+
       try {
         await donationsService.createDonation(invalidData as any);
       } catch (error) {
@@ -110,7 +116,7 @@ describe('DonationsService', () => {
   describe('getDonationStats', () => {
     it('should return donation statistics', async () => {
       const stats = await donationsService.getDonationStats();
-      
+
       expect(stats).toBeDefined();
       expect(typeof stats.total).toBe('number');
       expect(typeof stats.totalAmount).toBe('number');
@@ -118,7 +124,7 @@ describe('DonationsService', () => {
 
     it('should calculate monthly totals', async () => {
       const stats = await donationsService.getDonationStats();
-      
+
       expect(stats.monthly).toBeDefined();
       expect(Array.isArray(stats.monthly)).toBe(true);
     });
@@ -127,7 +133,7 @@ describe('DonationsService', () => {
   describe('exportDonations', () => {
     it('should export donations as CSV', async () => {
       const result = await donationsService.exportDonations('csv');
-      
+
       expect(result).toBeDefined();
       expect(typeof result).toBe('string');
     });

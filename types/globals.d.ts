@@ -15,7 +15,7 @@ declare module 'sonner' {
       description?: string;
       duration?: number;
       type?: 'success' | 'error' | 'info' | 'warning';
-    },
+    }
   ): void;
 
   export function Toaster(): JSX.Element;
@@ -28,7 +28,7 @@ declare module 'sonner' {
         description?: string;
         duration?: number;
         type?: 'success' | 'error' | 'info' | 'warning';
-      },
+      }
     ): void;
 
     success: (message: string, options?: { description?: string; duration?: number }) => void;
@@ -43,7 +43,7 @@ declare module 'sonner' {
         loading: string;
         success: string | ((data: T) => string);
         error: string | ((error: Error) => string);
-      },
+      }
     ) => Promise<T>;
   }
 
@@ -63,7 +63,7 @@ declare module 'sonner' {
         loading: string;
         success: string | ((data: T) => string);
         error: string | ((error: Error) => string);
-      },
+      }
     ): Promise<T>;
   }
 }
@@ -289,11 +289,16 @@ declare module 'react-hook-form@7.55.0' {
       touchedFields: Record<string, unknown>;
       dirtyFields: Record<string, unknown>;
     };
-    getFieldState: (name: string) => { isDirty: boolean; isTouched: boolean; invalid: boolean; error?: unknown };
+    getFieldState: (name: string) => {
+      isDirty: boolean;
+      isTouched: boolean;
+      invalid: boolean;
+      error?: unknown;
+    };
     getValues: (payload?: string | string[]) => TFieldValues;
     handleSubmit: (
       onValid: (data: TFieldValues) => void,
-      onInvalid?: (errors: any) => void,
+      onInvalid?: (errors: any) => void
     ) => (e?: any) => void;
     register: (name: string, options?: any) => any;
     reset: (values?: TFieldValues, options?: any) => void;
@@ -306,7 +311,7 @@ declare module 'react-hook-form@7.55.0' {
   }
 
   export function useForm<TFieldValues = Record<string, any>>(
-    props?: UseFormProps<TFieldValues>,
+    props?: UseFormProps<TFieldValues>
   ): UseFormReturn<TFieldValues>;
   export function useFormContext<TFieldValues = Record<string, any>>(): UseFormReturn<TFieldValues>;
   export function useController(props: any): any;

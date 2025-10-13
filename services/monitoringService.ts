@@ -30,7 +30,7 @@ export const monitoring = {
     method: string,
     duration: number,
     status: number,
-    data?: Record<string, unknown>,
+    data?: Record<string, unknown>
   ) => {
     logger.info('API call tracked:', { endpoint, method, duration, status, data });
   },

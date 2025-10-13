@@ -97,67 +97,67 @@ export const colorTokens = {
 
 // Spacing Scale (consistent with 8px grid)
 export const spacingTokens = {
-  xs: '0.25rem',   // 4px
-  sm: '0.5rem',    // 8px
-  md: '1rem',      // 16px
-  lg: '1.5rem',    // 24px
-  xl: '2rem',      // 32px
+  xs: '0.25rem', // 4px
+  sm: '0.5rem', // 8px
+  md: '1rem', // 16px
+  lg: '1.5rem', // 24px
+  xl: '2rem', // 32px
   '2xl': '2.5rem', // 40px
-  '3xl': '3rem',   // 48px
-  '4xl': '4rem',   // 64px
-  '5xl': '5rem',   // 80px
-  '6xl': '6rem',   // 96px
+  '3xl': '3rem', // 48px
+  '4xl': '4rem', // 64px
+  '5xl': '5rem', // 80px
+  '6xl': '6rem', // 96px
 } as const;
 
 // Typography Scale
 export const typographyTokens = {
   xs: {
-    fontSize: '0.75rem',    // 12px
-    lineHeight: '1rem',     // 16px
+    fontSize: '0.75rem', // 12px
+    lineHeight: '1rem', // 16px
     letterSpacing: '0.025em',
   },
   sm: {
-    fontSize: '0.875rem',   // 14px
-    lineHeight: '1.25rem',  // 20px
+    fontSize: '0.875rem', // 14px
+    lineHeight: '1.25rem', // 20px
     letterSpacing: '0.025em',
   },
   base: {
-    fontSize: '1rem',       // 16px
-    lineHeight: '1.5rem',   // 24px
+    fontSize: '1rem', // 16px
+    lineHeight: '1.5rem', // 24px
     letterSpacing: '0',
   },
   lg: {
-    fontSize: '1.125rem',   // 18px
-    lineHeight: '1.75rem',  // 28px
+    fontSize: '1.125rem', // 18px
+    lineHeight: '1.75rem', // 28px
     letterSpacing: '-0.025em',
   },
   xl: {
-    fontSize: '1.25rem',    // 20px
-    lineHeight: '1.75rem',  // 28px
+    fontSize: '1.25rem', // 20px
+    lineHeight: '1.75rem', // 28px
     letterSpacing: '-0.025em',
   },
   '2xl': {
-    fontSize: '1.5rem',     // 24px
-    lineHeight: '2rem',     // 32px
+    fontSize: '1.5rem', // 24px
+    lineHeight: '2rem', // 32px
     letterSpacing: '-0.025em',
   },
   '3xl': {
-    fontSize: '1.875rem',   // 30px
-    lineHeight: '2.25rem',  // 36px
+    fontSize: '1.875rem', // 30px
+    lineHeight: '2.25rem', // 36px
     letterSpacing: '-0.025em',
   },
   '4xl': {
-    fontSize: '2.25rem',    // 36px
-    lineHeight: '2.5rem',   // 40px
+    fontSize: '2.25rem', // 36px
+    lineHeight: '2.5rem', // 40px
     letterSpacing: '-0.025em',
   },
   '5xl': {
-    fontSize: '3rem',       // 48px
+    fontSize: '3rem', // 48px
     lineHeight: '1',
     letterSpacing: '-0.025em',
   },
   '6xl': {
-    fontSize: '3.75rem',    // 60px
+    fontSize: '3.75rem', // 60px
     lineHeight: '1',
     letterSpacing: '-0.025em',
   },
@@ -179,12 +179,12 @@ export const fontWeightTokens = {
 // Border Radius Scale
 export const radiusTokens = {
   none: '0',
-  xs: '0.125rem',  // 2px
-  sm: '0.25rem',   // 4px
-  md: '0.375rem',  // 6px
-  lg: '0.5rem',    // 8px
-  xl: '0.75rem',   // 12px
-  '2xl': '1rem',   // 16px
+  xs: '0.125rem', // 2px
+  sm: '0.25rem', // 4px
+  md: '0.375rem', // 6px
+  lg: '0.5rem', // 8px
+  xl: '0.75rem', // 12px
+  '2xl': '1rem', // 16px
   '3xl': '1.5rem', // 24px
   full: '9999px',
 } as const;
@@ -236,8 +236,8 @@ export const accessibilityTokens = {
   // Color contrast ratios (WCAG AA compliance)
   contrast: {
     normal: '4.5', // 4.5:1 for normal text
-    large: '3',    // 3:1 for large text (18pt+ or 14pt+ bold)
-    ui: '3',       // 3:1 for UI components
+    large: '3', // 3:1 for large text (18pt+ or 14pt+ bold)
+    ui: '3', // 3:1 for UI components
   },
 
   // Animation preferences
@@ -381,7 +381,10 @@ export function generateCSSVariables() {
 }
 
 // Utility function to get semantic color for a given context
-export function getSemanticColor(context: 'success' | 'error' | 'warning' | 'info', shade: keyof typeof colorTokens.success = 500) {
+export function getSemanticColor(
+  context: 'success' | 'error' | 'warning' | 'info',
+  shade: keyof typeof colorTokens.success = 500
+) {
   return `hsl(var(--${context}-${shade}))`;
 }
 

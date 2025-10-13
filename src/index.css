@@ -1,5 +1,5 @@
 /* Global CSS Reset and Base Styles */
-@import "tailwindcss";
+@import 'tailwindcss';
 
 /* CSS Variables for theming */
 :root {
@@ -55,7 +55,9 @@
 body {
   color: hsl(var(--foreground));
   background: hsl(var(--background));
-  font-feature-settings: "rlig" 1, "calt" 1;
+  font-feature-settings:
+    'rlig' 1,
+    'calt' 1;
 }
 
 /* Scrollbar styles */

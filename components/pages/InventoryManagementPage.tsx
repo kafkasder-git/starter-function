@@ -97,7 +97,12 @@ const mapPartnerToAssociationPartner = (partner: any): AssociationPartner => {
     phone: partner.phone || '',
     email: partner.email || '',
     address: partner.address || '',
-    status: partner.status === 'active' ? 'aktif' : partner.status === 'inactive' ? 'pasif' : 'işbirliği-arayışı',
+    status:
+      partner.status === 'active'
+        ? 'aktif'
+        : partner.status === 'inactive'
+          ? 'pasif'
+          : 'işbirliği-arayışı',
     collaborationType: 'network' as AssociationPartner['collaborationType'], // Default
     establishedDate: partner.relationship_start,
     memberCount: undefined, // Not in Partner
@@ -178,9 +183,9 @@ export default function PartnerAssociationsPage() {
           association.contactPerson.toLowerCase().includes(searchLower) ||
           association.location.toLowerCase().includes(searchLower) ||
           association.specialties.some((specialty) =>
-            specialty.toLowerCase().includes(searchLower),
+            specialty.toLowerCase().includes(searchLower)
           ) ||
-          association.tags.some((tag) => tag.toLowerCase().includes(searchLower)),
+          association.tags.some((tag) => tag.toLowerCase().includes(searchLower))
       );
     }
 
@@ -204,7 +209,7 @@ export default function PartnerAssociationsPage() {
       filtered = filtered.filter((association) => association.status === 'aktif');
     } else if (activeTab === 'large') {
       filtered = filtered.filter(
-        (association) => association.memberCount && association.memberCount >= 100,
+        (association) => association.memberCount && association.memberCount >= 100
       );
     } else if (activeTab === 'collaborative') {
       filtered = filtered.filter((association) => association.sharedProjects.length > 0);
@@ -272,7 +277,13 @@ export default function PartnerAssociationsPage() {
         className = 'bg-gray-50 text-gray-700';
     }
 
-    return <Badge className={`${className} border border-gray-200 dark:border-gray-700 dark:bg-gray-900 px-2 py-1 text-xs`}>{label}</Badge>;
+    return (
+      <Badge
+        className={`${className} border border-gray-200 dark:border-gray-700 dark:bg-gray-900 px-2 py-1 text-xs`}
+      >
+        {label}
+      </Badge>
+    );
   };
 
   const getFocusAreaBadge = (area: AssociationPartner['focusArea']) => {
@@ -353,10 +364,10 @@ export default function PartnerAssociationsPage() {
   const activeAssociations = associationsList.filter((a) => a.status === 'aktif').length;
   const totalMembers = associationsList.reduce((sum, a) => sum + (a.memberCount ?? 0), 0);
   const collaborativeAssociations = associationsList.filter(
-    (a) => a.sharedProjects.length > 0,
+    (a) => a.sharedProjects.length > 0
   ).length;
   const largeAssociations = associationsList.filter(
-    (a) => a.memberCount && a.memberCount >= 100,
+    (a) => a.memberCount && a.memberCount >= 100
   ).length;
 
   if (loading) {

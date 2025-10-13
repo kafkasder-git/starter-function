@@ -109,7 +109,8 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
               Yardım operasyonlarınızı tek panelden yönetin
             </h1>
             <p className="max-w-xl text-base text-primary-100/80 sm:text-lg">
-              Gönüllüler, bağışçılar ve yardım süreçleri için tasarlanmış kurumsal yönetim sistemiyle ekiplerinizi tek merkezden koordine edin.
+              Gönüllüler, bağışçılar ve yardım süreçleri için tasarlanmış kurumsal yönetim
+              sistemiyle ekiplerinizi tek merkezden koordine edin.
             </p>
           </div>
 
@@ -121,7 +122,9 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
                 </span>
                 <div className="space-y-1">
                   <p className="text-sm font-semibold text-white">Gönüllü ağı</p>
-                  <p className="text-xs text-primary-100/75">Yetkilendirilmiş ekip üyelerinizi tek panelden yönetin.</p>
+                  <p className="text-xs text-primary-100/75">
+                    Yetkilendirilmiş ekip üyelerinizi tek panelden yönetin.
+                  </p>
                 </div>
               </div>
             </div>
@@ -133,7 +136,9 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
                 </span>
                 <div className="space-y-1">
                   <p className="text-sm font-semibold text-white">Etkin yardımlar</p>
-                  <p className="text-xs text-primary-100/75">Bağışların etkisini ve dağıtım süreçlerini gerçek zamanlı takip edin.</p>
+                  <p className="text-xs text-primary-100/75">
+                    Bağışların etkisini ve dağıtım süreçlerini gerçek zamanlı takip edin.
+                  </p>
                 </div>
               </div>
             </div>
@@ -145,7 +150,9 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
                 </span>
                 <div className="space-y-1">
                   <p className="text-sm font-semibold text-white">Analitik içgörüler</p>
-                  <p className="text-xs text-primary-100/75">Bağış, yardım ve kampanya performansını detaylı raporlarla analiz edin.</p>
+                  <p className="text-xs text-primary-100/75">
+                    Bağış, yardım ve kampanya performansını detaylı raporlarla analiz edin.
+                  </p>
                 </div>
               </div>
             </div>
@@ -155,7 +162,9 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
             <Shield className="h-5 w-5 text-white" />
             <div className="space-y-1">
               <p className="font-semibold text-white">Appwrite destekli güvenlik</p>
-              <p className="text-sm text-primary-100/75">Rol tabanlı erişim ve oturum kontrolleriyle verileriniz koruma altında.</p>
+              <p className="text-sm text-primary-100/75">
+                Rol tabanlı erişim ve oturum kontrolleriyle verileriniz koruma altında.
+              </p>
             </div>
           </div>
         </motion.section>
@@ -173,8 +182,12 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
                   <Shield className="h-6 w-6" />
                 </div>
                 <div className="space-y-1">
-                  <span className="text-xs font-semibold uppercase tracking-[0.35em] text-primary-600">Yönetim Girişi</span>
-                  <CardTitle className="text-3xl font-semibold leading-tight text-neutral-900">Dernek Yönetim Sistemi</CardTitle>
+                  <span className="text-xs font-semibold uppercase tracking-[0.35em] text-primary-600">
+                    Yönetim Girişi
+                  </span>
+                  <CardTitle className="text-3xl font-semibold leading-tight text-neutral-900">
+                    Dernek Yönetim Sistemi
+                  </CardTitle>
                 </div>
               </div>
               <CardDescription className="text-sm text-neutral-600">
@@ -272,7 +285,10 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
                 </div>
 
                 <div className="flex items-center">
-                  <label htmlFor="rememberMe" className="flex items-center gap-2 text-sm text-neutral-600">
+                  <label
+                    htmlFor="rememberMe"
+                    className="flex items-center gap-2 text-sm text-neutral-600"
+                  >
                     <input
                       id="rememberMe"
                       type="checkbox"
@@ -289,12 +305,12 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
 
                 <Button
                   type="submit"
-                  variant="primaryGradient"
+                  variant="default"
                   size="xl"
                   fullWidth
+                  className="corporate-gradient shadow-lg shadow-primary-500/25"
                   loading={isLoading}
                   loadingText="Giriş yapılıyor..."
-                  className="shadow-lg shadow-primary-500/25"
                 >
                   Giriş Yap
                 </Button>

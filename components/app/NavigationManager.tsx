@@ -1,6 +1,6 @@
 /**
  * @fileoverview NavigationManager Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -12,7 +12,7 @@ import monitoringService from '../../services/monitoringService';
 
 /**
  * NavigationState Interface
- * 
+ *
  * @interface NavigationState
  */
 export interface NavigationState {
@@ -25,7 +25,7 @@ export interface NavigationState {
 
 /**
  * NavigationActions Interface
- * 
+ *
  * @interface NavigationActions
  */
 export interface NavigationActions {
@@ -45,13 +45,13 @@ export interface NavigationActions {
   // Demo navigation functions removed
 }
 
-interface NavigationContextType extends NavigationState, NavigationActions { }
+interface NavigationContextType extends NavigationState, NavigationActions {}
 
 const NavigationContext = createContext<NavigationContextType | undefined>(undefined);
 
 /**
  * useNavigation function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -72,7 +72,7 @@ interface NavigationProviderProps {
 
 /**
  * NavigationProvider function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -120,30 +120,24 @@ export function NavigationProvider({
       monitoringService.trackFeatureUsage('navigation', 'module_change', { moduleId });
       updatePreference('lastModule', moduleId);
     },
-    [updatePreference],
+    [updatePreference]
   );
 
-  const setCurrentPage = useCallback(
-    (page: string) => {
-      setNavigationState((prev) => ({
-        ...prev,
-        currentPage: page,
-        loading: false,
-      }));
-    },
-    [],
-  );
+  const setCurrentPage = useCallback((page: string) => {
+    setNavigationState((prev) => ({
+      ...prev,
+      currentPage: page,
+      loading: false,
+    }));
+  }, []);
 
-  const setCurrentSubPage = useCallback(
-    (subPage: string) => {
-      setNavigationState((prev) => ({
-        ...prev,
-        currentSubPage: subPage,
-        loading: false,
-      }));
-    },
-    [],
-  );
+  const setCurrentSubPage = useCallback((subPage: string) => {
+    setNavigationState((prev) => ({
+      ...prev,
+      currentSubPage: subPage,
+      loading: false,
+    }));
+  }, []);
 
   const setLoading = useCallback((isLoading: boolean) => {
     setNavigationState((prev) => ({ ...prev, loading: isLoading }));
@@ -160,7 +154,7 @@ export function NavigationProvider({
       setSelectedBeneficiaryId(id);
       setCurrentPage('detail');
     },
-    [setSelectedBeneficiaryId, setCurrentPage],
+    [setSelectedBeneficiaryId, setCurrentPage]
   );
 
   const backToBeneficiariesList = useCallback(() => {
@@ -172,14 +166,14 @@ export function NavigationProvider({
     (href: string) => {
       setCurrentSubPage(href);
     },
-    [setCurrentSubPage],
+    [setCurrentSubPage]
   );
 
   const moduleChange = useCallback(
     (moduleId: string) => {
       setActiveModule(moduleId);
     },
-    [setActiveModule],
+    [setActiveModule]
   );
 
   const navigateToProfile = useCallback(() => {
@@ -254,11 +248,10 @@ export function NavigationProvider({
       backToMain,
       navigateToUserManagement,
       // Demo navigation functions removed
-    ],
+    ]
   );
 
   return React.createElement(NavigationContext.Provider, { value: contextValue }, children);
-
 }
 
 export default NavigationProvider;

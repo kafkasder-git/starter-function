@@ -217,7 +217,10 @@ export class DataProcessor {
     throw new Error(`${context} failed: ${message}`);
   }
 
-  private static validateInput<T extends Record<string, unknown>>(data: T[], context: string): void {
+  private static validateInput<T extends Record<string, unknown>>(
+    data: T[],
+    context: string
+  ): void {
     if (!Array.isArray(data)) {
       throw new Error(`${context}: Data must be an array`);
     }
@@ -236,7 +239,7 @@ export class DataProcessor {
     data: T[],
     groupBy: keyof T,
     aggregationType: keyof typeof DataProcessor.aggregationStrategies = 'sum',
-    valueField?: keyof T,
+    valueField?: keyof T
   ): Record<string, number> {
     try {
       // Use validateInput helper
@@ -261,7 +264,7 @@ export class DataProcessor {
 
       if (!strategy) {
         throw new Error(
-          `Unsupported aggregation type: ${aggregationType}. Supported types: ${Object.keys(this.aggregationStrategies).join(', ')}`,
+          `Unsupported aggregation type: ${aggregationType}. Supported types: ${Object.keys(this.aggregationStrategies).join(', ')}`
         );
       }
 
@@ -299,7 +302,7 @@ export class DataProcessor {
     data: T[],
     dateField: string,
     valueField: string,
-    dateRange?: DateRange,
+    dateRange?: DateRange
   ): TimeSeriesData[] {
     this.validateInput(data, 'generateTimeSeries');
     let filteredData = data;
@@ -330,7 +333,7 @@ export class DataProcessor {
         values: {
           [valueField]: grouped[date].reduce(
             (sum: number, item: T) => sum + (Number(item[valueField]) || 0),
-            0,
+            0
           ),
         },
       }));
@@ -340,7 +343,7 @@ export class DataProcessor {
   static generateCategoryData<T extends Record<string, unknown>>(
     data: T[],
     categoryField: string,
-    valueField: string,
+    valueField: string
   ): CategoryData[] {
     const grouped = this.aggregateData(data, categoryField, 'sum', valueField);
     const total = Object.values(grouped).reduce((sum, value) => sum + value, 0);
@@ -357,10 +360,16 @@ export class DataProcessor {
   static generateComparisonData<T extends Record<string, unknown>>(
     currentData: T[],
     previousData: T[],
-    valueField: string,
+    valueField: string
   ): ComparisonData {
-    const current = currentData.reduce((sum, item) => sum + (Number((item as Record<string, unknown>)[valueField]) || 0), 0);
-    const previous = previousData.reduce((sum, item) => sum + (Number((item as Record<string, unknown>)[valueField]) || 0), 0);
+    const current = currentData.reduce(
+      (sum, item) => sum + (Number((item as Record<string, unknown>)[valueField]) || 0),
+      0
+    );
+    const previous = previousData.reduce(
+      (sum, item) => sum + (Number((item as Record<string, unknown>)[valueField]) || 0),
+      0
+    );
     const change = current - previous;
     const changePercent = previous > 0 ? (change / previous) * 100 : 0;
 
@@ -373,7 +382,10 @@ export class DataProcessor {
   }
 
   // Metrik verisi oluşturma
-  static generateMetrics<T extends Record<string, unknown>>(data: T[], config: { key: string; field?: string; aggregationType?: string; format?: string }[]): MetricData[] {
+  static generateMetrics<T extends Record<string, unknown>>(
+    data: T[],
+    config: { key: string; field?: string; aggregationType?: string; format?: string }[]
+  ): MetricData[] {
     this.validateInput(data, 'generateMetrics');
 
     if (!Array.isArray(config)) {
@@ -391,12 +403,12 @@ export class DataProcessor {
   }
 
   private static generateSingleMetric<T extends Record<string, unknown>>(
-    data: T[], 
-    metricConfig: { 
-      key: string; 
-      field?: string; 
-      aggregationType?: string; 
-      format?: 'number' | 'currency' | 'percentage' 
+    data: T[],
+    metricConfig: {
+      key: string;
+      field?: string;
+      aggregationType?: string;
+      format?: 'number' | 'currency' | 'percentage';
     }
   ): MetricData {
     const { key, field, aggregationType = 'sum', format = 'number' } = metricConfig;
@@ -420,7 +432,11 @@ export class DataProcessor {
     };
   }
 
-  private static calculateMetricValue<T extends Record<string, unknown>>(data: T[], field: string, aggregationType: string): number {
+  private static calculateMetricValue<T extends Record<string, unknown>>(
+    data: T[],
+    field: string,
+    aggregationType: string
+  ): number {
     if (!data.length) return 0;
 
     const strategy =
@@ -504,7 +520,16 @@ export class DataProcessor {
     };
   }
 
-  private static itemPassesFilters<T extends Record<string, unknown>>(item: T, context: { dateRange?: DateRange; categories?: Set<string> | null | undefined; statusSet?: Set<string> | null | undefined; amountRange?: { min: number; max: number }; searchTerm?: string }): boolean {
+  private static itemPassesFilters<T extends Record<string, unknown>>(
+    item: T,
+    context: {
+      dateRange?: DateRange;
+      categories?: Set<string> | null | undefined;
+      statusSet?: Set<string> | null | undefined;
+      amountRange?: { min: number; max: number };
+      searchTerm?: string;
+    }
+  ): boolean {
     return (
       this.passesDateFilter(item, context.dateRange) &&
       this.passesCategoryFilter(item, context.categories ?? null) &&
@@ -514,24 +539,33 @@ export class DataProcessor {
     );
   }
 
-  private static passesDateFilter<T extends Record<string, unknown>>(item: T, dateRange?: DateRange): boolean {
+  private static passesDateFilter<T extends Record<string, unknown>>(
+    item: T,
+    dateRange?: DateRange
+  ): boolean {
     if (!dateRange) return true;
 
     const itemDate = new Date(String(item.created_at || item.date));
     return !isNaN(itemDate.getTime()) && itemDate >= dateRange.start && itemDate <= dateRange.end;
   }
 
-  private static passesCategoryFilter<T extends Record<string, unknown>>(item: T, categories: Set<string> | null): boolean {
+  private static passesCategoryFilter<T extends Record<string, unknown>>(
+    item: T,
+    categories: Set<string> | null
+  ): boolean {
     return !categories || categories.has(String(item.category || item.type));
   }
 
-  private static passesStatusFilter<T extends Record<string, unknown>>(item: T, statusSet: Set<string> | null): boolean {
+  private static passesStatusFilter<T extends Record<string, unknown>>(
+    item: T,
+    statusSet: Set<string> | null
+  ): boolean {
     return !statusSet || statusSet.has(String(item.status));
   }
 
   private static passesAmountFilter<T extends Record<string, unknown>>(
     item: T,
-    amountRange?: { min: number; max: number },
+    amountRange?: { min: number; max: number }
   ): boolean {
     if (!amountRange) return true;
 
@@ -539,7 +573,10 @@ export class DataProcessor {
     return amount >= amountRange.min && amount <= amountRange.max;
   }
 
-  private static passesSearchFilter<T extends Record<string, unknown>>(item: T, searchTerm?: string): boolean {
+  private static passesSearchFilter<T extends Record<string, unknown>>(
+    item: T,
+    searchTerm?: string
+  ): boolean {
     if (!searchTerm) return true;
 
     const searchableValues = Object.values(item)
@@ -550,15 +587,18 @@ export class DataProcessor {
   }
 
   // Basit trend hesaplama
-  private static calculateTrend<T extends Record<string, unknown>>(data: T[], field: string): 'up' | 'down' | 'stable' {
+  private static calculateTrend<T extends Record<string, unknown>>(
+    data: T[],
+    field: string
+  ): 'up' | 'down' | 'stable' {
     if (data.length < this.CONFIG.MIN_TREND_CALCULATION_SIZE) return 'stable';
 
     try {
       const sortedData = [...data].sort((a, b) => {
-         const dateA = new Date(String(a.created_at || a.date)).getTime();
-         const dateB = new Date(String(b.created_at || b.date)).getTime();
-         return dateA - dateB;
-       });
+        const dateA = new Date(String(a.created_at || a.date)).getTime();
+        const dateB = new Date(String(b.created_at || b.date)).getTime();
+        return dateA - dateB;
+      });
 
       const midPoint = Math.floor(sortedData.length / 2);
       const firstHalf = sortedData.slice(0, midPoint);
@@ -593,7 +633,9 @@ export class DataProcessor {
       hash = name.charCodeAt(i) + ((hash << 5) - hash);
     }
 
-    return this.CONFIG.COLOR_PALETTE[Math.abs(hash) % this.CONFIG.COLOR_PALETTE.length] || '#3B82F6';
+    return (
+      this.CONFIG.COLOR_PALETTE[Math.abs(hash) % this.CONFIG.COLOR_PALETTE.length] || '#3B82F6'
+    );
   }
 
   // Metrik ikonu
@@ -609,7 +651,7 @@ export class DataProcessor {
   // Veri validasyonu with improved type safety
   static validateData<T extends Record<string, any>>(
     data: T[],
-    requiredFields: (keyof T)[],
+    requiredFields: (keyof T)[]
   ): { isValid: boolean; errors: string[]; validItems: T[] } {
     const errors: string[] = [];
     const validItems: T[] = [];
@@ -660,7 +702,10 @@ export class DataProcessor {
   }
 
   // Performance optimization through data sampling using reservoir sampling
-  static sampleData<T extends Record<string, unknown>>(data: T[], maxSize: number = DataProcessor.CONFIG.DEFAULT_SAMPLE_SIZE): T[] {
+  static sampleData<T extends Record<string, unknown>>(
+    data: T[],
+    maxSize: number = DataProcessor.CONFIG.DEFAULT_SAMPLE_SIZE
+  ): T[] {
     if (data.length <= maxSize) {
       return [...data]; // Return copy to avoid mutations
     }
@@ -686,7 +731,9 @@ export class DataProcessor {
 
   // Veri normalizasyonu
   static normalizeData<T extends Record<string, unknown>>(data: T[], field: string): T[] {
-    const values = data.map((item) => Number(item[field]) || 0).filter((val) => typeof val === 'number');
+    const values = data
+      .map((item) => Number(item[field]) || 0)
+      .filter((val) => typeof val === 'number');
     const min = Math.min(...values);
     const max = Math.max(...values);
     const range = max - min;
@@ -695,14 +742,15 @@ export class DataProcessor {
 
     return data.map((item) => ({
       ...item,
-      [`${field}_normalized`]: typeof item[field] === 'number' ? (Number(item[field]) - min) / range : 0,
+      [`${field}_normalized`]:
+        typeof item[field] === 'number' ? (Number(item[field]) - min) / range : 0,
     }));
   }
 
   // Outlier detection using IQR method
   static detectOutliers<T extends Record<string, unknown>>(
     data: T[],
-    field: string,
+    field: string
   ): {
     outliers: T[];
     cleaned: T[];
@@ -775,7 +823,16 @@ export class DataProcessor {
           iqr: 0,
           bounds: { lower: 0, upper: 0 },
         },
-      }) as { outliers: T[]; cleaned: T[]; statistics: { q1: number; q3: number; iqr: number; bounds: { lower: number; upper: number } } };
+      }) as {
+        outliers: T[];
+        cleaned: T[];
+        statistics: {
+          q1: number;
+          q3: number;
+          iqr: number;
+          bounds: { lower: number; upper: number };
+        };
+      };
     }
   }
 }

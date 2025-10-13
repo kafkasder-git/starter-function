@@ -122,7 +122,7 @@ export class CSRFProtection {
 
   static generateToken(sessionId?: string): string {
     const token = Array.from({ length: this.TOKEN_LENGTH }, () =>
-      Math.random().toString(36).charAt(2),
+      Math.random().toString(36).charAt(2)
     ).join('');
 
     const expires = Date.now() + this.TOKEN_EXPIRY;

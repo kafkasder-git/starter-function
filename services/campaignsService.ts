@@ -7,7 +7,13 @@
 
 import { db, collections, queryHelpers } from '../lib/database';
 import type { ApiResponse } from '../types/database';
-import type { Campaign, CampaignInsert, CampaignUpdate, CampaignsFilters, CampaignStats } from '../types/campaign';
+import type {
+  Campaign,
+  CampaignInsert,
+  CampaignUpdate,
+  CampaignsFilters,
+  CampaignStats,
+} from '../types/campaign';
 import { logger } from '../lib/logging/logger';
 import { useAuthStore } from '../stores/authStore';
 
@@ -26,7 +32,7 @@ const campaignsService = {
   async getCampaigns(
     page: number = 1,
     pageSize: number = 10,
-    filters?: CampaignsFilters,
+    filters?: CampaignsFilters
   ): Promise<ApiResponse<Campaign[]>> {
     try {
       logger.info('Fetching campaigns', { page, pageSize, filters });
@@ -160,10 +166,7 @@ const campaignsService = {
   /**
    * Update existing campaign
    */
-  async updateCampaign(
-    id: string,
-    updates: CampaignUpdate,
-  ): Promise<ApiResponse<Campaign>> {
+  async updateCampaign(id: string, updates: CampaignUpdate): Promise<ApiResponse<Campaign>> {
     try {
       logger.info('Updating campaign', { id });
 
@@ -207,7 +210,7 @@ const campaignsService = {
       logger.info('Deleting campaign', { id });
 
       const { error } = await db.update(collectionName, id, {
-        deleted_at: new Date().toISOString()
+        deleted_at: new Date().toISOString(),
       });
 
       if (error) {
@@ -241,7 +244,7 @@ const campaignsService = {
       logger.info('Fetching campaign statistics');
 
       const { data, error } = await db.list(collectionName, [
-        queryHelpers.select(['status', 'goal_amount', 'current_amount'])
+        queryHelpers.select(['status', 'goal_amount', 'current_amount']),
       ]);
 
       if (error) {

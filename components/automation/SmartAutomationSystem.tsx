@@ -380,13 +380,13 @@ export function SmartAutomationSystem({
                 status: automation.status === 'active' ? 'paused' : 'active',
                 updatedAt: new Date(),
               }
-            : automation,
-        ),
+            : automation
+        )
       );
       onAutomationToggle?.(automationId, 'active');
       triggerHapticFeedback('medium');
     },
-    [onAutomationToggle, triggerHapticFeedback],
+    [onAutomationToggle, triggerHapticFeedback]
   );
 
   // Otomasyonu düzenle
@@ -396,7 +396,7 @@ export function SmartAutomationSystem({
       onAutomationEdit?.(automation);
       triggerHapticFeedback('light');
     },
-    [onAutomationEdit, triggerHapticFeedback],
+    [onAutomationEdit, triggerHapticFeedback]
   );
 
   // Otomasyonu sil
@@ -406,7 +406,7 @@ export function SmartAutomationSystem({
       onAutomationDelete?.(automationId);
       triggerHapticFeedback('light');
     },
-    [onAutomationDelete, triggerHapticFeedback],
+    [onAutomationDelete, triggerHapticFeedback]
   );
 
   // Otomasyonu çalıştır
@@ -415,7 +415,7 @@ export function SmartAutomationSystem({
       onAutomationRun?.(automationId);
       triggerHapticFeedback('medium');
     },
-    [onAutomationRun, triggerHapticFeedback],
+    [onAutomationRun, triggerHapticFeedback]
   );
 
   // Başarı oranı hesapla
@@ -433,7 +433,7 @@ export function SmartAutomationSystem({
     successRate:
       automations.length > 0
         ? Math.round(
-            automations.reduce((sum, a) => sum + getSuccessRate(a), 0) / automations.length,
+            automations.reduce((sum, a) => sum + getSuccessRate(a), 0) / automations.length
           )
         : 0,
   };

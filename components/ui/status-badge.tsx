@@ -142,28 +142,18 @@ export function StatusBadge({
   const iconSize = iconSizeClasses[size];
 
   // Create accessible label combining status type and text
-  const ariaLabel = children
-    ? `${config.label}: ${children}`
-    : config.label;
+  const ariaLabel = children ? `${config.label}: ${children}` : config.label;
 
   return (
     <Badge
       variant={config.variant}
       size={size}
       animated={animated}
-      className={cn(
-        'inline-flex items-center gap-1',
-        className
-      )}
+      className={cn('inline-flex items-center gap-1', className)}
       aria-label={ariaLabel}
       {...props}
     >
-      {showIcon && (
-        <Icon
-          className={iconSize}
-          aria-hidden="true"
-        />
-      )}
+      {showIcon && <Icon className={iconSize} aria-hidden="true" />}
       {children}
     </Badge>
   );
@@ -217,9 +207,9 @@ export function PriorityBadge({
   priority: 'high' | 'medium' | 'low';
 }) {
   const priorityMap = {
-    high: 'error' as const,      // Red for urgency
-    medium: 'warning' as const,  // Yellow for attention
-    low: 'info' as const,        // Blue for low priority
+    high: 'error' as const, // Red for urgency
+    medium: 'warning' as const, // Yellow for attention
+    low: 'info' as const, // Blue for low priority
   };
 
   return <StatusBadge status={priorityMap[priority]} {...props} />;
@@ -227,4 +217,3 @@ export function PriorityBadge({
 
 // Export all components
 export { Badge };
-

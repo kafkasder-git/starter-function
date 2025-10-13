@@ -209,8 +209,8 @@ export class FileStorageService {
       if (!options.overwrite) {
         try {
           const existingFiles = await storage.listFiles(bucket, []);
-          const fileExists = existingFiles.files?.some(file => file.name === fileName);
-          
+          const fileExists = existingFiles.files?.some((file) => file.name === fileName);
+
           if (fileExists) {
             return {
               success: false,
@@ -393,25 +393,23 @@ export class FileStorageService {
       const hasMore = offset + limit < total;
 
       // Convert to FileMetadata objects
-      const files: FileMetadata[] = (data?.files || []).map(
-        (file: any) => ({
-          id: file.$id,
-          name: file.name,
-          size: file.sizeOriginal,
-          type: file.mimeType,
-          bucket,
-          path: folder ? `${folder}/${file.name}` : file.name,
-          url: storage.getFileView(bucket, file.$id).toString(),
-          createdAt: new Date(file.$createdAt),
-          updatedAt: new Date(file.$updatedAt),
-          uploadedBy: file.uploadedBy || this.getCurrentUserId(),
-          isPublic: this.config.buckets[bucket]?.isPublic || false,
-          downloadCount: 0,
-          tags: file.tags ? JSON.parse(file.tags) : [],
-          description: file.description || '',
-          metadata: file.metadata || {},
-        }),
-      );
+      const files: FileMetadata[] = (data?.files || []).map((file: any) => ({
+        id: file.$id,
+        name: file.name,
+        size: file.sizeOriginal,
+        type: file.mimeType,
+        bucket,
+        path: folder ? `${folder}/${file.name}` : file.name,
+        url: storage.getFileView(bucket, file.$id).toString(),
+        createdAt: new Date(file.$createdAt),
+        updatedAt: new Date(file.$updatedAt),
+        uploadedBy: file.uploadedBy || this.getCurrentUserId(),
+        isPublic: this.config.buckets[bucket]?.isPublic || false,
+        downloadCount: 0,
+        tags: file.tags ? JSON.parse(file.tags) : [],
+        description: file.description || '',
+        metadata: file.metadata || {},
+      }));
 
       const processingTime = Date.now() - startTime;
       const result: FileListResult = {
@@ -513,7 +511,7 @@ export class FileStorageService {
   async downloadFile(
     bucket: string,
     filePath: string,
-    _options: FileDownloadOptions = {},
+    _options: FileDownloadOptions = {}
   ): Promise<Blob | null> {
     const startTime = Date.now();
 
@@ -633,7 +631,7 @@ export class FileStorageService {
     sourceBucket: string,
     sourcePath: string,
     targetBucket: string,
-    targetPath: string,
+    targetPath: string
   ): Promise<FileMetadata | null> {
     const startTime = Date.now();
 
@@ -667,7 +665,10 @@ export class FileStorageService {
         sourcePath,
         targetBucket,
         targetPath,
-        fileSize: typeof sourceFileBlob === 'string' ? sourceFileBlob.length : (sourceFileBlob as Blob).size,
+        fileSize:
+          typeof sourceFileBlob === 'string'
+            ? sourceFileBlob.length
+            : (sourceFileBlob as Blob).size,
       });
 
       return uploadResult.file;
@@ -812,7 +813,7 @@ export class FileStorageService {
         const bucketFiles = files || [];
         const bucketSize = bucketFiles.reduce(
           (sum: any, file: any) => sum + (file.sizeOriginal || 0),
-          0,
+          0
         );
 
         stats.bucketStats[config.name] = {
@@ -901,7 +902,7 @@ export const copyFile = (
   sourceBucket: string,
   sourcePath: string,
   targetBucket: string,
-  targetPath: string,
+  targetPath: string
 ) => fileStorageService.copyFile(sourceBucket, sourcePath, targetBucket, targetPath);
 export const getStorageStats = () => fileStorageService.getStorageStats();
 export const testFileStorage = () => fileStorageService.testStorage();

@@ -22,7 +22,7 @@ interface ResponsiveCardProps {
 export const ResponsiveCard = forwardRef<HTMLDivElement, ResponsiveCardProps>(
   (
     { className, variant = 'default', hoverable = false, interactive = false, children, ...props },
-    ref,
+    ref
   ) => {
     const baseClasses = cn(
       'transition-all duration-200',
@@ -34,7 +34,7 @@ export const ResponsiveCard = forwardRef<HTMLDivElement, ResponsiveCardProps>(
       hoverable && 'hover:shadow-lg hover:-translate-y-1',
       // Interactive states
       interactive && 'cursor-pointer hover:bg-neutral-50 active:scale-95',
-      className,
+      className
     );
 
     if (interactive) {
@@ -57,7 +57,7 @@ export const ResponsiveCard = forwardRef<HTMLDivElement, ResponsiveCardProps>(
         {children}
       </Card>
     );
-  },
+  }
 );
 
 ResponsiveCard.displayName = 'ResponsiveCard';
@@ -103,7 +103,7 @@ export function ResponsiveCardGrid({
     gap === 'sm' && 'gap-3 sm:gap-4',
     gap === 'md' && 'gap-4 sm:gap-6',
     gap === 'lg' && 'gap-6 sm:gap-8',
-    className,
+    className
   );
 
   return <div className={gridClasses}>{children}</div>;
@@ -147,7 +147,7 @@ export function MobileInfoCard({
         // Mobile optimized sizing
         'min-h-[100px] sm:min-h-[120px]',
         'w-full',
-        className,
+        className
       )}
     >
       {/* Background pattern for visual interest */}
@@ -228,11 +228,18 @@ export function TouchActionCard({
         'focus:outline-none focus:ring-2 focus:ring-primary/20',
         'min-h-[88px]', // Touch-friendly minimum height
         variant in variantClasses ? variantClasses[variant] : variantClasses.default,
-        className,
+        className
       )}
     >
       <div className="flex items-center gap-4">
-        <div className={cn('text-xl', variant in iconColors ? iconColors[variant] : iconColors.default)}>{icon}</div>
+        <div
+          className={cn(
+            'text-xl',
+            variant in iconColors ? iconColors[variant] : iconColors.default
+          )}
+        >
+          {icon}
+        </div>
         <div className="flex-1 text-left">
           <div className="font-semibold text-neutral-900 mb-1">{title}</div>
           {description && <div className="text-sm text-neutral-600">{description}</div>}

@@ -125,7 +125,9 @@ export function MeetingsPage() {
               </div>
               <div>
                 <p className="text-sm text-gray-600">Planlanan</p>
-                <p className="text-xl font-bold">{meetings.filter(m => m.status === 'scheduled').length}</p>
+                <p className="text-xl font-bold">
+                  {meetings.filter((m) => m.status === 'scheduled').length}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -138,7 +140,9 @@ export function MeetingsPage() {
               </div>
               <div>
                 <p className="text-sm text-gray-600">Toplam Katılımcı</p>
-                <p className="text-xl font-bold">{meetings.reduce((sum, m) => sum + m.attendees, 0)}</p>
+                <p className="text-xl font-bold">
+                  {meetings.reduce((sum, m) => sum + m.attendees, 0)}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -151,7 +155,9 @@ export function MeetingsPage() {
               </div>
               <div>
                 <p className="text-sm text-gray-600">Online Toplantı</p>
-                <p className="text-xl font-bold">{meetings.filter(m => m.type === 'online').length}</p>
+                <p className="text-xl font-bold">
+                  {meetings.filter((m) => m.type === 'online').length}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -165,16 +171,23 @@ export function MeetingsPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           {meetings.map((meeting) => (
-            <div key={meeting.id} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
+            <div
+              key={meeting.id}
+              className="border rounded-lg p-4 hover:bg-gray-50 transition-colors"
+            >
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
                     {getTypeIcon(meeting.type)}
                     <h3 className="font-semibold">{meeting.title}</h3>
                     <Badge className={getStatusColor(meeting.status)}>
-                      {meeting.status === 'scheduled' ? 'Planlandı' : 
-                       meeting.status === 'ongoing' ? 'Devam Ediyor' :
-                       meeting.status === 'completed' ? 'Tamamlandı' : 'İptal'}
+                      {meeting.status === 'scheduled'
+                        ? 'Planlandı'
+                        : meeting.status === 'ongoing'
+                          ? 'Devam Ediyor'
+                          : meeting.status === 'completed'
+                            ? 'Tamamlandı'
+                            : 'İptal'}
                     </Badge>
                   </div>
                   <p className="text-gray-600 mb-2">{meeting.description}</p>
@@ -201,9 +214,7 @@ export function MeetingsPage() {
                   <Button variant="outline" size="sm">
                     Düzenle
                   </Button>
-                  <Button size="sm">
-                    Katıl
-                  </Button>
+                  <Button size="sm">Katıl</Button>
                 </div>
               </div>
             </div>

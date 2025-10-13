@@ -7,21 +7,21 @@ import type { UserRole } from './auth';
 
 export enum ConversationType {
   DIRECT = 'direct',
-  GROUP = 'group'
+  GROUP = 'group',
 }
 
 export enum MessageType {
   TEXT = 'text',
   FILE = 'file',
   VOICE = 'voice',
-  SYSTEM = 'system'
+  SYSTEM = 'system',
 }
 
 export enum UserPresenceStatus {
   ONLINE = 'online',
   AWAY = 'away',
   OFFLINE = 'offline',
-  BUSY = 'busy'
+  BUSY = 'busy',
 }
 
 export interface Conversation {
@@ -228,21 +228,21 @@ export interface UseMessagingReturn {
   messages: Message[];
   loading: boolean;
   error: string | null;
-  
+
   // Conversation operations
   createConversation: (data: CreateConversationData) => Promise<Conversation>;
   loadConversations: () => Promise<void>;
   getConversationById: (id: string) => Promise<Conversation | null>;
   addParticipants: (conversationId: string, userIds: string[]) => Promise<void>;
   removeParticipant: (conversationId: string, userId: string) => Promise<void>;
-  
+
   // Message operations
   sendMessage: (data: SendMessageData) => Promise<Message>;
   loadMessages: (conversationId: string, limit?: number, offset?: number) => Promise<void>;
   markAsRead: (messageId: string) => Promise<void>;
   deleteMessage: (messageId: string) => Promise<void>;
   getUnreadCount: (conversationId: string) => Promise<number>;
-  
+
   // UI state
   setSelectedConversation: (id: string | null) => void;
   clearError: () => void;
@@ -252,15 +252,18 @@ export interface UseRealtimeMessagingReturn {
   typingUsers: TypingIndicator[];
   onlineUsers: Map<string, UserPresence>;
   isConnected: boolean;
-  
+
   setTyping: (conversationId: string, isTyping: boolean) => void;
   updatePresence: (status: UserPresenceStatus) => void;
-  subscribeToConversation: (conversationId: string, callbacks: {
-    onMessage: (message: Message) => void;
-    onTyping: (indicator: TypingIndicator) => void;
-    onReadStatus: (status: MessageReadStatus) => void;
-    onPresenceChange: (presence: UserPresence) => void;
-  }) => () => void;
+  subscribeToConversation: (
+    conversationId: string,
+    callbacks: {
+      onMessage: (message: Message) => void;
+      onTyping: (indicator: TypingIndicator) => void;
+      onReadStatus: (status: MessageReadStatus) => void;
+      onPresenceChange: (presence: UserPresence) => void;
+    }
+  ) => () => void;
 }
 
 export interface UseVoiceRecorderReturn {
@@ -268,7 +271,7 @@ export interface UseVoiceRecorderReturn {
   duration: number;
   audioBlob: Blob | null;
   error: string | null;
-  
+
   startRecording: () => Promise<void>;
   stopRecording: () => void;
   cancelRecording: () => void;

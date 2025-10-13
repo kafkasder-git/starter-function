@@ -246,9 +246,4 @@ export type {
   AidRequestStats as AppwriteAidRequestStats,
 } from './appwrite';
 
-export {
-  COLLECTIONS,
-  BUCKETS,
-  PERMISSIONS,
-  ROLES,
-} from './appwrite';
+export { COLLECTIONS, BUCKETS, PERMISSIONS, ROLES } from './appwrite';

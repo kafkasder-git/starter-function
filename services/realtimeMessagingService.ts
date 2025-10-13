@@ -13,7 +13,7 @@ import type {
   TypingIndicator,
   MessageReadStatus,
   ConversationType,
-  UserPresenceStatus
+  UserPresenceStatus,
 } from '@/types/messaging';
 import type { Models } from 'appwrite';
 
@@ -50,7 +50,7 @@ export class RealtimeMessagingService {
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 5;
   private reconnectInterval = 3000; // 3 seconds
-  private heartbeatInterval: NodeJS.Timeout | null = null;
+  private heartbeatInterval: ReturnType<typeof setTimeout> | null = null;
 
   public static getInstance(): RealtimeMessagingService {
     if (!RealtimeMessagingService.instance) {
@@ -110,7 +110,8 @@ export class RealtimeMessagingService {
       // Try to get a simple document to test connection
       const { databases } = await import('@/lib/appwrite');
       if (databases) {
-        await databases.get(DATABASE_ID);
+        // Test connection by listing a collection
+        await databases.list(DATABASE_ID);
         this.handleConnectionChange(true);
       }
     } catch (error) {
@@ -127,7 +128,7 @@ export class RealtimeMessagingService {
     if (this.isConnected !== connected) {
       this.isConnected = connected;
       this.globalCallbacks?.onConnectionChange?.(connected);
-      
+
       if (connected) {
         this.reconnectAttempts = 0;
         logger.info('Realtime connection established');
@@ -202,7 +203,6 @@ export class RealtimeMessagingService {
       this.handleConnectionChange(true);
 
       return unsubscribe;
-
     } catch (error) {
       logger.error('Failed to subscribe to conversation', { conversationId, error });
       this.handleConnectionChange(false);
@@ -213,7 +213,10 @@ export class RealtimeMessagingService {
   /**
    * Subscribe to user presence updates
    */
-  subscribeToPresence(userIds: string[], onPresenceChange: (presence: UserPresence) => void): () => void {
+  subscribeToPresence(
+    userIds: string[],
+    onPresenceChange: (presence: UserPresence) => void
+  ): () => void {
     try {
       logger.info('Subscribing to presence updates', { userIds });
 
@@ -222,13 +225,13 @@ export class RealtimeMessagingService {
         async (response: RealtimeResponse<UserPresence>) => {
           try {
             const { events, payload } = response;
-            
+
             // Check if this is an update for one of the users we're monitoring
-            if (payload && userIds.includes(payload.user_id)) {
+            if (payload && userIds.includes((payload as any).user_id)) {
               const presence: UserPresence = {
-                userId: payload.user_id,
-                status: payload.status,
-                lastSeen: new Date(payload.last_seen)
+                userId: (payload as any).user_id,
+                status: (payload as any).status,
+                lastSeen: new Date((payload as any).last_seen),
               };
 
               onPresenceChange(presence);
@@ -241,7 +244,6 @@ export class RealtimeMessagingService {
       );
 
       return presenceSubscription;
-
     } catch (error) {
       logger.error('Failed to subscribe to presence updates', error);
       return () => {}; // Return empty function
@@ -263,7 +265,7 @@ export class RealtimeMessagingService {
       if (!payload) return;
 
       // Filter events by conversation if applicable
-      if (payload.conversation_id && payload.conversation_id !== conversationId) {
+      if ((payload as any).conversation_id && (payload as any).conversation_id !== conversationId) {
         return;
       }
 
@@ -278,7 +280,6 @@ export class RealtimeMessagingService {
           await this.handleReadStatusEvent(payload, callbacks);
           break;
       }
-
     } catch (error) {
       logger.error('Error handling realtime event', { eventType, conversationId, error });
     }
@@ -290,7 +291,17 @@ export class RealtimeMessagingService {
   private async handleMessageEvent(payload: any, callbacks: ConversationCallbacks) {
     try {
       // Build full message object
-      const message = await messagingService.buildMessageFromDocument(payload);
+      // Create message object directly since buildMessageFromDocument is protected
+      const message: Message = {
+        id: (payload as any).$id,
+        conversationId: (payload as any).conversation_id,
+        senderId: (payload as any).sender_id,
+        content: (payload as any).content,
+        type: (payload as any).type,
+        timestamp: new Date((payload as any).$createdAt),
+        readBy: (payload as any).read_by || [],
+        attachments: (payload as any).attachments || [],
+      };
       if (message) {
         callbacks.onMessage(message);
         this.globalCallbacks?.onMessage?.(message);
@@ -306,10 +317,7 @@ export class RealtimeMessagingService {
   private async handleTypingEvent(payload: any, callbacks: ConversationCallbacks) {
     try {
       // Get user profile for typing indicator
-      const { data: userProfile, error } = await db.get(
-        collections.USER_PROFILES,
-        payload.user_id
-      );
+      const { data: userProfile, error } = await db.get(collections.USER_PROFILES, (payload as any).user_id);
 
       if (error) {
         logger.error('Failed to get user profile for typing indicator', error);
@@ -317,11 +325,11 @@ export class RealtimeMessagingService {
       }
 
       const indicator: TypingIndicator = {
-        conversationId: payload.conversation_id,
-        userId: payload.user_id,
-        userName: userProfile?.name || 'Unknown User',
+        conversationId: (payload as any).conversation_id,
+        userId: (payload as any).user_id,
+        userName: (userProfile as any)?.name || 'Unknown User',
         isTyping: payload.is_typing,
-        updatedAt: new Date(payload.updated_at)
+        updatedAt: new Date(payload.updated_at),
       };
 
       callbacks.onTyping(indicator);
@@ -334,13 +342,10 @@ export class RealtimeMessagingService {
   /**
    * Handle read status events
    */
-  private async handleReadStatusEvent(payload: any, callbacks: ConversationCallbacks) {
+  private async handleReadStatusEvent(payload: any, callbacks: ConversationCallbacks, _conversationId?: string) {
     try {
       // Get user profile for read status
-      const { data: userProfile, error } = await db.get(
-        collections.USER_PROFILES,
-        payload.user_id
-      );
+      const { data: userProfile, error } = await db.get(collections.USER_PROFILES, (payload as any).user_id);
 
       if (error) {
         logger.error('Failed to get user profile for read status', error);
@@ -348,9 +353,9 @@ export class RealtimeMessagingService {
       }
 
       const readStatus: MessageReadStatus = {
-        userId: payload.user_id,
-        userName: userProfile?.name || 'Unknown User',
-        readAt: new Date(payload.read_at)
+        userId: (payload as any).user_id,
+        userName: (userProfile as any)?.name || 'Unknown User',
+        readAt: new Date((payload as any).read_at),
       };
 
       callbacks.onReadStatus(readStatus);
@@ -374,7 +379,7 @@ export class RealtimeMessagingService {
   /**
    * Update user presence
    */
-  async updatePresence(status: UserPresenceStatus): Promise<void> {
+  async updatePresence(status: UserPresenceStatus, _filters?: any): Promise<void> {
     try {
       await messagingService.updatePresence(status);
     } catch (error) {
@@ -394,7 +399,7 @@ export class RealtimeMessagingService {
    */
   cleanup(): void {
     logger.info('Cleaning up realtime subscriptions');
-    
+
     // Unsubscribe from all conversations
     for (const [conversationId, unsubscribe] of this.subscriptions) {
       unsubscribe();

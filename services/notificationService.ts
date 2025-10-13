@@ -42,7 +42,7 @@ class NotificationService {
   }
 
   async createNotification(
-    notification: Omit<NotificationStats['recent'][0], 'id' | 'timestamp' | 'read'>,
+    notification: Omit<NotificationStats['recent'][0], 'id' | 'timestamp' | 'read'>
   ): Promise<void> {
     // 🔗 Gerçek API'den yeni bildirim oluşturulacak
     logger.info('Creating notification', notification);
@@ -141,7 +141,7 @@ export const notify = Object.assign(
     type: 'info' | 'success' | 'warning' | 'error',
     title: string,
     message: string,
-    category = 'system',
+    category = 'system'
   ) => {
     await notificationService.createNotification({
       type,
@@ -150,7 +150,7 @@ export const notify = Object.assign(
       message,
     });
   },
-  notifyMethods,
+  notifyMethods
 );
 
 export default notificationService;

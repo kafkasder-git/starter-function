@@ -94,8 +94,8 @@ export function getFocusableElements(container: HTMLElement): HTMLElement[] {
     '[contenteditable="true"]',
   ].join(', ');
 
-  return Array.from(container.querySelectorAll<HTMLElement>(selector)).filter(
-    (element) => isFocusable(element)
+  return Array.from(container.querySelectorAll<HTMLElement>(selector)).filter((element) =>
+    isFocusable(element)
   );
 }
 
@@ -322,9 +322,10 @@ export function VisuallyHidden({ children }: { children: React.ReactNode }): JSX
  * Get touch target classes based on design tokens
  */
 export function getTouchTargetClasses(size: 'minimum' | 'comfortable' = 'minimum'): string {
-  const targetSize = size === 'minimum'
-    ? accessibilityTokens.touchTarget.minimum
-    : accessibilityTokens.touchTarget.comfortable;
+  const targetSize =
+    size === 'minimum'
+      ? accessibilityTokens.touchTarget.minimum
+      : accessibilityTokens.touchTarget.comfortable;
 
   return `min-h-[${targetSize}] min-w-[${targetSize}]`;
 }
@@ -471,6 +472,4 @@ export function checkColorContrast(
 // Export all utilities
 // ============================================================================
 
-export {
-  accessibilityTokens,
-};
+export { accessibilityTokens };

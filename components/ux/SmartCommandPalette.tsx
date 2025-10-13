@@ -1,6 +1,6 @@
 /**
  * @fileoverview SmartCommandPalette Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -47,7 +47,7 @@ interface SmartCommandPaletteProps {
 
 /**
  * SmartCommandPalette function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -75,16 +75,6 @@ export function SmartCommandPalette({
         onExecute: () => onNavigate?.('genel'),
         keywords: ['dashboard', 'ana', 'genel', 'istatistik', 'özet'],
         priority: 10,
-      },
-      {
-        id: 'nav-reporting',
-        title: 'Raporlama & Analitik',
-        description: 'Kapsamlı raporlama ve analitik merkezi',
-        category: 'navigation',
-        icon: <BarChart3 className="w-4 h-4" />,
-        onExecute: () => onNavigate?.('raporlama'),
-        keywords: ['rapor', 'analitik', 'veri', 'grafik', 'istatistik', 'dashboard'],
-        priority: 9.5,
       },
       {
         id: 'nav-beneficiaries',
@@ -220,7 +210,7 @@ export function SmartCommandPalette({
         priority: 6,
       },
     ],
-    [onNavigate, onQuickAction],
+    [onNavigate, onQuickAction]
   );
 
   // Fuzzy search implementation
@@ -246,7 +236,7 @@ export function SmartCommandPalette({
 
         // Keyword matches
         const keywordMatches = command.keywords.filter((keyword) =>
-          keyword.toLowerCase().includes(queryLower),
+          keyword.toLowerCase().includes(queryLower)
         ).length;
         score += keywordMatches * 3;
 
@@ -405,7 +395,7 @@ export function SmartCommandPalette({
                   className={cn(
                     'w-full flex items-center gap-3 p-3 rounded-lg text-left transition-colors',
                     'hover:bg-accent hover:text-accent-foreground',
-                    index === selectedIndex && 'bg-accent text-accent-foreground',
+                    index === selectedIndex && 'bg-accent text-accent-foreground'
                   )}
                 >
                   <div className="flex-shrink-0 w-8 h-8 rounded-md bg-muted/50 flex items-center justify-center">
@@ -418,7 +408,7 @@ export function SmartCommandPalette({
                       <div
                         className={cn(
                           'w-1.5 h-1.5 rounded-full flex-shrink-0',
-                          getCategoryColor(command.category),
+                          getCategoryColor(command.category)
                         )}
                       />
                       <span className="text-xs text-muted-foreground hidden sm:inline">

@@ -1,6 +1,6 @@
 /**
  * @fileoverview useTouchDevice Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -17,7 +17,7 @@ interface TouchDeviceState {
 
 /**
  * useTouchDevice function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -38,7 +38,7 @@ export function useTouchDevice(): TouchDeviceState {
   });
 
   function getDeviceState(): TouchDeviceState {
-      const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
     const width = window.innerWidth;
     const height = window.innerHeight;
 
@@ -103,7 +103,7 @@ export function useTouchDevice(): TouchDeviceState {
 // Additional utility hooks for common use cases
 /**
  * useIsMobile function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -114,7 +114,7 @@ export function useIsMobile(): boolean {
 
 /**
  * useIsTablet function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -125,7 +125,7 @@ export function useIsTablet(): boolean {
 
 /**
  * useIsTouchDevice function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -136,7 +136,7 @@ export function useIsTouchDevice(): boolean {
 
 /**
  * useScreenSize function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */

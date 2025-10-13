@@ -13,7 +13,6 @@ import notificationService from './notificationService';
 import fileStorageService from './fileStorageService';
 import monitoring from './monitoringService';
 import exportService from './exportService';
-import performanceMonitoringService from './performanceMonitoringService';
 import { enhancedAppwrite } from './enhancedAppwriteService';
 import { authService } from '../lib/auth/authService';
 import { storageService } from '../lib/storage/storageService';
@@ -23,9 +22,6 @@ import { serviceManager } from '../lib/services/serviceManager';
 // New services
 import eventsService from './eventsService';
 import legalConsultationsService from './legalConsultationsService';
-import queryOptimizationService from './queryOptimizationService';
-import indexManagementService from './indexManagementService';
-import connectionPoolingService from './connectionPoolingService';
 import { githubActionsErrorAnalyzer } from './githubActions/errorAnalyzer';
 import { githubActionsErrorParser } from './githubActions/errorParser';
 
@@ -60,9 +56,6 @@ export { default as intelligentStatsService } from './intelligentStatsService';
 // New services
 export { default as eventsService } from './eventsService';
 export { default as legalConsultationsService } from './legalConsultationsService';
-export { default as queryOptimizationService } from './queryOptimizationService';
-export { default as indexManagementService } from './indexManagementService';
-export { default as connectionPoolingService } from './connectionPoolingService';
 export { githubActionsErrorAnalyzer } from './githubActions/errorAnalyzer';
 export { githubActionsErrorParser } from './githubActions/errorParser';
 
@@ -133,8 +126,6 @@ export {
 // 2. Wrap app with QueryClientProvider
 // 3. Use useQuery/useMutation hooks in components
 
-// Performance monitoring service
-export { default as performanceMonitoringService } from './performanceMonitoringService';
 
 // =============================================================================
 // UTILITY SERVICES
@@ -289,7 +280,10 @@ export const checkServiceHealth = async () => {
       // Call a lightweight method to test service health
       if (method === 'trackEvent' && typeof methodFunc === 'function') {
         methodFunc('health_check', { service: name });
-      } else if ((method === 'testConfiguration' || method === 'testStorage') && typeof methodFunc === 'function') {
+      } else if (
+        (method === 'testConfiguration' || method === 'testStorage') &&
+        typeof methodFunc === 'function'
+      ) {
         await methodFunc();
       } else if (typeof methodFunc === 'function') {
         // For data services, just check if method exists and call it

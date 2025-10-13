@@ -3,7 +3,18 @@
  * @description Centralized Appwrite SDK initialization and service exports
  */
 
-import { Client, Account, Databases, Storage, Functions, Teams, ID, Query, Permission, Role } from 'appwrite';
+import {
+  Client,
+  Account,
+  Databases,
+  Storage,
+  Functions,
+  Teams,
+  ID,
+  Query,
+  Permission,
+  Role,
+} from 'appwrite';
 import { environment } from './environment';
 import { logger } from './logging/logger';
 import { debugAppwriteConfig } from './debugAppwriteConfig';
@@ -25,8 +36,8 @@ if (!environment.appwrite.databaseId) {
 const isAppwriteConfigured = (): boolean => {
   return Boolean(
     environment.appwrite.endpoint?.startsWith('http') &&
-    environment.appwrite.projectId &&
-    environment.appwrite.databaseId
+      environment.appwrite.projectId &&
+      environment.appwrite.databaseId
   );
 };
 
@@ -102,5 +113,3 @@ export const getAppwriteStatus = () => {
 export const DATABASE_ID = environment.appwrite.databaseId;
 
 export default client;
-
-

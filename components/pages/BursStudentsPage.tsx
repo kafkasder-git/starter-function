@@ -101,7 +101,7 @@ export function BursStudentsPage() {
     try {
       const result = await aidRequestsService.getAidRequests(1, 1000, { aidType: 'education' });
       const mappedStudents = (result.data as unknown as AidRequestDocument[]).map(
-        mapAidRequestToStudent,
+        mapAidRequestToStudent
       );
       setStudents(mappedStudents);
     } catch (error) {
@@ -187,7 +187,7 @@ export function BursStudentsPage() {
     };
 
     // Safe to access since status is typed as Student['status']
-     
+
     return statusConfig[status];
   };
 
@@ -380,9 +380,7 @@ export function BursStudentsPage() {
           {isMobile ? (
             <div className="space-y-3 p-4">
               {filteredStudents.map((student, index) => (
-                <div
-                  key={student.id}
-                >
+                <div key={student.id}>
                   <TouchActionCard
                     icon={<GraduationCap className="h-5 w-5" />}
                     title={student.name}

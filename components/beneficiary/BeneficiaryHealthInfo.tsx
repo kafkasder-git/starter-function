@@ -1,6 +1,6 @@
 /**
  * @fileoverview BeneficiaryHealthInfo Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -39,7 +39,7 @@ const healthConditions = [
 
 /**
  * BeneficiaryHealthInfo function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -49,7 +49,7 @@ export function BeneficiaryHealthInfo({
   onUpdate,
 }: BeneficiaryHealthInfoProps) {
   const [healthConditionsState, setHealthConditionsState] = useState<Record<string, boolean>>(
-    beneficiary?.healthConditions || {},
+    beneficiary?.healthConditions || {}
   );
   const [newCondition, setNewCondition] = useState('');
 
@@ -125,13 +125,15 @@ export function BeneficiaryHealthInfo({
                 </div>
                 <div className="p-3 bg-white rounded-lg">
                   <p className="text-gray-600">Risk Seviyesi</p>
-                  <p className={`text-lg font-semibold ${
-                    activeConditions.length === 0
-                      ? 'text-green-600'
-                      : activeConditions.length < 3
-                        ? 'text-yellow-600'
-                        : 'text-red-600'
-                  }`}>
+                  <p
+                    className={`text-lg font-semibold ${
+                      activeConditions.length === 0
+                        ? 'text-green-600'
+                        : activeConditions.length < 3
+                          ? 'text-yellow-600'
+                          : 'text-red-600'
+                    }`}
+                  >
                     {activeConditions.length === 0
                       ? 'Düşük'
                       : activeConditions.length < 3
@@ -150,9 +152,9 @@ export function BeneficiaryHealthInfo({
                 </h4>
                 <div className="flex flex-wrap gap-2">
                   {activeConditions.map((condition) => (
-                    <Badge 
-                      key={condition} 
-                      variant="outline" 
+                    <Badge
+                      key={condition}
+                      variant="outline"
                       className="text-xs font-medium px-3 py-1 bg-orange-100 text-orange-700 border-orange-300"
                     >
                       {condition}
@@ -200,7 +202,9 @@ export function BeneficiaryHealthInfo({
               />
             ) : (
               <div className="p-3 bg-gray-50 rounded-lg">
-                <p className="text-sm font-medium text-gray-900">{beneficiary?.emergencyContact ?? '-'}</p>
+                <p className="text-sm font-medium text-gray-900">
+                  {beneficiary?.emergencyContact ?? '-'}
+                </p>
               </div>
             )}
           </div>
@@ -223,7 +227,10 @@ export function BeneficiaryHealthInfo({
                 <h4 className="font-semibold text-gray-900 mb-4">Sağlık Durumları</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-60 overflow-y-auto">
                   {healthConditions.map((condition) => (
-                    <div key={condition} className="flex items-center space-x-3 p-2 hover:bg-white rounded-lg transition-colors duration-200">
+                    <div
+                      key={condition}
+                      className="flex items-center space-x-3 p-2 hover:bg-white rounded-lg transition-colors duration-200"
+                    >
                       <Checkbox
                         id={condition}
                         checked={healthConditionsState[condition] ?? false}
@@ -232,7 +239,10 @@ export function BeneficiaryHealthInfo({
                         }}
                         className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
                       />
-                      <Label htmlFor={condition} className="text-sm font-medium text-gray-700 cursor-pointer">
+                      <Label
+                        htmlFor={condition}
+                        className="text-sm font-medium text-gray-700 cursor-pointer"
+                      >
                         {condition}
                       </Label>
                     </div>

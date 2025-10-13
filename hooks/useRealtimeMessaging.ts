@@ -14,7 +14,7 @@ import type {
   Message,
   UserPresenceStatus,
   UseRealtimeMessagingReturn,
-  ConversationCallbacks
+  ConversationCallbacks,
 } from '@/types/messaging';
 
 interface UseRealtimeMessagingOptions {
@@ -27,16 +27,13 @@ interface UseRealtimeMessagingOptions {
 /**
  * Hook for real-time messaging features
  */
-export function useRealtimeMessaging(options: UseRealtimeMessagingOptions = {}): UseRealtimeMessagingReturn {
-  const {
-    autoConnect = true,
-    reconnectOnFocus = true,
-    onConnectionChange,
-    onError
-  } = options;
+export function useRealtimeMessaging(
+  options: UseRealtimeMessagingOptions = {}
+): UseRealtimeMessagingReturn {
+  const { autoConnect = true, reconnectOnFocus = true, onConnectionChange, onError } = options;
 
   const { user, isAuthenticated } = useAuthStore();
-  
+
   // State
   const [typingUsers, setTypingUsers] = useState<TypingIndicator[]>([]);
   const [onlineUsers, setOnlineUsers] = useState<Map<string, UserPresence>>(new Map());
@@ -51,210 +48,232 @@ export function useRealtimeMessaging(options: UseRealtimeMessagingOptions = {}):
   /**
    * Handle connection state changes
    */
-  const handleConnectionChange = useCallback((connected: boolean) => {
-    setIsConnected(connected);
-    onConnectionChange?.(connected);
-    
-    if (connected) {
-      logger.info('Realtime connection established');
-    } else {
-      logger.warn('Realtime connection lost');
-    }
-  }, [onConnectionChange]);
+  const handleConnectionChange = useCallback(
+    (connected: boolean) => {
+      setIsConnected(connected);
+      onConnectionChange?.(connected);
+
+      if (connected) {
+        logger.info('Realtime connection established');
+      } else {
+        logger.warn('Realtime connection lost');
+      }
+    },
+    [onConnectionChange]
+  );
 
   /**
    * Handle errors
    */
-  const handleError = useCallback((error: string) => {
-    onError?.(error);
-    logger.error('Realtime messaging error', error);
-  }, [onError]);
+  const handleError = useCallback(
+    (error: string) => {
+      onError?.(error);
+      logger.error('Realtime messaging error', error);
+    },
+    [onError]
+  );
 
   /**
    * Update user presence
    */
-  const updatePresence = useCallback(async (status: UserPresenceStatus): Promise<void> => {
-    try {
-      if (!isAuthenticated || !user) {
-        return;
-      }
+  const updatePresence = useCallback(
+    async (status: UserPresenceStatus): Promise<void> => {
+      try {
+        if (!isAuthenticated || !user) {
+          return;
+        }
 
-      await realtimeMessagingService.updatePresence(status);
-      
-      // Update local presence state
-      setOnlineUsers(prev => {
-        const updated = new Map(prev);
-        updated.set(user.id, {
-          userId: user.id,
-          status,
-          lastSeen: new Date()
+        await realtimeMessagingService.updatePresence(status);
+
+        // Update local presence state
+        setOnlineUsers((prev) => {
+          const updated = new Map(prev);
+          updated.set(user.id, {
+            userId: user.id,
+            status,
+            lastSeen: new Date(),
+          });
+          return updated;
         });
-        return updated;
-      });
-
-    } catch (error) {
-      handleError('Presence güncellenemedi');
-    }
-  }, [isAuthenticated, user, handleError]);
+      } catch (error) {
+        handleError('Presence güncellenemedi');
+      }
+    },
+    [isAuthenticated, user, handleError]
+  );
 
   /**
    * Set typing indicator
    */
-  const setTyping = useCallback(async (conversationId: string, isTyping: boolean): Promise<void> => {
-    try {
-      if (!isAuthenticated || !user) {
-        return;
-      }
+  const setTyping = useCallback(
+    async (conversationId: string, isTyping: boolean): Promise<void> => {
+      try {
+        if (!isAuthenticated || !user) {
+          return;
+        }
 
-      await realtimeMessagingService.updateTypingIndicator(conversationId, isTyping);
+        await realtimeMessagingService.updateTypingIndicator(conversationId, isTyping);
 
-      // Update local typing state
-      if (isTyping) {
-        setTypingUsers(prev => {
-          const existing = prev.find(t => t.conversationId === conversationId && t.userId === user.id);
-          if (existing) {
-            return prev.map(t => 
-              t.conversationId === conversationId && t.userId === user.id
-                ? { ...t, isTyping: true, updatedAt: new Date() }
-                : t
+        // Update local typing state
+        if (isTyping) {
+          setTypingUsers((prev) => {
+            const existing = prev.find(
+              (t) => t.conversationId === conversationId && t.userId === user.id
             );
+            if (existing) {
+              return prev.map((t) =>
+                t.conversationId === conversationId && t.userId === user.id
+                  ? { ...t, isTyping: true, updatedAt: new Date() }
+                  : t
+              );
+            }
+
+            return [
+              ...prev,
+              {
+                conversationId,
+                userId: user.id,
+                userName: user.name,
+                isTyping: true,
+                updatedAt: new Date(),
+              },
+            ];
+          });
+
+          // Set timeout to remove typing indicator
+          const timeoutId = setTimeout(() => {
+            setTyping(conversationId, false);
+          }, 3000); // Remove after 3 seconds
+
+          // Clear existing timeout
+          const existingTimeout = typingTimeoutRef.current.get(conversationId);
+          if (existingTimeout) {
+            clearTimeout(existingTimeout);
           }
 
-          return [...prev, {
-            conversationId,
-            userId: user.id,
-            userName: user.name,
-            isTyping: true,
-            updatedAt: new Date()
-          }];
-        });
+          typingTimeoutRef.current.set(conversationId, timeoutId);
+        } else {
+          // Remove typing indicator
+          setTypingUsers((prev) =>
+            prev.filter((t) => !(t.conversationId === conversationId && t.userId === user.id))
+          );
 
-        // Set timeout to remove typing indicator
-        const timeoutId = setTimeout(() => {
-          setTyping(conversationId, false);
-        }, 3000); // Remove after 3 seconds
-
-        // Clear existing timeout
-        const existingTimeout = typingTimeoutRef.current.get(conversationId);
-        if (existingTimeout) {
-          clearTimeout(existingTimeout);
+          // Clear timeout
+          const timeoutId = typingTimeoutRef.current.get(conversationId);
+          if (timeoutId) {
+            clearTimeout(timeoutId);
+            typingTimeoutRef.current.delete(conversationId);
+          }
         }
-
-        typingTimeoutRef.current.set(conversationId, timeoutId);
-
-      } else {
-        // Remove typing indicator
-        setTypingUsers(prev => prev.filter(t => 
-          !(t.conversationId === conversationId && t.userId === user.id)
-        ));
-
-        // Clear timeout
-        const timeoutId = typingTimeoutRef.current.get(conversationId);
-        if (timeoutId) {
-          clearTimeout(timeoutId);
-          typingTimeoutRef.current.delete(conversationId);
-        }
+      } catch (error) {
+        handleError('Typing durumu güncellenemedi');
       }
-
-    } catch (error) {
-      handleError('Typing durumu güncellenemedi');
-    }
-  }, [isAuthenticated, user, handleError]);
+    },
+    [isAuthenticated, user, handleError]
+  );
 
   /**
    * Subscribe to conversation events
    */
-  const subscribeToConversation = useCallback((conversationId: string, callbacks: ConversationCallbacks): () => void => {
-    try {
-      logger.info('Subscribing to conversation events', { conversationId });
+  const subscribeToConversation = useCallback(
+    (conversationId: string, callbacks: ConversationCallbacks): (() => void) => {
+      try {
+        logger.info('Subscribing to conversation events', { conversationId });
 
-      // Unsubscribe from existing subscription for this conversation
-      const existingUnsubscribe = conversationSubscriptionsRef.current.get(conversationId);
-      if (existingUnsubscribe) {
-        existingUnsubscribe();
-      }
-
-      // Create new subscription
-      const unsubscribe = realtimeMessagingService.subscribeToConversation(conversationId, {
-        onMessage: (message: Message) => {
-          callbacks.onMessage(message);
-        },
-        onTyping: (indicator: TypingIndicator) => {
-          // Update typing users state
-          setTypingUsers(prev => {
-            const filtered = prev.filter(t => 
-              !(t.conversationId === indicator.conversationId && t.userId === indicator.userId)
-            );
-
-            if (indicator.isTyping) {
-              return [...filtered, indicator];
-            }
-
-            return filtered;
-          });
-
-          callbacks.onTyping(indicator);
-        },
-        onReadStatus: (readStatus: MessageReadStatus) => {
-          callbacks.onReadStatus(readStatus);
+        // Unsubscribe from existing subscription for this conversation
+        const existingUnsubscribe = conversationSubscriptionsRef.current.get(conversationId);
+        if (existingUnsubscribe) {
+          existingUnsubscribe();
         }
-      });
 
-      // Store subscription
-      conversationSubscriptionsRef.current.set(conversationId, unsubscribe);
+        // Create new subscription
+        const unsubscribe = realtimeMessagingService.subscribeToConversation(conversationId, {
+          onMessage: (message: Message) => {
+            callbacks.onMessage(message);
+          },
+          onTyping: (indicator: TypingIndicator) => {
+            // Update typing users state
+            setTypingUsers((prev) => {
+              const filtered = prev.filter(
+                (t) =>
+                  !(t.conversationId === indicator.conversationId && t.userId === indicator.userId)
+              );
 
-      return () => {
-        unsubscribe();
-        conversationSubscriptionsRef.current.delete(conversationId);
-        logger.info('Unsubscribed from conversation events', { conversationId });
-      };
+              if (indicator.isTyping) {
+                return [...filtered, indicator];
+              }
 
-    } catch (error) {
-      handleError('Konuşma aboneliği oluşturulamadı');
-      return () => {}; // Return empty function
-    }
-  }, [handleError]);
+              return filtered;
+            });
+
+            callbacks.onTyping(indicator);
+          },
+          onReadStatus: (readStatus: MessageReadStatus) => {
+            callbacks.onReadStatus(readStatus);
+          },
+        });
+
+        // Store subscription
+        conversationSubscriptionsRef.current.set(conversationId, unsubscribe);
+
+        return () => {
+          unsubscribe();
+          conversationSubscriptionsRef.current.delete(conversationId);
+          logger.info('Unsubscribed from conversation events', { conversationId });
+        };
+      } catch (error) {
+        handleError('Konuşma aboneliği oluşturulamadı');
+        return () => {}; // Return empty function
+      }
+    },
+    [handleError]
+  );
 
   /**
    * Subscribe to user presence updates
    */
-  const subscribeToPresence = useCallback((userIds: string[]): () => void => {
-    try {
-      if (!userIds || userIds.length === 0) {
-        return () => {};
+  const subscribeToPresence = useCallback(
+    (userIds: string[]): (() => void) => {
+      try {
+        if (!userIds || userIds.length === 0) {
+          return () => {};
+        }
+
+        logger.info('Subscribing to presence updates', { userIds });
+
+        // Unsubscribe from existing presence subscription
+        const existingUnsubscribe = presenceSubscriptionsRef.current.get(userIds);
+        if (existingUnsubscribe) {
+          existingUnsubscribe();
+        }
+
+        // Create new subscription
+        const unsubscribe = realtimeMessagingService.subscribeToPresence(
+          userIds,
+          (presence: UserPresence) => {
+            setOnlineUsers((prev) => {
+              const updated = new Map(prev);
+              updated.set(presence.userId, presence);
+              return updated;
+            });
+          }
+        );
+
+        // Store subscription
+        presenceSubscriptionsRef.current.set(userIds, unsubscribe);
+
+        return () => {
+          unsubscribe();
+          presenceSubscriptionsRef.current.delete(userIds);
+          logger.info('Unsubscribed from presence updates', { userIds });
+        };
+      } catch (error) {
+        handleError('Presence aboneliği oluşturulamadı');
+        return () => {}; // Return empty function
       }
-
-      logger.info('Subscribing to presence updates', { userIds });
-
-      // Unsubscribe from existing presence subscription
-      const existingUnsubscribe = presenceSubscriptionsRef.current.get(userIds);
-      if (existingUnsubscribe) {
-        existingUnsubscribe();
-      }
-
-      // Create new subscription
-      const unsubscribe = realtimeMessagingService.subscribeToPresence(userIds, (presence: UserPresence) => {
-        setOnlineUsers(prev => {
-          const updated = new Map(prev);
-          updated.set(presence.userId, presence);
-          return updated;
-        });
-      });
-
-      // Store subscription
-      presenceSubscriptionsRef.current.set(userIds, unsubscribe);
-
-      return () => {
-        unsubscribe();
-        presenceSubscriptionsRef.current.delete(userIds);
-        logger.info('Unsubscribed from presence updates', { userIds });
-      };
-
-    } catch (error) {
-      handleError('Presence aboneliği oluşturulamadı');
-      return () => {}; // Return empty function
-    }
-  }, [handleError]);
+    },
+    [handleError]
+  );
 
   /**
    * Initialize realtime connection
@@ -283,7 +302,7 @@ export function useRealtimeMessaging(options: UseRealtimeMessagingOptions = {}):
         },
         onConnectionChange: (connected: boolean) => {
           handleConnectionChange(connected);
-        }
+        },
       });
 
       // Set initial presence status
@@ -291,7 +310,6 @@ export function useRealtimeMessaging(options: UseRealtimeMessagingOptions = {}):
 
       connectionInitializedRef.current = true;
       logger.info('Realtime messaging connection initialized');
-
     } catch (error) {
       handleError('Realtime bağlantısı başlatılamadı');
     }
@@ -394,6 +412,6 @@ export function useRealtimeMessaging(options: UseRealtimeMessagingOptions = {}):
     setTyping,
     updatePresence,
     subscribeToConversation,
-    subscribeToPresence
+    subscribeToPresence,
   };
 }

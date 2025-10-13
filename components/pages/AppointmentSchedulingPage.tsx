@@ -81,7 +81,7 @@ export function AppointmentSchedulingPage() {
           appointment.beneficiaryName.toLowerCase().includes(searchLower) ||
           appointment.beneficiaryPhone.includes(searchTerm) ||
           appointment.assignedStaff.toLowerCase().includes(searchLower) ||
-          appointment.location.toLowerCase().includes(searchLower),
+          appointment.location.toLowerCase().includes(searchLower)
       );
     }
 
@@ -112,7 +112,8 @@ export function AppointmentSchedulingPage() {
             .toISOString()
             .split('T')[0];
           filtered = filtered.filter(
-            (appointment) => appointment.date >= (today || '') && appointment.date <= (weekFromNow || ''),
+            (appointment) =>
+              appointment.date >= (today || '') && appointment.date <= (weekFromNow || '')
           );
           break;
       }
@@ -202,20 +203,34 @@ export function AppointmentSchedulingPage() {
   const getPriorityBadge = (priority: Appointment['priority']) => {
     switch (priority) {
       case 'düşük':
-        return <Badge className="border border-gray-200 dark:border-gray-700 dark:bg-gray-900 bg-gray-50 px-2 py-1 text-xs text-gray-700">Düşük</Badge>;
+        return (
+          <Badge className="border border-gray-200 dark:border-gray-700 dark:bg-gray-900 bg-gray-50 px-2 py-1 text-xs text-gray-700">
+            Düşük
+          </Badge>
+        );
       case 'normal':
         return (
-          <Badge className="border border-gray-200 dark:border-gray-700 dark:bg-gray-900 bg-blue-50 px-2 py-1 text-xs text-blue-700">Normal</Badge>
+          <Badge className="border border-gray-200 dark:border-gray-700 dark:bg-gray-900 bg-blue-50 px-2 py-1 text-xs text-blue-700">
+            Normal
+          </Badge>
         );
       case 'yüksek':
         return (
-          <Badge className="border border-gray-200 dark:border-gray-700 dark:bg-gray-900 bg-orange-50 px-2 py-1 text-xs text-orange-700">Yüksek</Badge>
+          <Badge className="border border-gray-200 dark:border-gray-700 dark:bg-gray-900 bg-orange-50 px-2 py-1 text-xs text-orange-700">
+            Yüksek
+          </Badge>
         );
       case 'acil':
-        return <Badge className="border border-gray-200 dark:border-gray-700 dark:bg-gray-900 bg-red-50 px-2 py-1 text-xs text-red-700">Acil</Badge>;
+        return (
+          <Badge className="border border-gray-200 dark:border-gray-700 dark:bg-gray-900 bg-red-50 px-2 py-1 text-xs text-red-700">
+            Acil
+          </Badge>
+        );
       default:
         return (
-          <Badge className="border border-gray-200 dark:border-gray-700 dark:bg-gray-900 bg-gray-50 px-2 py-1 text-xs text-gray-700">Bilinmiyor</Badge>
+          <Badge className="border border-gray-200 dark:border-gray-700 dark:bg-gray-900 bg-gray-50 px-2 py-1 text-xs text-gray-700">
+            Bilinmiyor
+          </Badge>
         );
     }
   };
@@ -224,7 +239,9 @@ export function AppointmentSchedulingPage() {
     switch (type) {
       case 'görüşme':
         return (
-          <Badge className="border border-gray-200 dark:border-gray-700 dark:bg-gray-900 bg-blue-50 px-2 py-1 text-xs text-blue-700">Görüşme</Badge>
+          <Badge className="border border-gray-200 dark:border-gray-700 dark:bg-gray-900 bg-blue-50 px-2 py-1 text-xs text-blue-700">
+            Görüşme
+          </Badge>
         );
       case 'belge-teslim':
         return (
@@ -240,7 +257,9 @@ export function AppointmentSchedulingPage() {
         );
       case 'takip':
         return (
-          <Badge className="border border-gray-200 dark:border-gray-700 dark:bg-gray-900 bg-orange-50 px-2 py-1 text-xs text-orange-700">Takip</Badge>
+          <Badge className="border border-gray-200 dark:border-gray-700 dark:bg-gray-900 bg-orange-50 px-2 py-1 text-xs text-orange-700">
+            Takip
+          </Badge>
         );
       case 'danışmanlık':
         return (
@@ -250,7 +269,9 @@ export function AppointmentSchedulingPage() {
         );
       default:
         return (
-          <Badge className="border border-gray-200 dark:border-gray-700 dark:bg-gray-900 bg-gray-50 px-2 py-1 text-xs text-gray-700">Bilinmiyor</Badge>
+          <Badge className="border border-gray-200 dark:border-gray-700 dark:bg-gray-900 bg-gray-50 px-2 py-1 text-xs text-gray-700">
+            Bilinmiyor
+          </Badge>
         );
     }
   };
@@ -269,7 +290,7 @@ export function AppointmentSchedulingPage() {
 
   // Stats calculations
   const todayAppointments = appointments.filter(
-    (a) => a.date === new Date().toISOString().split('T')[0],
+    (a) => a.date === new Date().toISOString().split('T')[0]
   ).length;
   const pendingAppointments = appointments.filter((a) => a.status === 'beklemede').length;
   const confirmedAppointments = appointments.filter((a) => a.status === 'onaylandı').length;

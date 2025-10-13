@@ -27,12 +27,12 @@ import { useUserPreferences } from '../hooks/useLocalStorage';
  */
 const RootRedirect = () => {
   const { isAuthenticated, isInitialized } = useAuthStore();
-  
+
   // Wait for auth initialization to complete
   if (!isInitialized) {
     return <div>Loading...</div>;
   }
-  
+
   return <Navigate to={isAuthenticated ? '/genel' : '/login'} replace />;
 };
 
@@ -57,7 +57,7 @@ const AppContent = memo(() => {
       isDark: preferences.theme === 'dark',
       theme: preferences.theme || 'light',
     }),
-    [preferences.theme],
+    [preferences.theme]
   );
 
   // Dark mode initialization
@@ -68,7 +68,7 @@ const AppContent = memo(() => {
   // Keyboard shortcut handlers
   const handleGlobalSearch = useCallback(() => {
     const searchInput = document.querySelector(
-      'input[placeholder*="⌘K"], input[placeholder*="Ctrl+K"], input[placeholder*="Ara"]',
+      'input[placeholder*="⌘K"], input[placeholder*="Ctrl+K"], input[placeholder*="Ara"]'
     );
     if (searchInput) {
       (searchInput as HTMLInputElement).focus();
@@ -86,7 +86,7 @@ const AppContent = memo(() => {
 
   const handleNewItem = useCallback(() => {
     const addButton = document.querySelector(
-      'button[aria-label*="Ekle"], button[title*="Ekle"], button[class*="add"], button[class*="new"]',
+      'button[aria-label*="Ekle"], button[title*="Ekle"], button[class*="add"], button[class*="new"]'
     );
 
     if (
@@ -132,7 +132,7 @@ const AppContent = memo(() => {
         navigation.setCurrentSubPage(action.subPage);
       }
     },
-    [navigation],
+    [navigation]
   );
 
   // Initialize keyboard shortcuts
@@ -236,12 +236,7 @@ const AppContent = memo(() => {
  */
 const AppWithNavigation = memo(() => {
   return (
-    <BrowserRouter
-      future={{
-        v7_startTransition: true,
-        v7_relativeSplatPath: true,
-      }}
-    >
+    <BrowserRouter>
       <RouterNavigationProvider>
         <Routes>
           {/* Root redirect */}
@@ -249,11 +244,7 @@ const AppWithNavigation = memo(() => {
 
           {/* Public routes */}
           {publicRoutes.map((route, index) => (
-            <Route
-              key={index}
-              path={route.path}
-              element={route.element}
-            >
+            <Route key={index} path={route.path} element={route.element}>
               {route.children?.map((childRoute, childIndex) => (
                 <Route
                   key={childIndex}
@@ -268,17 +259,12 @@ const AppWithNavigation = memo(() => {
           {/* Protected routes */}
           <Route element={<AppContent />}>
             {protectedRoutes.map((route, index) => (
-              <Route
-                key={index}
-                path={route.path}
-                index={route.index}
-                element={route.element}
-              >
+              <Route key={index} path={route.path} index={route.index} element={route.element}>
                 {route.children?.map((childRoute, childIndex) => (
                   <Route
                     key={childIndex}
                     path={childRoute.path}
-                    index={childRoute.index}
+                    index={childRoute.index === true}
                     element={childRoute.element}
                   />
                 ))}

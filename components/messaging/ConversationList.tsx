@@ -35,7 +35,7 @@ export function ConversationList({
   onConversationSelect,
   onNewConversation,
   onConversationMenuClick,
-  className
+  className,
 }: ConversationListProps) {
   const { user } = useAuthStore();
   const [searchTerm, setSearchTerm] = useState('');
@@ -47,8 +47,8 @@ export function ConversationList({
     }
 
     const term = searchTerm.toLowerCase();
-    
-    return conversations.filter(conversation => {
+
+    return conversations.filter((conversation) => {
       // Search in conversation name
       if (conversation.name?.toLowerCase().includes(term)) {
         return true;
@@ -56,10 +56,10 @@ export function ConversationList({
 
       // Search in participant names
       const participantNames = conversation.participants
-        .filter(p => p.userId !== user?.id)
-        .map(p => p.userName.toLowerCase());
-      
-      if (participantNames.some(name => name.includes(term))) {
+        .filter((p) => p.userId !== user?.id)
+        .map((p) => p.userName.toLowerCase());
+
+      if (participantNames.some((name) => name.includes(term))) {
         return true;
       }
 
@@ -79,9 +79,9 @@ export function ConversationList({
 
   // Group conversations by type
   const groupedConversations = useMemo(() => {
-    const direct = filteredConversations.filter(c => c.type === 'direct');
-    const groups = filteredConversations.filter(c => c.type === 'group');
-    
+    const direct = filteredConversations.filter((c) => c.type === 'direct');
+    const groups = filteredConversations.filter((c) => c.type === 'group');
+
     return { direct, groups };
   }, [filteredConversations]);
 
@@ -99,19 +99,19 @@ export function ConversationList({
   return (
     <div className={cn('flex flex-col h-full', className)}>
       {/* Header */}
-      <div className="p-4 border-b">
+      <div className="p-4 border-b bg-white">
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-xl font-semibold text-gray-900">Mesajlar</h1>
           <div className="flex items-center gap-2">
             {totalUnreadCount > 0 && (
-              <Badge variant="destructive">
+              <Badge variant="destructive" className="bg-red-500 text-white">
                 {totalUnreadCount}
               </Badge>
             )}
-            <Button
-              onClick={onNewConversation}
-              size="sm"
-              className="h-8 w-8 p-0"
+            <Button 
+              onClick={onNewConversation} 
+              size="sm" 
+              className="h-8 w-8 p-0 bg-blue-600 hover:bg-blue-700 text-white rounded-full"
             >
               <Plus className="h-4 w-4" />
             </Button>
@@ -124,8 +124,10 @@ export function ConversationList({
           <Input
             placeholder="Kişi veya konuşma ara..."
             value={searchTerm}
-            onChange={(e) => { setSearchTerm(e.target.value); }}
-            className="pl-10"
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+            }}
+            className="pl-10 bg-gray-50 border-gray-200 focus:bg-white focus:border-blue-500 rounded-full"
           />
         </div>
       </div>
@@ -143,14 +145,8 @@ export function ConversationList({
           <div className="flex items-center justify-center h-32">
             <div className="text-center text-gray-500">
               <MessageCircle className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-              <p>
-                {searchTerm ? 'Arama sonucu bulunamadı' : 'Henüz konuşma yok'}
-              </p>
-              {!searchTerm && (
-                <p className="text-sm mt-1">
-                  Yeni bir konuşma başlatın
-                </p>
-              )}
+              <p>{searchTerm ? 'Arama sonucu bulunamadı' : 'Henüz konuşma yok'}</p>
+              {!searchTerm && <p className="text-sm mt-1">Yeni bir konuşma başlatın</p>}
             </div>
           </div>
         ) : (
@@ -158,9 +154,7 @@ export function ConversationList({
             {/* Direct Messages */}
             {groupedConversations.direct.length > 0 && (
               <div className="mb-6">
-                <h3 className="text-sm font-medium text-gray-500 mb-2 px-3">
-                  Doğrudan Mesajlar
-                </h3>
+                <h3 className="text-sm font-medium text-gray-500 mb-2 px-3">Doğrudan Mesajlar</h3>
                 <div className="space-y-1">
                   {groupedConversations.direct.map((conversation) => (
                     <ConversationItem
@@ -168,7 +162,9 @@ export function ConversationList({
                       conversation={conversation}
                       isSelected={conversation.id === selectedConversationId}
                       currentUserId={user.id}
-                      onClick={() => { onConversationSelect(conversation.id); }}
+                      onClick={() => {
+                        onConversationSelect(conversation.id);
+                      }}
                       onMenuClick={onConversationMenuClick}
                     />
                   ))}
@@ -179,9 +175,7 @@ export function ConversationList({
             {/* Groups */}
             {groupedConversations.groups.length > 0 && (
               <div>
-                <h3 className="text-sm font-medium text-gray-500 mb-2 px-3">
-                  Gruplar
-                </h3>
+                <h3 className="text-sm font-medium text-gray-500 mb-2 px-3">Gruplar</h3>
                 <div className="space-y-1">
                   {groupedConversations.groups.map((conversation) => (
                     <ConversationItem
@@ -189,7 +183,9 @@ export function ConversationList({
                       conversation={conversation}
                       isSelected={conversation.id === selectedConversationId}
                       currentUserId={user.id}
-                      onClick={() => { onConversationSelect(conversation.id); }}
+                      onClick={() => {
+                        onConversationSelect(conversation.id);
+                      }}
                       onMenuClick={onConversationMenuClick}
                     />
                   ))}
@@ -203,9 +199,7 @@ export function ConversationList({
       {/* Footer with connection status */}
       <div className="p-3 border-t bg-gray-50">
         <div className="flex items-center justify-between text-xs text-gray-500">
-          <span>
-            {filteredConversations.length} konuşma
-          </span>
+          <span>{filteredConversations.length} konuşma</span>
           <div className="flex items-center gap-1">
             <div className="w-2 h-2 bg-green-500 rounded-full" />
             <span>Çevrimiçi</span>

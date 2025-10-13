@@ -1,6 +1,6 @@
 /**
  * @fileoverview OCR Service - Kimlik ve pasaport okuma servisi
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -69,7 +69,7 @@ class OCRService {
       };
 
       this.mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
-      
+
       this.videoElement = document.createElement('video');
       this.videoElement.srcObject = this.mediaStream;
       this.videoElement.autoplay = true;
@@ -94,10 +94,12 @@ class OCRService {
   stopCamera(): void {
     try {
       if (this.mediaStream) {
-        this.mediaStream.getTracks().forEach(track => { track.stop(); });
+        this.mediaStream.getTracks().forEach((track) => {
+          track.stop();
+        });
         this.mediaStream = null;
       }
-      
+
       if (this.videoElement) {
         this.videoElement.srcObject = null;
         this.videoElement = null;
@@ -127,7 +129,7 @@ class OCRService {
 
       this.canvas.width = this.videoElement.videoWidth;
       this.canvas.height = this.videoElement.videoHeight;
-      
+
       context.drawImage(this.videoElement, 0, 0);
       return this.canvas.toDataURL('image/jpeg', 0.8);
     } catch (error) {
@@ -143,16 +145,18 @@ class OCRService {
     try {
       // Tesseract.js'i dinamik olarak yükle
       const { createWorker } = await import('tesseract.js');
-      
+
       const worker = await createWorker('tur+eng', 1, {
         logger: (m) => {
           if (m.status === 'recognizing text') {
             logger.debug(`OCR Progress: ${Math.round(m.progress * 100)}%`);
           }
-        }
+        },
       });
 
-      const { data: { text, confidence } } = await worker.recognize(imageData);
+      const {
+        data: { text, confidence },
+      } = await worker.recognize(imageData);
       await worker.terminate();
 
       logger.info('OCR işlemi tamamlandı', { confidence });
@@ -165,7 +169,9 @@ class OCRService {
       return result;
     } catch (error) {
       logger.error('OCR işlemi başarısız:', error);
-      throw new Error('Belge okuma işlemi başarısız oldu. Lütfen belgeyi daha net bir şekilde gösterin.');
+      throw new Error(
+        'Belge okuma işlemi başarısız oldu. Lütfen belgeyi daha net bir şekilde gösterin.'
+      );
     }
   }
 
@@ -209,7 +215,7 @@ class OCRService {
       const match = cleanText.match(pattern);
       if (match) {
         const value = match[1].trim();
-        
+
         switch (key) {
           case 'identityNumber':
             result.identityNumber = value;
@@ -247,7 +253,7 @@ class OCRService {
       .replace(/\s+/g, ' ')
       .trim()
       .toLowerCase()
-      .replace(/\b\w/g, l => l.toUpperCase());
+      .replace(/\b\w/g, (l) => l.toUpperCase());
   }
 
   /**
@@ -259,7 +265,7 @@ class OCRService {
       .replace(/\s+/g, ' ')
       .trim()
       .toLowerCase()
-      .replace(/\b\w/g, l => l.toUpperCase());
+      .replace(/\b\w/g, (l) => l.toUpperCase());
   }
 
   /**
@@ -274,13 +280,21 @@ class OCRService {
    */
   private parseGender(gender: string): 'male' | 'female' | 'other' {
     const cleanGender = gender.toLowerCase().trim();
-    
-    if (cleanGender.includes('erkek') || cleanGender.includes('male') || cleanGender.includes('m')) {
+
+    if (
+      cleanGender.includes('erkek') ||
+      cleanGender.includes('male') ||
+      cleanGender.includes('m')
+    ) {
       return 'male';
-    } else if (cleanGender.includes('kadın') || cleanGender.includes('female') || cleanGender.includes('f')) {
+    } else if (
+      cleanGender.includes('kadın') ||
+      cleanGender.includes('female') ||
+      cleanGender.includes('f')
+    ) {
       return 'female';
     }
-    
+
     return 'other';
   }
 
@@ -289,18 +303,18 @@ class OCRService {
    */
   private getCountryCode(nationality: string): string {
     const countryMap: Record<string, string> = {
-      'türk': 'TR',
-      'turk': 'TR',
-      'turkey': 'TR',
-      'türkiye': 'TR',
-      'syrian': 'SY',
-      'suriyeli': 'SY',
-      'afghan': 'AF',
-      'afgan': 'AF',
-      'iraqi': 'IQ',
-      'iraklı': 'IQ',
-      'iranian': 'IR',
-      'iranlı': 'IR',
+      türk: 'TR',
+      turk: 'TR',
+      turkey: 'TR',
+      türkiye: 'TR',
+      syrian: 'SY',
+      suriyeli: 'SY',
+      afghan: 'AF',
+      afgan: 'AF',
+      iraqi: 'IQ',
+      iraklı: 'IQ',
+      iranian: 'IR',
+      iranlı: 'IR',
     };
 
     const lowerNationality = nationality.toLowerCase();

@@ -3,10 +3,7 @@ import { tailwindAnimationConfig } from './lib/design-system/animations.js';
 import { colorTokens, zIndexTokens } from './lib/design-system/tokens.js';
 
 export default {
-  content: [
-    './index.html',
-    './**/*.{js,ts,jsx,tsx}',
-  ],
+  content: ['./index.html', './**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
       // Design Tokens - Spacing Scale
@@ -21,11 +18,11 @@ export default {
 
       // Typography Scale
       fontSize: {
-        'xs': ['0.75rem', { lineHeight: '1rem' }],
-        'sm': ['0.875rem', { lineHeight: '1.25rem' }],
-        'base': ['1rem', { lineHeight: '1.5rem' }],
-        'lg': ['1.125rem', { lineHeight: '1.75rem' }],
-        'xl': ['1.25rem', { lineHeight: '1.75rem' }],
+        xs: ['0.75rem', { lineHeight: '1rem' }],
+        sm: ['0.875rem', { lineHeight: '1.25rem' }],
+        base: ['1rem', { lineHeight: '1.5rem' }],
+        lg: ['1.125rem', { lineHeight: '1.75rem' }],
+        xl: ['1.25rem', { lineHeight: '1.75rem' }],
         '2xl': ['1.5rem', { lineHeight: '2rem' }],
         '3xl': ['1.875rem', { lineHeight: '2.25rem' }],
         '4xl': ['2.25rem', { lineHeight: '2.5rem' }],
@@ -39,24 +36,30 @@ export default {
       // Enhanced Color Palette with Design Tokens
       colors: {
         // Design token-based colors
-        ...Object.entries(colorTokens).reduce((acc, [colorName, shades]) => {
-          const colorShades = shades as Record<string, string>;
-          acc[colorName] = Object.entries(colorShades).reduce((shadeAcc, [shade, value]) => {
-            shadeAcc[shade] = `hsl(${value})`;
-            return shadeAcc;
-          }, {} as Record<string, string>);
+        ...Object.entries(colorTokens).reduce(
+          (acc, [colorName, shades]) => {
+            const colorShades = shades as Record<string, string>;
+            acc[colorName] = Object.entries(colorShades).reduce(
+              (shadeAcc, [shade, value]) => {
+                shadeAcc[shade] = `hsl(${value})`;
+                return shadeAcc;
+              },
+              {} as Record<string, string>
+            );
 
-          // Add alpha variants for semantic colors
-          if (['primary', 'success', 'error', 'warning', 'info'].includes(colorName)) {
-            acc[colorName]['alpha-10'] = `hsl(${colorShades['500']} / 0.1)`;
-            acc[colorName]['alpha-20'] = `hsl(${colorShades['500']} / 0.2)`;
-            acc[colorName]['alpha-30'] = `hsl(${colorShades['500']} / 0.3)`;
-            acc[colorName]['alpha-40'] = `hsl(${colorShades['500']} / 0.4)`;
-            acc[colorName]['alpha-50'] = `hsl(${colorShades['500']} / 0.5)`;
-          }
+            // Add alpha variants for semantic colors
+            if (['primary', 'success', 'error', 'warning', 'info'].includes(colorName)) {
+              acc[colorName]['alpha-10'] = `hsl(${colorShades['500']} / 0.1)`;
+              acc[colorName]['alpha-20'] = `hsl(${colorShades['500']} / 0.2)`;
+              acc[colorName]['alpha-30'] = `hsl(${colorShades['500']} / 0.3)`;
+              acc[colorName]['alpha-40'] = `hsl(${colorShades['500']} / 0.4)`;
+              acc[colorName]['alpha-50'] = `hsl(${colorShades['500']} / 0.5)`;
+            }
 
-          return acc;
-        }, {} as Record<string, Record<string, string>>),
+            return acc;
+          },
+          {} as Record<string, Record<string, string>>
+        ),
 
         // Compatibility with existing shadcn/ui colors
         destructive: {
@@ -92,13 +95,13 @@ export default {
 
       // Enhanced Shadows
       boxShadow: {
-        'xs': '0 1px 2px 0 rgb(0 0 0 / 0.05)',
-        'sm': '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
-        'md': '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
-        'lg': '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
-        'xl': '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
+        xs: '0 1px 2px 0 rgb(0 0 0 / 0.05)',
+        sm: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
+        md: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+        lg: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
+        xl: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
         '2xl': '0 25px 50px -12px rgb(0 0 0 / 0.25)',
-        'inner': 'inset 0 2px 4px 0 rgb(0 0 0 / 0.05)',
+        inner: 'inset 0 2px 4px 0 rgb(0 0 0 / 0.05)',
         'elevation-1': '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
         'elevation-2': '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
         'elevation-3': '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
@@ -129,14 +132,14 @@ export default {
 
       // Typography Utilities
       textWrap: {
-        'balance': 'balance',
-        'pretty': 'pretty',
+        balance: 'balance',
+        pretty: 'pretty',
       },
     },
   },
   plugins: [
     // Design token CSS variables injection
-    function({ addBase }: { addBase: any }) {
+    function ({ addBase }: { addBase: any }) {
       const cssVariables: Record<string, Record<string, string>> = {};
 
       // Generate CSS variables for colors
@@ -154,7 +157,7 @@ export default {
     },
 
     // Typography utilities plugin
-    function({ addUtilities }: { addUtilities: any }) {
+    function ({ addUtilities }: { addUtilities: any }) {
       const newUtilities = {
         '.text-balance': {
           'text-wrap': 'balance',
@@ -165,14 +168,14 @@ export default {
         // Fallbacks for browsers that don't support text-wrap
         '@supports not (text-wrap: balance)': {
           '.text-balance': {
-            'hyphens': 'auto',
+            hyphens: 'auto',
             'word-break': 'break-word',
           },
         },
         '@supports not (text-wrap: pretty)': {
           '.text-pretty': {
-            'orphans': '2',
-            'widows': '2',
+            orphans: '2',
+            widows: '2',
             'word-break': 'break-word',
           },
         },
@@ -234,11 +237,12 @@ export default {
 
         // High contrast mode support
         '@media (prefers-contrast: high)': {
-          '.focus-ring, .focus-ring-error, .focus-ring-success, .focus-ring-warning, .focus-ring-info': {
-            '&:focus-visible': {
-              outline: '3px solid currentColor',
+          '.focus-ring, .focus-ring-error, .focus-ring-success, .focus-ring-warning, .focus-ring-info':
+            {
+              '&:focus-visible': {
+                outline: '3px solid currentColor',
+              },
             },
-          },
         },
 
         // Touch target utilities

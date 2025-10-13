@@ -636,9 +636,7 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
         <div className="mb-3 flex items-start justify-between">
           <div className="flex-1">
             <div className="mb-1 text-base font-semibold">{row.ad_soyad}</div>
-            <div className="text-sm text-gray-600">
-              #{index + 1 + (currentPage - 1) * pageSize}
-            </div>
+            <div className="text-sm text-gray-600">#{index + 1 + (currentPage - 1) * pageSize}</div>
           </div>
           {getCategoryBadge(row.kategori ?? 'Genel')}
         </div>
@@ -725,9 +723,9 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
             <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
               <DialogTrigger asChild>
                 <Button
-                  variant="primaryGradient"
+                  variant="default"
                   size="sm"
-                  className="micro-interaction order-1 min-h-[44px] min-w-[44px] flex-shrink-0 border border-blue-600 px-4 py-3 text-white shadow-lg transition-all duration-200 hover:shadow-xl sm:order-2 sm:px-6"
+                  className="micro-interaction order-1 min-h-[44px] min-w-[44px] flex-shrink-0 border-none px-4 py-3 text-white shadow-lg transition-all duration-200 hover:shadow-xl sm:order-2 sm:px-6 corporate-gradient"
                   type="button"
                   data-testid="new-beneficiary-btn"
                   aria-label="Yeni İhtiyaç Sahibi Ekle"
@@ -902,9 +900,9 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
                     İptal
                   </Button>
                   <Button
-                    variant="primaryGradient"
+                    variant="default"
                     onClick={handleCreateBeneficiary}
-                    className="min-h-[44px] px-6 shadow-md hover:shadow-lg"
+                    className="min-h-[44px] px-6 shadow-md hover:shadow-lg corporate-gradient"
                     disabled={saving}
                   >
                     {saving ? (

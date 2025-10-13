@@ -1,6 +1,6 @@
 /**
  * @fileoverview FormStepper Component - Multi-step form with progress indication
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -44,24 +44,27 @@ export interface FormStepperProps {
 }
 
 export const FormStepper = React.forwardRef<HTMLDivElement, FormStepperProps>(
-  ({
-    steps,
-    currentStep,
-    onStepChange,
-    orientation = 'horizontal',
-    showStepNumbers = true,
-    clickable = true,
-    stepStates,
-    className,
-    disabled = false,
-    ...props
-  }, ref) => {
+  (
+    {
+      steps,
+      currentStep,
+      onStepChange,
+      orientation = 'horizontal',
+      showStepNumbers = true,
+      clickable = true,
+      stepStates,
+      className,
+      disabled = false,
+      ...props
+    },
+    ref
+  ) => {
     // Generate step states if not provided
     const getStepState = (index: number): 'pending' | 'current' | 'completed' | 'error' => {
       if (stepStates?.[index]) {
         return stepStates[index];
       }
-      
+
       if (index < currentStep) return 'completed';
       if (index === currentStep) return 'current';
       return 'pending';
@@ -69,7 +72,7 @@ export const FormStepper = React.forwardRef<HTMLDivElement, FormStepperProps>(
 
     const handleStepClick = (stepIndex: number) => {
       if (disabled || !clickable) return;
-      
+
       // Only allow navigation to completed steps or current step
       const stepState = getStepState(stepIndex);
       if (stepState === 'completed' || stepState === 'current') {
@@ -82,7 +85,7 @@ export const FormStepper = React.forwardRef<HTMLDivElement, FormStepperProps>(
         event.preventDefault();
         handleStepClick(stepIndex);
       }
-      
+
       // Arrow key navigation
       if (orientation === 'horizontal') {
         if (event.key === 'ArrowLeft' && stepIndex > 0) {
@@ -105,7 +108,8 @@ export const FormStepper = React.forwardRef<HTMLDivElement, FormStepperProps>(
 
     const renderStepIndicator = (step: FormStep, index: number) => {
       const stepState = getStepState(index);
-      const isClickable = clickable && !disabled && (stepState === 'completed' || stepState === 'current');
+      const isClickable =
+        clickable && !disabled && (stepState === 'completed' || stepState === 'current');
 
       return (
         <div
@@ -127,8 +131,12 @@ export const FormStepper = React.forwardRef<HTMLDivElement, FormStepperProps>(
               type="button"
               variant="ghost"
               size="icon"
-              onClick={() => { handleStepClick(index); }}
-              onKeyDown={(e) => { handleKeyDown(e, index); }}
+              onClick={() => {
+                handleStepClick(index);
+              }}
+              onKeyDown={(e) => {
+                handleKeyDown(e, index);
+              }}
               disabled={!isClickable}
               aria-current={stepState === 'current' ? 'step' : undefined}
               aria-label={`Step ${index + 1}: ${step.label}${step.optional ? ' (optional)' : ''}`}
@@ -138,7 +146,8 @@ export const FormStepper = React.forwardRef<HTMLDivElement, FormStepperProps>(
                 stepState === 'pending' && 'border-muted bg-background text-muted-foreground',
                 stepState === 'current' && 'border-primary bg-primary text-primary-foreground',
                 stepState === 'completed' && 'border-success bg-success text-success-foreground',
-                stepState === 'error' && 'border-destructive bg-destructive text-destructive-foreground',
+                stepState === 'error' &&
+                  'border-destructive bg-destructive text-destructive-foreground',
                 isClickable && 'hover:scale-105 cursor-pointer',
                 !isClickable && 'cursor-not-allowed'
               )}
@@ -148,9 +157,7 @@ export const FormStepper = React.forwardRef<HTMLDivElement, FormStepperProps>(
               ) : stepState === 'error' ? (
                 <AlertCircle className="w-5 h-5" />
               ) : step.icon ? (
-                <span className="w-5 h-5 flex items-center justify-center">
-                  {step.icon}
-                </span>
+                <span className="w-5 h-5 flex items-center justify-center">{step.icon}</span>
               ) : showStepNumbers ? (
                 <span className="text-sm font-medium">{index + 1}</span>
               ) : null}
@@ -178,9 +185,7 @@ export const FormStepper = React.forwardRef<HTMLDivElement, FormStepperProps>(
                 )}
               </div>
               {step.description && (
-                <div className="text-xs text-muted-foreground mt-1">
-                  {step.description}
-                </div>
+                <div className="text-xs text-muted-foreground mt-1">{step.description}</div>
               )}
             </div>
           </div>
@@ -190,9 +195,7 @@ export const FormStepper = React.forwardRef<HTMLDivElement, FormStepperProps>(
             <div
               className={cn(
                 'transition-colors duration-200',
-                orientation === 'horizontal' 
-                  ? 'flex-1 h-0.5 mx-4 mt-5' 
-                  : 'w-0.5 h-8 my-2 ml-5',
+                orientation === 'horizontal' ? 'flex-1 h-0.5 mx-4 mt-5' : 'w-0.5 h-8 my-2 ml-5',
                 getStepState(index) === 'completed' ? 'bg-success' : 'bg-muted'
               )}
             />

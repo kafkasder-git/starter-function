@@ -1,6 +1,6 @@
 /**
  * @fileoverview Camera Scanner - Kamera ile belge tarama bileşeni
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -22,18 +22,18 @@ interface CameraScannerProps {
   title?: string;
 }
 
-export function CameraScanner({ 
-  isOpen, 
-  onClose, 
-  onScanComplete, 
-  title = "Belge Tarama" 
+export function CameraScanner({
+  isOpen,
+  onClose,
+  onScanComplete,
+  title = 'Belge Tarama',
 }: CameraScannerProps) {
   const [isScanning, setIsScanning] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [cameraSupported, setCameraSupported] = useState(false);
   const [lastResult, setLastResult] = useState<OCRResult | null>(null);
-  
+
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -51,18 +51,18 @@ export function CameraScanner({
     try {
       setError(null);
       setIsScanning(true);
-      
+
       const video = await ocrService.startCamera({
         facingMode: 'environment',
         width: 1280,
-        height: 720
+        height: 720,
       });
-      
+
       if (videoRef.current) {
         videoRef.current.srcObject = video.srcObject;
         videoRef.current.play();
       }
-      
+
       logger.info('Kamera başlatıldı');
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Kamera başlatılamadı';
@@ -88,14 +88,14 @@ export function CameraScanner({
   // Belge tara
   const scanDocument = useCallback(async () => {
     if (!isScanning) return;
-    
+
     try {
       setIsProcessing(true);
       setError(null);
-      
+
       const result = await ocrService.scanDocument();
       setLastResult(result);
-      
+
       if (result.confidence && result.confidence > 0.3) {
         toast.success('Belge başarıyla okundu');
         logger.info('Belge tarama başarılı', { confidence: result.confidence });
@@ -173,7 +173,7 @@ export function CameraScanner({
           {/* Kamera Görüntüsü */}
           <Card>
             <CardContent className="p-4">
-              <div 
+              <div
                 ref={containerRef}
                 className="relative bg-black rounded-lg overflow-hidden aspect-video"
               >
@@ -182,9 +182,7 @@ export function CameraScanner({
                     <div className="text-center">
                       <Camera className="h-16 w-16 mx-auto mb-4 opacity-50" />
                       <p className="text-lg mb-2">Kamera Hazır</p>
-                      <p className="text-sm opacity-75">
-                        Belgeyi kameraya gösterin ve tarayın
-                      </p>
+                      <p className="text-sm opacity-75">Belgeyi kameraya gösterin ve tarayın</p>
                     </div>
                   </div>
                 ) : (
@@ -230,8 +228,8 @@ export function CameraScanner({
               </Button>
             ) : (
               <>
-                <Button 
-                  onClick={scanDocument} 
+                <Button
+                  onClick={scanDocument}
                   disabled={isProcessing}
                   className="flex items-center gap-2"
                 >
@@ -247,7 +245,7 @@ export function CameraScanner({
                     </>
                   )}
                 </Button>
-                
+
                 <Button onClick={stopCamera} variant="outline" className="flex items-center gap-2">
                   <X className="h-4 w-4" />
                   Durdur
@@ -270,7 +268,7 @@ export function CameraScanner({
                       <p className="text-sm text-gray-600">{lastResult.fullName}</p>
                     </div>
                   )}
-                  
+
                   {lastResult.identityNumber && (
                     <div>
                       <Label className="text-sm font-medium">
@@ -279,31 +277,34 @@ export function CameraScanner({
                       <p className="text-sm text-gray-600">{lastResult.identityNumber}</p>
                     </div>
                   )}
-                  
+
                   {lastResult.nationality && (
                     <div>
                       <Label className="text-sm font-medium">Uyruk</Label>
                       <p className="text-sm text-gray-600">{lastResult.nationality}</p>
                     </div>
                   )}
-                  
+
                   {lastResult.birthDate && (
                     <div>
                       <Label className="text-sm font-medium">Doğum Tarihi</Label>
                       <p className="text-sm text-gray-600">{lastResult.birthDate}</p>
                     </div>
                   )}
-                  
+
                   {lastResult.gender && (
                     <div>
                       <Label className="text-sm font-medium">Cinsiyet</Label>
                       <p className="text-sm text-gray-600">
-                        {lastResult.gender === 'male' ? 'Erkek' : 
-                         lastResult.gender === 'female' ? 'Kadın' : 'Diğer'}
+                        {lastResult.gender === 'male'
+                          ? 'Erkek'
+                          : lastResult.gender === 'female'
+                            ? 'Kadın'
+                            : 'Diğer'}
                       </p>
                     </div>
                   )}
-                  
+
                   {lastResult.confidence && (
                     <div>
                       <Label className="text-sm font-medium">Güven Seviyesi</Label>

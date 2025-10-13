@@ -61,28 +61,25 @@ export function LegalConsultationPage() {
   }, []);
 
   // Use the optimized search hook with fetched data
-  const {
-    searchState,
-    setQuery,
-    setFilters,
-    clearFilters,
-    isEmpty,
-  } = useSearch<Consultation>({
+  const { searchState, setQuery, setFilters, clearFilters, isEmpty } = useSearch<Consultation>({
     config: CONSULTATION_SEARCH_CONFIG,
     data: consultations,
     initialFilters: [],
   });
 
   // Memoized filter transformations
-  const filterConfig = useMemo(() => ({
-    tabs: {
-      all: {},
-      pending: { status: 'bekliyor' },
-      scheduled: { status: 'incelemede' },
-      completed: { status: 'tamamlandi' },
-      urgent: { urgency: 'acil' },
-    },
-  }), []);
+  const filterConfig = useMemo(
+    () => ({
+      tabs: {
+        all: {},
+        pending: { status: 'bekliyor' },
+        scheduled: { status: 'incelemede' },
+        completed: { status: 'tamamlandi' },
+        urgent: { urgency: 'acil' },
+      },
+    }),
+    []
+  );
 
   // Memoized filtered consultations based on active tab
   const filteredConsultations = useMemo(() => {
@@ -109,31 +106,41 @@ export function LegalConsultationPage() {
       <div className="tabs">
         <button
           className={activeTab === 'all' ? 'active' : ''}
-          onClick={() => { handleTabChange('all'); }}
+          onClick={() => {
+            handleTabChange('all');
+          }}
         >
           Tüm Danışmalar
         </button>
         <button
           className={activeTab === 'pending' ? 'active' : ''}
-          onClick={() => { handleTabChange('pending'); }}
+          onClick={() => {
+            handleTabChange('pending');
+          }}
         >
           Bekleyen
         </button>
         <button
           className={activeTab === 'scheduled' ? 'active' : ''}
-          onClick={() => { handleTabChange('scheduled'); }}
+          onClick={() => {
+            handleTabChange('scheduled');
+          }}
         >
           Planlanmış
         </button>
         <button
           className={activeTab === 'completed' ? 'active' : ''}
-          onClick={() => { handleTabChange('completed'); }}
+          onClick={() => {
+            handleTabChange('completed');
+          }}
         >
           Tamamlanmış
         </button>
         <button
           className={activeTab === 'urgent' ? 'active' : ''}
-          onClick={() => { handleTabChange('urgent'); }}
+          onClick={() => {
+            handleTabChange('urgent');
+          }}
         >
           Acil
         </button>
@@ -145,11 +152,15 @@ export function LegalConsultationPage() {
           type="text"
           placeholder="Danışma ara..."
           value={searchState.query}
-          onChange={(e) => { setQuery(e.target.value); }}
+          onChange={(e) => {
+            setQuery(e.target.value);
+          }}
         />
         <select
           value={searchState.filters.find((f) => f.field === 'category')?.value ?? ''}
-          onChange={(e) => { setFilters([{ field: 'category', value: e.target.value }]); }}
+          onChange={(e) => {
+            setFilters([{ field: 'category', value: e.target.value }]);
+          }}
           title="Kategori seçin"
           aria-label="Kategori filtresi"
         >
@@ -181,14 +192,18 @@ export function LegalConsultationPage() {
               <p>{consultation.description}</p>
               <p>Kategori: {consultation.category}</p>
               <div className={`status ${consultation.status}`}>
-                {consultation.status === 'pending' ? 'Bekliyor' :
-                 consultation.status === 'scheduled' ? 'Planlandı' :
-                 'Tamamlandı'}
+                {consultation.status === 'pending'
+                  ? 'Bekliyor'
+                  : consultation.status === 'scheduled'
+                    ? 'Planlandı'
+                    : 'Tamamlandı'}
               </div>
               <div className={`priority ${consultation.priority}`}>
-                {consultation.priority === 'high' ? 'Acil' :
-                 consultation.priority === 'medium' ? 'Normal' :
-                 'Düşük'}
+                {consultation.priority === 'high'
+                  ? 'Acil'
+                  : consultation.priority === 'medium'
+                    ? 'Normal'
+                    : 'Düşük'}
               </div>
             </div>
           ))}
@@ -199,7 +214,13 @@ export function LegalConsultationPage() {
       {isDetailOpen && selectedConsultation && (
         <div className="modal">
           <div className="modal-content">
-            <button onClick={() => { setIsDetailOpen(false); }}>Kapat</button>
+            <button
+              onClick={() => {
+                setIsDetailOpen(false);
+              }}
+            >
+              Kapat
+            </button>
             <h2>{selectedConsultation.title}</h2>
             {/* Add more consultation details */}
           </div>

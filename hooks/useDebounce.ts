@@ -71,7 +71,7 @@ export function useSearch<T>(
   items: T[],
   searchFields: (keyof T)[],
   searchTerm: string,
-  debounceMs = 300,
+  debounceMs = 300
 ) {
   const debouncedSearchTerm = useDebounce(searchTerm.toLowerCase(), debounceMs);
 
@@ -106,7 +106,7 @@ export function useSearch<T>(
  */
 export function useIntersectionObserver(
   elementRef: React.RefObject<Element>,
-  options?: IntersectionObserverInit,
+  options?: IntersectionObserverInit
 ) {
   const [isVisible, setIsVisible] = useState(false);
 
@@ -139,7 +139,7 @@ export function useVirtualScroll<T>(
   items: T[],
   containerHeight: number,
   itemHeight: number,
-  overscan = 5,
+  overscan = 5
 ) {
   const [scrollTop, setScrollTop] = useState(0);
 

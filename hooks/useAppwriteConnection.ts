@@ -1,6 +1,6 @@
 /**
  * @fileoverview useAppwriteConnection Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -19,7 +19,7 @@ interface ConnectionStatus {
 
 /**
  * useAppwriteConnection function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -88,17 +88,19 @@ export function useAppwriteConnection(): ConnectionStatus {
 // Utility function to check if Appwrite is properly configured
 /**
  * isAppwriteConfigured function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
 export function isAppwriteConfigured(): boolean {
-  const {endpoint, projectId} = environment.appwrite;
+  const { endpoint, projectId } = environment.appwrite;
 
-  return Boolean(endpoint &&
-    projectId &&
-    !endpoint.includes('your-endpoint') &&
-    !projectId.includes('your-project-id') &&
-    endpoint.startsWith('https://') &&
-    endpoint.includes('.appwrite.io'));
+  return Boolean(
+    endpoint &&
+      projectId &&
+      !endpoint.includes('your-endpoint') &&
+      !projectId.includes('your-project-id') &&
+      endpoint.startsWith('https://') &&
+      endpoint.includes('.appwrite.io')
+  );
 }

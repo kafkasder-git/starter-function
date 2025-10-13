@@ -65,10 +65,9 @@ const buildUserFromAppwriteUser = async (appwriteUser: any): Promise<AuthUser> =
 
   // Try to get user profile from database
   try {
-    const { data: profileData, error } = await db.list(
-      collections.USER_PROFILES,
-      [Query.equal('$id', appwriteUser.$id)]
-    );
+    const { data: profileData, error } = await db.list(collections.USER_PROFILES, [
+      Query.equal('$id', appwriteUser.$id),
+    ]);
 
     if (!error && profileData?.documents?.[0]) {
       const profile = profileData.documents[0];
@@ -76,20 +75,20 @@ const buildUserFromAppwriteUser = async (appwriteUser: any): Promise<AuthUser> =
       isActive = profile.is_active !== false;
       avatar = profile.avatar_url;
       metadata = { ...prefs, ...profile };
-      
+
       logger.info('Successfully fetched user profile from database', {
         userId: appwriteUser.$id,
-        role: profile.role
+        role: profile.role,
       });
     } else {
       logger.info('No user profile found in database, using preferences', {
-        userId: appwriteUser.$id
+        userId: appwriteUser.$id,
       });
     }
   } catch (error: any) {
-    logger.error('Failed to fetch user profile from database, using preferences', { 
-      userId: appwriteUser.$id, 
-      error: error.message
+    logger.error('Failed to fetch user profile from database, using preferences', {
+      userId: appwriteUser.$id,
+      error: error.message,
     });
   }
 
@@ -101,7 +100,7 @@ const buildUserFromAppwriteUser = async (appwriteUser: any): Promise<AuthUser> =
       role = normalizedRole as UserRole;
     }
   }
-  
+
   isActive = (prefs as any).is_active !== false;
   avatar = (prefs as any).avatar_url as string;
 
@@ -113,7 +112,7 @@ const buildUserFromAppwriteUser = async (appwriteUser: any): Promise<AuthUser> =
   return {
     id: appwriteUser.$id,
     email,
-    name: appwriteUser.name || (prefs as any).name as string || email.split('@')[0] || 'User',
+    name: appwriteUser.name || ((prefs as any).name as string) || email.split('@')[0] || 'User',
     role,
     avatar,
     permissions: ROLE_PERMISSIONS[role],
@@ -148,7 +147,7 @@ export class AuthService {
   async initialize(): Promise<AuthResponse> {
     try {
       logger.info('Initializing authentication service');
-      
+
       // Get current account session
       const appwriteUser = await account.get();
 
@@ -162,7 +161,7 @@ export class AuthService {
 
         logger.info('Authentication initialized successfully', {
           userId: user.id,
-          role: user.role
+          role: user.role,
         });
 
         return {
@@ -175,9 +174,9 @@ export class AuthService {
       return { success: false, error: 'No active session found' };
     } catch (error: any) {
       logger.error('Authentication initialization failed', error);
-      return { 
-        success: false, 
-        error: error.message || 'Authentication initialization failed' 
+      return {
+        success: false,
+        error: error.message || 'Authentication initialization failed',
       };
     }
   }
@@ -188,23 +187,23 @@ export class AuthService {
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
     try {
       logger.info('Attempting login', { email: credentials.email });
-      
+
       // Create email session
       await account.createEmailPasswordSession(credentials.email, credentials.password);
       logger.info('Email session created successfully', { email: credentials.email });
 
       // Get user data
       const appwriteUser = await account.get();
-      logger.info('Retrieved Appwrite user data', { 
+      logger.info('Retrieved Appwrite user data', {
         userId: appwriteUser.$id,
-        email: appwriteUser.email 
+        email: appwriteUser.email,
       });
-      
+
       const user = await buildUserFromAppwriteUser(appwriteUser);
-      logger.info('Built user object successfully', { 
+      logger.info('Built user object successfully', {
         userId: user.id,
         role: user.role,
-        isActive: user.isActive 
+        isActive: user.isActive,
       });
 
       // Update Appwrite preferences with database role if different
@@ -219,13 +218,13 @@ export class AuthService {
           });
           logger.info('Updated Appwrite preferences with database role', {
             userId: user.id,
-            role: user.role
+            role: user.role,
           });
         }
       } catch (prefsError: any) {
         logger.error('Failed to update Appwrite preferences', {
           userId: user.id,
-          error: prefsError.message
+          error: prefsError.message,
         });
         // Continue even if preferences update fails
       }
@@ -289,12 +288,7 @@ export class AuthService {
 
       // Create account
       const userId = ID.unique();
-      await account.create(
-        userId,
-        userData.email,
-        userData.password,
-        userData.name
-      );
+      await account.create(userId, userData.email, userData.password, userData.name);
 
       // Update preferences with role
       await account.updatePrefs({
@@ -315,9 +309,9 @@ export class AuthService {
         });
         logger.info('User profile created in database', { userId });
       } catch (dbError: any) {
-        logger.error('Failed to create user profile in database', { 
-          userId, 
-          error: dbError.message 
+        logger.error('Failed to create user profile in database', {
+          userId,
+          error: dbError.message,
         });
         // Continue even if database profile creation fails
       }
@@ -376,18 +370,16 @@ export class AuthService {
    */
   async resetPassword(email: string): Promise<AuthResponse> {
     try {
-      await account.createRecovery(
-        email,
-        `${window.location.origin}/reset-password`
-      );
+      await account.createRecovery(email, `${window.location.origin}/reset-password`);
 
       logger.info('Password reset email sent', { email });
       return { success: true };
     } catch (error: any) {
       logger.error('Password reset failed', { email, error: error.message });
-      const errorMessage = error instanceof AppwriteException
-        ? error.message
-        : 'Şifre sıfırlama bağlantısı gönderilemedi';
+      const errorMessage =
+        error instanceof AppwriteException
+          ? error.message
+          : 'Şifre sıfırlama bağlantısı gönderilemedi';
       return { success: false, error: errorMessage };
     }
   }
@@ -430,9 +422,9 @@ export class AuthService {
         await db.update(collections.USER_PROFILES, this.currentUser.id, updateData);
         logger.info('User profile updated in database', { userId: this.currentUser.id });
       } catch (dbError: any) {
-        logger.error('Failed to update user profile in database', { 
-          userId: this.currentUser.id, 
-          error: dbError.message 
+        logger.error('Failed to update user profile in database', {
+          userId: this.currentUser.id,
+          error: dbError.message,
         });
         // Continue even if database update fails
       }
@@ -444,9 +436,8 @@ export class AuthService {
       return { success: true, user: updatedUser };
     } catch (error: any) {
       logger.error('Profile update failed', { userId: this.currentUser.id, error: error.message });
-      const errorMessage = error instanceof AppwriteException
-        ? error.message
-        : 'Profil güncellenemedi';
+      const errorMessage =
+        error instanceof AppwriteException ? error.message : 'Profil güncellenemedi';
       return { success: false, error: errorMessage };
     }
   }
@@ -538,14 +529,13 @@ export class AuthService {
    */
   async syncUserProfile(userId: string): Promise<void> {
     try {
-      const { data: profileData, error } = await db.list(
-        collections.USER_PROFILES,
-        [Query.equal('$id', userId)]
-      );
+      const { data: profileData, error } = await db.list(collections.USER_PROFILES, [
+        Query.equal('$id', userId),
+      ]);
 
       if (!error && profileData?.documents?.[0]) {
         const profile = profileData.documents[0];
-        
+
         if (this.currentUser && this.currentUser.id === userId) {
           this.currentUser = {
             ...this.currentUser,
@@ -555,7 +545,7 @@ export class AuthService {
             metadata: { ...this.currentUser.metadata, ...profile },
             updatedAt: new Date(),
           };
-          
+
           logger.info('User profile synced with database', { userId });
         }
       }
@@ -578,7 +568,7 @@ export class AuthService {
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       });
-      
+
       logger.info('User profile created in database', { userId: userData.id });
     } catch (error: any) {
       logger.error('Failed to create user profile', { userId: userData.id, error: error.message });

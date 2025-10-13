@@ -29,7 +29,7 @@ const DANGEROUS_PATTERNS = new RegExp(
     'data:text/html',
     'on\\w+\\s*=',
   ].join('|'),
-  'gi',
+  'gi'
 );
 
 /**

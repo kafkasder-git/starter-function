@@ -5,7 +5,21 @@
 
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
-import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import {
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts';
 
 interface MetricData {
   label: string;
@@ -92,11 +106,13 @@ export function AdvancedMetrics() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {metric.label.includes('Bağış') 
+                {metric.label.includes('Bağış')
                   ? formatCurrency(metric.value)
                   : metric.value.toLocaleString('tr-TR')}
               </div>
-              <div className={`text-sm flex items-center gap-1 mt-1 ${getTrendColor(metric.trend)}`}>
+              <div
+                className={`text-sm flex items-center gap-1 mt-1 ${getTrendColor(metric.trend)}`}
+              >
                 <span>{getTrendIcon(metric.trend)}</span>
                 <span>{Math.abs(metric.change)}%</span>
                 <span className="text-gray-500">son aydan</span>
@@ -120,14 +136,12 @@ export function AdvancedMetrics() {
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
                 <YAxis />
-                <Tooltip 
-                  formatter={(value: number) => formatCurrency(value)}
-                />
+                <Tooltip formatter={(value: number) => formatCurrency(value)} />
                 <Legend />
-                <Line 
-                  type="monotone" 
-                  dataKey="value" 
-                  stroke="#8884d8" 
+                <Line
+                  type="monotone"
+                  dataKey="value"
+                  stroke="#8884d8"
                   strokeWidth={2}
                   name="Bağış"
                 />
@@ -205,20 +219,38 @@ export function AdvancedMetrics() {
         <CardContent>
           <div className="space-y-4">
             {[
-              { time: '2 dakika önce', action: 'Yeni bağış kaydedildi', amount: '₺1,500', user: 'Ahmet Y.' },
+              {
+                time: '2 dakika önce',
+                action: 'Yeni bağış kaydedildi',
+                amount: '₺1,500',
+                user: 'Ahmet Y.',
+              },
               { time: '15 dakika önce', action: 'Üye eklendi', amount: null, user: 'Ayşe D.' },
-              { time: '1 saat önce', action: 'Kampanya güncellendi', amount: null, user: 'Mehmet K.' },
-              { time: '2 saat önce', action: 'Yardım başvurusu onaylandı', amount: null, user: 'Fatma Ş.' },
+              {
+                time: '1 saat önce',
+                action: 'Kampanya güncellendi',
+                amount: null,
+                user: 'Mehmet K.',
+              },
+              {
+                time: '2 saat önce',
+                action: 'Yardım başvurusu onaylandı',
+                amount: null,
+                user: 'Fatma Ş.',
+              },
             ].map((activity, index) => (
-              <div key={index} className="flex items-center justify-between border-b pb-3 last:border-0">
+              <div
+                key={index}
+                className="flex items-center justify-between border-b pb-3 last:border-0"
+              >
                 <div className="flex-1">
                   <p className="font-medium">{activity.action}</p>
-                  <p className="text-sm text-gray-500">{activity.time} • {activity.user}</p>
+                  <p className="text-sm text-gray-500">
+                    {activity.time} • {activity.user}
+                  </p>
                 </div>
                 {activity.amount && (
-                  <div className="text-lg font-semibold text-green-600">
-                    {activity.amount}
-                  </div>
+                  <div className="text-lg font-semibold text-green-600">{activity.amount}</div>
                 )}
               </div>
             ))}

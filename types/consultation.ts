@@ -1,6 +1,6 @@
 /**
  * @fileoverview Consultation Types - Type definitions for legal consultation system
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -78,4 +78,12 @@ export interface ConsultationStats {
 
 export type ConsultationStatus = 'bekliyor' | 'incelemede' | 'atandi' | 'tamamlandi';
 export type ConsultationUrgency = 'acil' | 'orta' | 'normal';
-export type ConsultationCategory = 'medeni' | 'ceza' | 'is' | 'ticaret' | 'idare' | 'aile' | 'icra' | 'diger';
+export type ConsultationCategory =
+  | 'medeni'
+  | 'ceza'
+  | 'is'
+  | 'ticaret'
+  | 'idare'
+  | 'aile'
+  | 'icra'
+  | 'diger';

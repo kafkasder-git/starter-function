@@ -167,7 +167,10 @@ export function formatTime(date: DateInput, includeSeconds: boolean = false): st
  * formatDateTime(new Date()); // '15.01.2024 14:30'
  * formatDateTime(new Date(), 'dd.MM.yyyy HH:mm:ss'); // '15.01.2024 14:30:45'
  */
-export function formatDateTime(date: DateInput, formatString: string = TURKISH_DATETIME_FORMAT): string {
+export function formatDateTime(
+  date: DateInput,
+  formatString: string = TURKISH_DATETIME_FORMAT
+): string {
   try {
     const parsedDate = parseDateInput(date);
     if (!parsedDate) {
@@ -250,7 +253,11 @@ export function formatRelativeDate(date: DateInput, baseDate?: DateInput): strin
  * @example
  * formatDateRange('2024-01-01', '2024-12-31'); // '01.01.2024 - 31.12.2024'
  */
-export function formatDateRange(startDate: DateInput, endDate: DateInput, separator: string = ' - '): string {
+export function formatDateRange(
+  startDate: DateInput,
+  endDate: DateInput,
+  separator: string = ' - '
+): string {
   try {
     const formattedStart = formatDate(startDate);
     const formattedEnd = formatDate(endDate);
@@ -525,4 +532,3 @@ export function getTurkishMonthName(date: DateInput): string {
     return '';
   }
 }
-

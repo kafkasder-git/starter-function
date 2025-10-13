@@ -39,29 +39,29 @@ export const CACHE_KEYS = {
   USER_PROFILE: ['user', 'profile'] as const,
   USER_PREFERENCES: ['user', 'preferences'] as const,
   USER_PERMISSIONS: ['user', 'permissions'] as const,
-  
+
   // Beneficiaries
   BENEFICIARIES: ['beneficiaries'] as const,
   BENEFICIARY_DETAIL: (id: string) => ['beneficiaries', id] as const,
-  
+
   // Aid applications
   AID_APPLICATIONS: ['aid-applications'] as const,
   AID_APPLICATION_DETAIL: (id: string) => ['aid-applications', id] as const,
-  
+
   // Donations
   DONATIONS: ['donations'] as const,
   DONATION_DETAIL: (id: string) => ['donations', id] as const,
-  
+
   // Members
   MEMBERS: ['members'] as const,
   MEMBER_DETAIL: (id: string) => ['members', id] as const,
-  
+
   // Statistics
   STATS_BENEFICIARIES: ['stats', 'beneficiaries'] as const,
   STATS_DONATIONS: ['stats', 'donations'] as const,
   STATS_MEMBERS: ['stats', 'members'] as const,
   STATS_OVERVIEW: ['stats', 'overview'] as const,
-  
+
   // System
   SYSTEM_SETTINGS: ['system', 'settings'] as const,
   FEATURE_FLAGS: ['system', 'feature-flags'] as const,
@@ -75,17 +75,17 @@ export const CACHE_INVALIDATION = {
   invalidateUserData: (queryClient: QueryClient) => {
     queryClient.invalidateQueries({ queryKey: ['user'] });
   },
-  
+
   // Invalidate all beneficiary data
   invalidateBeneficiaryData: (queryClient: QueryClient) => {
     queryClient.invalidateQueries({ queryKey: CACHE_KEYS.BENEFICIARIES });
   },
-  
+
   // Invalidate all statistics
   invalidateStats: (queryClient: QueryClient) => {
     queryClient.invalidateQueries({ queryKey: ['stats'] });
   },
-  
+
   // Invalidate all system data
   invalidateSystemData: (queryClient: QueryClient) => {
     queryClient.invalidateQueries({ queryKey: ['system'] });
@@ -105,7 +105,7 @@ export const CACHE_UTILS = {
       staleTime: 5 * 60 * 1000,
     });
   },
-  
+
   /**
    * Prefetch common data on app initialization
    */
@@ -114,17 +114,17 @@ export const CACHE_UTILS = {
       CACHE_UTILS.prefetchUserProfile(queryClient),
       // Add more prefetch operations as needed
     ];
-    
+
     await Promise.allSettled(prefetchPromises);
   },
-  
+
   /**
    * Clear all cache data
    */
   clearAllCache: (queryClient: QueryClient) => {
     queryClient.clear();
   },
-  
+
   /**
    * Remove stale data from cache
    */
@@ -144,7 +144,7 @@ export const BROWSER_CACHE = {
     API: 'api-v1',
     IMAGES: 'images-v1',
   },
-  
+
   // Cache strategies
   STRATEGIES: {
     // Cache first for static assets
@@ -154,7 +154,7 @@ export const BROWSER_CACHE = {
     // Stale while revalidate for dynamic content
     STALE_WHILE_REVALIDATE: 'stale-while-revalidate',
   },
-  
+
   // Cache expiration times (in seconds)
   EXPIRATION: {
     STATIC: 365 * 24 * 60 * 60, // 1 year

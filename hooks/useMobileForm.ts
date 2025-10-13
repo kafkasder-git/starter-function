@@ -168,7 +168,7 @@ export function useMobileForm(options: UseMobileFormOptions = {}) {
       enableHapticFeedback,
       triggerHapticFeedback,
       requestFrame,
-    ],
+    ]
   );
 
   /**
@@ -186,7 +186,7 @@ export function useMobileForm(options: UseMobileFormOptions = {}) {
         | 'search'
         | 'url'
         | 'password'
-        | 'textarea' = 'text',
+        | 'textarea' = 'text'
     ) => {
       const baseProps: any = {
         className: deviceInfo.isMobile ? 'text-base' : '', // Prevent iOS zoom
@@ -258,7 +258,7 @@ export function useMobileForm(options: UseMobileFormOptions = {}) {
 
       return baseProps;
     },
-    [deviceInfo.isMobile, deviceInfo.isIOS],
+    [deviceInfo.isMobile, deviceInfo.isIOS]
   );
 
   return {

@@ -142,7 +142,13 @@ export function LegalDocumentsPage() {
     };
 
     const { label, className } = config[type];
-    return <Badge className={`${className} border border-gray-200 dark:border-gray-700 dark:bg-gray-900 px-2 py-1 text-xs`}>{label}</Badge>;
+    return (
+      <Badge
+        className={`${className} border border-gray-200 dark:border-gray-700 dark:bg-gray-900 px-2 py-1 text-xs`}
+      >
+        {label}
+      </Badge>
+    );
   };
 
   const approvedDocs = documents.filter((d) => d.status === 'onaylandi').length;

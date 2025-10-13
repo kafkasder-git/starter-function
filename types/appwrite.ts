@@ -372,14 +372,14 @@ export const PERMISSIONS = {
   BENEFICIARY_CREATE: 'beneficiary:create',
   BENEFICIARY_UPDATE: 'beneficiary:update',
   BENEFICIARY_DELETE: 'beneficiary:delete',
-  
+
   // Donation permissions
   DONATION_VIEW: 'donation:view',
   DONATION_CREATE: 'donation:create',
   DONATION_UPDATE: 'donation:update',
   DONATION_DELETE: 'donation:delete',
   DONATION_APPROVE: 'donation:approve',
-  
+
   // Aid request permissions
   AID_REQUEST_VIEW: 'aid_request:view',
   AID_REQUEST_CREATE: 'aid_request:create',
@@ -387,20 +387,20 @@ export const PERMISSIONS = {
   AID_REQUEST_DELETE: 'aid_request:delete',
   AID_REQUEST_ASSIGN: 'aid_request:assign',
   AID_REQUEST_APPROVE: 'aid_request:approve',
-  
+
   // Campaign permissions
   CAMPAIGN_VIEW: 'campaign:view',
   CAMPAIGN_CREATE: 'campaign:create',
   CAMPAIGN_UPDATE: 'campaign:update',
   CAMPAIGN_DELETE: 'campaign:delete',
-  
+
   // User management permissions
   USER_VIEW: 'user:view',
   USER_CREATE: 'user:create',
   USER_UPDATE: 'user:update',
   USER_DELETE: 'user:delete',
   USER_ROLE_ASSIGN: 'user:role_assign',
-  
+
   // System permissions
   SYSTEM_SETTINGS_VIEW: 'system:settings_view',
   SYSTEM_SETTINGS_UPDATE: 'system:settings_update',
@@ -419,7 +419,7 @@ export const ROLES = {
   VIEWER: 'viewer',
 } as const;
 
-export type CollectionName = typeof COLLECTIONS[keyof typeof COLLECTIONS];
-export type BucketName = typeof BUCKETS[keyof typeof BUCKETS];
-export type PermissionName = typeof PERMISSIONS[keyof typeof PERMISSIONS];
-export type RoleName = typeof ROLES[keyof typeof ROLES];
+export type CollectionName = (typeof COLLECTIONS)[keyof typeof COLLECTIONS];
+export type BucketName = (typeof BUCKETS)[keyof typeof BUCKETS];
+export type PermissionName = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
+export type RoleName = (typeof ROLES)[keyof typeof ROLES];

@@ -64,9 +64,7 @@ function Badge({
       )}
       {...props}
     >
-      {!isDotVariant && icon && (
-        <span className="flex items-center">{icon}</span>
-      )}
+      {!isDotVariant && icon && <span className="flex items-center">{icon}</span>}
       {!isDotVariant && children}
       {removable && !isDotVariant && (
         <button

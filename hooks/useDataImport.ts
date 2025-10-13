@@ -1,13 +1,19 @@
 /**
  * @fileoverview useDataImport Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
 
 import { useCallback, useRef, useState } from 'react';
 import { toast } from 'sonner';
-import { IMPORT_VALIDATION_RULES, type ImportConfig, type ImportError, type ImportResult, type ImportWarning } from '../types/data';
+import {
+  IMPORT_VALIDATION_RULES,
+  type ImportConfig,
+  type ImportError,
+  type ImportResult,
+  type ImportWarning,
+} from '../types/data';
 
 interface UseDataImportProps {
   onProgress?: (progress: number) => void;
@@ -18,7 +24,7 @@ interface UseDataImportProps {
 
 /**
  * useDataImport function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -116,7 +122,7 @@ export function useDataImport({
         reader.readAsText(file);
       });
     },
-    [parseCSV],
+    [parseCSV]
   );
 
   // Parse JSON file
@@ -266,7 +272,7 @@ export function useDataImport({
 
       return { errors, warnings };
     },
-    [],
+    []
   );
 
   // Preview file content
@@ -315,7 +321,7 @@ export function useDataImport({
         throw error;
       }
     },
-    [parseCSV, parseExcel, parseJSON, onError],
+    [parseCSV, parseExcel, parseJSON, onError]
   );
 
   // Read file as text
@@ -494,7 +500,7 @@ export function useDataImport({
       onComplete,
       onError,
       onValidationError,
-    ],
+    ]
   );
 
   // Cancel import

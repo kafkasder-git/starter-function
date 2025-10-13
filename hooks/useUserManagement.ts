@@ -1,6 +1,6 @@
 /**
  * @fileoverview useUserManagement Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -56,7 +56,7 @@ interface UseUserManagementReturn {
 
 /**
  * useUserManagement function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -108,31 +108,34 @@ export function useUserManagement(): UseUserManagementReturn {
   /**
    * Create new user
    */
-  const createUser = useCallback(async (request: CreateUserRequest): Promise<ManagedUser> => {
-    setLoading(true);
-    setError(null);
+  const createUser = useCallback(
+    async (request: CreateUserRequest): Promise<ManagedUser> => {
+      setLoading(true);
+      setError(null);
 
-    try {
-      const newUser = await userManagementService.createUser(request);
+      try {
+        const newUser = await userManagementService.createUser(request);
 
-      // Add to local state
-      setUsers((prev) => [newUser, ...prev]);
+        // Add to local state
+        setUsers((prev) => [newUser, ...prev]);
 
-      toast.success(`Kullanıcı ${newUser.name} başarıyla oluşturuldu`);
+        toast.success(`Kullanıcı ${newUser.name} başarıyla oluşturuldu`);
 
-      // Refresh stats
-      await loadStats();
+        // Refresh stats
+        await loadStats();
 
-      return newUser;
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Kullanıcı oluşturulamadı';
-      setError(errorMessage);
-      toast.error(errorMessage);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, [loadStats]);
+        return newUser;
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Kullanıcı oluşturulamadı';
+        setError(errorMessage);
+        toast.error(errorMessage);
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [loadStats]
+  );
 
   /**
    * Update user
@@ -163,7 +166,7 @@ export function useUserManagement(): UseUserManagementReturn {
         setLoading(false);
       }
     },
-    [loadStats],
+    [loadStats]
   );
 
   /**
@@ -195,7 +198,7 @@ export function useUserManagement(): UseUserManagementReturn {
         setLoading(false);
       }
     },
-    [users, loadStats],
+    [users, loadStats]
   );
 
   /**
@@ -221,7 +224,7 @@ export function useUserManagement(): UseUserManagementReturn {
         setLoading(false);
       }
     },
-    [users],
+    [users]
   );
 
   /**
@@ -278,7 +281,7 @@ export function useUserManagement(): UseUserManagementReturn {
     (id: string): ManagedUser | undefined => {
       return users.find((user) => user.id === id);
     },
-    [users],
+    [users]
   );
 
   /**

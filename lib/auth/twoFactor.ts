@@ -12,22 +12,18 @@ import { logger } from '../logging/logger';
 export function generateSecret(): string {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
   let secret = '';
-  
+
   for (let i = 0; i < 32; i++) {
     secret += chars[Math.floor(Math.random() * chars.length)];
   }
-  
+
   return secret;
 }
 
 /**
  * Generate QR code URL for authenticator apps
  */
-export function generateQRCodeURL(
-  secret: string,
-  email: string,
-  issuer = 'Kafkasder'
-): string {
+export function generateQRCodeURL(secret: string, email: string, issuer = 'Kafkasder'): string {
   const otpauthURL = `otpauth://totp/${encodeURIComponent(issuer)}:${encodeURIComponent(email)}?secret=${secret}&issuer=${encodeURIComponent(issuer)}`;
   return `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(otpauthURL)}`;
 }
@@ -39,7 +35,7 @@ function simpleHash(str: string): number {
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
     const char = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
+    hash = (hash << 5) - hash + char;
     hash = hash & hash;
   }
   return Math.abs(hash);
@@ -52,11 +48,11 @@ function simpleHash(str: string): number {
 export function generateTOTP(secret: string, window = 0): string {
   const epoch = Math.floor(Date.now() / 1000);
   const time = Math.floor(epoch / 30) + window;
-  
+
   // Simple TOTP implementation (in production, use a library like otplib)
   const hash = simpleHash(secret + time.toString());
   const code = (hash % 1000000).toString().padStart(6, '0');
-  
+
   return code;
 }
 
@@ -82,7 +78,7 @@ export function verifyTOTP(secret: string, code: string): boolean {
       return true;
     }
   }
-  
+
   return false;
 }
 
@@ -96,10 +92,8 @@ export async function enable2FA(userId: string): Promise<{
 }> {
   try {
     // Get user email
-    const { data: userData } = await db.list('user_profiles', [
-      queryHelpers.equal('$id', userId)
-    ]);
-    
+    const { data: userData } = await db.list('user_profiles', [queryHelpers.equal('$id', userId)]);
+
     const user = userData?.documents?.[0];
 
     if (!user) {
@@ -108,13 +102,13 @@ export async function enable2FA(userId: string): Promise<{
 
     // Generate secret
     const secret = generateSecret();
-    
+
     // Generate QR code URL
     const qrCodeURL = generateQRCodeURL(secret, user.email);
-    
+
     // Generate backup codes
     const backupCodes = generateBackupCodes();
-    
+
     // Store in database (encrypted)
     await db.create('user_2fa', {
       user_id: userId,
@@ -138,16 +132,11 @@ export async function enable2FA(userId: string): Promise<{
 /**
  * Verify and activate 2FA
  */
-export async function verify2FASetup(
-  userId: string,
-  code: string
-): Promise<boolean> {
+export async function verify2FASetup(userId: string, code: string): Promise<boolean> {
   try {
     // Get user's 2FA secret
-    const { data: twoFAData } = await db.list('user_2fa', [
-      queryHelpers.equal('user_id', userId)
-    ]);
-    
+    const { data: twoFAData } = await db.list('user_2fa', [queryHelpers.equal('user_id', userId)]);
+
     const twoFA = twoFAData?.documents?.[0];
 
     if (!twoFA) {
@@ -156,14 +145,14 @@ export async function verify2FASetup(
 
     // Verify code
     const isValid = verifyTOTP(twoFA.secret, code);
-    
+
     if (isValid) {
       // Enable 2FA
       await db.update('user_2fa', twoFA.$id, { enabled: true });
-      
+
       return true;
     }
-    
+
     return false;
   } catch (error) {
     logger.error('Failed to verify 2FA setup:', error);
@@ -174,16 +163,11 @@ export async function verify2FASetup(
 /**
  * Verify 2FA code during login
  */
-export async function verify2FALogin(
-  userId: string,
-  code: string
-): Promise<boolean> {
+export async function verify2FALogin(userId: string, code: string): Promise<boolean> {
   try {
     // Get user's 2FA settings
-    const { data: twoFAData } = await db.list('user_2fa', [
-      queryHelpers.equal('user_id', userId)
-    ]);
-    
+    const { data: twoFAData } = await db.list('user_2fa', [queryHelpers.equal('user_id', userId)]);
+
     const twoFA = twoFAData?.documents?.[0];
 
     if (!twoFA?.enabled) {
@@ -195,7 +179,7 @@ export async function verify2FALogin(
       // Remove used backup code
       const updatedCodes = twoFA.backup_codes.filter((c: string) => c !== code);
       await db.update('user_2fa', twoFA.$id, { backup_codes: updatedCodes });
-      
+
       return true;
     }
 
@@ -214,7 +198,7 @@ export async function disable2FA(userId: string, code: string): Promise<boolean>
   try {
     // Verify code before disabling
     const isValid = await verify2FALogin(userId, code);
-    
+
     if (!isValid) {
       return false;
     }
@@ -234,12 +218,12 @@ export async function disable2FA(userId: string, code: string): Promise<boolean>
  */
 export function generateBackupCodes(count = 10): string[] {
   const codes: string[] = [];
-  
+
   for (let i = 0; i < count; i++) {
     const code = Math.random().toString(36).substring(2, 10).toUpperCase();
     codes.push(code);
   }
-  
+
   return codes;
 }
 
@@ -248,10 +232,8 @@ export function generateBackupCodes(count = 10): string[] {
  */
 export async function is2FAEnabled(userId: string): Promise<boolean> {
   try {
-    const { data: twoFAData } = await db.list('user_2fa', [
-      queryHelpers.equal('user_id', userId)
-    ]);
-    
+    const { data: twoFAData } = await db.list('user_2fa', [queryHelpers.equal('user_id', userId)]);
+
     const data = twoFAData?.documents?.[0];
 
     return data?.enabled || false;
@@ -265,10 +247,8 @@ export async function is2FAEnabled(userId: string): Promise<boolean> {
  */
 export async function getBackupCodesCount(userId: string): Promise<number> {
   try {
-    const { data: twoFAData } = await db.list('user_2fa', [
-      queryHelpers.equal('user_id', userId)
-    ]);
-    
+    const { data: twoFAData } = await db.list('user_2fa', [queryHelpers.equal('user_id', userId)]);
+
     const data = twoFAData?.documents?.[0];
 
     return data?.backup_codes?.length || 0;
@@ -280,21 +260,18 @@ export async function getBackupCodesCount(userId: string): Promise<number> {
 /**
  * Regenerate backup codes
  */
-export async function regenerateBackupCodes(
-  userId: string,
-  code: string
-): Promise<string[]> {
+export async function regenerateBackupCodes(userId: string, code: string): Promise<string[]> {
   try {
     // Verify current code
     const isValid = await verify2FALogin(userId, code);
-    
+
     if (!isValid) {
       throw new Error('Invalid verification code');
     }
 
     // Generate new backup codes
     const backupCodes = generateBackupCodes();
-    
+
     // Update in database
     await db.update('user_2fa', twoFA.$id, { backup_codes: backupCodes });
 

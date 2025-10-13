@@ -214,14 +214,11 @@ export function ProfilePage() {
 
     setIsLoading(true);
     try {
-      const result = await userManagementService.updateUser(
-        user!.id,
-        {
-          name: `${profileData.firstName} ${profileData.lastName}`,
-          email: profileData.email,
-          phone: profileData.phone,
-        }
-      );
+      const result = await userManagementService.updateUser(user!.id, {
+        name: `${profileData.firstName} ${profileData.lastName}`,
+        email: profileData.email,
+        phone: profileData.phone,
+      });
       // Update auth store with new user data
       await updateProfile({
         name: result.name,
@@ -408,11 +405,17 @@ export function ProfilePage() {
         {/* Mobile-Optimized Profile Settings Tabs */}
         <Tabs defaultValue="personal" className="space-y-4 sm:space-y-6">
           <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3 h-auto sm:h-10">
-            <TabsTrigger value="personal" className="min-h-[44px] text-sm sm:text-base px-3 sm:px-4">
+            <TabsTrigger
+              value="personal"
+              className="min-h-[44px] text-sm sm:text-base px-3 sm:px-4"
+            >
               <User className="w-4 h-4 mr-1 sm:mr-2 sm:hidden" />
               Kişisel Bilgiler
             </TabsTrigger>
-            <TabsTrigger value="notifications" className="min-h-[44px] text-sm sm:text-base px-3 sm:px-4">
+            <TabsTrigger
+              value="notifications"
+              className="min-h-[44px] text-sm sm:text-base px-3 sm:px-4"
+            >
               <Bell className="w-4 h-4 mr-1 sm:mr-2 sm:hidden" />
               Bildirimler
             </TabsTrigger>

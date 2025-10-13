@@ -16,7 +16,7 @@ import { SkeletonLoader } from './shared/LoadingSpinner';
 export const BeneficiaryDetailPageComprehensive = lazy(() =>
   import('./pages/BeneficiaryDetailPageComprehensive').then((m) => ({
     default: m.BeneficiaryDetailPageComprehensive,
-  })),
+  }))
 );
 
 // SecurityManagementPage ve UserManagementPage kaldırıldı - eksik dosyalar
@@ -27,7 +27,7 @@ export const BeneficiaryDetailPageComprehensive = lazy(() =>
 
 // Chart Components - Heavy rendering
 export const InteractiveChart = lazy(() =>
-  import('./ui/InteractiveChart').then((m) => ({ default: m.InteractiveChart })),
+  import('./ui/InteractiveChart').then((m) => ({ default: m.InteractiveChart }))
 );
 
 // Beneficiary Components - Core components only
@@ -38,12 +38,12 @@ export const InteractiveChart = lazy(() =>
 // AI Assistant page removed
 
 export const UserManagementPageReal = lazy(() =>
-  import('./pages/UserManagementPageReal').then((m) => ({ default: m.UserManagementPageReal })),
+  import('./pages/UserManagementPageReal').then((m) => ({ default: m.UserManagementPageReal }))
 );
 
 // Yeni eklenen sayfalar - performans optimizasyonu
 export const DonationsPage = lazy(() =>
-  import('./pages/DonationsPage').then((m) => ({ default: m.DonationsPage })),
+  import('./pages/DonationsPage').then((m) => ({ default: m.DonationsPage }))
 );
 
 // MembersPage kaldırıldı - dosya mevcut değil
@@ -51,26 +51,26 @@ export const DonationsPage = lazy(() =>
 export const BeneficiariesPageEnhanced = lazy(() =>
   import('./pages/BeneficiariesPageEnhanced').then((m) => ({
     default: m.BeneficiariesPageEnhanced,
-  })),
+  }))
 );
 
 export const FinanceIncomePage = lazy(() =>
-  import('./pages/FinanceIncomePage').then((m) => ({ default: m.FinanceIncomePage })),
+  import('./pages/FinanceIncomePage').then((m) => ({ default: m.FinanceIncomePage }))
 );
 
 export const EventsPage = lazy(() =>
-  import('./pages/EventsPage').then((m) => ({ default: m.EventsPage })),
+  import('./pages/EventsPage').then((m) => ({ default: m.EventsPage }))
 );
 
 // TasksPage kaldırıldı - dosya mevcut değil
 
 // New PWA Components - Lazy load for better initial performance
 export const PushNotificationManager = lazy(() =>
-  import('./notifications/PushNotificationManager').then((m) => ({ default: m.default })),
+  import('./notifications/PushNotificationManager').then((m) => ({ default: m.default }))
 );
 
 export const BackgroundSyncManager = lazy(() =>
-  import('./sync/BackgroundSyncManager').then((m) => ({ default: m.default })),
+  import('./sync/BackgroundSyncManager').then((m) => ({ default: m.default }))
 );
 
 // Native features demo removed
@@ -146,4 +146,3 @@ export const LazyChartWrapper = ({
     </div>
   );
 };
-

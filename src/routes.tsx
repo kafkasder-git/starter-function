@@ -4,7 +4,9 @@ import { lazy, Suspense } from 'react';
 // Lazy load components for better performance
 const DashboardPage = lazy(() => import('../components/pages/DashboardPage'));
 const BeneficiariesPage = lazy(() => import('../components/pages/BeneficiariesPageEnhanced'));
-const BeneficiaryDetailPage = lazy(() => import('../components/pages/BeneficiaryDetailPageComprehensive'));
+const BeneficiaryDetailPage = lazy(
+  () => import('../components/pages/BeneficiaryDetailPageComprehensive')
+);
 const AidApplicationsPage = lazy(() => import('../components/pages/AidApplicationsPage'));
 const AllAidListPage = lazy(() => import('../components/pages/AllAidListPage'));
 const DonationsPage = lazy(() => import('../components/pages/DonationsPage'));
@@ -17,8 +19,10 @@ const UIComponentsShowcase = lazy(() => import('../components/pages/UIComponents
 const FormExamplesPage = lazy(() => import('../components/pages/FormExamplesPage'));
 const GanttExample = lazy(() => import('../components/examples/GanttExample'));
 const KiboUIExample = lazy(() => import('../components/examples/KiboUIExample'));
+const CardFlipExample = lazy(() => import('../components/examples/CardFlipExample'));
 const BursStudentsPage = lazy(() => import('../components/pages/BursStudentsPage'));
 const BursApplicationsPage = lazy(() => import('../components/pages/BursApplicationsPage'));
+const OrphanListPage = lazy(() => import('../components/pages/OrphanListPage'));
 const BulkMessagePage = lazy(() => import('../components/pages/BulkMessagePage'));
 const InternalMessagingPage = lazy(() => import('../components/pages/InternalMessagingPage'));
 const FinanceIncomePage = lazy(() => import('../components/pages/FinanceIncomePage'));
@@ -28,8 +32,14 @@ const TasksPage = lazy(() => import('../components/pages/TasksPage'));
 const MeetingsPage = lazy(() => import('../components/pages/MeetingsPage'));
 const PartnersPage = lazy(() => import('../components/pages/PartnersPage'));
 const KumbaraPage = lazy(() => import('../components/pages/KumbaraPage'));
-const CashAidVaultPage = lazy(() => import('../components/pages/CashAidVaultPage').then(m => ({ default: m.CashAidVaultPage })));
-const DonationReportsPage = lazy(() => import('../components/pages/DonationReportsPage').then(m => ({ default: m.DonationReportsPage })));
+const CashAidVaultPage = lazy(() =>
+  import('../components/pages/CashAidVaultPage').then((m) => ({ default: m.CashAidVaultPage }))
+);
+const DonationReportsPage = lazy(() =>
+  import('../components/pages/DonationReportsPage').then((m) => ({
+    default: m.DonationReportsPage,
+  }))
+);
 
 // Import skeleton loaders
 import { PageSkeleton } from '../components/ui/skeleton-loaders';
@@ -39,9 +49,7 @@ const PageLoading = () => <PageSkeleton />;
 
 // Wrapper component for Suspense
 const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
-  <Suspense fallback={<PageLoading />}>
-    {children}
-  </Suspense>
+  <Suspense fallback={<PageLoading />}>{children}</Suspense>
 );
 
 /**
@@ -51,7 +59,11 @@ const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
 export const publicRoutes: RouteObject[] = [
   {
     path: '/login',
-    element: <SuspenseWrapper><LoginPage /></SuspenseWrapper>,
+    element: (
+      <SuspenseWrapper>
+        <LoginPage />
+      </SuspenseWrapper>
+    ),
   },
 ];
 
@@ -65,180 +77,368 @@ export const protectedRoutes: RouteObject[] = [
     children: [
       {
         index: true,
-        element: <SuspenseWrapper><DashboardPage /></SuspenseWrapper>,
+        element: (
+          <SuspenseWrapper>
+            <DashboardPage />
+          </SuspenseWrapper>
+        ),
       },
       // Dashboard/General module
       {
         path: 'genel',
-        element: <SuspenseWrapper><DashboardPage /></SuspenseWrapper>,
+        element: (
+          <SuspenseWrapper>
+            <DashboardPage />
+          </SuspenseWrapper>
+        ),
       },
       {
         path: 'dashboard',
-        element: <SuspenseWrapper><DashboardPage /></SuspenseWrapper>,
+        element: (
+          <SuspenseWrapper>
+            <DashboardPage />
+          </SuspenseWrapper>
+        ),
       },
       {
         path: 'genel/ui-showcase',
-        element: <SuspenseWrapper><UIComponentsShowcase /></SuspenseWrapper>,
+        element: (
+          <SuspenseWrapper>
+            <UIComponentsShowcase />
+          </SuspenseWrapper>
+        ),
       },
       {
         path: 'genel/form-examples',
-        element: <SuspenseWrapper><FormExamplesPage /></SuspenseWrapper>,
+        element: (
+          <SuspenseWrapper>
+            <FormExamplesPage />
+          </SuspenseWrapper>
+        ),
       },
       {
         path: 'genel/gantt',
-        element: <SuspenseWrapper><GanttExample /></SuspenseWrapper>,
+        element: (
+          <SuspenseWrapper>
+            <GanttExample />
+          </SuspenseWrapper>
+        ),
       },
       {
         path: 'genel/kibo-ui',
-        element: <SuspenseWrapper><KiboUIExample /></SuspenseWrapper>,
+        element: (
+          <SuspenseWrapper>
+            <KiboUIExample />
+          </SuspenseWrapper>
+        ),
+      },
+      {
+        path: 'genel/card-flip',
+        element: (
+          <SuspenseWrapper>
+            <CardFlipExample />
+          </SuspenseWrapper>
+        ),
       },
       // Aid management module
       {
         path: 'yardim',
-        element: <SuspenseWrapper><BeneficiariesPage /></SuspenseWrapper>,
+        element: (
+          <SuspenseWrapper>
+            <BeneficiariesPage />
+          </SuspenseWrapper>
+        ),
       },
       {
         path: 'yardim/ihtiyac-sahipleri',
-        element: <SuspenseWrapper><BeneficiariesPage /></SuspenseWrapper>,
+        element: (
+          <SuspenseWrapper>
+            <BeneficiariesPage />
+          </SuspenseWrapper>
+        ),
       },
       {
         path: 'yardim/ihtiyac-sahipleri/:id',
-        element: <SuspenseWrapper><BeneficiaryDetailPage /></SuspenseWrapper>,
+        element: (
+          <SuspenseWrapper>
+            <BeneficiaryDetailPage />
+          </SuspenseWrapper>
+        ),
       },
       {
         path: 'yardim/basvurular',
-        element: <SuspenseWrapper><AidApplicationsPage /></SuspenseWrapper>,
+        element: (
+          <SuspenseWrapper>
+            <AidApplicationsPage />
+          </SuspenseWrapper>
+        ),
       },
       {
         path: 'yardim/liste',
-        element: <SuspenseWrapper><AllAidListPage /></SuspenseWrapper>,
+        element: (
+          <SuspenseWrapper>
+            <AllAidListPage />
+          </SuspenseWrapper>
+        ),
       },
       {
         path: 'yardim/ogrenci-listesi',
-        element: <SuspenseWrapper><BursStudentsPage /></SuspenseWrapper>,
+        element: (
+          <SuspenseWrapper>
+            <BursStudentsPage />
+          </SuspenseWrapper>
+        ),
       },
       {
         path: 'yardim/nakdi-vezne',
-        element: <SuspenseWrapper><CashAidVaultPage /></SuspenseWrapper>,
+        element: (
+          <SuspenseWrapper>
+            <CashAidVaultPage />
+          </SuspenseWrapper>
+        ),
       },
       // Donation module
       {
         path: 'bagis',
-        element: <SuspenseWrapper><DonationsPage /></SuspenseWrapper>,
+        element: (
+          <SuspenseWrapper>
+            <DonationsPage />
+          </SuspenseWrapper>
+        ),
       },
       {
         path: 'bagis/liste',
-        element: <SuspenseWrapper><DonationsPage /></SuspenseWrapper>,
+        element: (
+          <SuspenseWrapper>
+            <DonationsPage />
+          </SuspenseWrapper>
+        ),
       },
       {
         path: 'bagis/kumbara',
-        element: <SuspenseWrapper><KumbaraPage /></SuspenseWrapper>,
+        element: (
+          <SuspenseWrapper>
+            <KumbaraPage />
+          </SuspenseWrapper>
+        ),
       },
       {
         path: 'bagis/raporlar',
-        element: <SuspenseWrapper><DonationReportsPage /></SuspenseWrapper>,
+        element: (
+          <SuspenseWrapper>
+            <DonationReportsPage />
+          </SuspenseWrapper>
+        ),
       },
       // Burs (Scholarship) module
       {
         path: 'burs',
-        element: <SuspenseWrapper><BursStudentsPage /></SuspenseWrapper>,
+        element: (
+          <SuspenseWrapper>
+            <BursStudentsPage />
+          </SuspenseWrapper>
+        ),
       },
       {
         path: 'burs/ogrenciler',
-        element: <SuspenseWrapper><BursStudentsPage /></SuspenseWrapper>,
+        element: (
+          <SuspenseWrapper>
+            <BursStudentsPage />
+          </SuspenseWrapper>
+        ),
       },
       {
         path: 'burs/basvurular',
-        element: <SuspenseWrapper><BursApplicationsPage /></SuspenseWrapper>,
+        element: (
+          <SuspenseWrapper>
+            <BursApplicationsPage />
+          </SuspenseWrapper>
+        ),
+      },
+      {
+        path: 'burs/yetim',
+        element: (
+          <SuspenseWrapper>
+            <OrphanListPage />
+          </SuspenseWrapper>
+        ),
       },
       // Finance module
       {
         path: 'fon',
-        element: <SuspenseWrapper><FinanceIncomePage /></SuspenseWrapper>,
+        element: (
+          <SuspenseWrapper>
+            <FinanceIncomePage />
+          </SuspenseWrapper>
+        ),
       },
       {
         path: 'fon/raporlar',
-        element: <SuspenseWrapper><FinanceIncomePage /></SuspenseWrapper>,
+        element: (
+          <SuspenseWrapper>
+            <FinanceIncomePage />
+          </SuspenseWrapper>
+        ),
       },
       {
         path: 'fon/gelir-gider',
-        element: <SuspenseWrapper><FinanceIncomePage /></SuspenseWrapper>,
+        element: (
+          <SuspenseWrapper>
+            <FinanceIncomePage />
+          </SuspenseWrapper>
+        ),
       },
       // Message module
       {
         path: 'mesaj',
-        element: <SuspenseWrapper><InternalMessagingPage /></SuspenseWrapper>,
+        element: (
+          <SuspenseWrapper>
+            <InternalMessagingPage />
+          </SuspenseWrapper>
+        ),
+      },
+      {
+        path: 'mesaj/kurum-ici',
+        element: (
+          <SuspenseWrapper>
+            <InternalMessagingPage />
+          </SuspenseWrapper>
+        ),
       },
       {
         path: 'mesaj/icerik',
-        element: <SuspenseWrapper><InternalMessagingPage /></SuspenseWrapper>,
+        element: (
+          <SuspenseWrapper>
+            <InternalMessagingPage />
+          </SuspenseWrapper>
+        ),
       },
       {
         path: 'mesaj/toplu',
-        element: <SuspenseWrapper><BulkMessagePage /></SuspenseWrapper>,
+        element: (
+          <SuspenseWrapper>
+            <BulkMessagePage />
+          </SuspenseWrapper>
+        ),
       },
       // Work module
       {
         path: 'is',
-        element: <SuspenseWrapper><TasksPage /></SuspenseWrapper>,
+        element: (
+          <SuspenseWrapper>
+            <TasksPage />
+          </SuspenseWrapper>
+        ),
       },
       {
         path: 'is/etkinlikler',
-        element: <SuspenseWrapper><TasksPage /></SuspenseWrapper>,
+        element: (
+          <SuspenseWrapper>
+            <TasksPage />
+          </SuspenseWrapper>
+        ),
       },
       {
         path: 'is/toplantilar',
-        element: <SuspenseWrapper><MeetingsPage /></SuspenseWrapper>,
+        element: (
+          <SuspenseWrapper>
+            <MeetingsPage />
+          </SuspenseWrapper>
+        ),
       },
       {
         path: 'is/gorevlerim',
-        element: <SuspenseWrapper><TasksPage /></SuspenseWrapper>,
+        element: (
+          <SuspenseWrapper>
+            <TasksPage />
+          </SuspenseWrapper>
+        ),
       },
       {
         path: 'is/gorevler',
-        element: <SuspenseWrapper><TasksPage /></SuspenseWrapper>,
+        element: (
+          <SuspenseWrapper>
+            <TasksPage />
+          </SuspenseWrapper>
+        ),
       },
       // Legal module
       {
         path: 'hukuki',
-        element: <SuspenseWrapper><LegalDocumentsPage /></SuspenseWrapper>,
+        element: (
+          <SuspenseWrapper>
+            <LegalDocumentsPage />
+          </SuspenseWrapper>
+        ),
       },
       {
         path: 'hukuki/belgeler',
-        element: <SuspenseWrapper><LegalDocumentsPage /></SuspenseWrapper>,
+        element: (
+          <SuspenseWrapper>
+            <LegalDocumentsPage />
+          </SuspenseWrapper>
+        ),
       },
       // Partners module
       {
         path: 'partner',
-        element: <SuspenseWrapper><PartnersPage /></SuspenseWrapper>,
+        element: (
+          <SuspenseWrapper>
+            <PartnersPage />
+          </SuspenseWrapper>
+        ),
       },
       {
         path: 'partner/liste',
-        element: <SuspenseWrapper><PartnersPage /></SuspenseWrapper>,
+        element: (
+          <SuspenseWrapper>
+            <PartnersPage />
+          </SuspenseWrapper>
+        ),
       },
       {
         path: 'partner/bagiscilar',
-        element: <SuspenseWrapper><ApplicationWorkflowPage /></SuspenseWrapper>,
+        element: (
+          <SuspenseWrapper>
+            <ApplicationWorkflowPage />
+          </SuspenseWrapper>
+        ),
       },
       // User management
       {
         path: 'user-management',
-        element: <SuspenseWrapper><UserManagementPage /></SuspenseWrapper>,
+        element: (
+          <SuspenseWrapper>
+            <UserManagementPage />
+          </SuspenseWrapper>
+        ),
       },
       // Profile
       {
         path: 'profile',
-        element: <SuspenseWrapper><ProfilePage /></SuspenseWrapper>,
+        element: (
+          <SuspenseWrapper>
+            <ProfilePage />
+          </SuspenseWrapper>
+        ),
       },
       // Settings
       {
         path: 'settings',
-        element: <SuspenseWrapper><SystemSettingsPage /></SuspenseWrapper>,
+        element: (
+          <SuspenseWrapper>
+            <SystemSettingsPage />
+          </SuspenseWrapper>
+        ),
       },
       // 404 - Catch all
       {
         path: '*',
-        element: <SuspenseWrapper><NotFoundPage /></SuspenseWrapper>,
+        element: (
+          <SuspenseWrapper>
+            <NotFoundPage />
+          </SuspenseWrapper>
+        ),
       },
     ],
   },
@@ -249,10 +449,7 @@ export const protectedRoutes: RouteObject[] = [
  * Uses React Router v6 for URL-based routing
  * Public routes are added directly, protected routes are nested under '/'
  */
-export const routes: RouteObject[] = [
-  ...publicRoutes,
-  ...protectedRoutes,
-];
+export const routes: RouteObject[] = [...publicRoutes, ...protectedRoutes];
 
 /**
  * Module to route mapping
@@ -279,5 +476,5 @@ export const routeToModule: Record<string, string> = Object.entries(moduleToRout
   (acc, [module, route]) => {
     return { ...acc, [route]: module };
   },
-  {} as Record<string, string>,
+  {} as Record<string, string>
 );

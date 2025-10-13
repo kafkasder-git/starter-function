@@ -87,7 +87,7 @@ const emailSMSService = {
   async sendWithTemplate(
     to: string,
     templateId: string,
-    variables: Record<string, any>,
+    variables: Record<string, any>
   ): Promise<boolean> {
     // Mock implementation
     logger.info(`Sending email with template ${templateId} to ${to}`);
@@ -99,11 +99,11 @@ const emailSMSService = {
     // Implementation placeholder
     return { provider: 'test' };
   },
-  
+
   getTemplates(): any[] {
     return templates;
   },
-  
+
   async testConfiguration(): Promise<boolean> {
     logger.info('Testing email/SMS configuration');
     return true;
@@ -122,68 +122,75 @@ export const sendBulkSMS = (recipients: string[], message: string) =>
 // Class-like interface for test compatibility
 export class EmailSMSService {
   private static instance: EmailSMSService;
-  
+
   private constructor() {}
-  
+
   static getInstance(): EmailSMSService {
     if (!EmailSMSService.instance) {
       EmailSMSService.instance = new EmailSMSService();
     }
     return EmailSMSService.instance;
   }
-  
+
   async initialize(): Promise<void> {
     return emailSMSService.initialize();
   }
-  
+
   async getTemplate(templateId: string) {
     return emailSMSService.getTemplate(templateId);
   }
-  
+
   async renderTemplate(templateId: string, variables: Record<string, any>) {
     return emailSMSService.renderTemplate(templateId, variables);
   }
-  
+
   async sendEmail(to: string, subject: string, body: string): Promise<boolean> {
     return emailSMSService.sendEmail(to, subject, body);
   }
-  
+
   async sendSMS(to: string, message: string): Promise<boolean> {
     return emailSMSService.sendSMS(to, message);
   }
-  
-  async sendBulkEmail(recipients: string[], subject: string, body: string): Promise<{ sent: number; failed: number }> {
+
+  async sendBulkEmail(
+    recipients: string[],
+    subject: string,
+    body: string
+  ): Promise<{ sent: number; failed: number }> {
     return emailSMSService.sendBulkEmail(recipients, subject, body);
   }
-  
-  async sendBulkSMS(recipients: string[], message: string): Promise<{ sent: number; failed: number }> {
+
+  async sendBulkSMS(
+    recipients: string[],
+    message: string
+  ): Promise<{ sent: number; failed: number }> {
     return emailSMSService.sendBulkSMS(recipients, message);
   }
-  
+
   getConfig() {
     return emailSMSService.getConfig();
   }
-  
+
   getConfiguration() {
     return emailSMSService.getConfig();
   }
-  
+
   getTemplates() {
     return emailSMSService.getTemplates();
   }
-  
+
   async sendWithTemplate(templateId: string, to: string, variables: Record<string, any> = {}) {
     return emailSMSService.sendWithTemplate(templateId, to, variables);
   }
-  
+
   async testConfiguration() {
     return emailSMSService.testConfiguration();
   }
-  
+
   async sendWithSMTP(to: string, subject: string, body: string) {
     return emailSMSService.sendEmail(to, subject, body);
   }
-  
+
   async sendWithTwilio(to: string, message: string) {
     return emailSMSService.sendSMS(to, message);
   }

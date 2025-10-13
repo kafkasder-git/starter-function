@@ -82,6 +82,7 @@ const modules: Module[] = [
     subPages: [
       { name: 'Öğrenci Listesi', href: '/burs/ogrenciler' },
       { name: 'Burs Başvuruları', href: '/burs/basvurular' },
+      { name: 'Yetim Listesi', href: '/burs/yetim' },
     ],
   },
   {
@@ -206,7 +207,7 @@ export function MobileNavigation({
   return (
     <>
       {/* Mobile Bottom Navigation - Always visible on mobile */}
-      <div className="fixed right-0 bottom-0 left-0 z-40 border-t border-slate-200 bg-white md:hidden">
+      <div className="fixed right-0 bottom-0 left-0 z-40 border-t border-neutral-200 bg-white md:hidden">
         <div className="grid h-16 grid-cols-5">
           {/* Primary modules for quick access */}
           {filteredModules.slice(0, 4).map((module) => (
@@ -222,7 +223,7 @@ export function MobileNavigation({
                 'relative flex flex-col items-center justify-center p-2 transition-all duration-200',
                 activeModule === module.id
                   ? 'text-primary bg-primary/5'
-                  : 'hover:text-primary text-slate-500 hover:bg-slate-50',
+                  : 'hover:text-primary text-slate-500 hover:bg-slate-50'
               )}
             >
               <div className="relative">{module.icon}</div>
@@ -268,10 +269,10 @@ export function MobileNavigation({
                           'group flex w-full items-center justify-between rounded-xl p-4 transition-all duration-200',
                           activeModule === module.id
                             ? 'bg-primary text-white shadow-lg'
-                            : 'bg-slate-50 text-slate-700 hover:bg-slate-100 hover:text-slate-900',
+                            : 'bg-neutral-50 text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900'
                         )}
                       >
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2">
                           <div className="relative">{module.icon}</div>
                           <span className="font-medium">{module.name}</span>
                         </div>
@@ -315,9 +316,9 @@ export function MobileNavigation({
                                   onClick={() => {
                                     handleSubPageClick(subPage.href, module.id);
                                   }}
-                                  className="flex w-full items-center gap-2 rounded-lg p-3 text-left text-sm text-slate-600 transition-all duration-200 hover:bg-slate-100 hover:text-slate-900"
+                                  className="flex w-full items-center gap-2 rounded-lg p-2 text-left text-sm text-neutral-600 transition-all duration-200 hover:bg-neutral-100 hover:text-neutral-900"
                                 >
-                                  <div className="h-1.5 w-1.5 rounded-full bg-slate-400" />
+                                  <div className="h-1.5 w-1.5 rounded-full bg-neutral-400" />
                                   {subPage.name}
                                 </motion.button>
                               ))}

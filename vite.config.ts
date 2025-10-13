@@ -160,7 +160,7 @@ export default defineConfig({
       '@radix-ui/react-slot',
       '@radix-ui/react-dialog',
       '@radix-ui/react-dropdown-menu',
-      '@radix-ui/react-select'
+      '@radix-ui/react-select',
     ],
   },
   build: {
@@ -173,11 +173,11 @@ export default defineConfig({
       include: [/node_modules/],
       transformMixedEsModules: true,
     },
-      rollupOptions: {
-        output: {
-          // Fix preload warnings
-          experimentalMinChunkSize: 1000,
-          manualChunks(id) {
+    rollupOptions: {
+      output: {
+        // Fix preload warnings
+        experimentalMinChunkSize: 1000,
+        manualChunks(id) {
           // Keep React in a single vendor chunk to avoid duplication
           if (id.includes('node_modules')) {
             if (id.includes('react') || id.includes('react-dom')) {
@@ -196,8 +196,13 @@ export default defineConfig({
             if (id.includes('react-hook-form') || id.includes('@hookform') || id.includes('zod')) {
               return 'form-vendor';
             }
-            if (id.includes('date-fns') || id.includes('clsx') || id.includes('tailwind-merge') ||
-                id.includes('class-variance-authority') || id.includes('crypto-js')) {
+            if (
+              id.includes('date-fns') ||
+              id.includes('clsx') ||
+              id.includes('tailwind-merge') ||
+              id.includes('class-variance-authority') ||
+              id.includes('crypto-js')
+            ) {
               return 'utils-vendor';
             }
             if (id.includes('lucide-react')) {
@@ -213,30 +218,40 @@ export default defineConfig({
               return 'query-vendor';
             }
           }
-          
+
           // Page-level chunk splitting for heavy pages
-          if (id.includes('components/pages/DashboardPage') || 
-              id.includes('components/ui/EnhancedDashboard')) {
+          if (
+            id.includes('components/pages/DashboardPage') ||
+            id.includes('components/ui/EnhancedDashboard')
+          ) {
             return 'dashboard-page';
           }
-          
-          if (id.includes('components/pages/EventsPage') || 
-              id.includes('components/pages/FinanceIncomePage')) {
+
+          if (
+            id.includes('components/pages/EventsPage') ||
+            id.includes('components/pages/FinanceIncomePage')
+          ) {
             return 'events-finance-page';
           }
-          
-          if (id.includes('components/pages/BeneficiariesPage') || 
-              id.includes('components/pages/AidApplicationsPage')) {
+
+          if (
+            id.includes('components/pages/BeneficiariesPage') ||
+            id.includes('components/pages/AidApplicationsPage')
+          ) {
             return 'beneficiaries-page';
           }
-          
-          if (id.includes('components/messaging/') || 
-              id.includes('components/pages/InternalMessagingPage')) {
+
+          if (
+            id.includes('components/messaging/') ||
+            id.includes('components/pages/InternalMessagingPage')
+          ) {
             return 'messaging-page';
           }
-          
-          if (id.includes('components/pages/UserManagementPage') || 
-              id.includes('components/pages/RoleManagementPage')) {
+
+          if (
+            id.includes('components/pages/UserManagementPage') ||
+            id.includes('components/pages/RoleManagementPage')
+          ) {
             return 'user-management-page';
           }
         },

@@ -1,6 +1,6 @@
 /**
  * @fileoverview toggle Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -19,8 +19,7 @@ const toggleVariants = cva(
     variants: {
       variant: {
         default: 'bg-transparent',
-        outline:
-          'border border-input bg-transparent hover:bg-accent hover:text-accent-foreground',
+        outline: 'border border-input bg-transparent hover:bg-accent hover:text-accent-foreground',
       },
       size: {
         default: 'h-10 px-3',
@@ -32,7 +31,7 @@ const toggleVariants = cva(
       variant: 'default',
       size: 'default',
     },
-  },
+  }
 );
 
 function Toggle({

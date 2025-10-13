@@ -97,7 +97,7 @@ class NativeFeaturesService {
     } catch (error) {
       logger.error('Camera access failed:', error);
       throw new Error(
-        `Camera access failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Camera access failed: ${error instanceof Error ? error.message : 'Unknown error'}`
       );
     }
   }
@@ -142,7 +142,7 @@ class NativeFeaturesService {
       this.stopCamera();
       logger.error('Photo capture failed:', error);
       throw new Error(
-        `Photo capture failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Photo capture failed: ${error instanceof Error ? error.message : 'Unknown error'}`
       );
     }
   }
@@ -184,7 +184,7 @@ class NativeFeaturesService {
           logger.error('Geolocation error:', error);
           reject(new Error(`Geolocation failed: ${error.message}`));
         },
-        defaultOptions,
+        defaultOptions
       );
     });
   }
@@ -195,7 +195,7 @@ class NativeFeaturesService {
   watchLocation(
     callback: (position: GeolocationPosition) => void,
     errorCallback?: (error: GeolocationPositionError) => void,
-    options: GeolocationOptions = {},
+    options: GeolocationOptions = {}
   ): number | null {
     if (!navigator.geolocation) {
       logger.error('Geolocation not supported');
@@ -240,7 +240,7 @@ class NativeFeaturesService {
     } catch (error) {
       logger.error('Contacts access failed:', error);
       throw new Error(
-        `Contacts access failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Contacts access failed: ${error instanceof Error ? error.message : 'Unknown error'}`
       );
     }
   }
@@ -293,7 +293,7 @@ class NativeFeaturesService {
     } catch (error) {
       logger.error('Clipboard read failed:', error);
       throw new Error(
-        `Clipboard read failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Clipboard read failed: ${error instanceof Error ? error.message : 'Unknown error'}`
       );
     }
   }
@@ -328,7 +328,7 @@ class NativeFeaturesService {
       multiple?: boolean;
       accept?: string[];
       excludeAcceptAllOption?: boolean;
-    } = {},
+    } = {}
   ): Promise<FileSystemFileHandle[]> {
     try {
       if (!('showOpenFilePicker' in window)) {
@@ -355,7 +355,7 @@ class NativeFeaturesService {
     } catch (error) {
       logger.error('File picker failed:', error);
       throw new Error(
-        `File picker failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `File picker failed: ${error instanceof Error ? error.message : 'Unknown error'}`
       );
     }
   }
@@ -540,7 +540,7 @@ class NativeFeaturesService {
     return Boolean(
       document.fullscreenElement ||
         (document as any).webkitFullscreenElement ||
-        (document as any).msFullscreenElement,
+        (document as any).msFullscreenElement
     );
   }
 

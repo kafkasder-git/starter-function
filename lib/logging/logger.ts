@@ -1,6 +1,6 @@
 /**
  * @fileoverview logger Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -20,7 +20,7 @@ export enum LogLevel {
 
 /**
  * LoggerConfig Interface
- * 
+ *
  * @interface LoggerConfig
  */
 export interface LoggerConfig {
@@ -53,22 +53,22 @@ class Logger {
 
   private getEnvironmentLogLevel(): LogLevel {
     if (typeof window === 'undefined') return LogLevel.INFO;
-    
+
     // Production'da sadece error ve üstü
     if (import.meta.env.PROD) {
       return LogLevel.ERROR;
     }
-    
+
     // Development'da debug ve üstü
     if (import.meta.env.DEV) {
       return LogLevel.DEBUG;
     }
-    
+
     // Test ortamında sadece error
     if (import.meta.env.MODE === 'test') {
       return LogLevel.ERROR;
     }
-    
+
     return LogLevel.INFO;
   }
 
@@ -77,18 +77,18 @@ class Logger {
     if (import.meta.env.PROD) {
       return false;
     }
-    
+
     // Test ortamında console'u devre dışı bırak
     if (import.meta.env.MODE === 'test') {
       return false;
     }
-    
+
     return true;
   }
 
   private formatMessage(level: string, message: string, ..._args: unknown[]): string {
     const timestamp = new Date().toISOString();
-    const {prefix} = this.config;
+    const { prefix } = this.config;
     return `[${timestamp}] ${prefix} [${level}] ${message}`;
   }
 
@@ -168,10 +168,18 @@ export const logger = Logger.getInstance();
 
 // Convenience functions for different modules
 export const storeLogger = {
-  init: (message: string, ...args: unknown[]): void => { logger.storeInit(message, ...args); },
-  error: (message: string, ...args: unknown[]): void => { logger.log(LogLevel.ERROR, 'ERROR', `Store: ${message}`, ...args); },
-  warn: (message: string, ...args: unknown[]): void => { logger.log(LogLevel.WARN, 'WARN', `Store: ${message}`, ...args); },
-  info: (message: string, ...args: unknown[]): void => { logger.log(LogLevel.INFO, 'INFO', `Store: ${message}`, ...args); },
+  init: (message: string, ...args: unknown[]): void => {
+    logger.storeInit(message, ...args);
+  },
+  error: (message: string, ...args: unknown[]): void => {
+    logger.log(LogLevel.ERROR, 'ERROR', `Store: ${message}`, ...args);
+  },
+  warn: (message: string, ...args: unknown[]): void => {
+    logger.log(LogLevel.WARN, 'WARN', `Store: ${message}`, ...args);
+  },
+  info: (message: string, ...args: unknown[]): void => {
+    logger.log(LogLevel.INFO, 'INFO', `Store: ${message}`, ...args);
+  },
 };
 
 export const apiLogger = {

@@ -198,7 +198,7 @@ const partnersService = {
   async getPartners(
     page: number = 1,
     pageSize: number = 10,
-    filters?: PartnersFilters,
+    filters?: PartnersFilters
   ): Promise<PartnersApiResponse<Partner[]>> {
     try {
       logger.info('Fetching partners', { page, pageSize, filters });
@@ -278,7 +278,7 @@ const partnersService = {
   async getSponsors(
     page: number = 1,
     pageSize: number = 10,
-    filters?: PartnersFilters,
+    filters?: PartnersFilters
   ): Promise<PartnersApiResponse<SponsorOrganization[]>> {
     try {
       const sponsorFilters = {
@@ -432,7 +432,7 @@ const partnersService = {
       logger.info('Deleting partner', { id });
 
       const { error } = await db.update(collectionName, id, {
-        deleted_at: new Date().toISOString()
+        deleted_at: new Date().toISOString(),
       });
 
       if (error) {
@@ -466,7 +466,7 @@ const partnersService = {
       logger.info('Fetching partner statistics');
 
       const { data, error } = await db.list(collectionName, [
-        queryHelpers.select(['partner_type', 'status'])
+        queryHelpers.select(['partner_type', 'status']),
       ]);
 
       if (error) {
@@ -494,7 +494,7 @@ const partnersService = {
 
       const totalSponsors = byType['sponsor'] || 0;
       const activeSponsors = partners.filter(
-        (p: any) => p.partner_type === 'sponsor' && p.status === 'active',
+        (p: any) => p.partner_type === 'sponsor' && p.status === 'active'
       ).length;
 
       const stats: PartnerStats = {
@@ -528,7 +528,7 @@ const partnersService = {
       logger.info('Fetching partner types');
 
       const { data, error } = await db.list(collectionName, [
-        queryHelpers.select(['partner_type'])
+        queryHelpers.select(['partner_type']),
       ]);
 
       if (error) {
@@ -539,7 +539,9 @@ const partnersService = {
         };
       }
 
-      const types = [...new Set(data?.documents?.map((item: any) => item.partner_type as string) || [])].sort();
+      const types = [
+        ...new Set(data?.documents?.map((item: any) => item.partner_type as string) || []),
+      ].sort();
 
       logger.info('Successfully fetched partner types', { types });
 

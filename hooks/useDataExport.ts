@@ -7,7 +7,13 @@
 
 import { useCallback, useRef, useState } from 'react';
 import { toast } from 'sonner';
-import { DATA_FORMATTERS, EXPORT_LIMITS, EXPORT_TEMPLATES, type ExportConfig, type ExportResult } from '../types/data';
+import {
+  DATA_FORMATTERS,
+  EXPORT_LIMITS,
+  EXPORT_TEMPLATES,
+  type ExportConfig,
+  type ExportResult,
+} from '../types/data';
 import { validateDateRange } from '../lib/utils/dateFormatter';
 
 // Specific types for different data structures
@@ -70,7 +76,7 @@ export function useDataExport({ onProgress, onComplete, onError }: UseDataExport
 
     // Create header row
     const headerRow = fields.map((field) =>
-      config.includeHeaders !== false ? (headers as Record<string, string>)[field] || field : field,
+      config.includeHeaders !== false ? (headers as Record<string, string>)[field] || field : field
     );
 
     // Create data rows
@@ -93,7 +99,7 @@ export function useDataExport({ onProgress, onComplete, onError }: UseDataExport
           return `"${stringValue.replace(/"/g, '""')}"`;
         }
         return stringValue;
-      }),
+      })
     );
 
     // Combine header and data
@@ -111,7 +117,7 @@ export function useDataExport({ onProgress, onComplete, onError }: UseDataExport
       });
       return blob;
     },
-    [generateCSV],
+    [generateCSV]
   );
 
   // Generate PDF content (simplified - in real app would use library like jsPDF)
@@ -164,7 +170,7 @@ export function useDataExport({ onProgress, onComplete, onError }: UseDataExport
                   })
                   .join('')}
               </tr>
-            `,
+            `
               )
               .join('')}
           </tbody>
@@ -179,7 +185,7 @@ export function useDataExport({ onProgress, onComplete, onError }: UseDataExport
 
       return new Blob([content], { type: 'text/html' });
     },
-    [],
+    []
   );
 
   // Generate JSON content
@@ -206,7 +212,7 @@ export function useDataExport({ onProgress, onComplete, onError }: UseDataExport
         data: filteredData,
       },
       null,
-      2,
+      2
     );
   }, []);
 
@@ -229,7 +235,7 @@ export function useDataExport({ onProgress, onComplete, onError }: UseDataExport
       errors.push(
         `${config.format.toUpperCase()} formatı için maksimum ${
           EXPORT_LIMITS[config.format]
-        } kayıt destekleniyor`,
+        } kayıt destekleniyor`
       );
     }
 
@@ -304,7 +310,7 @@ export function useDataExport({ onProgress, onComplete, onError }: UseDataExport
         switch (config.format) {
           case 'csv':
             content = generateCSV(filteredData, config);
-            blob = new Blob([`\ufeff${  content}`], { type: 'text/csv;charset=utf-8;' });
+            blob = new Blob([`\ufeff${content}`], { type: 'text/csv;charset=utf-8;' });
             break;
 
           case 'excel':
@@ -382,7 +388,7 @@ export function useDataExport({ onProgress, onComplete, onError }: UseDataExport
       onProgress,
       onComplete,
       onError,
-    ],
+    ]
   );
 
   // Cancel export
@@ -400,28 +406,28 @@ export function useDataExport({ onProgress, onComplete, onError }: UseDataExport
     (data: ExportableData[], config: Partial<ExportConfig> = {}) => {
       return exportData(data, { ...config, format: 'csv' });
     },
-    [exportData],
+    [exportData]
   );
 
   const exportAsExcel = useCallback(
     (data: ExportableData[], config: Partial<ExportConfig> = {}) => {
       return exportData(data, { ...config, format: 'excel' });
     },
-    [exportData],
+    [exportData]
   );
 
   const exportAsPDF = useCallback(
     (data: ExportableData[], config: Partial<ExportConfig> = {}) => {
       return exportData(data, { ...config, format: 'pdf' });
     },
-    [exportData],
+    [exportData]
   );
 
   const exportAsJSON = useCallback(
     (data: ExportableData[], config: Partial<ExportConfig> = {}) => {
       return exportData(data, { ...config, format: 'json' });
     },
-    [exportData],
+    [exportData]
   );
 
   return {

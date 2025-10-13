@@ -99,7 +99,7 @@ const validationService = {
         throw new ServiceError(
           ServiceErrorCode.VALIDATION_ERROR,
           `Validation failed: ${messages.join(', ')}`,
-          { validationErrors: error.issues },
+          { validationErrors: error.issues }
         );
       }
       throw error;
@@ -112,7 +112,7 @@ const validationService = {
 
   safeValidate<T>(
     schema: z.ZodSchema<T>,
-    data: unknown,
+    data: unknown
   ): { success: true; data: T } | { success: false; errors: string[] } {
     try {
       const result = validationService.validate(schema, data);
@@ -128,7 +128,7 @@ const validationService = {
   validateField<T>(
     schema: z.ZodSchema<T>,
     fieldName: string,
-    value: unknown,
+    value: unknown
   ): { isValid: boolean; error?: string } {
     try {
       schema.parse(value);
@@ -152,7 +152,7 @@ const validationService = {
  */
 export function validateWithSchema<T>(
   schema: z.ZodSchema<T>,
-  data: unknown,
+  data: unknown
 ): { isValid: boolean; errors: string[] } {
   try {
     validationService.validate(schema, data);

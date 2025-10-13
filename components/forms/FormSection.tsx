@@ -41,21 +41,24 @@ export interface FormSectionProps {
 }
 
 export const FormSection = forwardRef<HTMLDivElement, FormSectionProps>(
-  ({
-    title,
-    description,
-    collapsible = false,
-    defaultOpen = true,
-    icon,
-    children,
-    className,
-    headerClassName,
-    contentClassName,
-    onToggle,
-    required = false,
-    disabled = false,
-    ...props
-  }, ref) => {
+  (
+    {
+      title,
+      description,
+      collapsible = false,
+      defaultOpen = true,
+      icon,
+      children,
+      className,
+      headerClassName,
+      contentClassName,
+      onToggle,
+      required = false,
+      disabled = false,
+      ...props
+    },
+    ref
+  ) => {
     const [isOpen, setIsOpen] = useState(defaultOpen);
 
     const handleToggle = () => {
@@ -91,11 +94,7 @@ export const FormSection = forwardRef<HTMLDivElement, FormSectionProps>(
         >
           <div className="flex items-center gap-3 flex-1">
             {/* Icon */}
-            {icon && (
-              <div className="flex-shrink-0 text-muted-foreground">
-                {icon}
-              </div>
-            )}
+            {icon && <div className="flex-shrink-0 text-muted-foreground">{icon}</div>}
 
             {/* Title and Description */}
             <div className="flex-1 min-w-0">
@@ -103,9 +102,7 @@ export const FormSection = forwardRef<HTMLDivElement, FormSectionProps>(
                 level={3}
                 size="lg"
                 weight="semibold"
-                className={cn(
-                  required && "after:content-['*'] after:text-destructive after:ml-1"
-                )}
+                className={cn(required && "after:content-['*'] after:text-destructive after:ml-1")}
               >
                 {title}
               </Heading>
@@ -151,15 +148,13 @@ export const FormSection = forwardRef<HTMLDivElement, FormSectionProps>(
               transition={{
                 duration: 0.3,
                 ease: 'easeInOut',
-                opacity: { duration: 0.2 }
+                opacity: { duration: 0.2 },
               }}
               style={{ overflow: 'hidden' }}
               role="region"
               aria-labelledby={headerId}
             >
-              <div className={cn('p-4 pt-0 space-y-4', contentClassName)}>
-                {children}
-              </div>
+              <div className={cn('p-4 pt-0 space-y-4', contentClassName)}>{children}</div>
             </motion.div>
           )}
         </AnimatePresence>

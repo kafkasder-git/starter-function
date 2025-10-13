@@ -4,12 +4,15 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
-import { pushNotificationService, type NotificationPayload } from '../services/pushNotificationService';
+import {
+  pushNotificationService,
+  type NotificationPayload,
+} from '../services/pushNotificationService';
 
 import { logger } from '../lib/logging/logger';
 /**
  * UsePushNotificationsReturn Interface
- * 
+ *
  * @interface UsePushNotificationsReturn
  */
 export interface UsePushNotificationsReturn {
@@ -158,7 +161,7 @@ export const usePushNotifications = (): UsePushNotificationsReturn => {
         return false;
       }
     },
-    [],
+    []
   );
 
   // Broadcast notification to all users

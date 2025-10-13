@@ -37,7 +37,7 @@ export function useFormValidation<T extends Record<string, string | number | boo
   const [values, setValuesState] = useState<T>(initialValues);
   const [errors, setErrors] = useState<Record<keyof T, string>>({} as Record<keyof T, string>);
   const [touched, setTouchedState] = useState<Record<keyof T, boolean>>(
-    {} as Record<keyof T, boolean>,
+    {} as Record<keyof T, boolean>
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitCount, setSubmitCount] = useState(0);
@@ -70,7 +70,7 @@ export function useFormValidation<T extends Record<string, string | number | boo
         validateSingleField(field, value);
       }
     },
-    [errors, validateOnChange],
+    [errors, validateOnChange]
   );
 
   const setValues = useCallback((newValues: Partial<T>) => {
@@ -121,7 +121,7 @@ export function useFormValidation<T extends Record<string, string | number | boo
         const result = validateField.minLength(
           sanitizedValue,
           fieldSchema.minLength,
-          field as string,
+          field as string
         );
         if (!result.isValid) {
           setError(field, result.error!);
@@ -134,7 +134,7 @@ export function useFormValidation<T extends Record<string, string | number | boo
         const result = validateField.maxLength(
           sanitizedValue,
           fieldSchema.maxLength,
-          field as string,
+          field as string
         );
         if (!result.isValid) {
           setError(field, result.error!);
@@ -163,14 +163,14 @@ export function useFormValidation<T extends Record<string, string | number | boo
       setFieldError(field);
       return true;
     },
-    [schema, setError, setFieldError],
+    [schema, setError, setFieldError]
   );
 
   const validateFieldAction = useCallback(
     (field: keyof T): boolean => {
       return validateSingleField(field, values[field]);
     },
-    [validateSingleField, values],
+    [validateSingleField, values]
   );
 
   const validateFormAction = useCallback((): ValidationResult => {
@@ -243,7 +243,7 @@ export function useFormValidation<T extends Record<string, string | number | boo
         setIsSubmitting(false);
       }
     },
-    [validateFormAction, onSubmit, values, schema],
+    [validateFormAction, onSubmit, values, schema]
   );
 
   const handleBlur = useCallback(
@@ -254,14 +254,14 @@ export function useFormValidation<T extends Record<string, string | number | boo
         validateSingleField(field, values[field]);
       }
     },
-    [setTouched, validateOnBlur, validateSingleField, values],
+    [setTouched, validateOnBlur, validateSingleField, values]
   );
 
   const handleChange = useCallback(
     (field: keyof T, value: string | number | boolean) => {
       setValue(field, value);
     },
-    [setValue],
+    [setValue]
   );
 
   return {

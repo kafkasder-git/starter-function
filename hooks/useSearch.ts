@@ -96,7 +96,7 @@ export function useSearch<T = unknown>({
         .replace(/[çğıöşüÇĞIÖŞÜ]/g, (char) => TURKISH_CHAR_MAP[char] ?? char)
         .trim();
     },
-    [config.enableTurkishSearch],
+    [config.enableTurkishSearch]
   );
 
   // Fuzzy search implementation
@@ -117,7 +117,7 @@ export function useSearch<T = unknown>({
 
       return queryIndex === normalizedQuery.length;
     },
-    [config.enableFuzzySearch, normalizeText],
+    [config.enableFuzzySearch, normalizeText]
   );
 
   // Optimized nested value getter
@@ -158,7 +158,7 @@ export function useSearch<T = unknown>({
         return sort.direction === 'desc' ? -comparison : comparison;
       });
     },
-    [getNestedValue],
+    [getNestedValue]
   );
 
   // Local search implementation
@@ -172,14 +172,14 @@ export function useSearch<T = unknown>({
             config.searchableFields.some((field) => {
               const value = getNestedValue(item, field);
               return value != null && fuzzyMatch(query, String(value));
-            }),
+            })
           )
         : data;
 
       // Apply filters
       const filtered = filters.length
         ? textFiltered.filter((item) =>
-            filters.every((filter) => applyFilter(getNestedValue(item, filter.field), filter)),
+            filters.every((filter) => applyFilter(getNestedValue(item, filter.field), filter))
           )
         : textFiltered;
 
@@ -206,7 +206,7 @@ export function useSearch<T = unknown>({
       applyFilter,
       sortItems,
       searchState.itemsPerPage,
-    ],
+    ]
   );
 
   // Execute search with optimized error handling
@@ -216,7 +216,7 @@ export function useSearch<T = unknown>({
       filters: FilterValue[] = searchState.filters,
       sort: SortConfig = searchState.sort,
       page = 1,
-      append = false,
+      append = false
     ) => {
       abortControllerRef.current?.abort();
       abortControllerRef.current = new AbortController();
@@ -264,7 +264,7 @@ export function useSearch<T = unknown>({
       searchState.itemsPerPage,
       onSearch,
       performLocalSearch,
-    ],
+    ]
   );
 
   // Optimized state update functions
@@ -310,7 +310,7 @@ export function useSearch<T = unknown>({
       searchState.filters,
       searchState.sort,
       searchState.currentPage + 1,
-      true,
+      true
     );
   }, [searchState, executeSearch]);
 
@@ -359,7 +359,7 @@ export function useSearch<T = unknown>({
       isEmpty: Boolean(
         !searchState.isLoading &&
           searchState.results.length === 0 &&
-          (searchState.query ?? searchState.filters.length > 0),
+          (searchState.query ?? searchState.filters.length > 0)
       ),
     }),
     [
@@ -367,7 +367,7 @@ export function useSearch<T = unknown>({
       searchState.results.length,
       searchState.isLoading,
       searchState.query,
-    ],
+    ]
   );
 
   return {

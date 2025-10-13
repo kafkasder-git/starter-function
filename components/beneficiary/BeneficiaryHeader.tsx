@@ -72,7 +72,9 @@ export function BeneficiaryHeader({
                         : 'bg-gray-100 text-gray-700 border-gray-300'
                     }`}
                   >
-                    {beneficiary?.status === 'Aktif' ? '✓ Aktif' : beneficiary?.status ?? 'Bilinmiyor'}
+                    {beneficiary?.status === 'Aktif'
+                      ? '✓ Aktif'
+                      : (beneficiary?.status ?? 'Bilinmiyor')}
                   </Badge>
                 </div>
               </div>
@@ -161,7 +163,9 @@ export function BeneficiaryHeader({
                 <Calendar className="w-4 h-4 text-blue-600" />
               </div>
               <div>
-                <p className="text-xs font-medium text-blue-600 uppercase tracking-wide">Kayıt Tarihi</p>
+                <p className="text-xs font-medium text-blue-600 uppercase tracking-wide">
+                  Kayıt Tarihi
+                </p>
                 <p className="text-sm font-medium text-blue-900">
                   {formatDate(beneficiary.registrationDate, 'long')}
                 </p>

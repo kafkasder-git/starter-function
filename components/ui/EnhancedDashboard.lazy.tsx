@@ -7,8 +7,8 @@ import { lazy, Suspense } from 'react';
 import { Skeleton } from './skeleton';
 
 // Lazy load the main dashboard component
-const EnhancedDashboardComponent = lazy(() => 
-  import('./EnhancedDashboard').then(module => ({ default: module.EnhancedDashboard }))
+const EnhancedDashboardComponent = lazy(() =>
+  import('./EnhancedDashboard').then((module) => ({ default: module.EnhancedDashboard }))
 );
 
 // Loading fallback
@@ -35,4 +35,3 @@ export const EnhancedDashboard = () => (
 );
 
 export default EnhancedDashboard;
-

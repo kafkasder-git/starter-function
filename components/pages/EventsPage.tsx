@@ -167,7 +167,9 @@ export function EventsPage() {
             </div>
             Etkinlik Takvimi
           </h1>
-          <p className="text-neutral-600 dark:text-neutral-400">Dernek etkinliklerini planlayın ve takip edin</p>
+          <p className="text-neutral-600 dark:text-neutral-400">
+            Dernek etkinliklerini planlayın ve takip edin
+          </p>
         </div>
 
         {/* Desktop Actions and Filters */}
@@ -227,7 +229,7 @@ export function EventsPage() {
             Math.round(
               (events.reduce((sum, e) => sum + e.attendees, 0) /
                 events.reduce((sum, e) => sum + (e.maxAttendees ?? 0), 1)) *
-                100,
+                100
             ) || 0
           }`}
           subtitle="Ortalama"
@@ -240,7 +242,10 @@ export function EventsPage() {
       {loading ? (
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
           {[...Array(6)].map((_, i) => (
-            <Card key={i} className="border border-gray-200 shadow-md dark:border-gray-700 dark:bg-gray-900">
+            <Card
+              key={i}
+              className="border border-gray-200 shadow-md dark:border-gray-700 dark:bg-gray-900"
+            >
               <CardContent className="p-6">
                 <div className="space-y-4">
                   <div className="h-4 bg-gray-200 rounded w-3/4 animate-pulse" />
@@ -277,13 +282,13 @@ export function EventsPage() {
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between gap-3">
                   <CardTitle className="flex-1 pr-2 text-lg sm:text-xl">{event.title}</CardTitle>
-                  <div className="flex-shrink-0">
-                    {getEventTypeBadge(event.type)}
-                  </div>
+                  <div className="flex-shrink-0">{getEventTypeBadge(event.type)}</div>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p className="text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">{event.description}</p>
+                <p className="text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+                  {event.description}
+                </p>
 
                 {/* Mobile-Optimized Event Details */}
                 <div className="grid grid-cols-1 gap-4 text-sm sm:grid-cols-2">
@@ -327,7 +332,10 @@ export function EventsPage() {
                       <p className="font-medium">
                         {event.attendees} katılımcı
                         {event.maxAttendees && (
-                          <span className="text-neutral-500 dark:text-neutral-500"> / {event.maxAttendees} maksimum</span>
+                          <span className="text-neutral-500 dark:text-neutral-500">
+                            {' '}
+                            / {event.maxAttendees} maksimum
+                          </span>
                         )}
                       </p>
                       <p className="text-xs text-neutral-500 dark:text-neutral-500">Katılım</p>
@@ -373,7 +381,9 @@ export function EventsPage() {
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-100 dark:bg-gray-800 shadow-md">
             <Calendar className="h-8 w-8 text-gray-600 dark:text-gray-400" />
           </div>
-          <h2 className="mb-2 text-xl font-semibold text-neutral-900 dark:text-neutral-50">Henüz etkinlik bulunmuyor</h2>
+          <h2 className="mb-2 text-xl font-semibold text-neutral-900 dark:text-neutral-50">
+            Henüz etkinlik bulunmuyor
+          </h2>
           <p className="mb-4 text-neutral-600 dark:text-neutral-400">
             Yeni etkinlikler burada görünecek.
           </p>
@@ -388,7 +398,9 @@ export function EventsPage() {
         <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-600 shadow-lg">
           <span className="text-2xl text-white">📅</span>
         </div>
-        <h2 className="mb-2 text-xl font-semibold text-neutral-900 dark:text-neutral-50">Etkinlik Yönetimi</h2>
+        <h2 className="mb-2 text-xl font-semibold text-neutral-900 dark:text-neutral-50">
+          Etkinlik Yönetimi
+        </h2>
         <p className="mb-4 text-neutral-600 dark:text-neutral-400">
           Gelişmiş takvim özellikleri yakında kullanılabilir olacak.
         </p>

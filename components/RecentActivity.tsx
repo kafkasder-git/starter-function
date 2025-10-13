@@ -45,11 +45,11 @@ export function RecentActivity() {
       try {
         setLoading(true);
         setError(null);
-        
+
         // TODO: Replace with actual service call
         // const response = await activitiesService.getRecentActivities();
         // setActivities(response.data);
-        
+
         // Mock data for demonstration
         const mockActivities: Activity[] = [
           {
@@ -59,7 +59,7 @@ export function RecentActivity() {
             description: 'Ahmet Yılmaz tarafından maddi yardım talebi yapıldı.',
             timestamp: new Date().toISOString(),
             user: 'Ahmet Yılmaz',
-            status: 'pending'
+            status: 'pending',
           },
           {
             id: '2',
@@ -69,7 +69,7 @@ export function RecentActivity() {
             timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
             user: 'Muhasebe Ekibi',
             amount: 5000,
-            status: 'success'
+            status: 'success',
           },
           {
             id: '3',
@@ -78,12 +78,12 @@ export function RecentActivity() {
             description: 'Elif Öztürk sisteme üye olarak eklendi.',
             timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
             user: 'İnsan Kaynakları',
-            status: 'success'
-          }
+            status: 'success',
+          },
         ];
-        
+
         // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise((resolve) => setTimeout(resolve, 1000));
         setActivities(mockActivities);
       } catch (err) {
         setError('Aktiviteler yüklenirken bir hata oluştu.');
@@ -92,7 +92,7 @@ export function RecentActivity() {
         setLoading(false);
       }
     };
-    
+
     fetchActivities();
   }, []);
 
@@ -139,7 +139,11 @@ export function RecentActivity() {
 
   const RelativeTime = ({ timestamp }: { timestamp: string }) => {
     const relativeTime = useRelativeTime(timestamp);
-    return <Text as="span" size="xs" color="muted">{relativeTime}</Text>;
+    return (
+      <Text as="span" size="xs" color="muted">
+        {relativeTime}
+      </Text>
+    );
   };
 
   const handleRetry = () => {
@@ -194,7 +198,12 @@ export function RecentActivity() {
 
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between mb-1.5">
-                  <Heading level={4} size="sm" weight="semibold" className="truncate tracking-tight">
+                  <Heading
+                    level={4}
+                    size="sm"
+                    weight="semibold"
+                    className="truncate tracking-tight"
+                  >
                     {activity.title}
                   </Heading>
                   {activity.amount && (
@@ -204,7 +213,9 @@ export function RecentActivity() {
                   )}
                 </div>
 
-                <Text size="xs" color="neutral" className="mb-2.5 line-clamp-2">{activity.description}</Text>
+                <Text size="xs" color="neutral" className="mb-2.5 line-clamp-2">
+                  {activity.description}
+                </Text>
 
                 <div className="flex items-center justify-between">
                   <RelativeTime timestamp={activity.timestamp} />

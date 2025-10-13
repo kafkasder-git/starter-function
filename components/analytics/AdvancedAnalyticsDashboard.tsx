@@ -392,7 +392,7 @@ export function AdvancedAnalyticsDashboard({
                             </p>
                           </div>
                         </motion.div>
-                      ),
+                      )
                     )}
                   </div>
                 </CardContent>

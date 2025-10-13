@@ -1,6 +1,6 @@
 /**
  * @fileoverview DependentFormField Component - FormField with conditional rendering support
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -87,25 +87,20 @@ export const DependentFormField = React.forwardRef<
         <motion.div
           key={`${props.name}-${shouldShow}`}
           initial={{ opacity: 0, height: 0, marginBottom: 0 }}
-          animate={{ 
-            opacity: 1, 
-            height: 'auto', 
-            marginBottom: 'var(--space-4)' 
+          animate={{
+            opacity: 1,
+            height: 'auto',
+            marginBottom: 'var(--space-4)',
           }}
           exit={{ opacity: 0, height: 0, marginBottom: 0 }}
-          transition={{ 
+          transition={{
             duration: animationDuration,
             ease: 'easeInOut',
-            opacity: { duration: animationDuration * 0.6 }
+            opacity: { duration: animationDuration * 0.6 },
           }}
           style={{ overflow: 'hidden' }}
         >
-          <FormField
-            {...props}
-            ref={ref}
-            disabled={!shouldEnable}
-            required={shouldRequire}
-          />
+          <FormField {...props} ref={ref} disabled={!shouldEnable} required={shouldRequire} />
         </motion.div>
       </AnimatePresence>
     );
@@ -119,12 +114,15 @@ export interface UseFieldDependenciesOptions {
   /** Form values object */
   values: Record<string, any>;
   /** Dependency rules */
-  dependencies: Record<string, {
-    dependsOn: string | string[];
-    showWhen?: (dependentValues: any) => boolean;
-    enableWhen?: (dependentValues: any) => boolean;
-    requireWhen?: (dependentValues: any) => boolean;
-  }>;
+  dependencies: Record<
+    string,
+    {
+      dependsOn: string | string[];
+      showWhen?: (dependentValues: any) => boolean;
+      enableWhen?: (dependentValues: any) => boolean;
+      requireWhen?: (dependentValues: any) => boolean;
+    }
+  >;
 }
 
 export interface FieldState {
@@ -135,20 +133,23 @@ export interface FieldState {
 
 export function useFieldDependencies({
   values,
-  dependencies
+  dependencies,
 }: UseFieldDependenciesOptions): Record<string, FieldState> {
   return useMemo(() => {
     const fieldStates: Record<string, FieldState> = {};
 
     Object.entries(dependencies).forEach(([fieldName, config]) => {
       const { dependsOn, showWhen, enableWhen, requireWhen } = config;
-      
+
       // Get dependent values
       const dependentValues = Array.isArray(dependsOn)
-        ? dependsOn.reduce((acc, dep) => {
-            acc[dep] = values[dep];
-            return acc;
-          }, {} as Record<string, any>)
+        ? dependsOn.reduce(
+            (acc, dep) => {
+              acc[dep] = values[dep];
+              return acc;
+            },
+            {} as Record<string, any>
+          )
         : values[dependsOn];
 
       // Calculate field state
@@ -167,36 +168,40 @@ export function useFieldDependencies({
 export const DependencyConditions = {
   /** Show when dependent field has any value */
   hasValue: (value: any) => value !== undefined && value !== null && value !== '',
-  
+
   /** Show when dependent field equals specific value */
   equals: (expectedValue: any) => (value: any) => value === expectedValue,
-  
+
   /** Show when dependent field is one of the specified values */
   oneOf: (expectedValues: any[]) => (value: any) => expectedValues.includes(value),
-  
+
   /** Show when dependent field does not equal specific value */
   notEquals: (expectedValue: any) => (value: any) => value !== expectedValue,
-  
+
   /** Show when dependent field is not one of the specified values */
   notOneOf: (expectedValues: any[]) => (value: any) => !expectedValues.includes(value),
-  
+
   /** Show when dependent field is greater than value */
   greaterThan: (threshold: number) => (value: any) => Number(value) > threshold,
-  
+
   /** Show when dependent field is less than value */
   lessThan: (threshold: number) => (value: any) => Number(value) < threshold,
-  
+
   /** Show when dependent field matches regex pattern */
   matches: (pattern: RegExp) => (value: any) => pattern.test(String(value)),
-  
+
   /** Show when multiple conditions are met (AND) */
-  and: (...conditions: ((value: any) => boolean)[]) => (value: any) =>
-    conditions.every(condition => condition(value)),
-  
+  and:
+    (...conditions: ((value: any) => boolean)[]) =>
+    (value: any) =>
+      conditions.every((condition) => condition(value)),
+
   /** Show when any condition is met (OR) */
-  or: (...conditions: ((value: any) => boolean)[]) => (value: any) =>
-    conditions.some(condition => condition(value)),
-  
+  or:
+    (...conditions: ((value: any) => boolean)[]) =>
+    (value: any) =>
+      conditions.some((condition) => condition(value)),
+
   /** Show when condition is not met (NOT) */
   not: (condition: (value: any) => boolean) => (value: any) => !condition(value),
 };

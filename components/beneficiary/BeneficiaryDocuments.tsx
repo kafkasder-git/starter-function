@@ -118,7 +118,7 @@ export function BeneficiaryDocuments({
 
     try {
       // Get Current User
-      const {user} = useAuthStore.getState();
+      const { user } = useAuthStore.getState();
 
       // Prepare Upload Options
       const options = {
@@ -138,8 +138,10 @@ export function BeneficiaryDocuments({
       }
 
       // Process Results
-      const successfulUploads = results.filter(result => result.success);
-      const newDocumentUrls = successfulUploads.map(result => result.url ?? '').filter(url => url);
+      const successfulUploads = results.filter((result) => result.success);
+      const newDocumentUrls = successfulUploads
+        .map((result) => result.url ?? '')
+        .filter((url) => url);
       const newFiles = successfulUploads.map((result, index) => ({
         id: result.file?.id ?? `${Date.now()}-${index}`,
         name: result.file?.name ?? files[index]?.name ?? 'unknown',
@@ -176,7 +178,7 @@ export function BeneficiaryDocuments({
   const handleDeleteFile = async (fileId: string) => {
     try {
       // Find Document
-      const document = uploadedFiles.find(file => file.id === fileId);
+      const document = uploadedFiles.find((file) => file.id === fileId);
       if (!document?.bucket || !document.path) return;
 
       // Delete from Storage
@@ -257,7 +259,10 @@ export function BeneficiaryDocuments({
             <div className="space-y-3">
               {/* Skeleton loaders */}
               {Array.from({ length: 3 }).map((_, index) => (
-                <div key={index} className="flex items-center justify-between p-4 bg-gray-50 border border-gray-200 rounded-xl animate-pulse">
+                <div
+                  key={index}
+                  className="flex items-center justify-between p-4 bg-gray-50 border border-gray-200 rounded-xl animate-pulse"
+                >
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-gray-200 rounded-lg" />
                     <div>
@@ -275,7 +280,10 @@ export function BeneficiaryDocuments({
           ) : uploadedFiles.length > 0 ? (
             <div className="space-y-3">
               {uploadedFiles.slice(0, 3).map((file) => (
-                <div key={file.id} className="flex items-center justify-between p-4 bg-gray-50 border border-gray-200 rounded-xl hover:bg-gray-100 transition-colors duration-200">
+                <div
+                  key={file.id}
+                  className="flex items-center justify-between p-4 bg-gray-50 border border-gray-200 rounded-xl hover:bg-gray-100 transition-colors duration-200"
+                >
                   <div className="flex items-center gap-3">
                     <div className="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-lg">
                       {getFileIcon(file.type)}
@@ -283,7 +291,10 @@ export function BeneficiaryDocuments({
                     <div>
                       <p className="text-sm font-medium text-gray-900">{file.name}</p>
                       <div className="flex items-center gap-2 mt-1">
-                        <Badge variant="outline" className="text-xs font-medium px-2 py-1 bg-blue-50 text-blue-700 border-blue-200">
+                        <Badge
+                          variant="outline"
+                          className="text-xs font-medium px-2 py-1 bg-blue-50 text-blue-700 border-blue-200"
+                        >
                           {file.size ? (file.size / 1024).toFixed(1) : '0'} KB
                         </Badge>
                         <span className="text-xs text-gray-500">
@@ -374,7 +385,11 @@ export function BeneficiaryDocuments({
 
               <div className="flex justify-center gap-3">
                 <label htmlFor="file-upload">
-                  <Button asChild className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium shadow-sm hover:shadow-md transition-all duration-200" disabled={isUploading}>
+                  <Button
+                    asChild
+                    className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium shadow-sm hover:shadow-md transition-all duration-200"
+                    disabled={isUploading}
+                  >
                     <span>
                       <FileText className="w-4 h-4 mr-2" />
                       Dosya Seç
@@ -391,7 +406,11 @@ export function BeneficiaryDocuments({
                   disabled={isUploading}
                 />
 
-                <Button variant="outline" className="px-6 py-3 text-gray-700 border-gray-300 hover:bg-gray-50 rounded-lg font-medium transition-all duration-200" disabled={isUploading}>
+                <Button
+                  variant="outline"
+                  className="px-6 py-3 text-gray-700 border-gray-300 hover:bg-gray-50 rounded-lg font-medium transition-all duration-200"
+                  disabled={isUploading}
+                >
                   <Camera className="w-4 h-4 mr-2" />
                   Fotoğraf Çek
                 </Button>
@@ -470,12 +489,19 @@ export function BeneficiaryDocuments({
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => file.bucket && file.path && handleDownload(file.bucket, file.path)}
+                        onClick={() =>
+                          file.bucket && file.path && handleDownload(file.bucket, file.path)
+                        }
                         disabled={isUploading || !file.bucket || !file.path}
                       >
                         <Download className="w-4 h-4" />
                       </Button>
-                      <Button variant="ghost" size="sm" onClick={() => handleDeleteFile(file.id)} disabled={isUploading}>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDeleteFile(file.id)}
+                        disabled={isUploading}
+                      >
                         <Trash2 className="w-4 h-4" />
                       </Button>
                     </div>
@@ -520,7 +546,11 @@ export function BeneficiaryDocuments({
                   <p>Bu dosya türü önizlenemez</p>
                   <Button
                     className="mt-2"
-                    onClick={() => previewFile.bucket && previewFile.path && handleDownload(previewFile.bucket, previewFile.path)}
+                    onClick={() =>
+                      previewFile.bucket &&
+                      previewFile.path &&
+                      handleDownload(previewFile.bucket, previewFile.path)
+                    }
                     disabled={!previewFile.bucket || !previewFile.path}
                   >
                     <Download className="w-4 h-4 mr-2" />

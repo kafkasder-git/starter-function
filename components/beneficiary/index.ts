@@ -1,6 +1,6 @@
 /**
  * @fileoverview index Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -20,7 +20,7 @@ export { BeneficiaryPersonalInfo } from './BeneficiaryPersonalInfo';
 // Types
 /**
  * BeneficiaryData Interface
- * 
+ *
  * @interface BeneficiaryData
  */
 export interface BeneficiaryData {
@@ -55,7 +55,7 @@ export interface BeneficiaryData {
 
 /**
  * FamilyMember Interface
- * 
+ *
  * @interface FamilyMember
  */
 export interface FamilyMember {
@@ -70,7 +70,7 @@ export interface FamilyMember {
 
 /**
  * AidRecord Interface
- * 
+ *
  * @interface AidRecord
  */
 export interface AidRecord {

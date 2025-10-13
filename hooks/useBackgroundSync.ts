@@ -4,11 +4,16 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
-import { backgroundSyncService, type SyncOptions, type SyncResult, type SyncTask } from '../services/backgroundSyncService';
+import {
+  backgroundSyncService,
+  type SyncOptions,
+  type SyncResult,
+  type SyncTask,
+} from '../services/backgroundSyncService';
 
 /**
  * UseBackgroundSyncReturn Interface
- * 
+ *
  * @interface UseBackgroundSyncReturn
  */
 export interface UseBackgroundSyncReturn {
@@ -28,7 +33,7 @@ export interface UseBackgroundSyncReturn {
     entity: string,
     type: SyncTask['type'],
     data: any,
-    options?: SyncOptions,
+    options?: SyncOptions
   ) => Promise<string>;
   syncNow: () => Promise<SyncResult>;
   retryFailedTasks: () => Promise<SyncResult>;
@@ -87,13 +92,13 @@ export const useBackgroundSync = (): UseBackgroundSyncReturn => {
       entity: string,
       type: SyncTask['type'],
       data: any,
-      options?: SyncOptions,
+      options?: SyncOptions
     ): Promise<string> => {
       const taskId = await backgroundSyncService.addSyncTask(entity, type, data, options);
       updateSyncState();
       return taskId;
     },
-    [updateSyncState],
+    [updateSyncState]
   );
 
   // Manual sync
@@ -129,7 +134,7 @@ export const useBackgroundSync = (): UseBackgroundSyncReturn => {
       updateSyncState();
       return result;
     },
-    [updateSyncState],
+    [updateSyncState]
   );
 
   return {

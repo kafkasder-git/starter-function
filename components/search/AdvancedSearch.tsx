@@ -1,6 +1,6 @@
 /**
  * @fileoverview AdvancedSearch Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -28,7 +28,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 
 /**
  * SearchFilter Interface
- * 
+ *
  * @interface SearchFilter
  */
 export interface SearchFilter {
@@ -41,7 +41,7 @@ export interface SearchFilter {
 
 /**
  * SortOption Interface
- * 
+ *
  * @interface SortOption
  */
 export interface SortOption {
@@ -57,7 +57,7 @@ interface AdvancedSearchProps {
   onSearch: (
     query: string,
     filters: Record<string, string | number | boolean>,
-    sort?: SortOption,
+    sort?: SortOption
   ) => void;
   onExport?: () => void;
   onRefresh?: () => void;
@@ -71,7 +71,7 @@ interface AdvancedSearchProps {
 
 /**
  * AdvancedSearch function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -109,7 +109,7 @@ export function AdvancedSearch({
         value !== '' &&
         value !== null &&
         value !== undefined &&
-        (Array.isArray(value) ? value.length > 0 : true),
+        (Array.isArray(value) ? value.length > 0 : true)
     ).length;
   }, [activeFilters]);
 
@@ -222,7 +222,12 @@ export function AdvancedSearch({
                 type="date"
                 value={typeof value === 'object' && value?.from ? String(value.from) : ''}
                 onChange={(e) => {
-                  handleFilterChange(filter.key, typeof value === 'object' && value ? { ...value, from: e.target.value } : { from: e.target.value, to: '' });
+                  handleFilterChange(
+                    filter.key,
+                    typeof value === 'object' && value
+                      ? { ...value, from: e.target.value }
+                      : { from: e.target.value, to: '' }
+                  );
                 }}
                 placeholder="Başlangıç"
               />
@@ -230,7 +235,12 @@ export function AdvancedSearch({
                 type="date"
                 value={typeof value === 'object' && value?.to ? String(value.to) : ''}
                 onChange={(e) => {
-                  handleFilterChange(filter.key, typeof value === 'object' && value ? { ...value, to: e.target.value } : { from: '', to: e.target.value });
+                  handleFilterChange(
+                    filter.key,
+                    typeof value === 'object' && value
+                      ? { ...value, to: e.target.value }
+                      : { from: '', to: e.target.value }
+                  );
                 }}
                 placeholder="Bitiş"
               />

@@ -1,13 +1,13 @@
 /**
  * @fileoverview systemSettingsService Module - System settings management service
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
 
 /*
  * Database Migration Required:
- * 
+ *
  * CREATE TABLE IF NOT EXISTS system_settings (
  *   id INTEGER PRIMARY KEY DEFAULT 1,
  *   created_at TIMESTAMPTZ DEFAULT NOW(),
@@ -83,25 +83,25 @@ export class SystemSettingsService {
         organizationName: 'Dernek Yönetim Sistemi',
         organizationAddress: '',
         organizationPhone: '',
-        organizationEmail: ''
+        organizationEmail: '',
       },
       notifications: {
         emailNotifications: true,
         smsNotifications: false,
         pushNotifications: true,
-        auditLogNotifications: true
+        auditLogNotifications: true,
       },
       security: {
         sessionTimeout: 30,
         passwordExpiry: 90,
         mfaEnabled: false,
-        ipWhitelist: []
+        ipWhitelist: [],
       },
       database: {
         backupFrequency: 'daily',
         dataRetentionDays: 365,
-        enableArchiving: true
-      }
+        enableArchiving: true,
+      },
     };
   }
 
@@ -112,15 +112,13 @@ export class SystemSettingsService {
     try {
       logger.info('Fetching system settings');
 
-      const { data, error } = await db.list(this.collectionName, [
-        queryHelpers.limit(1)
-      ]);
+      const { data, error } = await db.list(this.collectionName, [queryHelpers.limit(1)]);
 
       if (error) {
         logger.error('Error fetching system settings', error);
         return {
           data: this.getDefaultSettings(),
-          error: 'Sistem ayarları yüklenirken bir hata oluştu'
+          error: 'Sistem ayarları yüklenirken bir hata oluştu',
         };
       }
 
@@ -129,7 +127,7 @@ export class SystemSettingsService {
         logger.info('No system settings found, returning defaults');
         return {
           data: this.getDefaultSettings(),
-          error: null
+          error: null,
         };
       }
 
@@ -139,20 +137,20 @@ export class SystemSettingsService {
         general: { ...defaults.general, ...(settingsData.general || {}) },
         notifications: { ...defaults.notifications, ...(settingsData.notifications || {}) },
         security: { ...defaults.security, ...(settingsData.security || {}) },
-        database: { ...defaults.database, ...(settingsData.database || {}) }
+        database: { ...defaults.database, ...(settingsData.database || {}) },
       };
 
       logger.info('Successfully fetched system settings');
 
       return {
         data: settings,
-        error: null
+        error: null,
       };
     } catch (error) {
       logger.error('Unexpected error fetching system settings', error);
       return {
         data: this.getDefaultSettings(),
-        error: 'Beklenmeyen bir hata oluştu'
+        error: 'Beklenmeyen bir hata oluştu',
       };
     }
   }
@@ -171,13 +169,11 @@ export class SystemSettingsService {
         security: settings.security,
         database: settings.database,
         updated_at: new Date().toISOString(),
-        updated_by: user?.id || null
+        updated_by: user?.id || null,
       };
 
       // Check if settings document exists
-      const { data: existingData } = await db.list(this.collectionName, [
-        queryHelpers.limit(1)
-      ]);
+      const { data: existingData } = await db.list(this.collectionName, [queryHelpers.limit(1)]);
 
       let result;
       if (existingData?.documents?.[0]) {
@@ -185,17 +181,21 @@ export class SystemSettingsService {
         result = await db.update(this.collectionName, existingData.documents[0].$id, updateData);
       } else {
         // Create new document with fixed ID
-        result = await db.create(this.collectionName, {
-          ...updateData,
-          id: 1
-        }, 'system-settings-1');
+        result = await db.create(
+          this.collectionName,
+          {
+            ...updateData,
+            id: 1,
+          },
+          'system-settings-1'
+        );
       }
 
       if (result.error) {
         logger.error('Error updating system settings', result.error);
         return {
           data: null,
-          error: 'Sistem ayarları güncellenirken bir hata oluştu'
+          error: 'Sistem ayarları güncellenirken bir hata oluştu',
         };
       }
 
@@ -203,13 +203,13 @@ export class SystemSettingsService {
 
       return {
         data: true,
-        error: null
+        error: null,
       };
     } catch (error) {
       logger.error('Unexpected error updating system settings', error);
       return {
         data: null,
-        error: 'Beklenmeyen bir hata oluştu'
+        error: 'Beklenmeyen bir hata oluştu',
       };
     }
   }
@@ -232,13 +232,13 @@ export class SystemSettingsService {
 
       return {
         data: true,
-        error: null
+        error: null,
       };
     } catch (error) {
       logger.error('Unexpected error resetting system settings', error);
       return {
         data: null,
-        error: 'Beklenmeyen bir hata oluştu'
+        error: 'Beklenmeyen bir hata oluştu',
       };
     }
   }

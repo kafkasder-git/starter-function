@@ -102,7 +102,9 @@ class AppwriteAuthService {
   /**
    * Login user with email and password
    */
-  async login(credentials: LoginCredentials): Promise<{ data: AuthUser | null; error: Error | null }> {
+  async login(
+    credentials: LoginCredentials
+  ): Promise<{ data: AuthUser | null; error: Error | null }> {
     try {
       if (!account) {
         return { data: null, error: new Error('Appwrite account service not available') };
@@ -150,12 +152,7 @@ class AppwriteAuthService {
       logger.info(`Attempting registration for: ${data.email}`);
 
       // Create user account
-      const user = await account.create(
-        ID.unique(),
-        data.email,
-        data.password,
-        data.name
-      );
+      const user = await account.create(ID.unique(), data.email, data.password, data.name);
 
       this.currentUser = user as AuthUser;
 
@@ -173,10 +170,7 @@ class AppwriteAuthService {
       }
 
       // Create session
-      const session = await account.createEmailPasswordSession(
-        data.email,
-        data.password
-      );
+      const session = await account.createEmailPasswordSession(data.email, data.password);
 
       this.currentSession = session as AuthSession;
 
@@ -243,7 +237,7 @@ class AppwriteAuthService {
       if (!this.currentUser) return;
 
       const { data: profile } = await appwriteUserService.getUserByAppwriteId(this.currentUser.$id);
-      
+
       if (profile) {
         this.currentUser.profile = {
           role: profile.role,
@@ -311,7 +305,7 @@ class AppwriteAuthService {
       }
 
       const result = await appwriteUserService.updateUser(this.currentUser.$id, data);
-      
+
       if (result.error) {
         logger.error('Error updating user profile:', result.error);
         return { error: result.error };
@@ -356,10 +350,7 @@ class AppwriteAuthService {
         return { error: new Error('Appwrite account service not available') };
       }
 
-      await account.createRecovery(
-        email,
-        `${window.location.origin}/reset-password`
-      );
+      await account.createRecovery(email, `${window.location.origin}/reset-password`);
 
       logger.info(`Password recovery requested for: ${email}`);
       return { error: null };
@@ -372,7 +363,11 @@ class AppwriteAuthService {
   /**
    * Confirm password recovery
    */
-  async confirmPasswordRecovery(userId: string, secret: string, password: string): Promise<{ error: Error | null }> {
+  async confirmPasswordRecovery(
+    userId: string,
+    secret: string,
+    password: string
+  ): Promise<{ error: Error | null }> {
     try {
       if (!account) {
         return { error: new Error('Appwrite account service not available') };

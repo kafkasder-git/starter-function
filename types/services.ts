@@ -76,7 +76,7 @@ export class ServiceError extends Error {
   constructor(
     public code: ServiceErrorCode,
     message: string,
-    public context?: Record<string, unknown>,
+    public context?: Record<string, unknown>
   ) {
     super(message);
     this.name = 'ServiceError';

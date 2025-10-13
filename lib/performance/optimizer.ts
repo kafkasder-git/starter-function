@@ -39,12 +39,12 @@ export function throttle<T extends (...args: any[]) => any>(
     if (!inThrottle) {
       inThrottle = true;
       lastResult = func(...args);
-      
+
       setTimeout(() => {
         inThrottle = false;
       }, wait);
     }
-    
+
     return lastResult;
   };
 }
@@ -52,14 +52,12 @@ export function throttle<T extends (...args: any[]) => any>(
 /**
  * Memoize function results
  */
-export function memoize<T extends (...args: any[]) => any>(
-  func: T
-): T {
+export function memoize<T extends (...args: any[]) => any>(func: T): T {
   const cache = new Map<string, ReturnType<T>>();
 
   return ((...args: Parameters<T>) => {
     const key = JSON.stringify(args);
-    
+
     if (cache.has(key)) {
       return cache.get(key);
     }
@@ -91,7 +89,7 @@ export function lazyLoadImages(selector = 'img[data-src]') {
       if (entry.isIntersecting) {
         const img = entry.target as HTMLImageElement;
         const src = img.getAttribute('data-src');
-        
+
         if (src) {
           img.src = src;
           img.removeAttribute('data-src');
@@ -102,7 +100,9 @@ export function lazyLoadImages(selector = 'img[data-src]') {
   });
 
   const images = document.querySelectorAll(selector);
-  images.forEach((img) => { imageObserver.observe(img); });
+  images.forEach((img) => {
+    imageObserver.observe(img);
+  });
 }
 
 /**
@@ -146,7 +146,9 @@ export function runWhenIdle(callback: () => void, timeout = 2000) {
  */
 export function batchDOMUpdates(updates: (() => void)[]) {
   requestAnimationFrame(() => {
-    updates.forEach((update) => { update(); });
+    updates.forEach((update) => {
+      update();
+    });
   });
 }
 
@@ -160,12 +162,7 @@ export class VirtualScroller {
   private readonly visibleCount: number;
   private startIndex = 0;
 
-  constructor(
-    container: HTMLElement,
-    items: any[],
-    itemHeight: number,
-    visibleCount: number
-  ) {
+  constructor(container: HTMLElement, items: any[], itemHeight: number, visibleCount: number) {
     this.container = container;
     this.items = items;
     this.itemHeight = itemHeight;
@@ -176,7 +173,7 @@ export class VirtualScroller {
 
   private setupScroll() {
     this.container.addEventListener('scroll', () => {
-      const {scrollTop} = this.container;
+      const { scrollTop } = this.container;
       this.startIndex = Math.floor(scrollTop / this.itemHeight);
       this.render();
     });
@@ -185,20 +182,17 @@ export class VirtualScroller {
   }
 
   private render() {
-    const endIndex = Math.min(
-      this.startIndex + this.visibleCount,
-      this.items.length
-    );
-    
+    const endIndex = Math.min(this.startIndex + this.visibleCount, this.items.length);
+
     const visibleItems = this.items.slice(this.startIndex, endIndex);
-    
+
     // Render logic here
     if (typeof window !== 'undefined') {
       import('../logging/logger').then(({ logger }) => {
         logger.info('Rendering items:', this.startIndex, 'to', endIndex);
       });
     }
-    
+
     return visibleItems;
   }
 
@@ -221,25 +215,23 @@ export function optimizeImage(
   } = {}
 ): string {
   const { width, height, quality = 80, format = 'webp' } = options;
-  
+
   // If using a CDN like Cloudinary or imgix, construct optimized URL
   // This is a placeholder - adjust based on your CDN
   const params = new URLSearchParams();
-  
+
   if (width) params.append('w', width.toString());
   if (height) params.append('h', height.toString());
   params.append('q', quality.toString());
   params.append('f', format);
-  
+
   return `${src}?${params.toString()}`;
 }
 
 /**
  * Code splitting helper
  */
-export async function loadComponent<T>(
-  importFn: () => Promise<{ default: T }>
-): Promise<T> {
+export async function loadComponent<T>(importFn: () => Promise<{ default: T }>): Promise<T> {
   try {
     const module = await importFn();
     return module.default;
@@ -317,10 +309,7 @@ export class CacheManager {
 /**
  * Network-first cache strategy
  */
-export async function networkFirst(
-  url: string,
-  cacheManager: CacheManager
-): Promise<Response> {
+export async function networkFirst(url: string, cacheManager: CacheManager): Promise<Response> {
   try {
     const response = await fetch(url);
     await cacheManager.cache(url, response.clone());
@@ -337,10 +326,7 @@ export async function networkFirst(
 /**
  * Cache-first strategy
  */
-export async function cacheFirst(
-  url: string,
-  cacheManager: CacheManager
-): Promise<Response> {
+export async function cacheFirst(url: string, cacheManager: CacheManager): Promise<Response> {
   const cached = await cacheManager.get(url);
   if (cached) {
     return cached;

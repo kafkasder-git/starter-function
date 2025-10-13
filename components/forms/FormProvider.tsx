@@ -1,6 +1,6 @@
 /**
  * @fileoverview FormProvider Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -22,19 +22,25 @@ interface FormState {
   isDirty: boolean;
 }
 
-type FormValidationSchema = Record<string, {
+type FormValidationSchema = Record<
+  string,
+  {
     required?: boolean;
     minLength?: number;
     maxLength?: number;
     pattern?: RegExp;
     custom?: (value: any) => string | boolean;
-  }>;
+  }
+>;
 
 interface FormContextType {
   formState: FormState;
   schema: FormValidationSchema;
   validateForm: () => Promise<{ isValid: boolean; errors: ValidationError[] }>;
-  validateField: (fieldName: string, value: any) => Promise<{ isValid: boolean; errors: ValidationError[] }>;
+  validateField: (
+    fieldName: string,
+    value: any
+  ) => Promise<{ isValid: boolean; errors: ValidationError[] }>;
   setFieldValue: (fieldName: string, value: any) => void;
   setFieldTouched: (fieldName: string, touched?: boolean) => void;
   resetForm: () => void;
@@ -84,7 +90,10 @@ export function FormProvider({
     isDirty: false,
   };
 
-  const validateField = async (fieldName: string, value: any): Promise<{ isValid: boolean; errors: ValidationError[] }> => {
+  const validateField = async (
+    fieldName: string,
+    value: any
+  ): Promise<{ isValid: boolean; errors: ValidationError[] }> => {
     const fieldSchema = schema[fieldName];
     if (!fieldSchema) {
       return { isValid: true, errors: [] };
@@ -97,11 +106,17 @@ export function FormProvider({
     }
 
     if (fieldSchema.minLength && value && value.length < fieldSchema.minLength) {
-      errors.push({ field: fieldName, message: `${fieldName} must be at least ${fieldSchema.minLength} characters` });
+      errors.push({
+        field: fieldName,
+        message: `${fieldName} must be at least ${fieldSchema.minLength} characters`,
+      });
     }
 
     if (fieldSchema.maxLength && value && value.length > fieldSchema.maxLength) {
-      errors.push({ field: fieldName, message: `${fieldName} must be no more than ${fieldSchema.maxLength} characters` });
+      errors.push({
+        field: fieldName,
+        message: `${fieldName} must be no more than ${fieldSchema.maxLength} characters`,
+      });
     }
 
     if (fieldSchema.pattern && value && !fieldSchema.pattern.test(value)) {
@@ -111,7 +126,10 @@ export function FormProvider({
     if (fieldSchema.custom) {
       const customResult = fieldSchema.custom(value);
       if (customResult !== true) {
-        errors.push({ field: fieldName, message: typeof customResult === 'string' ? customResult : `${fieldName} is invalid` });
+        errors.push({
+          field: fieldName,
+          message: typeof customResult === 'string' ? customResult : `${fieldName} is invalid`,
+        });
       }
     }
 
@@ -132,9 +150,9 @@ export function FormProvider({
   const setFieldValue = (fieldName: string, value: any) => {
     formState.values[fieldName] = value;
     formState.isDirty = true;
-    
+
     if (validateOnChange) {
-      validateField(fieldName, value).then(result => {
+      validateField(fieldName, value).then((result) => {
         if (result.errors.length > 0) {
           formState.errors[fieldName] = result.errors[0]?.message || 'Validation error';
         } else {
@@ -148,9 +166,9 @@ export function FormProvider({
 
   const setFieldTouched = (fieldName: string, touched = true) => {
     formState.touched[fieldName] = touched;
-    
+
     if (validateOnBlur && touched) {
-      validateField(fieldName, formState.values[fieldName]).then(result => {
+      validateField(fieldName, formState.values[fieldName]).then((result) => {
         if (result.errors.length > 0) {
           formState.errors[fieldName] = result.errors[0]?.message || 'Validation error';
         } else {
@@ -173,9 +191,9 @@ export function FormProvider({
 
   const submitForm = async (): Promise<{ isValid: boolean; errors: ValidationError[] }> => {
     formState.isSubmitting = true;
-    
+
     const validationResult = await validateForm();
-    
+
     if (validationResult.isValid && onSubmit) {
       try {
         await onSubmit(formState.values);
@@ -183,7 +201,7 @@ export function FormProvider({
         logger.error('Form submission error:', error);
       }
     }
-    
+
     formState.isSubmitting = false;
     return validationResult;
   };
@@ -192,8 +210,12 @@ export function FormProvider({
 
   const getFieldProps = (fieldName: string) => ({
     value: formState.values[fieldName] || '',
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => { setFieldValue(fieldName, e.target.value); },
-    onBlur: () => { setFieldTouched(fieldName, true); },
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+      setFieldValue(fieldName, e.target.value);
+    },
+    onBlur: () => {
+      setFieldTouched(fieldName, true);
+    },
     error: formState.errors[fieldName],
     touched: formState.touched[fieldName],
   });
@@ -249,10 +271,14 @@ export const Field = ({ name, ...props }: any) => <input name={name} {...props} 
 export const FormErrorSummary = ({ errors }: any) => (
   <div>
     {Object.entries(errors).map(([field, error]) => (
-      <div key={field}>{field}: {String(error)}</div>
+      <div key={field}>
+        {field}: {String(error)}
+      </div>
     ))}
   </div>
 );
 export const FormSubmitButton = ({ children, ...props }: any) => (
-  <button type="submit" {...props}>{children}</button>
+  <button type="submit" {...props}>
+    {children}
+  </button>
 );

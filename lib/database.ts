@@ -9,7 +9,7 @@ import type { Models } from 'appwrite';
 
 /**
  * Appwrite Collection IDs
- * 
+ *
  * Collections with active services:
  * - USER_PROFILES: User account data (authStore, rolesService)
  * - BENEFICIARIES: Beneficiary management (beneficiariesService)
@@ -17,14 +17,14 @@ import type { Models } from 'appwrite';
  * - AID_APPLICATIONS: Aid request management (aidRequestsService)
  * - CAMPAIGNS: Campaign management (campaignsService)
  * - NOTIFICATIONS: Notification system (notificationService)
- * 
+ *
  * Collections pending service implementation:
  * - FINANCE_TRANSACTIONS: Financial transaction tracking
  * - LEGAL_CONSULTATIONS: Legal case management
  * - EVENTS: Event management
  * - INVENTORY_ITEMS: Inventory tracking
  * - TASKS: Task management
- * 
+ *
  * Note: Before removing any collection, search codebase for references.
  */
 export const collections = {
@@ -65,14 +65,14 @@ export const STORAGE_BUCKETS = {
 
 /**
  * Field mapping for database collections
- * 
+ *
  * IMPORTANT: Only add mappings for collections that genuinely have different
  * field names in the database vs. application code.
- * 
+ *
  * Currently:
  * - beneficiaries: Uses Turkish DB fields (ad_soyad, sehri, etc.) mapped to English app fields
  * - All other collections: Use English field names directly (no mapping needed)
- * 
+ *
  * Before adding a new mapping:
  * 1. Verify the actual Appwrite collection schema
  * 2. Check if the service already uses English field names
@@ -80,28 +80,28 @@ export const STORAGE_BUCKETS = {
  */
 export const FIELD_MAPPING = {
   beneficiaries: {
-    'full_name': 'ad_soyad',
-    'phone': 'telefon_no',
-    'city': 'sehri',
-    'district': 'yerlesimi',
-    'neighborhood': 'mahalle',
-    'address': 'adres',
-    'nationality': 'uyruk',
-    'country': 'ulkesi',
-    'settlement': 'yerlesimi',
-    'iban': 'iban',
-    'family_members_count': 'ailedeki_kisi_sayisi',
-    'monthly_income': 'toplam_tutar',
-    'description': 'kategori',
-    'notes': 'tur',
-    'application_date': 'kayit_tarihi',
-    'identity_number': 'kimlik_no',
-    'status': 'status',
-    'created_at': 'created_at',
-    'updated_at': 'updated_at',
-    'created_by': 'created_by',
-    'updated_by': 'updated_by',
-  }
+    full_name: 'ad_soyad',
+    phone: 'telefon_no',
+    city: 'sehri',
+    district: 'yerlesimi',
+    neighborhood: 'mahalle',
+    address: 'adres',
+    nationality: 'uyruk',
+    country: 'ulkesi',
+    settlement: 'yerlesimi',
+    iban: 'iban',
+    family_members_count: 'ailedeki_kisi_sayisi',
+    monthly_income: 'toplam_tutar',
+    description: 'kategori',
+    notes: 'tur',
+    application_date: 'kayit_tarihi',
+    identity_number: 'kimlik_no',
+    status: 'status',
+    created_at: 'created_at',
+    updated_at: 'updated_at',
+    created_by: 'created_by',
+    updated_by: 'updated_by',
+  },
 } as const;
 
 /**
@@ -123,14 +123,17 @@ export function getMappedField(collection: keyof typeof FIELD_MAPPING, field: st
  * @returns English field name or original field name if not mapped
  * Useful for converting database field names back to application field names when reading data from the database.
  */
-export function getReverseMappedField(collection: keyof typeof FIELD_MAPPING, field: string): string {
+export function getReverseMappedField(
+  collection: keyof typeof FIELD_MAPPING,
+  field: string
+): string {
   const mapping = FIELD_MAPPING[collection];
   if (!mapping) return field;
-  
+
   const reverseMapping = Object.fromEntries(
     Object.entries(mapping).map(([key, value]) => [value, key])
   );
-  
+
   return reverseMapping[field] || field;
 }
 
@@ -154,11 +157,7 @@ export const db = {
     queries: string[] = []
   ): Promise<DatabaseResponse<ListResponse<T>>> => {
     try {
-      const response = await databases.listDocuments(
-        DATABASE_ID,
-        collectionId,
-        queries
-      );
+      const response = await databases.listDocuments(DATABASE_ID, collectionId, queries);
       return { data: response as ListResponse<T>, error: null };
     } catch (error) {
       logger.error(`Error listing documents from ${collectionId}:`, error);
@@ -174,11 +173,7 @@ export const db = {
     documentId: string
   ): Promise<DatabaseResponse<T & Models.Document>> => {
     try {
-      const response = await databases.getDocument(
-        DATABASE_ID,
-        collectionId,
-        documentId
-      );
+      const response = await databases.getDocument(DATABASE_ID, collectionId, documentId);
       return { data: response as T & Models.Document, error: null };
     } catch (error) {
       logger.error(`Error getting document ${documentId} from ${collectionId}:`, error);
@@ -237,10 +232,7 @@ export const db = {
   /**
    * Delete a document
    */
-  delete: async (
-    collectionId: string,
-    documentId: string
-  ): Promise<DatabaseResponse<void>> => {
+  delete: async (collectionId: string, documentId: string): Promise<DatabaseResponse<void>> => {
     try {
       await databases.deleteDocument(DATABASE_ID, collectionId, documentId);
       return { data: null, error: null };
@@ -253,12 +245,12 @@ export const db = {
 
 /**
  * Query helpers for common database operations
- * 
+ *
  * These helpers wrap Appwrite Query methods and provide:
  * - Automatic field mapping for collections with Turkish DB fields
  * - Type-safe query building
  * - Consistent query syntax across the application
- * 
+ *
  * @example Basic Usage (No Field Mapping)
  * ```typescript
  * // For collections with English field names (donations, campaigns, etc.)
@@ -270,7 +262,7 @@ export const db = {
  * ];
  * const { data } = await db.list(collections.DONATIONS, queries);
  * ```
- * 
+ *
  * @example With Field Mapping (Beneficiaries)
  * ```typescript
  * // For beneficiaries with Turkish DB fields
@@ -281,7 +273,7 @@ export const db = {
  * ];
  * const { data } = await db.list(collections.BENEFICIARIES, queries);
  * ```
- * 
+ *
  * @example Pagination
  * ```typescript
  * const page = 2;
@@ -292,7 +284,7 @@ export const db = {
  *   queryHelpers.orderDesc('created_at')
  * ];
  * ```
- * 
+ *
  * @example Complex Filtering
  * ```typescript
  * const queries = [
@@ -304,7 +296,7 @@ export const db = {
  *   queryHelpers.orderAsc('donor_name')
  * ];
  * ```
- * 
+ *
  * @example Select Specific Fields
  * ```typescript
  * const queries = [
@@ -321,8 +313,11 @@ export const queryHelpers = {
    * @param collection - Optional collection name for field mapping
    * @returns Appwrite Query object for equal comparison
    */
-  equal: (attribute: string, value: string | number | boolean, collection?: keyof typeof FIELD_MAPPING) =>
-    Query.equal(collection ? getMappedField(collection, attribute) : attribute, value),
+  equal: (
+    attribute: string,
+    value: string | number | boolean,
+    collection?: keyof typeof FIELD_MAPPING
+  ) => Query.equal(collection ? getMappedField(collection, attribute) : attribute, value),
 
   /**
    * Not equal comparison with field mapping
@@ -331,8 +326,11 @@ export const queryHelpers = {
    * @param collection - Optional collection name for field mapping
    * @returns Appwrite Query object for not equal comparison
    */
-  notEqual: (attribute: string, value: string | number | boolean, collection?: keyof typeof FIELD_MAPPING) =>
-    Query.notEqual(collection ? getMappedField(collection, attribute) : attribute, value),
+  notEqual: (
+    attribute: string,
+    value: string | number | boolean,
+    collection?: keyof typeof FIELD_MAPPING
+  ) => Query.notEqual(collection ? getMappedField(collection, attribute) : attribute, value),
 
   /**
    * Less than comparison with field mapping
@@ -391,7 +389,11 @@ export const queryHelpers = {
    * @param collection - Optional collection name for field mapping
    * @returns Appwrite Query object for greater than or equal date comparison
    */
-  greaterThanEqualDate: (attribute: string, value: string, collection?: keyof typeof FIELD_MAPPING) =>
+  greaterThanEqualDate: (
+    attribute: string,
+    value: string,
+    collection?: keyof typeof FIELD_MAPPING
+  ) =>
     Query.greaterThanEqual(collection ? getMappedField(collection, attribute) : attribute, value),
 
   /**
@@ -432,16 +434,14 @@ export const queryHelpers = {
    * @param count - Maximum number of results to return
    * @returns Appwrite Query object for limit
    */
-  limit: (count: number) =>
-    Query.limit(count),
+  limit: (count: number) => Query.limit(count),
 
   /**
    * Offset results
    * @param count - Number of results to skip
    * @returns Appwrite Query object for offset
    */
-  offset: (count: number) =>
-    Query.offset(count),
+  offset: (count: number) => Query.offset(count),
 
   /**
    * Select specific attributes with field mapping
@@ -455,31 +455,31 @@ export const queryHelpers = {
    * ```
    */
   select: (attributes: string[], collection?: keyof typeof FIELD_MAPPING) =>
-    Query.select(attributes.map(attr => collection ? getMappedField(collection, attr) : attr)),
+    Query.select(attributes.map((attr) => (collection ? getMappedField(collection, attr) : attr))),
 };
 
 /**
  * USAGE NOTES:
- * 
+ *
  * 1. Field Mapping:
  *    - Only pass the 'collection' parameter for collections with field mappings
  *    - Currently only 'beneficiaries' has field mapping
  *    - For all other collections, omit the collection parameter
- * 
+ *
  * 2. Query Combination:
  *    - All query helpers return Appwrite Query strings
  *    - Combine multiple queries in an array
  *    - Queries are applied with AND logic
- * 
+ *
  * 3. Performance:
  *    - Use select() to fetch only needed fields
  *    - Always add limit() to prevent fetching all records
  *    - Use offset() with limit() for pagination
- * 
+ *
  * 4. Date Queries:
  *    - Use greaterThanEqualDate/lessThanEqualDate for date comparisons
  *    - Date format: ISO 8601 (YYYY-MM-DD or YYYY-MM-DDTHH:mm:ss.sssZ)
- * 
+ *
  * 5. Search:
  *    - search() performs full-text search on specified field
  *    - Not all fields support search (check Appwrite collection indexes)
@@ -487,30 +487,30 @@ export const queryHelpers = {
 
 /**
  * TESTING QUERY HELPERS
- * 
+ *
  * To verify query helpers work correctly:
- * 
+ *
  * 1. Test Field Mapping (Beneficiaries):
  *    ```typescript
  *    const mapped = getMappedField('beneficiaries', 'city');
  *    console.assert(mapped === 'sehri', 'City should map to sehri');
- *    
+ *
  *    const reverse = getReverseMappedField('beneficiaries', 'sehri');
  *    console.assert(reverse === 'city', 'Sehri should reverse map to city');
  *    ```
- * 
+ *
  * 2. Test Query Building:
  *    ```typescript
  *    const query = queryHelpers.equal('city', 'Istanbul', 'beneficiaries');
  *    // Should generate: Query.equal('sehri', 'Istanbul')
  *    ```
- * 
+ *
  * 3. Test No Mapping (Other Collections):
  *    ```typescript
  *    const query = queryHelpers.equal('status', 'active');
  *    // Should generate: Query.equal('status', 'active')
  *    ```
- * 
+ *
  * 4. Integration Test:
  *    ```typescript
  *    const { data } = await db.list(collections.BENEFICIARIES, [
@@ -549,5 +549,3 @@ export function debugFieldMapping(collection: string, field: string) {
 }
 
 export default db;
-
-

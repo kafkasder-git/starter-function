@@ -81,7 +81,7 @@ export class SQLInjectionPrevention {
       throw new ServiceError(
         ServiceErrorCode.VALIDATION_ERROR,
         'Potentially dangerous SQL patterns detected in input',
-        { input: input.substring(0, 100) },
+        { input: input.substring(0, 100) }
       );
     }
 
@@ -112,7 +112,7 @@ export class SQLInjectionProtection {
     // More aggressive validation - reject any input with SQL keywords
     const hasSQLKeywords =
       /(\bUNION\b|\bSELECT\b|\bINSERT\b|\bUPDATE\b|\bDELETE\b|\bDROP\b|\bCREATE\b|\bALTER\b)/i.test(
-        input,
+        input
       );
     const hasSQLOperators = /(\bOR\b|\bAND\b).*\d+\s*=\s*\d+/i.test(input);
     const hasSQLComments = /(--|\/\*|\*\/)/.test(input);
@@ -135,7 +135,7 @@ export class SQLInjectionProtection {
     return input
       .replace(
         /(\bUNION\b|\bSELECT\b|\bINSERT\b|\bUPDATE\b|\bDELETE\b|\bDROP\b|\bCREATE\b|\bALTER\b)/gi,
-        '',
+        ''
       )
       .replace(/['";\\]/g, '')
       .replace(/--/g, '')

@@ -1,6 +1,6 @@
 /**
  * @fileoverview CashAidVaultPage Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -51,7 +51,7 @@ const initialTransactions: VaultTransaction[] = [];
 
 /**
  * CashAidVaultPage function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -78,7 +78,7 @@ function CashAidVaultPageContent() {
 
   const currentBalance = transactions.length > 0 ? transactions[0].balance : 0;
   const todayTransactions = transactions.filter(
-    (t) => new Date(t.date).toDateString() === new Date().toDateString(),
+    (t) => new Date(t.date).toDateString() === new Date().toDateString()
   );
   const todayDeposits = todayTransactions
     .filter((t) => t.type === 'deposit')
@@ -152,7 +152,7 @@ function CashAidVaultPageContent() {
     toast.success(
       `${
         newTransaction.type === 'deposit' ? 'Para yatırma' : 'Para çekme'
-      } işlemi başarıyla kaydedildi`,
+      } işlemi başarıyla kaydedildi`
     );
   };
 

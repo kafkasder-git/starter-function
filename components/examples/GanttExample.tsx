@@ -1,22 +1,45 @@
 import React, { useState } from 'react';
-import {
-  GanttProvider,
-  GanttSidebar,
-  GanttSidebarGroup,
-  GanttSidebarItem,
-  GanttTimeline,
-  GanttHeader,
-  GanttFeatureList,
-  GanttFeatureListGroup,
-  GanttFeatureRow,
-  // GanttFeatureItem,
-  GanttToday,
-  GanttMarker,
-  type GanttFeature,
-  type GanttStatus,
-  type GanttMarkerProps,
-} from '@/components/kibo-ui/gantt';
-import { Card, CardHeader, CardTitle, Badge } from '@/components/kibo-ui';
+// TODO: Gantt components need to be implemented
+// import {
+//   GanttProvider,
+//   GanttSidebar,
+//   GanttSidebarGroup,
+//   GanttSidebarItem,
+//   GanttTimeline,
+//   GanttHeader,
+//   GanttFeatureList,
+//   GanttFeatureListGroup,
+//   GanttFeatureRow,
+//   // GanttFeatureItem,
+//   GanttToday,
+//   GanttMarker,
+//   type GanttFeature,
+//   type GanttStatus,
+//   type GanttMarkerProps,
+// } from '@/components/ui';
+import { Card, CardHeader, CardTitle, Badge } from '@/components/ui';
+
+// Type definitions for Gantt components (when implemented)
+type GanttStatus = {
+  id: string;
+  name: string;
+  color: string;
+};
+
+type GanttFeature = {
+  id: string;
+  name: string;
+  startAt: Date;
+  endAt: Date;
+  status: GanttStatus;
+  lane?: string;
+};
+
+type GanttMarkerProps = {
+  id: string;
+  date: Date;
+  label: string;
+};
 
 // Sample data
 const sampleStatuses: GanttStatus[] = [
@@ -85,50 +108,6 @@ const sampleMarkers: GanttMarkerProps[] = [
 export const GanttExample: React.FC = () => {
   const [features, setFeatures] = useState<GanttFeature[]>(sampleFeatures);
   const [markers, setMarkers] = useState<GanttMarkerProps[]>(sampleMarkers);
-  const [selectedFeature, setSelectedFeature] = useState<string | null>(null);
-
-  const handleFeatureMove = (id: string, startAt: Date, endAt: Date | null) => {
-    setFeatures(prev => prev.map(feature => 
-      feature.id === id 
-        ? { ...feature, startAt, endAt: endAt || new Date(startAt.getTime() + 24 * 60 * 60 * 1000) }
-        : feature
-    ));
-  };
-
-  const handleAddItem = (date: Date) => {
-    const newFeature: GanttFeature = {
-      id: `feature-${Date.now()}`,
-      name: `New Feature ${features.length + 1}`,
-      startAt: date,
-      endAt: new Date(date.getTime() + 7 * 24 * 60 * 60 * 1000), // 7 days later
-      status: sampleStatuses[0]!,
-      lane: 'general',
-    };
-    setFeatures(prev => [...prev, newFeature]);
-  };
-
-  const handleRemoveMarker = (id: string) => {
-    setMarkers(prev => prev.filter(marker => marker.id !== id));
-  };
-
-  // const handleCreateMarker = (date: Date) => {
-  //   const newMarker: GanttMarkerProps = {
-  //     id: `marker-${Date.now()}`,
-  //     date,
-  //     label: `Marker ${markers.length + 1}`,
-  //   };
-  //   setMarkers(prev => [...prev, newMarker]);
-  // };
-
-  // Group features by lane
-  const featuresByLane = features.reduce((acc, feature) => {
-    const lane = feature.lane || 'general';
-    if (!acc[lane]) {
-      acc[lane] = [];
-    }
-    acc[lane].push(feature);
-    return acc;
-  }, {} as Record<string, GanttFeature[]>);
 
   return (
     <div className="h-screen w-full p-4">
@@ -140,89 +119,38 @@ export const GanttExample: React.FC = () => {
           </p>
         </CardHeader>
       </Card>
-      
+
       <div className="h-[calc(100vh-120px)]">
-        <GanttProvider
-          range="monthly"
-          zoom={100}
-          onAddItem={handleAddItem}
-        >
-          <div className="flex h-full">
-            {/* Sidebar */}
-            <GanttSidebar>
-              {Object.entries(featuresByLane).map(([lane, laneFeatures]) => (
-                <GanttSidebarGroup key={lane} name={lane.charAt(0).toUpperCase() + lane.slice(1)}>
-                  {laneFeatures.map(feature => (
-                    <GanttSidebarItem
-                      key={feature.id}
-                      feature={feature}
-                      onSelectItem={setSelectedFeature}
-                      className={selectedFeature === feature.id ? 'bg-accent' : ''}
-                    />
-                  ))}
-                </GanttSidebarGroup>
-              ))}
-            </GanttSidebar>
-
-            {/* Timeline */}
-            <GanttTimeline>
-              <GanttHeader />
-              
-              <GanttFeatureList>
-                {Object.entries(featuresByLane).map(([lane, laneFeatures]) => (
-                  <GanttFeatureListGroup key={lane}>
-                    <GanttFeatureRow
-                      features={laneFeatures}
-                      onMove={handleFeatureMove}
-                    >
-                      {(feature) => (
-                        <div className="flex items-center justify-between w-full">
-                          <span className="truncate text-xs font-medium">
-                            {feature.name}
-                          </span>
-                    <div 
-                      className="ml-2 h-2 w-2 rounded-full"
-                      style={{ backgroundColor: feature.status.color }}
-                    />
-                        </div>
-                      )}
-                    </GanttFeatureRow>
-                  </GanttFeatureListGroup>
-                ))}
-              </GanttFeatureList>
-
-              {/* Today marker */}
-              <GanttToday />
-              
-              {/* Custom markers */}
-              {markers.map(marker => (
-                <GanttMarker
-                  key={marker.id}
-                  {...marker}
-                  onRemove={handleRemoveMarker}
-                />
-              ))}
-            </GanttTimeline>
+        <Card className="h-full flex items-center justify-center">
+          <div className="text-center">
+            <div className="text-6xl mb-4">📊</div>
+            <h3 className="text-xl font-semibold mb-2">Gantt Chart Component</h3>
+            <p className="text-muted-foreground mb-4">
+              The Gantt chart components are not yet implemented.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              This placeholder shows the data structure that would be used:
+            </p>
+            <div className="mt-4 text-left bg-muted p-4 rounded-lg max-w-md mx-auto">
+              <div className="text-sm">
+                <div>Features: {features.length}</div>
+                <div>Markers: {markers.length}</div>
+                <div>Status Types: {sampleStatuses.length}</div>
+              </div>
+            </div>
           </div>
-        </GanttProvider>
+        </Card>
       </div>
 
-      {/* Controls */}
+      {/* Status badges */}
       <div className="mt-4 flex gap-4 items-center">
         <div className="text-sm text-muted-foreground">
           Total Features: {features.length} | Markers: {markers.length}
         </div>
         <div className="flex gap-2">
-          {sampleStatuses.map(status => (
-            <Badge 
-              key={status.id} 
-              variant="secondary" 
-              className="flex items-center gap-2"
-            >
-              <div 
-                className="h-2 w-2 rounded-full"
-                style={{ backgroundColor: status.color }}
-              />
+          {sampleStatuses.map((status) => (
+            <Badge key={status.id} variant="secondary" className="flex items-center gap-2">
+              <div className="h-2 w-2 rounded-full" style={{ backgroundColor: status.color }} />
               <span className="text-xs">{status.name}</span>
             </Badge>
           ))}

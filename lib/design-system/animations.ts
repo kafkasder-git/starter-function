@@ -343,11 +343,7 @@ export const staggerAnimations = {
   staggerDelay: (index: number, baseDelay: number = 50) => `${index * baseDelay}ms`,
 
   // Stagger animation for multiple elements
-  createStaggeredAnimation: (
-    animation: string,
-    itemCount: number,
-    staggerDelay: number = 50
-  ) => {
+  createStaggeredAnimation: (animation: string, itemCount: number, staggerDelay: number = 50) => {
     const animations: Record<string, string> = {};
     for (let i = 0; i < itemCount; i++) {
       animations[`.stagger-${i}`] = `${animation} ${i * staggerDelay}ms`;
@@ -407,13 +403,13 @@ export const tailwindAnimationConfig = {
     'bounce-out': animations.bounceOut,
 
     // Feedback animations
-    'shake': animations.shake,
-    'pulse': animations.pulse,
+    shake: animations.shake,
+    pulse: animations.pulse,
     'pulse-subtle': animations.pulseSubtle,
 
     // Loading animations
-    'spin': animations.spin,
-    'shimmer': animations.shimmer,
+    spin: animations.spin,
+    shimmer: animations.shimmer,
     'loading-dots': animations.loadingDots,
 
     // Component animations
@@ -429,7 +425,7 @@ export const tailwindAnimationConfig = {
     'toast-slide-out-to-bottom': animations.toastSlideOutToBottom,
 
     // Success animation
-    'checkmark': animations.checkmark,
+    checkmark: animations.checkmark,
   },
   transitionTimingFunction: easingFunctions,
   transitionDuration: animationDuration,

@@ -28,17 +28,17 @@ const beneficiariesService = {
    */
   async getAll(): Promise<ApiResponse<Beneficiary[]>> {
     try {
-      const { data, error } = await db.list(
-        collectionName,
-        [queryHelpers.orderDesc('created_at', 'beneficiaries')]
-      );
+      const { data, error } = await db.list(collectionName, [
+        queryHelpers.orderDesc('created_at', 'beneficiaries'),
+      ]);
 
       if (error) {
         logger.error('Error fetching all beneficiaries', error);
         return { data: null, error: error.message };
       }
 
-      const mapped = data?.documents?.map((item: BeneficiaryDBFields) => mapDBToBeneficiary(item)) || [];
+      const mapped =
+        data?.documents?.map((item: BeneficiaryDBFields) => mapDBToBeneficiary(item)) || [];
       return { data: mapped, error: null };
     } catch (error) {
       logger.error('Unexpected error in getAll', error);
@@ -140,13 +140,10 @@ const beneficiariesService = {
     try {
       logger.info('Fetching active beneficiaries');
 
-      const { data, error } = await db.list(
-        collectionName,
-        [
-          queryHelpers.equal('status', 'active'),
-          queryHelpers.orderDesc('created_at')
-        ]
-      );
+      const { data, error } = await db.list(collectionName, [
+        queryHelpers.equal('status', 'active'),
+        queryHelpers.orderDesc('created_at'),
+      ]);
 
       if (error) {
         logger.error('Error fetching active beneficiaries', error);
@@ -154,7 +151,8 @@ const beneficiariesService = {
       }
 
       // Map Turkish DB fields to English app model
-      const mapped = data?.documents?.map((item: BeneficiaryDBFields) => mapDBToBeneficiary(item)) || [];
+      const mapped =
+        data?.documents?.map((item: BeneficiaryDBFields) => mapDBToBeneficiary(item)) || [];
 
       logger.info(`Successfully fetched ${mapped.length} active beneficiaries`);
       return { data: mapped, error: null };
@@ -174,14 +172,11 @@ const beneficiariesService = {
     try {
       logger.info('Fetching beneficiaries by city', { city });
 
-      const { data, error } = await db.list(
-        collectionName,
-        [
-          queryHelpers.equal('city', city), // Use English DB field name
-          queryHelpers.equal('status', 'active'),
-          queryHelpers.orderDesc('created_at')
-        ]
-      );
+      const { data, error } = await db.list(collectionName, [
+        queryHelpers.equal('city', city), // Use English DB field name
+        queryHelpers.equal('status', 'active'),
+        queryHelpers.orderDesc('created_at'),
+      ]);
 
       if (error) {
         logger.error('Error fetching beneficiaries by city', error);
@@ -189,7 +184,8 @@ const beneficiariesService = {
       }
 
       // Map Turkish DB fields to English app model
-      const mapped = data?.documents?.map((item: BeneficiaryDBFields) => mapDBToBeneficiary(item)) || [];
+      const mapped =
+        data?.documents?.map((item: BeneficiaryDBFields) => mapDBToBeneficiary(item)) || [];
 
       logger.info(`Successfully fetched ${mapped.length} beneficiaries for city: ${city}`);
       return { data: mapped, error: null };
@@ -210,14 +206,11 @@ const beneficiariesService = {
       logger.info('Fetching beneficiaries by need type', { needType });
 
       // Note: DB uses 'kategori' field instead of need_types array
-      const { data, error } = await db.list(
-        collectionName,
-        [
-          queryHelpers.equal('kategori', needType), // Use Turkish DB field name
-          queryHelpers.equal('status', 'active'),
-          queryHelpers.orderDesc('created_at')
-        ]
-      );
+      const { data, error } = await db.list(collectionName, [
+        queryHelpers.equal('kategori', needType), // Use Turkish DB field name
+        queryHelpers.equal('status', 'active'),
+        queryHelpers.orderDesc('created_at'),
+      ]);
 
       if (error) {
         logger.error('Error fetching beneficiaries by need type', error);
@@ -225,7 +218,8 @@ const beneficiariesService = {
       }
 
       // Map Turkish DB fields to English app model
-      const mapped = data?.documents?.map((item: BeneficiaryDBFields) => mapDBToBeneficiary(item)) || [];
+      const mapped =
+        data?.documents?.map((item: BeneficiaryDBFields) => mapDBToBeneficiary(item)) || [];
 
       logger.info(`Successfully fetched ${mapped.length} beneficiaries for need type: ${needType}`);
       return { data: mapped, error: null };
@@ -245,14 +239,11 @@ const beneficiariesService = {
       logger.info('Fetching urgent beneficiaries');
 
       // Note: DB doesn't have priority field, return all active
-      const { data, error } = await db.list(
-        collectionName,
-        [
-          queryHelpers.equal('status', 'active'),
-          queryHelpers.orderDesc('created_at'),
-          queryHelpers.limit(20) // Limit to recent entries as fallback
-        ]
-      );
+      const { data, error } = await db.list(collectionName, [
+        queryHelpers.equal('status', 'active'),
+        queryHelpers.orderDesc('created_at'),
+        queryHelpers.limit(20), // Limit to recent entries as fallback
+      ]);
 
       if (error) {
         logger.error('Error fetching urgent beneficiaries', error);
@@ -260,7 +251,8 @@ const beneficiariesService = {
       }
 
       // Map Turkish DB fields to English app model
-      const mapped = data?.documents?.map((item: BeneficiaryDBFields) => mapDBToBeneficiary(item)) || [];
+      const mapped =
+        data?.documents?.map((item: BeneficiaryDBFields) => mapDBToBeneficiary(item)) || [];
 
       logger.info(`Successfully fetched ${mapped.length} urgent beneficiaries`);
       return { data: mapped, error: null };
@@ -365,7 +357,7 @@ const beneficiariesService = {
    */
   async addSupportingDocuments(
     beneficiaryId: string,
-    documentUrls: string[],
+    documentUrls: string[]
   ): Promise<ApiResponse<Beneficiary>> {
     try {
       logger.info('Adding supporting documents', { beneficiaryId, count: documentUrls.length });
@@ -416,7 +408,7 @@ const beneficiariesService = {
    */
   async removeSupportingDocument(
     beneficiaryId: string,
-    documentUrl: string,
+    documentUrl: string
   ): Promise<ApiResponse<Beneficiary>> {
     try {
       logger.info('Removing supporting document', { beneficiaryId, documentUrl });
@@ -504,7 +496,7 @@ const beneficiariesService = {
    */
   async updateSupportingDocuments(
     beneficiaryId: string,
-    documentUrls: string[],
+    documentUrls: string[]
   ): Promise<ApiResponse<Beneficiary>> {
     try {
       logger.info('Updating supporting documents', { beneficiaryId, count: documentUrls.length });
@@ -553,7 +545,7 @@ const beneficiariesService = {
       kategori?: string;
       status?: string;
       sortBy?: string;
-    } = {},
+    } = {}
   ): Promise<{
     data: Beneficiary[];
     total: number;
@@ -631,7 +623,7 @@ const beneficiariesService = {
 
       if (error) {
         logger.error('Error fetching beneficiaries', error);
-        
+
         // If collection doesn't exist (404), return mock data
         if (error.code === 404 || error.message?.includes('404')) {
           logger.warn('Collection not found, returning mock beneficiaries data');
@@ -643,7 +635,7 @@ const beneficiariesService = {
             error: undefined,
           };
         }
-        
+
         return {
           data: [],
           total: 0,
@@ -654,9 +646,12 @@ const beneficiariesService = {
       }
 
       // Map Turkish DB fields to English app model
-      const mapped = data?.documents?.map((item: BeneficiaryDBFields) => mapDBToBeneficiary(item)) || [];
+      const mapped =
+        data?.documents?.map((item: BeneficiaryDBFields) => mapDBToBeneficiary(item)) || [];
 
-      logger.info(`Successfully fetched ${mapped.length} beneficiaries from ${data?.total ?? 0} total`);
+      logger.info(
+        `Successfully fetched ${mapped.length} beneficiaries from ${data?.total ?? 0} total`
+      );
 
       return {
         data: mapped,
@@ -684,26 +679,34 @@ const beneficiariesService = {
     try {
       logger.info('Getting unique cities');
 
-      const { data, error } = await db.list(
-        collectionName,
-        [
-          queryHelpers.select(['city']),
-          queryHelpers.notEqual('city', null)
-        ]
-      );
+      const { data, error } = await db.list(collectionName, [
+        queryHelpers.select(['city']),
+        queryHelpers.notEqual('city', null),
+      ]);
 
       if (error) {
         logger.error('Error fetching cities:', error);
-        
+
         // If collection doesn't exist (404), return mock data
         if (error.code === 404 || error.message?.includes('404')) {
           logger.warn('Collection not found, returning mock cities data');
           return {
-            data: ['İstanbul', 'Ankara', 'İzmir', 'Bursa', 'Antalya', 'Adana', 'Konya', 'Gaziantep', 'Şanlıurfa', 'Kocaeli'],
+            data: [
+              'İstanbul',
+              'Ankara',
+              'İzmir',
+              'Bursa',
+              'Antalya',
+              'Adana',
+              'Konya',
+              'Gaziantep',
+              'Şanlıurfa',
+              'Kocaeli',
+            ],
             error: undefined,
           };
         }
-        
+
         return {
           data: [],
           error: error.message,
@@ -711,9 +714,9 @@ const beneficiariesService = {
       }
 
       // Get unique cities
-      const cities = [...new Set(data?.documents?.map((item: any) => item.city).filter(Boolean))].sort(
-        (a, b) => a.localeCompare(b),
-      );
+      const cities = [
+        ...new Set(data?.documents?.map((item: any) => item.city).filter(Boolean)),
+      ].sort((a, b) => a.localeCompare(b));
 
       logger.info('Successfully fetched cities:', cities);
       return {
@@ -736,16 +739,15 @@ const beneficiariesService = {
     try {
       logger.info('Testing Appwrite connection and collection existence...');
 
-      const { data: tableData, error: tableError } = await db.list(
-        collectionName,
-        [queryHelpers.limit(1)]
-      );
+      const { data: tableData, error: tableError } = await db.list(collectionName, [
+        queryHelpers.limit(1),
+      ]);
 
       logger.info('Collection test result:', { tableData, tableError });
 
       if (tableError) {
         logger.error('Collection does not exist or access denied:', tableError);
-        
+
         // If collection doesn't exist (404), return mock success
         if (tableError.code === 404 || tableError.message?.includes('404')) {
           logger.warn('Collection not found, but connection is working (mock mode)');
@@ -755,7 +757,7 @@ const beneficiariesService = {
             error: undefined,
           };
         }
-        
+
         return { exists: false, error: tableError.message };
       }
 

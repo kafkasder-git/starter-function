@@ -1,6 +1,6 @@
 /**
  * @fileoverview pagination Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -53,7 +53,7 @@ function PaginationLink({ className, isActive, size = 'icon', ...props }: Pagina
           variant: isActive ? 'outline' : 'ghost',
           size,
         }),
-        className,
+        className
       )}
       {...props}
     />

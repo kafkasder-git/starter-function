@@ -20,9 +20,13 @@ import {
   AlertTriangle,
   Clock,
   Shield,
-  Activity
+  Activity,
 } from 'lucide-react';
-import { NetworkManager, type NetworkDiagnostics, type NetworkError } from '../../lib/networkDiagnostics';
+import {
+  NetworkManager,
+  type NetworkDiagnostics,
+  type NetworkError,
+} from '../../lib/networkDiagnostics';
 import { enhancedAppwrite } from '../../services/enhancedAppwriteService';
 import { logger } from '../../lib/logging/logger';
 
@@ -31,7 +35,7 @@ export function NetworkDiagnosticsPage() {
     isOnline: navigator.onLine,
     canReachAppwrite: false,
     canReachInternet: false,
-    connectionQuality: 'offline'
+    connectionQuality: 'offline',
   });
   const [isRunning, setIsRunning] = useState(false);
   const [lastCheck, setLastCheck] = useState<Date | null>(null);
@@ -60,16 +64,15 @@ export function NetworkDiagnosticsPage() {
 
       logger.info('Network diagnostics completed:', {
         network: networkDiag,
-        appwrite: appwriteTest
+        appwrite: appwriteTest,
       });
-
     } catch (error) {
       const networkError: NetworkError = {
         type: 'UNKNOWN_ERROR',
         message: error instanceof Error ? error.message : 'Diagnostics failed',
-        details: error
+        details: error,
       };
-      setErrors(prev => [...prev, networkError]);
+      setErrors((prev) => [...prev, networkError]);
       logger.error('Network diagnostics failed:', error);
     } finally {
       setIsRunning(false);
@@ -91,10 +94,10 @@ export function NetworkDiagnosticsPage() {
 
   const getQualityBadge = (quality: string) => {
     const variants = {
-      'excellent': { variant: 'default' as const, className: 'bg-green-100 text-green-800' },
-      'good': { variant: 'default' as const, className: 'bg-yellow-100 text-yellow-800' },
-      'poor': { variant: 'default' as const, className: 'bg-orange-100 text-orange-800' },
-      'offline': { variant: 'destructive' as const, className: 'bg-red-100 text-red-800' }
+      excellent: { variant: 'default' as const, className: 'bg-green-100 text-green-800' },
+      good: { variant: 'default' as const, className: 'bg-yellow-100 text-yellow-800' },
+      poor: { variant: 'default' as const, className: 'bg-orange-100 text-orange-800' },
+      offline: { variant: 'destructive' as const, className: 'bg-red-100 text-red-800' },
     };
 
     const config = variants[quality as keyof typeof variants] || variants.offline;
@@ -151,9 +154,7 @@ export function NetworkDiagnosticsPage() {
       {lastCheck && (
         <Alert>
           <Clock className="h-4 w-4" />
-          <AlertDescription>
-            Son kontrol: {lastCheck.toLocaleString('tr-TR')}
-          </AlertDescription>
+          <AlertDescription>Son kontrol: {lastCheck.toLocaleString('tr-TR')}</AlertDescription>
         </Alert>
       )}
 
@@ -164,9 +165,7 @@ export function NetworkDiagnosticsPage() {
             <Activity className="h-5 w-5" />
             Genel Durum
           </CardTitle>
-          <CardDescription>
-            Sistem bağlantı durumu özeti
-          </CardDescription>
+          <CardDescription>Sistem bağlantı durumu özeti</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -230,9 +229,7 @@ export function NetworkDiagnosticsPage() {
             <Shield className="h-5 w-5" />
             Appwrite Bağlantı Detayları
           </CardTitle>
-          <CardDescription>
-            Veritabanı bağlantısı ve kimlik doğrulama durumu
-          </CardDescription>
+          <CardDescription>Veritabanı bağlantısı ve kimlik doğrulama durumu</CardDescription>
         </CardHeader>
         <CardContent>
           {appwriteConnection ? (
@@ -241,7 +238,9 @@ export function NetworkDiagnosticsPage() {
                 <span>Bağlantı Durumu:</span>
                 <div className="flex items-center gap-2">
                   {getStatusIcon(appwriteConnection.connected)}
-                  <span className={appwriteConnection.connected ? 'text-green-600' : 'text-red-600'}>
+                  <span
+                    className={appwriteConnection.connected ? 'text-green-600' : 'text-red-600'}
+                  >
                     {appwriteConnection.connected ? 'Bağlı' : 'Bağlantı Yok'}
                   </span>
                 </div>
@@ -272,9 +271,7 @@ export function NetworkDiagnosticsPage() {
       <Card>
         <CardHeader>
           <CardTitle>Yapılandırma Bilgileri</CardTitle>
-          <CardDescription>
-            Mevcut ağ ve uygulama yapılandırması
-          </CardDescription>
+          <CardDescription>Mevcut ağ ve uygulama yapılandırması</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -287,10 +284,9 @@ export function NetworkDiagnosticsPage() {
             <div>
               <div className="font-medium text-sm text-gray-500">Project ID</div>
               <div className="text-sm font-mono bg-gray-50 p-2 rounded truncate">
-                {import.meta.env.VITE_APPWRITE_PROJECT_ID ?
-                  `${import.meta.env.VITE_APPWRITE_PROJECT_ID.substring(0, 20)}...` :
-                  'Tanımlanmamış'
-                }
+                {import.meta.env.VITE_APPWRITE_PROJECT_ID
+                  ? `${import.meta.env.VITE_APPWRITE_PROJECT_ID.substring(0, 20)}...`
+                  : 'Tanımlanmamış'}
               </div>
             </div>
           </div>
@@ -305,9 +301,7 @@ export function NetworkDiagnosticsPage() {
               <AlertTriangle className="h-5 w-5" />
               Sorun Giderme Adımları
             </CardTitle>
-            <CardDescription>
-              Tespit edilen sorunlar için önerilen çözümler
-            </CardDescription>
+            <CardDescription>Tespit edilen sorunlar için önerilen çözümler</CardDescription>
           </CardHeader>
           <CardContent>
             <ul className="space-y-2">
@@ -330,9 +324,7 @@ export function NetworkDiagnosticsPage() {
               <XCircle className="h-5 w-5 text-red-500" />
               Son Hatalar
             </CardTitle>
-            <CardDescription>
-              Tanılama sırasında tespit edilen hatalar
-            </CardDescription>
+            <CardDescription>Tanılama sırasında tespit edilen hatalar</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">

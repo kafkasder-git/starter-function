@@ -44,7 +44,7 @@ function calculateScore(metrics: Omit<PerformanceMetrics, 'score' | 'rating'>): 
 
   // Weighted average (Core Web Vitals are more important)
   return Math.round(
-    lcpScore * 0.3 + fidScore * 0.25 + clsScore * 0.25 + memoryScore * 0.1 + renderScore * 0.1,
+    lcpScore * 0.3 + fidScore * 0.25 + clsScore * 0.25 + memoryScore * 0.1 + renderScore * 0.1
   );
 }
 

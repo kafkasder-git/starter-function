@@ -245,12 +245,15 @@ export interface HealthCheckResponse {
   status: 'healthy' | 'degraded' | 'unhealthy';
   timestamp: string;
   version: string;
-  services: Record<string, {
-    status: 'up' | 'down' | 'degraded';
-    responseTime?: number;
-    lastCheck: string;
-    details?: Record<string, any>;
-  }>;
+  services: Record<
+    string,
+    {
+      status: 'up' | 'down' | 'degraded';
+      responseTime?: number;
+      lastCheck: string;
+      details?: Record<string, any>;
+    }
+  >;
   uptime: number;
 }
 
@@ -306,10 +309,13 @@ export interface SearchResult<T = any> {
   items: T[];
   total: number;
   query: string;
-  facets?: Record<string, Array<{
-    value: string;
-    count: number;
-  }>>;
+  facets?: Record<
+    string,
+    Array<{
+      value: string;
+      count: number;
+    }>
+  >;
   suggestions?: string[];
   took: number;
 }

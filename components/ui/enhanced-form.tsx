@@ -154,7 +154,7 @@ export function EnhancedFormProvider<T extends FieldValues = FieldValues>({
   return (
     <EnhancedFormContext.Provider value={contextValue}>
       <ReactHookFormProvider {...form}>
-        <Card className={cn('w-full shadow-lg border-0 bg-white/80 backdrop-blur-sm', className)}>
+        <Card className={cn('w-full shadow-lg border-none bg-white/80 backdrop-blur-sm', className)}>
           {((title ?? description) || autoSave) && (
             <CardHeader className={cn('pb-4', compactMode && 'pb-2')}>
               <div className="flex items-center justify-between">
@@ -385,7 +385,11 @@ export function EnhancedField({
             className="text-sm text-error-600 flex items-center gap-1"
           >
             <AlertCircle className="w-4 h-4" />
-            {typeof error === 'string' ? error : (typeof error === 'object' && error !== null && 'message' in error ? String(error.message) : String(error))}
+            {typeof error === 'string'
+              ? error
+              : typeof error === 'object' && error !== null && 'message' in error
+                ? String(error.message)
+                : String(error)}
           </motion.p>
         )}
       </div>
@@ -408,7 +412,7 @@ export function EnhancedField({
         !error && isDirty && 'border-success-500',
         icon && 'pl-10',
         (prefix ?? getValidationIcon()) && 'pl-8',
-        (suffix ?? type === 'password') && 'pr-10',
+        (suffix ?? type === 'password') && 'pr-10'
       ),
       onFocus: handleFocus,
       onBlur: handleBlur,
@@ -435,7 +439,11 @@ export function EnhancedField({
 
       case 'select':
         return (
-          <Select value={form.getValues(name) || ''} onValueChange={handleChange} disabled={disabled}>
+          <Select
+            value={form.getValues(name) || ''}
+            onValueChange={handleChange}
+            disabled={disabled}
+          >
             <SelectTrigger className={cn(sizeClasses[size], error && 'border-error-500')}>
               <SelectValue placeholder={placeholder} />
             </SelectTrigger>
@@ -509,7 +517,7 @@ export function EnhancedField({
                   'w-full justify-start text-left font-normal',
                   !form.getValues(name) && 'text-muted-foreground',
                   sizeClasses[size],
-                  error && 'border-error-500',
+                  error && 'border-error-500'
                 )}
               >
                 <Calendar className="mr-2 h-4 w-4" />
@@ -594,7 +602,9 @@ export function EnhancedField({
               </Button>
               {form.getValues(name) && (
                 <span className="text-sm text-gray-600">
-                  {Array.isArray(form.getValues(name)) ? `${form.getValues(name).length} dosya` : form.getValues(name).name}
+                  {Array.isArray(form.getValues(name))
+                    ? `${form.getValues(name).length} dosya`
+                    : form.getValues(name).name}
                 </span>
               )}
             </div>
@@ -605,7 +615,7 @@ export function EnhancedField({
               multiple={multiple}
               accept={accept}
               onChange={(e) => {
-                const {files} = e.target;
+                const { files } = e.target;
                 if (files) {
                   handleChange(multiple ? Array.from(files) : files[0]);
                 }
@@ -680,7 +690,11 @@ export function EnhancedField({
             className="text-sm text-error-600 flex items-center gap-1"
           >
             <AlertCircle className="w-4 h-4" />
-            {typeof error === 'string' ? error : (typeof error === 'object' && error !== null && 'message' in error ? String(error.message) : String(error))}
+            {typeof error === 'string'
+              ? error
+              : typeof error === 'object' && error !== null && 'message' in error
+                ? String(error.message)
+                : String(error)}
           </motion.p>
         )}
       </AnimatePresence>
@@ -789,7 +803,7 @@ export function FormActions({
       disabled={loading ?? enhancedForm.isSubmitting}
       className="gap-2 min-w-24"
     >
-      {loading ?? enhancedForm.isSubmitting ? (
+      {(loading ?? enhancedForm.isSubmitting) ? (
         <Loader2 className="w-4 h-4 animate-spin" />
       ) : (
         <Save className="w-4 h-4" />

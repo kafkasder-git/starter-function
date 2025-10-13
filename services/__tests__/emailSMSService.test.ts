@@ -112,7 +112,7 @@ describe('EmailSMSService', () => {
       const result = await service.sendWithTemplate(
         'welcome-member',
         'test@example.com',
-        variables,
+        variables
       );
 
       expect(result.success).toBe(true);
@@ -121,14 +121,14 @@ describe('EmailSMSService', () => {
 
     it('should throw error for invalid template', async () => {
       await expect(
-        service.sendWithTemplate('invalid-template', 'test@example.com', {}),
+        service.sendWithTemplate('invalid-template', 'test@example.com', {})
       ).rejects.toThrow('Template not found');
     });
 
     it('should handle email errors gracefully', async () => {
       // Mock SMTP failure
       vi.spyOn(service as any, 'sendWithSMTP').mockRejectedValueOnce(
-        new Error('SMTP connection failed'),
+        new Error('SMTP connection failed')
       );
 
       const emailData = {
@@ -174,7 +174,7 @@ describe('EmailSMSService', () => {
     it('should handle SMS errors gracefully', async () => {
       // Mock Twilio failure
       vi.spyOn(service as any, 'sendWithTwilio').mockRejectedValueOnce(
-        new Error('SMS service unavailable'),
+        new Error('SMS service unavailable')
       );
 
       const smsData = {
@@ -290,13 +290,13 @@ describe('EmailSMSService', () => {
           subject: 'Test',
           text: 'Test',
           priority: 'normal',
-        }),
+        })
       ).rejects.toThrow('Network timeout');
     });
 
     it('should handle invalid email addresses', async () => {
       vi.spyOn(service as any, 'sendWithSMTP').mockRejectedValueOnce(
-        new Error('Invalid email address'),
+        new Error('Invalid email address')
       );
 
       await expect(
@@ -305,13 +305,13 @@ describe('EmailSMSService', () => {
           subject: 'Test',
           text: 'Test',
           priority: 'normal',
-        }),
+        })
       ).rejects.toThrow('Invalid email address');
     });
 
     it('should handle SMS rate limiting', async () => {
       vi.spyOn(service as any, 'sendWithTwilio').mockRejectedValueOnce(
-        new Error('Rate limit exceeded'),
+        new Error('Rate limit exceeded')
       );
 
       await expect(
@@ -320,7 +320,7 @@ describe('EmailSMSService', () => {
           subject: 'Test',
           text: 'Test',
           priority: 'normal',
-        }),
+        })
       ).rejects.toThrow('Rate limit exceeded');
     });
   });
@@ -333,7 +333,7 @@ describe('EmailSMSService', () => {
           subject: 'Concurrent Test',
           text: `Test message ${i}`,
           priority: 'normal',
-        }),
+        })
       );
 
       const results = await Promise.all(promises);

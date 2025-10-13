@@ -55,14 +55,18 @@ export function StatCard({
         <div className="flex items-center">
           <div className="p-4 flex-1">
             <div className="flex items-center justify-between mb-2">
-              <Heading level={3} size="sm" weight="medium" color="neutral" className="truncate">{title}</Heading>
+              <Heading level={3} size="sm" weight="medium" color="neutral" className="truncate">
+                {title}
+              </Heading>
               <div
                 className={`p-2 rounded-lg ${color} group-hover:scale-110 transition-transform duration-200`}
               >
                 {icon}
               </div>
             </div>
-            <Heading level={4} size="2xl" weight="bold" className="tabular-nums mb-1">{formatValue(value)}</Heading>
+            <Heading level={4} size="2xl" weight="bold" className="tabular-nums mb-1">
+              {formatValue(value)}
+            </Heading>
             {change && (
               <div className="flex items-center text-sm">
                 {changeType === 'increase' ? (
@@ -70,10 +74,16 @@ export function StatCard({
                 ) : (
                   <TrendingDown className="w-4 h-4 text-red-500 mr-1" />
                 )}
-                <Text size="xs" weight="semibold" color={changeType === 'increase' ? 'green' : 'red'}>
+                <Text
+                  size="xs"
+                  weight="semibold"
+                  color={changeType === 'increase' ? 'green' : 'red'}
+                >
                   {change}
                 </Text>
-                <Text size="xs" color="muted" className="ml-1">bu ay</Text>
+                <Text size="xs" color="muted" className="ml-1">
+                  bu ay
+                </Text>
               </div>
             )}
           </div>

@@ -72,9 +72,7 @@ const rolesService = {
     try {
       logger.info('Fetching all roles');
 
-      const { data, error } = await db.list(rolesCollection, [
-        queryHelpers.orderAsc('name')
-      ]);
+      const { data, error } = await db.list(rolesCollection, [queryHelpers.orderAsc('name')]);
 
       if (error) {
         logger.error('Error fetching roles', error);
@@ -131,7 +129,7 @@ const rolesService = {
 
       const { data, error } = await db.list(permissionsCollection, [
         queryHelpers.orderAsc('resource'),
-        queryHelpers.orderAsc('action')
+        queryHelpers.orderAsc('action'),
       ]);
 
       if (error) {
@@ -173,7 +171,7 @@ const rolesService = {
           acc[resource].push(permission);
           return acc;
         },
-        {} as Record<string, Permission[]>,
+        {} as Record<string, Permission[]>
       );
 
       return { data: grouped, error: null };
@@ -193,7 +191,7 @@ const rolesService = {
     try {
       // Get user role
       const { data: userProfile } = await db.list(userProfilesCollection, [
-        queryHelpers.equal('$id', userId)
+        queryHelpers.equal('$id', userId),
       ]);
 
       if (!userProfile?.documents?.[0]) {
@@ -205,14 +203,16 @@ const rolesService = {
 
       // Get role permissions
       const { data: role } = await db.list(rolesCollection, [
-        queryHelpers.equal('name', normalizedRole)
+        queryHelpers.equal('name', normalizedRole),
       ]);
 
       if (!role?.documents?.[0] || !role.documents[0].permissions) {
         return false;
       }
 
-      const permissions = Array.isArray(role.documents[0].permissions) ? role.documents[0].permissions : [];
+      const permissions = Array.isArray(role.documents[0].permissions)
+        ? role.documents[0].permissions
+        : [];
 
       // Check for wildcard permissions (e.g., "users:*")
       const [resource] = permissionName.split(':');
@@ -236,7 +236,7 @@ const rolesService = {
 
       // Get user profile with role
       const { data: userProfile, error: userError } = await db.list(userProfilesCollection, [
-        queryHelpers.equal('$id', userId)
+        queryHelpers.equal('$id', userId),
       ]);
 
       if (userError || !userProfile?.documents?.[0]) {
@@ -252,7 +252,7 @@ const rolesService = {
 
       // Get role details
       const { data: role, error: roleError } = await db.list(rolesCollection, [
-        queryHelpers.equal('name', normalizedRole)
+        queryHelpers.equal('name', normalizedRole),
       ]);
 
       if (roleError || !role?.documents?.[0]) {
@@ -282,7 +282,7 @@ const rolesService = {
 
       // Verify role exists
       const { data: roleExists } = await db.list(rolesCollection, [
-        queryHelpers.equal('name', newRole)
+        queryHelpers.equal('name', newRole),
       ]);
 
       if (!roleExists?.documents?.[0]) {
@@ -293,9 +293,9 @@ const rolesService = {
       }
 
       // Update user role
-      const { error } = await db.update(userProfilesCollection, userId, { 
-        role: newRole, 
-        $updatedAt: new Date().toISOString() 
+      const { error } = await db.update(userProfilesCollection, userId, {
+        role: newRole,
+        $updatedAt: new Date().toISOString(),
       });
 
       if (error) {
@@ -325,7 +325,7 @@ const rolesService = {
       logger.info('Fetching users with roles');
 
       const { data: users, error } = await db.list(userProfilesCollection, [
-        queryHelpers.orderAsc('name')
+        queryHelpers.orderAsc('name'),
       ]);
 
       if (error) {
@@ -336,13 +336,14 @@ const rolesService = {
         };
       }
 
-      const userRoles = users?.documents?.map(user => ({
-        id: user.$id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        is_active: user.is_active
-      })) || [];
+      const userRoles =
+        users?.documents?.map((user) => ({
+          id: user.$id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          is_active: user.is_active,
+        })) || [];
 
       return { data: userRoles as UserWithRole[], error: null };
     } catch (error) {
@@ -362,7 +363,7 @@ const rolesService = {
       logger.info('Fetching role statistics');
 
       const { data: users, error } = await db.list(userProfilesCollection, [
-        queryHelpers.equal('is_active', true)
+        queryHelpers.equal('is_active', true),
       ]);
 
       if (error) {
@@ -386,7 +387,7 @@ const rolesService = {
 
             return acc;
           },
-          {} as Record<string, number>,
+          {} as Record<string, number>
         ) || {};
 
       return { data: stats, error: null };
@@ -406,7 +407,7 @@ const rolesService = {
     name: string,
     displayName: string,
     description: string,
-    permissions: string[],
+    permissions: string[]
   ): Promise<ApiResponse<Role>> {
     try {
       logger.info(`Creating new role: ${name}`);
@@ -448,7 +449,7 @@ const rolesService = {
       description?: string;
       permissions?: string[];
       is_active?: boolean;
-    },
+    }
   ): Promise<ApiResponse<Role>> {
     try {
       logger.info(`Updating role: ${id}`);

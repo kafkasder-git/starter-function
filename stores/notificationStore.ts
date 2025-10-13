@@ -30,7 +30,7 @@ interface NotificationStoreState {
 
 interface NotificationStoreActions {
   addNotification: (
-    notification: Omit<NotificationState, 'id' | 'createdAt' | 'updatedAt' | 'read'>,
+    notification: Omit<NotificationState, 'id' | 'createdAt' | 'updatedAt' | 'read'>
   ) => void;
   markAsRead: (notificationId: string) => void;
   markAllAsRead: () => void;
@@ -66,7 +66,7 @@ export const useNotificationStore = create<NotificationStoreState & Notification
           notifications: state.notifications.map((n) =>
             n.id === notificationId
               ? { ...n, read: true, readAt: new Date(), updatedAt: new Date() }
-              : n,
+              : n
           ),
         }));
         get().updateUnreadCount();
@@ -112,8 +112,8 @@ export const useNotificationStore = create<NotificationStoreState & Notification
           }
         };
       },
-    },
-  ),
+    }
+  )
 );
 
 export const notificationSelectors = {
@@ -121,7 +121,7 @@ export const notificationSelectors = {
     state.notifications.filter((n) => !n.read),
   getNotificationsByCategory: (
     state: NotificationStoreState,
-    category: NotificationState['category'],
+    category: NotificationState['category']
   ) => state.notifications.filter((n) => n.category === category),
   getNotificationsByType: (state: NotificationStoreState, type: NotificationState['type']) =>
     state.notifications.filter((n) => n.type === type),

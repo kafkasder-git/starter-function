@@ -28,7 +28,7 @@ export class SecurityMiddleware {
   // Main security middleware
   async handle(
     request: NextRequest,
-    handler: (request: NextRequest, user: unknown) => Promise<NextResponse>,
+    handler: (request: NextRequest, user: unknown) => Promise<NextResponse>
   ) {
     try {
       // 1. Rate limiting
@@ -36,7 +36,7 @@ export class SecurityMiddleware {
       if (!rateLimitResult.success) {
         return NextResponse.json(
           { error: 'Too many requests', retryAfter: rateLimitResult.retryAfter },
-          { status: 429 },
+          { status: 429 }
         );
       }
 
@@ -92,7 +92,7 @@ export class SecurityMiddleware {
       // TODO: Implement Appwrite JWT validation
       // For now, return a placeholder implementation
       logger.warn('Appwrite JWT validation not yet implemented in security middleware');
-      
+
       return {
         success: false,
         error: 'Authentication not implemented for Appwrite',
@@ -170,7 +170,7 @@ export class SecurityMiddleware {
       id: string;
       role: string;
       permissions: string[];
-    },
+    }
   ) {
     const url = new URL(request.url);
     const path = url.pathname;
@@ -208,7 +208,7 @@ export class SecurityMiddleware {
     for (const [pattern, config] of Object.entries(permissionMap)) {
       if (path.startsWith(pattern) && config.methods.includes(method)) {
         const hasPermission = config.permissions.some(
-          (permission) => user.role === permission ?? user.permissions.includes(permission),
+          (permission) => user.role === permission ?? user.permissions.includes(permission)
         );
 
         if (!hasPermission) {

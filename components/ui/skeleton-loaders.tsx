@@ -88,9 +88,9 @@ export const DashboardSkeleton: React.FC = () => (
  * Table-specific skeleton loader
  * For pages with data tables
  */
-export const TableSkeleton: React.FC<{ rows?: number; columns?: number }> = ({ 
-  rows = 10, 
-  columns = 5 
+export const TableSkeleton: React.FC<{ rows?: number; columns?: number }> = ({
+  rows = 10,
+  columns = 5,
 }) => (
   <div className="space-y-4">
     {/* Table header skeleton */}
@@ -120,7 +120,7 @@ export const TableSkeleton: React.FC<{ rows?: number; columns?: number }> = ({
             ))}
           </div>
         </div>
-        
+
         {/* Table rows */}
         {Array.from({ length: rows }).map((_, rowIndex) => (
           <div key={rowIndex} className="border-b border-gray-100 p-4">
@@ -273,7 +273,7 @@ export const ListSkeleton: React.FC<{ items?: number }> = ({ items = 8 }) => (
       <Skeleton className="h-8 w-48" />
       <Skeleton className="h-10 w-32" />
     </div>
-    
+
     <div className="space-y-3">
       {Array.from({ length: items }).map((_, i) => (
         <div key={i} className="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg">
@@ -299,7 +299,7 @@ export const PageSkeleton: React.FC = () => (
       <Skeleton className="h-8 w-64" />
       <Skeleton className="h-4 w-96" />
     </div>
-    
+
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
       <div className="space-y-4">
         <Skeleton className="h-32 w-full" />

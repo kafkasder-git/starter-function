@@ -1,6 +1,6 @@
 /**
  * @fileoverview safeStatsService Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -21,7 +21,7 @@ const COLLECTIONS = {
 // Safe stats that only check table existence and provide fallback data
 /**
  * SafeStats Interface
- * 
+ *
  * @interface SafeStats
  */
 export interface SafeStats {
@@ -101,7 +101,7 @@ class SafeStatsService {
         ) {
           logger.info(
             `RLS policy error detected for ${tableName ?? ''}, returning 0:`,
-            (error as any).message,
+            (error as any).message
           );
           return 0;
         }
@@ -117,10 +117,7 @@ class SafeStatsService {
         }
 
         // For other errors (like table not exists), silently return 0
-        logger.info(
-          `Table ${tableName ?? ''} query failed, returning 0:`,
-          (error as any).message,
-        );
+        logger.info(`Table ${tableName ?? ''} query failed, returning 0:`, (error as any).message);
         return 0;
       }
 

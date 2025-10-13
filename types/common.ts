@@ -61,12 +61,24 @@ export type MaritalStatus = 'single' | 'married' | 'divorced' | 'widowed' | 'oth
 /**
  * Generic education level type
  */
-export type EducationLevel = 'primary' | 'secondary' | 'high-school' | 'university' | 'graduate' | 'other';
+export type EducationLevel =
+  | 'primary'
+  | 'secondary'
+  | 'high-school'
+  | 'university'
+  | 'graduate'
+  | 'other';
 
 /**
  * Generic employment status type
  */
-export type EmploymentStatus = 'employed' | 'unemployed' | 'student' | 'retired' | 'disabled' | 'other';
+export type EmploymentStatus =
+  | 'employed'
+  | 'unemployed'
+  | 'student'
+  | 'retired'
+  | 'disabled'
+  | 'other';
 
 /**
  * Generic contact type

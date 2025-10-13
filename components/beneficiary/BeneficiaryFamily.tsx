@@ -125,7 +125,7 @@ export function BeneficiaryFamily({
     }
 
     const updatedMembers = familyMembers.map((member) =>
-      member.id === editingMember.id ? ({ ...member, ...newMember } as FamilyMember) : member,
+      member.id === editingMember.id ? ({ ...member, ...newMember } as FamilyMember) : member
     );
 
     onFamilyUpdate(updatedMembers);
@@ -152,7 +152,7 @@ export function BeneficiaryFamily({
 
   const totalFamilyIncome = familyMembers.reduce(
     (total, member) => total + (member.income ?? 0),
-    0,
+    0
   );
 
   return (
@@ -205,7 +205,7 @@ export function BeneficiaryFamily({
                   </div>
                   <p className="text-2xl font-bold text-orange-600">
                     {Math.round(totalFamilyIncome / (familyMembers.length + 1)).toLocaleString(
-                      'tr-TR',
+                      'tr-TR'
                     )}{' '}
                     ₺
                   </p>
@@ -239,9 +239,7 @@ export function BeneficiaryFamily({
                             </span>
                           )}
                           {member.occupation && (
-                            <span className="text-sm text-gray-600">
-                              • {member.occupation}
-                            </span>
+                            <span className="text-sm text-gray-600">• {member.occupation}</span>
                           )}
                         </div>
                         {member.income && member.income > 0 && (

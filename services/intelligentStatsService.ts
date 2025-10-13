@@ -150,11 +150,11 @@ class IntelligentStatsService {
           if (m.birth_date) {
             const birthDate = new Date(m.birth_date);
             const today = new Date();
-              return today.getFullYear() - birthDate.getFullYear();
-            }
-            return null;
-          })
-          .filter((age) => age !== null);
+            return today.getFullYear() - birthDate.getFullYear();
+          }
+          return null;
+        })
+        .filter((age) => age !== null);
 
       const averageAge =
         ages.length > 0 ? ages.reduce((sum, age) => sum + age, 0) / ages.length : 0;
@@ -272,8 +272,14 @@ class IntelligentStatsService {
       const rejected = aidRequestList.filter((a) => a.status === 'rejected').length;
       const completed = aidRequestList.filter((a) => a.status === 'completed').length;
 
-      const totalRequestedAmount = aidRequestList.reduce((sum, a) => sum + (a.requested_amount ?? 0), 0);
-      const totalApprovedAmount = aidRequestList.reduce((sum, a) => sum + (a.approved_amount ?? 0), 0);
+      const totalRequestedAmount = aidRequestList.reduce(
+        (sum, a) => sum + (a.requested_amount ?? 0),
+        0
+      );
+      const totalApprovedAmount = aidRequestList.reduce(
+        (sum, a) => sum + (a.approved_amount ?? 0),
+        0
+      );
 
       // Group by aid type
       const byAidType: Record<string, number> = {};

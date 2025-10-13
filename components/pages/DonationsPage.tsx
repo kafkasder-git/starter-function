@@ -288,7 +288,7 @@ export function DonationsPage() {
       render: (_: any, row: Donation) => (
         <div>
           <div className="font-medium">{row.donor_name}</div>
-          {row.donor_email && <div className="text-sm text-gray-500">{row.donor_email}</div>}
+          {row.donor_email && <div className="text-sm text-neutral-500">{row.donor_email}</div>}
         </div>
       ),
     },
@@ -304,11 +304,7 @@ export function DonationsPage() {
       key: 'created_at',
       title: 'Tarih',
       mobileLabel: 'Tarih',
-      render: (value: string) => (
-        <span className="text-gray-500">
-          {formatDate(value)}
-        </span>
-      ),
+      render: (value: string) => <span className="text-neutral-500">{formatDate(value)}</span>,
     },
     {
       key: 'status',
@@ -506,7 +502,7 @@ export function DonationsPage() {
           <Button
             variant="outline"
             size="sm"
-            className="order-2 min-h-[44px] min-w-[44px] border-gray-300 px-3 text-sm hover:border-gray-400 sm:order-1 sm:px-4"
+            className="order-2 min-h-[44px] min-w-[44px] border-neutral-300 px-3 text-sm hover:border-neutral-400 sm:order-1 sm:px-4"
             onClick={async () => {
               try {
                 const exportFilters: DonationsFilters = {
@@ -562,9 +558,9 @@ export function DonationsPage() {
           <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
             <DialogTrigger asChild>
               <Button
-                variant="primaryGradient"
+                variant="default"
                 size="sm"
-                className="order-1 min-h-[44px] min-w-[44px] flex-shrink-0 border-0 px-3 py-3 text-white shadow-lg transition-all duration-300 hover:shadow-xl sm:order-2 sm:px-6"
+                className="order-1 min-h-[44px] min-w-[44px] flex-shrink-0 border-none px-3 py-3 text-white shadow-lg transition-all duration-300 hover:shadow-xl sm:order-2 sm:px-6 corporate-gradient"
               >
                 <Plus className="mr-1 h-4 w-4 sm:mr-2" />
                 <span className="hidden sm:inline">Yeni Bağış</span>
@@ -782,13 +778,13 @@ export function DonationsPage() {
                   İptal
                 </Button>
                 <Button
-                  variant="primaryGradient"
+                  variant="default"
                   onClick={() => {
                     if (donationForm.isValid) {
                       handleCreateDonation(donationForm.values);
                     }
                   }}
-                  className="min-h-[44px] px-6 shadow-md hover:shadow-lg"
+                  className="min-h-[44px] px-6 shadow-md hover:shadow-lg corporate-gradient"
                   disabled={saving || !donationForm.isValid}
                 >
                   {saving ? (
@@ -870,7 +866,7 @@ export function DonationsPage() {
         </div>
 
         {/* Mobile-Optimized Filters and Table */}
-        <Card className="border-0 shadow-md">
+        <Card className="border-none shadow-md">
           <CardHeader className="pb-4">
             <div className="space-y-4">
               <CardTitle className="text-lg sm:text-xl">Bağış Listesi</CardTitle>

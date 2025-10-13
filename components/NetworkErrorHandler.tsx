@@ -25,7 +25,7 @@ export function NetworkErrorHandler({
   onRetry,
   onGoHome,
   showDetails = false,
-  className = ''
+  className = '',
 }: NetworkErrorHandlerProps) {
   const [isRetrying, setIsRetrying] = useState(false);
   const [networkStatus, setNetworkStatus] = useState<{
@@ -37,7 +37,7 @@ export function NetworkErrorHandler({
     isOnline: navigator.onLine,
     canReachAppwrite: false,
     canReachInternet: false,
-    connectionQuality: 'offline'
+    connectionQuality: 'offline',
   });
   const [lastCheck, setLastCheck] = useState<Date>(new Date());
 
@@ -58,17 +58,17 @@ export function NetworkErrorHandler({
 
     // Listen for online/offline events
     const handleOnline = () => {
-      setNetworkStatus(prev => ({ ...prev, isOnline: true }));
+      setNetworkStatus((prev) => ({ ...prev, isOnline: true }));
       checkNetworkStatus();
     };
 
     const handleOffline = () => {
-      setNetworkStatus(prev => ({
+      setNetworkStatus((prev) => ({
         ...prev,
         isOnline: false,
         canReachAppwrite: false,
         canReachInternet: false,
-        connectionQuality: 'offline'
+        connectionQuality: 'offline',
       }));
     };
 
@@ -149,15 +149,9 @@ export function NetworkErrorHandler({
     <div className={`flex flex-col items-center justify-center min-h-[400px] p-6 ${className}`}>
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <div className="flex justify-center mb-4">
-            {getErrorIcon()}
-          </div>
-          <CardTitle className="text-lg font-semibold text-gray-900">
-            Bağlantı Hatası
-          </CardTitle>
-          <CardDescription>
-            {getErrorMessage()}
-          </CardDescription>
+          <div className="flex justify-center mb-4">{getErrorIcon()}</div>
+          <CardTitle className="text-lg font-semibold text-gray-900">Bağlantı Hatası</CardTitle>
+          <CardDescription>{getErrorMessage()}</CardDescription>
         </CardHeader>
 
         <CardContent className="space-y-4">
@@ -187,7 +181,9 @@ export function NetworkErrorHandler({
             <AlertDescription>
               <ul className="list-disc list-inside space-y-1 mt-2">
                 {getSuggestedActions().map((action, index) => (
-                  <li key={index} className="text-sm">{action}</li>
+                  <li key={index} className="text-sm">
+                    {action}
+                  </li>
                 ))}
               </ul>
             </AlertDescription>
@@ -195,11 +191,7 @@ export function NetworkErrorHandler({
 
           {/* Action Buttons */}
           <div className="flex flex-col space-y-2">
-            <Button
-              onClick={handleRetry}
-              disabled={isRetrying}
-              className="w-full"
-            >
+            <Button onClick={handleRetry} disabled={isRetrying} className="w-full">
               {isRetrying ? (
                 <>
                   <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
@@ -213,11 +205,7 @@ export function NetworkErrorHandler({
               )}
             </Button>
 
-            <Button
-              variant="outline"
-              onClick={handleGoHome}
-              className="w-full"
-            >
+            <Button variant="outline" onClick={handleGoHome} className="w-full">
               <Home className="h-4 w-4 mr-2" />
               Ana Sayfaya Dön
             </Button>
@@ -226,18 +214,18 @@ export function NetworkErrorHandler({
           {/* Error Details (if enabled) */}
           {showDetails && error && (
             <details className="mt-4">
-              <summary className="text-sm text-gray-600 cursor-pointer">
-                Teknik Detaylar
-              </summary>
+              <summary className="text-sm text-gray-600 cursor-pointer">Teknik Detaylar</summary>
               <div className="mt-2 p-3 bg-gray-50 rounded text-xs font-mono">
-                <div><strong>Hata:</strong> {error.message}</div>
-                <div><strong>Tür:</strong> {error.name}</div>
+                <div>
+                  <strong>Hata:</strong> {error.message}
+                </div>
+                <div>
+                  <strong>Tür:</strong> {error.name}
+                </div>
                 {error.stack && (
                   <div className="mt-2">
                     <strong>Stack Trace:</strong>
-                    <pre className="whitespace-pre-wrap text-xs mt-1">
-                      {error.stack}
-                    </pre>
+                    <pre className="whitespace-pre-wrap text-xs mt-1">{error.stack}</pre>
                   </div>
                 )}
               </div>

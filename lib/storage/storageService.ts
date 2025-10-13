@@ -41,7 +41,9 @@ export class StorageService {
   /**
    * Upload file to Appwrite Storage
    */
-  async uploadFile(options: UploadFileOptions): Promise<{ data: UploadFileResult | null; error: any }> {
+  async uploadFile(
+    options: UploadFileOptions
+  ): Promise<{ data: UploadFileResult | null; error: any }> {
     try {
       const { file, bucketId, onProgress } = options;
 
@@ -49,7 +51,7 @@ export class StorageService {
         fileName: file.name,
         fileSize: file.size,
         fileType: file.type,
-        bucketId
+        bucketId,
       });
 
       if (!storage) {
@@ -79,16 +81,15 @@ export class StorageService {
         fileUrl,
         fileName: file.name,
         fileSize: file.size,
-        fileType: file.type
+        fileType: file.type,
       };
 
       logger.info('File uploaded successfully', {
         fileId: result.$id,
-        fileName: file.name
+        fileName: file.name,
       });
 
       return { data: uploadResult, error: null };
-
     } catch (error) {
       logger.error('Failed to upload file', error);
       return { data: null, error };
@@ -141,7 +142,6 @@ export class StorageService {
       logger.info('File deleted successfully', { bucketId, fileId });
 
       return { data: true, error: null };
-
     } catch (error) {
       logger.error('Failed to delete file', { bucketId, fileId, error });
       return { data: false, error };
@@ -151,7 +151,10 @@ export class StorageService {
   /**
    * Get file metadata
    */
-  async getFileMetadata(bucketId: string, fileId: string): Promise<{ data: Models.File | null; error: any }> {
+  async getFileMetadata(
+    bucketId: string,
+    fileId: string
+  ): Promise<{ data: Models.File | null; error: any }> {
     try {
       if (!storage) {
         throw new Error('Storage service not initialized');
@@ -160,7 +163,6 @@ export class StorageService {
       const file = await storage.getFile(bucketId, fileId);
 
       return { data: file, error: null };
-
     } catch (error) {
       logger.error('Failed to get file metadata', { bucketId, fileId, error });
       return { data: null, error };
@@ -170,7 +172,10 @@ export class StorageService {
   /**
    * List files in bucket
    */
-  async listFiles(bucketId: string, queries?: string[]): Promise<{ data: Models.FileList | null; error: any }> {
+  async listFiles(
+    bucketId: string,
+    queries?: string[]
+  ): Promise<{ data: Models.FileList | null; error: any }> {
     try {
       if (!storage) {
         throw new Error('Storage service not initialized');
@@ -179,7 +184,6 @@ export class StorageService {
       const files = await storage.listFiles(bucketId, queries);
 
       return { data: files, error: null };
-
     } catch (error) {
       logger.error('Failed to list files', { bucketId, error });
       return { data: null, error };
@@ -190,8 +194,8 @@ export class StorageService {
    * Create bucket (admin only)
    */
   async createBucket(
-    bucketId: string, 
-    name: string, 
+    bucketId: string,
+    name: string,
     permissions: string[] = ['read', 'write']
   ): Promise<{ data: Models.Bucket | null; error: any }> {
     try {
@@ -215,7 +219,6 @@ export class StorageService {
       logger.info('Bucket created successfully', { bucketId, name });
 
       return { data: bucket, error: null };
-
     } catch (error) {
       logger.error('Failed to create bucket', { bucketId, name, error });
       return { data: null, error };
@@ -236,7 +239,6 @@ export class StorageService {
       logger.info('Bucket deleted successfully', { bucketId });
 
       return { data: true, error: null };
-
     } catch (error) {
       logger.error('Failed to delete bucket', { bucketId, error });
       return { data: false, error };

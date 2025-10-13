@@ -64,6 +64,56 @@ interface EnhancedToastOptions {
   duration?: number;
 }
 
+// Common toast renderer to reduce duplication
+const renderToast = (
+  type: 'success' | 'error' | 'warning' | 'info',
+  message: string,
+  options?: EnhancedToastOptions
+) => {
+  const icons = {
+    success: '✓',
+    error: '✕',
+    warning: '⚠',
+    info: 'ℹ'
+  };
+
+  const colors = {
+    success: 'success',
+    error: 'error',
+    warning: 'warning',
+    info: 'info'
+  };
+
+  const colorClass = colors[type];
+  const icon = icons[type];
+
+  return (
+    <div className="flex items-center">
+      <div className="flex-1">
+        <span className="sr-only">{type.charAt(0).toUpperCase() + type.slice(1)}: </span>
+        <span>{message}</span>
+        {options?.description && (
+          <p className={`text-sm text-${colorClass}-700 mt-1`}>{options.description}</p>
+        )}
+      </div>
+      {options?.action && (
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={() => {
+            options.action!.onClick();
+            toast.dismiss();
+          }}
+          aria-label={options.action.label}
+          className="ml-2"
+        >
+          {options.action.label}
+        </Button>
+      )}
+    </div>
+  );
+};
+
 /**
  * Enhanced Toast API
  *
@@ -94,30 +144,7 @@ interface EnhancedToastOptions {
 export const enhancedToast = {
   success: (message: string, options?: EnhancedToastOptions) => {
     toast.success(
-      <div role="status" aria-live="polite" aria-atomic="true" className="flex items-center gap-2">
-        <CheckCircle2 className="h-5 w-5 text-success-600" aria-hidden="true" />
-        <div className="flex-1">
-          <span className="sr-only">Success: </span>
-          <span>{message}</span>
-          {options?.description && (
-            <p className="text-sm text-success-700 mt-1">{options.description}</p>
-          )}
-        </div>
-        {options?.action && (
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => {
-              options.action!.onClick();
-              toast.dismiss();
-            }}
-            aria-label={options.action.label}
-            className="ml-2"
-          >
-            {options.action.label}
-          </Button>
-        )}
-      </div>,
+      renderToast('success', message, options),
       {
         duration: options?.duration ?? 4000,
         style: {
@@ -131,30 +158,7 @@ export const enhancedToast = {
 
   error: (message: string, options?: EnhancedToastOptions) => {
     toast.error(
-      <div role="alert" aria-live="assertive" aria-atomic="true" className="flex items-center gap-2">
-        <XCircle className="h-5 w-5 text-error-600" aria-hidden="true" />
-        <div className="flex-1">
-          <span className="sr-only">Error: </span>
-          <span>{message}</span>
-          {options?.description && (
-            <p className="text-sm text-error-700 mt-1">{options.description}</p>
-          )}
-        </div>
-        {options?.action && (
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => {
-              options.action!.onClick();
-              toast.dismiss();
-            }}
-            aria-label={options.action.label}
-            className="ml-2"
-          >
-            {options.action.label}
-          </Button>
-        )}
-      </div>,
+      renderToast('error', message, options),
       {
         duration: options?.duration ?? 4000,
         style: {
@@ -168,30 +172,7 @@ export const enhancedToast = {
 
   warning: (message: string, options?: EnhancedToastOptions) => {
     toast.warning(
-      <div role="status" aria-live="polite" aria-atomic="true" className="flex items-center gap-2">
-        <AlertTriangle className="h-5 w-5 text-warning-600" aria-hidden="true" />
-        <div className="flex-1">
-          <span className="sr-only">Warning: </span>
-          <span>{message}</span>
-          {options?.description && (
-            <p className="text-sm text-warning-700 mt-1">{options.description}</p>
-          )}
-        </div>
-        {options?.action && (
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => {
-              options.action!.onClick();
-              toast.dismiss();
-            }}
-            aria-label={options.action.label}
-            className="ml-2"
-          >
-            {options.action.label}
-          </Button>
-        )}
-      </div>,
+      renderToast('warning', message, options),
       {
         duration: options?.duration ?? 4000,
         style: {
@@ -205,30 +186,7 @@ export const enhancedToast = {
 
   info: (message: string, options?: EnhancedToastOptions) => {
     toast.info(
-      <div role="status" aria-live="polite" aria-atomic="true" className="flex items-center gap-2">
-        <Info className="h-5 w-5 text-info-600" aria-hidden="true" />
-        <div className="flex-1">
-          <span className="sr-only">Info: </span>
-          <span>{message}</span>
-          {options?.description && (
-            <p className="text-sm text-info-700 mt-1">{options.description}</p>
-          )}
-        </div>
-        {options?.action && (
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => {
-              options.action!.onClick();
-              toast.dismiss();
-            }}
-            aria-label={options.action.label}
-            className="ml-2"
-          >
-            {options.action.label}
-          </Button>
-        )}
-      </div>,
+      renderToast('info', message, options),
       {
         duration: options?.duration ?? 4000,
         style: {
@@ -258,7 +216,9 @@ export const enhancedToast = {
       success: (data) => (
         <div role="status" aria-live="polite" className="flex items-center gap-2">
           <CheckCircle2 className="h-5 w-5 text-success-600" />
-          <span>{typeof options.success === 'function' ? options.success(data) : options.success}</span>
+          <span>
+            {typeof options.success === 'function' ? options.success(data) : options.success}
+          </span>
         </div>
       ),
       error: (error) => (

@@ -1,14 +1,20 @@
 import { db, collections, queryHelpers } from '../lib/database';
 import { logger } from '../lib/logging/logger';
 import type { ApiResponse } from '../types/database';
-import type { Donation, DonationInsert, DonationUpdate, DonationFilters, DonationStats } from '../types/donation';
+import type {
+  Donation,
+  DonationInsert,
+  DonationUpdate,
+  DonationFilters,
+  DonationStats,
+} from '../types/donation';
 
 const donationsService = {
   // Get all donations with pagination and filters
   async getDonations(
     page = 1,
     pageSize = 10,
-    filters: DonationFilters = {},
+    filters: DonationFilters = {}
   ): Promise<ApiResponse<{ data: Donation[]; count: number; totalPages: number }>> {
     try {
       logger.info('🔄 Fetching donations with filters:', filters);
@@ -108,10 +114,16 @@ const donationsService = {
       logger.info('🔄 Fetching donation statistics');
 
       // Get total count and amount
-      const { data: totalData, error: totalError } = await db.list(
-        collections.DONATIONS,
-        [queryHelpers.select(['amount', 'status', 'donor_type', 'donation_type', 'payment_method', 'created_at'])]
-      );
+      const { data: totalData, error: totalError } = await db.list(collections.DONATIONS, [
+        queryHelpers.select([
+          'amount',
+          'status',
+          'donor_type',
+          'donation_type',
+          'payment_method',
+          'created_at',
+        ]),
+      ]);
 
       if (totalError) {
         logger.error('❌ Error fetching donation stats:', totalError);
@@ -246,10 +258,7 @@ const donationsService = {
   },
 
   // Update donation
-  async updateDonation(
-    id: string,
-    updates: Partial<Donation>,
-  ): Promise<ApiResponse<Donation>> {
+  async updateDonation(id: string, updates: Partial<Donation>): Promise<ApiResponse<Donation>> {
     try {
       logger.info('🔄 Updating donation:', id, updates);
 
@@ -294,20 +303,17 @@ const donationsService = {
   // Get donor types for filter dropdown
   async getDonorTypes(): Promise<ApiResponse<string[]>> {
     try {
-      const { data, error } = await db.list(
-        collections.DONATIONS,
-        [
-          queryHelpers.select(['donor_type']),
-          queryHelpers.notEqual('donor_type', null)
-        ]
-      );
+      const { data, error } = await db.list(collections.DONATIONS, [
+        queryHelpers.select(['donor_type']),
+        queryHelpers.notEqual('donor_type', null),
+      ]);
 
       if (error) {
         return { data: null, error: error.message };
       }
 
-      const donorTypes = [...new Set(data?.documents?.map((item) => item.donor_type))].sort((a, b) =>
-        a.localeCompare(b),
+      const donorTypes = [...new Set(data?.documents?.map((item) => item.donor_type))].sort(
+        (a, b) => a.localeCompare(b)
       );
       return { data: donorTypes, error: null };
     } catch (error: any) {
@@ -318,20 +324,17 @@ const donationsService = {
   // Get donation types for filter dropdown
   async getDonationTypes(): Promise<ApiResponse<string[]>> {
     try {
-      const { data, error } = await db.list(
-        collections.DONATIONS,
-        [
-          queryHelpers.select(['donation_type']),
-          queryHelpers.notEqual('donation_type', null)
-        ]
-      );
+      const { data, error } = await db.list(collections.DONATIONS, [
+        queryHelpers.select(['donation_type']),
+        queryHelpers.notEqual('donation_type', null),
+      ]);
 
       if (error) {
         return { data: null, error: error.message };
       }
 
-      const donationTypes = [...new Set(data?.documents?.map((item) => item.donation_type))].sort((a, b) =>
-        a.localeCompare(b),
+      const donationTypes = [...new Set(data?.documents?.map((item) => item.donation_type))].sort(
+        (a, b) => a.localeCompare(b)
       );
       return { data: donationTypes, error: null };
     } catch (error: any) {
@@ -342,20 +345,17 @@ const donationsService = {
   // Get payment methods for filter dropdown
   async getPaymentMethods(): Promise<ApiResponse<string[]>> {
     try {
-      const { data, error } = await db.list(
-        collections.DONATIONS,
-        [
-          queryHelpers.select(['payment_method']),
-          queryHelpers.notEqual('payment_method', null)
-        ]
-      );
+      const { data, error } = await db.list(collections.DONATIONS, [
+        queryHelpers.select(['payment_method']),
+        queryHelpers.notEqual('payment_method', null),
+      ]);
 
       if (error) {
         return { data: null, error: error.message };
       }
 
-      const paymentMethods = [...new Set(data?.documents?.map((item) => item.payment_method))].sort((a, b) =>
-        a.localeCompare(b),
+      const paymentMethods = [...new Set(data?.documents?.map((item) => item.payment_method))].sort(
+        (a, b) => a.localeCompare(b)
       );
       return { data: paymentMethods, error: null };
     } catch (error: any) {
@@ -369,7 +369,7 @@ const donationsService = {
       logger.info('🔄 Bulk approving donations:', ids);
 
       // Appwrite doesn't have bulk update, so we'll update each donation individually
-      const updatePromises = ids.map(id => 
+      const updatePromises = ids.map((id) =>
         db.update(collections.DONATIONS, id, {
           status: 'approved',
           approval_date: new Date().toISOString(),
@@ -378,7 +378,7 @@ const donationsService = {
       );
 
       const results = await Promise.allSettled(updatePromises);
-      const errors = results.filter(result => result.status === 'rejected');
+      const errors = results.filter((result) => result.status === 'rejected');
 
       if (errors.length > 0) {
         logger.error('❌ Error bulk approving donations:', errors);

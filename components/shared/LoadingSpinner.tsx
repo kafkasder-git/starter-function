@@ -56,7 +56,12 @@ export function PageLoading() {
           <div className="w-16 h-16 bg-gradient-to-br from-info-500 to-info-600 rounded-2xl flex items-center justify-center shadow-lg">
             <Heart className="w-8 h-8 text-white" />
           </div>
-          <Loader2 className={cn('absolute -bottom-2 -right-2 bg-white rounded-full p-1 shadow-md', spinnerVariants({ variant: 'primary', size: 'lg' }))} />
+          <Loader2
+            className={cn(
+              'absolute -bottom-2 -right-2 bg-white rounded-full p-1 shadow-md',
+              spinnerVariants({ variant: 'primary', size: 'lg' })
+            )}
+          />
         </div>
         <div className="text-center space-y-2">
           <p className="text-neutral-700 font-medium">Yükleniyor...</p>

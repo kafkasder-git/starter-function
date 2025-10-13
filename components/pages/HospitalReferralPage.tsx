@@ -61,8 +61,6 @@ interface HospitalReferral {
   followUpRequired: boolean;
 }
 
-
-
 /**
  * HospitalReferralPage function
  *
@@ -111,11 +109,19 @@ export function HospitalReferralPage() {
         patientGender: 'male' as 'male' | 'female',
         patientPhone: req.applicant_phone,
         medicalCondition: req.reason,
-        urgencyLevel: req.urgency === 'low' ? 'routine' : req.urgency === 'medium' ? 'urgent' : 'emergency',
+        urgencyLevel:
+          req.urgency === 'low' ? 'routine' : req.urgency === 'medium' ? 'urgent' : 'emergency',
         referralDate: req.created_at.split('T')[0],
         hospital: req.description.split('Hospital: ')[1]?.split(',')[0] || '',
         department: req.description.split('Department: ')[1]?.split(',')[0] || '',
-        status: req.status === 'pending' ? 'pending' : req.status === 'approved' ? 'scheduled' : req.status === 'completed' ? 'completed' : 'cancelled',
+        status:
+          req.status === 'pending'
+            ? 'pending'
+            : req.status === 'approved'
+              ? 'scheduled'
+              : req.status === 'completed'
+                ? 'completed'
+                : 'cancelled',
         referredBy: '',
         notes: req.notes,
         estimatedCost: req.requested_amount || 0,
@@ -217,7 +223,12 @@ export function HospitalReferralPage() {
         aid_type: 'medical',
         requested_amount: formData.estimatedCost,
         currency: 'TRY',
-        urgency: formData.urgencyLevel === 'routine' ? 'low' : formData.urgencyLevel === 'urgent' ? 'medium' : 'high',
+        urgency:
+          formData.urgencyLevel === 'routine'
+            ? 'low'
+            : formData.urgencyLevel === 'urgent'
+              ? 'medium'
+              : 'high',
         description: `Hospital: ${formData.hospital}, Department: ${formData.department}, Diagnosis: ${formData.medicalCondition}`,
         reason: formData.medicalCondition,
         notes: formData.notes,
@@ -515,7 +526,7 @@ export function HospitalReferralPage() {
                           <p className="font-medium">
                             ₺
                             {(referral.actualCost ?? referral.estimatedCost ?? 0).toLocaleString(
-                              'tr-TR',
+                              'tr-TR'
                             )}
                           </p>
                           <p className="text-muted-foreground text-xs">

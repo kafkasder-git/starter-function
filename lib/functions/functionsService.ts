@@ -104,20 +104,22 @@ export class FunctionsService {
   /**
    * Execute a function
    */
-  async executeFunction(options: FunctionExecutionOptions): Promise<FunctionResponse<FunctionExecutionResult>> {
+  async executeFunction(
+    options: FunctionExecutionOptions
+  ): Promise<FunctionResponse<FunctionExecutionResult>> {
     try {
       const { functionId, data, async = false, xpath, method, headers } = options;
-      
-      logger.info('Executing function', { 
-        functionId, 
-        async, 
+
+      logger.info('Executing function', {
+        functionId,
+        async,
         hasData: !!data,
         method,
-        xpath 
+        xpath,
       });
 
       const executionId = ID.unique();
-      
+
       const result = await functions.createExecution(
         functionId,
         data,
@@ -127,10 +129,10 @@ export class FunctionsService {
         headers
       );
 
-      logger.info('Function execution started', { 
-        functionId, 
+      logger.info('Function execution started', {
+        functionId,
         executionId: result.$id,
-        status: result.status 
+        status: result.status,
       });
 
       return {
@@ -139,9 +141,9 @@ export class FunctionsService {
         executionId: result.$id,
       };
     } catch (error: any) {
-      logger.error('Function execution failed', { 
+      logger.error('Function execution failed', {
         functionId: options.functionId,
-        error: error.message 
+        error: error.message,
       });
 
       let errorMessage = 'Fonksiyon çalıştırılamadı';
@@ -176,8 +178,8 @@ export class FunctionsService {
    * Execute function with JSON data
    */
   async executeFunctionWithJson(
-    functionId: string, 
-    jsonData: any, 
+    functionId: string,
+    jsonData: any,
     options: Omit<FunctionExecutionOptions, 'functionId' | 'data'> = {}
   ): Promise<FunctionResponse<FunctionExecutionResult>> {
     try {
@@ -188,9 +190,9 @@ export class FunctionsService {
         ...options,
       });
     } catch (error: any) {
-      logger.error('Failed to stringify JSON data for function execution', { 
+      logger.error('Failed to stringify JSON data for function execution', {
         functionId,
-        error: error.message 
+        error: error.message,
       });
       return { success: false, error: 'JSON verisi hazırlanamadı' };
     }
@@ -200,7 +202,7 @@ export class FunctionsService {
    * Get execution result
    */
   async getExecutionResult(
-    functionId: string, 
+    functionId: string,
     executionId: string
   ): Promise<FunctionResponse<FunctionExecutionResult>> {
     try {
@@ -208,10 +210,10 @@ export class FunctionsService {
 
       const result = await functions.getExecution(functionId, executionId);
 
-      logger.info('Execution result retrieved', { 
-        functionId, 
+      logger.info('Execution result retrieved', {
+        functionId,
         executionId,
-        status: result.status 
+        status: result.status,
       });
 
       return {
@@ -219,10 +221,10 @@ export class FunctionsService {
         data: result as FunctionExecutionResult,
       };
     } catch (error: any) {
-      logger.error('Failed to get execution result', { 
-        functionId, 
+      logger.error('Failed to get execution result', {
+        functionId,
         executionId,
-        error: error.message 
+        error: error.message,
       });
       return { success: false, error: 'Çalıştırma sonucu alınamadı' };
     }
@@ -232,12 +234,12 @@ export class FunctionsService {
    * List function executions
    */
   async listExecutions(
-    functionId: string, 
+    functionId: string,
     options: FunctionListOptions = {}
   ): Promise<FunctionResponse<FunctionListResult>> {
     try {
       const { queries = [], search } = options;
-      
+
       logger.info('Listing function executions', { functionId, search });
 
       let allQueries = [...queries];
@@ -247,10 +249,10 @@ export class FunctionsService {
 
       const result = await functions.listExecutions(functionId, allQueries);
 
-      logger.info('Function executions listed successfully', { 
-        functionId, 
+      logger.info('Function executions listed successfully', {
+        functionId,
         executionCount: result.executions.length,
-        total: result.total 
+        total: result.total,
       });
 
       return {
@@ -261,9 +263,9 @@ export class FunctionsService {
         },
       };
     } catch (error: any) {
-      logger.error('Failed to list function executions', { 
+      logger.error('Failed to list function executions', {
         functionId,
-        error: error.message 
+        error: error.message,
       });
       return { success: false, error: 'Fonksiyon çalıştırmaları listelenemedi' };
     }
@@ -272,10 +274,12 @@ export class FunctionsService {
   /**
    * List all functions
    */
-  async listFunctions(options: FunctionListOptions = {}): Promise<FunctionResponse<FunctionListResult>> {
+  async listFunctions(
+    options: FunctionListOptions = {}
+  ): Promise<FunctionResponse<FunctionListResult>> {
     try {
       const { queries = [], search } = options;
-      
+
       logger.info('Listing functions', { search });
 
       let allQueries = [...queries];
@@ -285,9 +289,9 @@ export class FunctionsService {
 
       const result = await functions.list(allQueries);
 
-      logger.info('Functions listed successfully', { 
+      logger.info('Functions listed successfully', {
         functionCount: result.functions.length,
-        total: result.total 
+        total: result.total,
       });
 
       return {
@@ -312,9 +316,9 @@ export class FunctionsService {
 
       const result = await functions.get(functionId);
 
-      logger.info('Function info retrieved successfully', { 
-        functionId, 
-        functionName: result.name 
+      logger.info('Function info retrieved successfully', {
+        functionId,
+        functionName: result.name,
       });
 
       return {
@@ -322,9 +326,9 @@ export class FunctionsService {
         data: result as FunctionInfo,
       };
     } catch (error: any) {
-      logger.error('Failed to get function info', { 
+      logger.error('Failed to get function info', {
         functionId,
-        error: error.message 
+        error: error.message,
       });
       return { success: false, error: 'Fonksiyon bilgileri alınamadı' };
     }
@@ -452,12 +456,7 @@ export class FunctionsService {
       logger.info('Creating deployment', { functionId, activate });
 
       const deploymentId = ID.unique();
-      const result = await functions.createDeployment(
-        functionId,
-        deploymentId,
-        code,
-        activate
-      );
+      const result = await functions.createDeployment(functionId, deploymentId, code, activate);
 
       logger.info('Deployment created successfully', { functionId, deploymentId });
 
@@ -475,19 +474,19 @@ export class FunctionsService {
    * List deployments
    */
   async listDeployments(
-    functionId: string, 
+    functionId: string,
     options: FunctionListOptions = {}
   ): Promise<FunctionResponse<any>> {
     try {
       const { queries = [] } = options;
-      
+
       logger.info('Listing deployments', { functionId });
 
       const result = await functions.listDeployments(functionId, queries);
 
-      logger.info('Deployments listed successfully', { 
-        functionId, 
-        deploymentCount: result.deployments.length 
+      logger.info('Deployments listed successfully', {
+        functionId,
+        deploymentCount: result.deployments.length,
       });
 
       return {
@@ -495,9 +494,9 @@ export class FunctionsService {
         data: result,
       };
     } catch (error: any) {
-      logger.error('Failed to list deployments', { 
+      logger.error('Failed to list deployments', {
         functionId,
-        error: error.message 
+        error: error.message,
       });
       return { success: false, error: 'Dağıtımlar listelenemedi' };
     }
@@ -516,7 +515,7 @@ export class FunctionsService {
       }
 
       const functions = functionsResult.data.functions;
-      const enabledFunctions = functions.filter(f => f.enabled).length;
+      const enabledFunctions = functions.filter((f) => f.enabled).length;
 
       let totalExecutions = 0;
       let successfulExecutions = 0;
@@ -533,9 +532,9 @@ export class FunctionsService {
             totalExecutions += executionsResult.data.total;
           }
         } catch (error) {
-          logger.warn('Failed to get execution stats for function', { 
-            functionId: func.$id, 
-            error: (error as Error).message 
+          logger.warn('Failed to get execution stats for function', {
+            functionId: func.$id,
+            error: (error as Error).message,
           });
         }
       }
@@ -549,9 +548,9 @@ export class FunctionsService {
         averageExecutionTime: totalExecutions > 0 ? totalExecutionTime / totalExecutions : 0,
       };
 
-      logger.info('Function statistics retrieved', { 
-        totalFunctions: functions.length, 
-        enabledFunctions 
+      logger.info('Function statistics retrieved', {
+        totalFunctions: functions.length,
+        enabledFunctions,
       });
 
       return { success: true, data: stats };
@@ -583,47 +582,47 @@ export class FunctionsService {
    * Wait for function execution to complete
    */
   async waitForExecution(
-    functionId: string, 
-    executionId: string, 
+    functionId: string,
+    executionId: string,
     timeout: number = 30000,
     pollInterval: number = 1000
   ): Promise<FunctionResponse<FunctionExecutionResult>> {
     try {
-      logger.info('Waiting for function execution to complete', { 
-        functionId, 
-        executionId, 
-        timeout 
+      logger.info('Waiting for function execution to complete', {
+        functionId,
+        executionId,
+        timeout,
       });
 
       const startTime = Date.now();
-      
+
       while (Date.now() - startTime < timeout) {
         const result = await this.getExecutionResult(functionId, executionId);
-        
+
         if (result.success && result.data) {
           const status = result.data.status;
-          
+
           if (status === 'completed') {
-            logger.info('Function execution completed successfully', { 
-              functionId, 
+            logger.info('Function execution completed successfully', {
+              functionId,
               executionId,
-              duration: result.data.duration 
+              duration: result.data.duration,
             });
             return result;
           } else if (status === 'failed') {
-            logger.error('Function execution failed', { 
-              functionId, 
+            logger.error('Function execution failed', {
+              functionId,
               executionId,
-              stderr: result.data.stderr 
+              stderr: result.data.stderr,
             });
-            return { 
-              success: false, 
-              error: `Fonksiyon çalıştırması başarısız: ${result.data.stderr}` 
+            return {
+              success: false,
+              error: `Fonksiyon çalıştırması başarısız: ${result.data.stderr}`,
             };
           }
-          
+
           // Still processing, wait and try again
-          await new Promise(resolve => setTimeout(resolve, pollInterval));
+          await new Promise((resolve) => setTimeout(resolve, pollInterval));
         } else {
           return result;
         }
@@ -632,10 +631,10 @@ export class FunctionsService {
       logger.warn('Function execution timeout', { functionId, executionId, timeout });
       return { success: false, error: 'Fonksiyon çalıştırması zaman aşımına uğradı' };
     } catch (error: any) {
-      logger.error('Error waiting for function execution', { 
-        functionId, 
+      logger.error('Error waiting for function execution', {
+        functionId,
         executionId,
-        error: error.message 
+        error: error.message,
       });
       return { success: false, error: 'Fonksiyon çalıştırması beklenirken hata oluştu' };
     }
@@ -646,29 +645,28 @@ export class FunctionsService {
 export const functionsService = FunctionsService.getInstance();
 
 // Export convenience functions
-export const executeFunction = (options: FunctionExecutionOptions) => 
+export const executeFunction = (options: FunctionExecutionOptions) =>
   functionsService.executeFunction(options);
 
 export const executeFunctionWithJson = (
-  functionId: string, 
-  jsonData: any, 
+  functionId: string,
+  jsonData: any,
   options?: Omit<FunctionExecutionOptions, 'functionId' | 'data'>
 ) => functionsService.executeFunctionWithJson(functionId, jsonData, options);
 
-export const getExecutionResult = (functionId: string, executionId: string) => 
+export const getExecutionResult = (functionId: string, executionId: string) =>
   functionsService.getExecutionResult(functionId, executionId);
 
-export const listFunctions = (options?: FunctionListOptions) => 
+export const listFunctions = (options?: FunctionListOptions) =>
   functionsService.listFunctions(options);
 
-export const getFunction = (functionId: string) => 
-  functionsService.getFunction(functionId);
+export const getFunction = (functionId: string) => functionsService.getFunction(functionId);
 
 export const testFunctions = () => functionsService.testFunctions();
 
 export const waitForExecution = (
-  functionId: string, 
-  executionId: string, 
+  functionId: string,
+  executionId: string,
   timeout?: number,
   pollInterval?: number
 ) => functionsService.waitForExecution(functionId, executionId, timeout, pollInterval);

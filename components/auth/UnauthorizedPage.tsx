@@ -164,7 +164,11 @@ export function UnauthorizedPage({
                     <div className="flex items-center justify-between">
                       <span className="text-slate-600 text-sm">Mevcut Rol:</span>
                       <Badge variant="outline" className="text-xs">
-                        {currentRole ? ROLE_LABELS[currentRole] : user.role ? ROLE_LABELS[user.role] : 'Görüntüleyici'}
+                        {currentRole
+                          ? ROLE_LABELS[currentRole]
+                          : user.role
+                            ? ROLE_LABELS[user.role]
+                            : 'Görüntüleyici'}
                       </Badge>
                     </div>
                   </div>

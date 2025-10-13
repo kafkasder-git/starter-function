@@ -44,7 +44,7 @@ export function EnhancedChart({
   ariaLabel,
   className = '',
   onDataPointClick,
-  emptyState
+  emptyState,
 }: EnhancedChartProps) {
   const { isMobile } = useAdvancedMobile();
   const [selectedDataPoint, setSelectedDataPoint] = useState<ChartData | null>(null);
@@ -57,7 +57,7 @@ export function EnhancedChart({
       'hsl(var(--warning-500))',
       'hsl(var(--neutral-500))',
     ],
-    [],
+    []
   );
 
   const resolveColor = (input: string | undefined, index: number) => {
@@ -168,7 +168,7 @@ export function EnhancedChart({
 
   // Calculate responsive height
   const responsiveHeight = isMobile ? '250px' : height;
-  const maxValue = Math.max(...data.map(d => d.value));
+  const maxValue = Math.max(...data.map((d) => d.value));
   const totalValue = data.reduce((sum, d) => sum + d.value, 0);
 
   return (
@@ -183,8 +183,8 @@ export function EnhancedChart({
         )}
       </CardHeader>
       <CardContent>
-        <div 
-          style={{ height: responsiveHeight }} 
+        <div
+          style={{ height: responsiveHeight }}
           className="relative"
           role="img"
           aria-label={ariaLabel || `${title} grafiği`}
@@ -194,7 +194,7 @@ export function EnhancedChart({
             {data.map((item, index) => {
               const percentage = (item.value / maxValue) * 100;
               const isSelected = selectedDataPoint?.name === item.name;
-              
+
               return (
                 <div
                   key={index}
@@ -223,12 +223,12 @@ export function EnhancedChart({
                       backgroundColor: resolveColor(item.color, index),
                     }}
                   />
-                  
+
                   {/* Value */}
                   <div className="mt-1 text-center text-xs text-neutral-600 dark:text-neutral-300">
                     {item.value}
                   </div>
-                  
+
                   {/* Label */}
                   <div className="mt-1 w-full truncate text-center text-xs text-neutral-500 dark:text-neutral-400">
                     {item.name}
@@ -242,11 +242,18 @@ export function EnhancedChart({
           {selectedDataPoint && (
             <div className="absolute right-4 top-4 rounded-lg border border-neutral-200 bg-white p-3 shadow-lg dark:border-neutral-700 dark:bg-neutral-900">
               <div className="flex items-center gap-2 mb-2">
-                <div 
+                <div
                   className="w-3 h-3 rounded-full"
-                  style={{ backgroundColor: resolveColor(selectedDataPoint.color, data.indexOf(selectedDataPoint)) }}
+                  style={{
+                    backgroundColor: resolveColor(
+                      selectedDataPoint.color,
+                      data.indexOf(selectedDataPoint)
+                    ),
+                  }}
                 />
-                <span className="font-medium text-neutral-900 dark:text-neutral-100">{selectedDataPoint.name}</span>
+                <span className="font-medium text-neutral-900 dark:text-neutral-100">
+                  {selectedDataPoint.name}
+                </span>
               </div>
               <div className="text-2xl font-bold text-neutral-900 dark:text-neutral-50">
                 {selectedDataPoint.value}
@@ -266,7 +273,7 @@ export function EnhancedChart({
               variant="outline"
               className="flex items-center gap-1 text-neutral-700 dark:text-neutral-200"
             >
-              <div 
+              <div
                 className="w-2 h-2 rounded-full"
                 style={{ backgroundColor: resolveColor(item.color, index) }}
               />
@@ -280,10 +287,7 @@ export function EnhancedChart({
 }
 
 // Hook for chart data management
-export function useChartData<T extends ChartData>(
-  initialData: T[] = [],
-  loading = false
-) {
+export function useChartData<T extends ChartData>(initialData: T[] = [], loading = false) {
   const [data, setData] = useState<T[]>(initialData);
   const [isLoading, setIsLoading] = useState(loading);
 
@@ -292,11 +296,11 @@ export function useChartData<T extends ChartData>(
   };
 
   const addDataPoint = (dataPoint: T) => {
-    setData(prev => [...prev, dataPoint]);
+    setData((prev) => [...prev, dataPoint]);
   };
 
   const removeDataPoint = (index: number) => {
-    setData(prev => prev.filter((_, i) => i !== index));
+    setData((prev) => prev.filter((_, i) => i !== index));
   };
 
   return {
@@ -305,6 +309,6 @@ export function useChartData<T extends ChartData>(
     updateData,
     addDataPoint,
     removeDataPoint,
-    setIsLoading
+    setIsLoading,
   };
 }

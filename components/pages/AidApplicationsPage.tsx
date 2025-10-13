@@ -137,7 +137,11 @@ export function AidApplicationsPage() {
     };
 
     const config = statusConfig[displayStatus as keyof typeof statusConfig];
-    return <Badge className={config?.color || 'bg-gray-100 text-gray-800'}>{config?.label || displayStatus}</Badge>;
+    return (
+      <Badge className={config?.color || 'bg-gray-100 text-gray-800'}>
+        {config?.label || displayStatus}
+      </Badge>
+    );
   };
 
   const getPriorityBadge = (urgency: AidRequest['urgency']) => {
@@ -150,7 +154,11 @@ export function AidApplicationsPage() {
     };
 
     const config = priorityConfig[displayPriority as keyof typeof priorityConfig];
-    return <Badge className={config?.color || 'bg-gray-100 text-gray-800'}>{config?.label || displayPriority}</Badge>;
+    return (
+      <Badge className={config?.color || 'bg-gray-100 text-gray-800'}>
+        {config?.label || displayPriority}
+      </Badge>
+    );
   };
 
   const filteredApplications = applications.filter((app) => {
@@ -158,16 +166,23 @@ export function AidApplicationsPage() {
       app.applicant_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       app.id.includes(searchTerm) ||
       app.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || mapStatusForDisplay(app.status) === statusFilter;
-    const matchesPriority = priorityFilter === 'all' || mapUrgencyForDisplay(app.urgency) === priorityFilter;
-    const matchesAidType = aidTypeFilter === 'all' || app.aid_type === mapAidTypeToEnum(aidTypeFilter);
+    const matchesStatus =
+      statusFilter === 'all' || mapStatusForDisplay(app.status) === statusFilter;
+    const matchesPriority =
+      priorityFilter === 'all' || mapUrgencyForDisplay(app.urgency) === priorityFilter;
+    const matchesAidType =
+      aidTypeFilter === 'all' || app.aid_type === mapAidTypeToEnum(aidTypeFilter);
 
     return matchesSearch && matchesStatus && matchesPriority && matchesAidType;
   });
 
   const handleApprove = async (id: string) => {
     try {
-      const result = await aidRequestsService.approveAidRequest(id, applications.find(app => app.id === id)?.requested_amount || 0, 'current-user-id'); // Replace with actual user ID
+      const result = await aidRequestsService.approveAidRequest(
+        id,
+        applications.find((app) => app.id === id)?.requested_amount || 0,
+        'current-user-id'
+      ); // Replace with actual user ID
       if (result.error) {
         logger.error('Failed to approve application:', result.error);
         toast.error('Başvuru onaylanırken hata oluştu');
@@ -284,7 +299,9 @@ export function AidApplicationsPage() {
                   <FileText className="h-4 w-4 text-blue-600" />
                 </div>
                 <div className="text-right">
-                  <div className="text-lg font-bold text-blue-600 sm:text-xl lg:text-2xl">{stats.total}</div>
+                  <div className="text-lg font-bold text-blue-600 sm:text-xl lg:text-2xl">
+                    {stats.total}
+                  </div>
                 </div>
               </div>
               <p className="text-sm font-medium text-gray-600">Toplam Başvuru</p>
@@ -335,7 +352,9 @@ export function AidApplicationsPage() {
                   <XCircle className="h-4 w-4 text-red-600" />
                 </div>
                 <div className="text-right">
-                  <div className="text-lg font-bold text-red-600 sm:text-xl lg:text-2xl">{stats.rejected}</div>
+                  <div className="text-lg font-bold text-red-600 sm:text-xl lg:text-2xl">
+                    {stats.rejected}
+                  </div>
                 </div>
               </div>
               <p className="text-sm font-medium text-gray-600">Reddedilen</p>

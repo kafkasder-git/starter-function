@@ -169,7 +169,7 @@ export function FloatingActionButton({
                     }}
                     className={cn(
                       'w-12 h-12 rounded-full shadow-lg text-white transition-all duration-200',
-                      action.color,
+                      action.color
                     )}
                     size="sm"
                   >
@@ -189,7 +189,7 @@ export function FloatingActionButton({
               'w-14 h-14 rounded-full shadow-xl transition-all duration-300',
               isExpanded
                 ? 'bg-neutral-600 hover:bg-neutral-700 rotate-45'
-                : 'bg-primary hover:bg-primary/90',
+                : 'bg-primary hover:bg-primary/90'
             )}
             size="sm"
           >

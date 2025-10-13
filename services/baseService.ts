@@ -76,7 +76,7 @@ export function delayExecution(ms: number = SERVICE_CONFIG.DEFAULT_DELAY_MS): Pr
 export function paginateData<TData>(
   data: TData[],
   page: number,
-  pageSize: number,
+  pageSize: number
 ): PaginatedResponse<TData> {
   const totalCount = data.length;
   const totalPages = Math.ceil(totalCount / pageSize);
@@ -101,14 +101,14 @@ export function paginateData<TData>(
 export function applySearchToQuery<T>(
   data: T[],
   searchTerm: string,
-  searchFields: (keyof T)[],
+  searchFields: (keyof T)[]
 ): T[] {
   const searchLower = searchTerm.toLowerCase();
   return data.filter((item) =>
     searchFields.some((field) => {
       const value = item[field];
       return value && String(value).toLowerCase().includes(searchLower);
-    }),
+    })
   );
 }
 
@@ -148,19 +148,19 @@ export function applyDateRangeToQuery<T>(
   data: T[],
   dateFrom?: string,
   dateTo?: string,
-  dateField: keyof T = 'created_at' as keyof T,
+  dateField: keyof T = 'created_at' as keyof T
 ): T[] {
   let filteredData = data;
 
   if (dateFrom) {
     filteredData = filteredData.filter(
-      (item) => new Date(item[dateField] as string) >= new Date(dateFrom),
+      (item) => new Date(item[dateField] as string) >= new Date(dateFrom)
     );
   }
 
   if (dateTo) {
     filteredData = filteredData.filter(
-      (item) => new Date(item[dateField] as string) <= new Date(dateTo),
+      (item) => new Date(item[dateField] as string) <= new Date(dateTo)
     );
   }
 

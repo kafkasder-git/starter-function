@@ -1,6 +1,6 @@
 /**
  * @fileoverview BankPaymentOrdersPage Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -46,7 +46,14 @@ interface PaymentOrder {
   aidType: string;
   createdDate: string;
   scheduledDate: string;
-  status: 'pending' | 'first_approved' | 'fully_approved' | 'sent' | 'completed' | 'failed' | 'cancelled';
+  status:
+    | 'pending'
+    | 'first_approved'
+    | 'fully_approved'
+    | 'sent'
+    | 'completed'
+    | 'failed'
+    | 'cancelled';
   createdBy: string;
   firstApprovedBy?: string;
   firstApprovedDate?: string;
@@ -61,7 +68,7 @@ const initialPaymentOrders: PaymentOrder[] = [];
 
 /**
  * BankPaymentOrdersPage function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -204,8 +211,8 @@ function BankPaymentOrdersPageContent() {
               firstApprovedBy: 'Manager 1',
               firstApprovedDate: new Date().toISOString(),
             }
-          : order,
-      ),
+          : order
+      )
     );
     toast.success('İlk onay tamamlandı. İkinci onay bekleniyor.');
   };
@@ -220,8 +227,8 @@ function BankPaymentOrdersPageContent() {
               secondApprovedBy: 'Manager 2',
               secondApprovedDate: new Date().toISOString(),
             }
-          : order,
-      ),
+          : order
+      )
     );
     toast.success('İkinci onay tamamlandı. Ödeme emri göndermeye hazır.');
   };
@@ -247,8 +254,8 @@ function BankPaymentOrdersPageContent() {
                 firstApprovedBy: 'Manager',
                 firstApprovedDate: new Date().toISOString(),
               }
-            : o,
-        ),
+            : o
+        )
       );
       toast.success('Ödeme emri onaylandı');
     }
@@ -271,8 +278,8 @@ function BankPaymentOrdersPageContent() {
               status: 'sent' as const,
               transactionId: `TXN${Date.now()}`,
             }
-          : o,
-      ),
+          : o
+      )
     );
     toast.success('Ödeme emri bankaya gönderildi');
   };
@@ -293,7 +300,8 @@ function BankPaymentOrdersPageContent() {
             <DialogHeader>
               <DialogTitle>Yeni Ödeme Emri Oluştur</DialogTitle>
               <p id="payment-order-description" className="text-sm text-muted-foreground">
-                İhtiyaç sahibi için yeni ödeme emri oluşturun. Zorunlu alanları (*) doldurmanız gereklidir.
+                İhtiyaç sahibi için yeni ödeme emri oluşturun. Zorunlu alanları (*) doldurmanız
+                gereklidir.
               </p>
             </DialogHeader>
             <div className="space-y-4 max-h-96 overflow-y-auto">
@@ -630,7 +638,8 @@ function BankPaymentOrdersPageContent() {
                               <CheckCircle className="w-4 h-4" />
                             </Button>
                           )}
-                          {(order.status === 'first_approved' || order.status === 'fully_approved') && (
+                          {(order.status === 'first_approved' ||
+                            order.status === 'fully_approved') && (
                             <Button
                               variant="ghost"
                               size="sm"

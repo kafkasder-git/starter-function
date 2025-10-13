@@ -12,7 +12,14 @@ import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '../ui/dialog';
 import { StatusBadge } from '../ui/status-badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { Progress } from '../ui/progress';
@@ -128,7 +135,7 @@ export function CampaignManagementPage() {
       }
     }
 
-    const {user} = useAuthStore.getState();
+    const { user } = useAuthStore.getState();
     if (!user) {
       toast.error('Kullanıcı oturumu bulunamadı');
       return;
@@ -152,7 +159,7 @@ export function CampaignManagementPage() {
         image_url: null,
         featured: false,
         deleted_at: null,
-        created_by: user.id
+        created_by: user.id,
       });
 
       if (result.error) {
@@ -229,9 +236,7 @@ export function CampaignManagementPage() {
           <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>Yeni Kampanya Oluştur</DialogTitle>
-              <DialogDescription>
-                Bağış toplamak için yeni bir kampanya başlatın
-              </DialogDescription>
+              <DialogDescription>Bağış toplamak için yeni bir kampanya başlatın</DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div>
@@ -239,7 +244,9 @@ export function CampaignManagementPage() {
                 <Input
                   id="campaignName"
                   value={newCampaign.name}
-                  onChange={(e) => { setNewCampaign({ ...newCampaign, name: e.target.value }); }}
+                  onChange={(e) => {
+                    setNewCampaign({ ...newCampaign, name: e.target.value });
+                  }}
                   placeholder="Örn: Ramazan Yardımı 2024"
                 />
               </div>
@@ -248,7 +255,9 @@ export function CampaignManagementPage() {
                 <Input
                   id="description"
                   value={newCampaign.description}
-                  onChange={(e) => { setNewCampaign({ ...newCampaign, description: e.target.value }); }}
+                  onChange={(e) => {
+                    setNewCampaign({ ...newCampaign, description: e.target.value });
+                  }}
                   placeholder="Kampanya detayları"
                 />
               </div>
@@ -259,7 +268,9 @@ export function CampaignManagementPage() {
                     id="goalAmount"
                     type="number"
                     value={newCampaign.goalAmount}
-                    onChange={(e) => { setNewCampaign({ ...newCampaign, goalAmount: e.target.value }); }}
+                    onChange={(e) => {
+                      setNewCampaign({ ...newCampaign, goalAmount: e.target.value });
+                    }}
                     placeholder="100000"
                   />
                 </div>
@@ -268,7 +279,9 @@ export function CampaignManagementPage() {
                   <Input
                     id="category"
                     value={newCampaign.category}
-                    onChange={(e) => { setNewCampaign({ ...newCampaign, category: e.target.value }); }}
+                    onChange={(e) => {
+                      setNewCampaign({ ...newCampaign, category: e.target.value });
+                    }}
                     placeholder="Gıda, Eğitim, Sağlık..."
                   />
                 </div>
@@ -280,7 +293,9 @@ export function CampaignManagementPage() {
                     id="startDate"
                     type="date"
                     value={newCampaign.startDate}
-                    onChange={(e) => { setNewCampaign({ ...newCampaign, startDate: e.target.value }); }}
+                    onChange={(e) => {
+                      setNewCampaign({ ...newCampaign, startDate: e.target.value });
+                    }}
                   />
                 </div>
                 <div>
@@ -289,7 +304,9 @@ export function CampaignManagementPage() {
                     id="endDate"
                     type="date"
                     value={newCampaign.endDate}
-                    onChange={(e) => { setNewCampaign({ ...newCampaign, endDate: e.target.value }); }}
+                    onChange={(e) => {
+                      setNewCampaign({ ...newCampaign, endDate: e.target.value });
+                    }}
                   />
                 </div>
               </div>
@@ -297,15 +314,14 @@ export function CampaignManagementPage() {
             <div className="flex justify-end gap-2">
               <Button
                 variant="outline"
-                onClick={() => { setIsDialogOpen(false); }}
+                onClick={() => {
+                  setIsDialogOpen(false);
+                }}
                 disabled={isSaving}
               >
                 İptal
               </Button>
-              <Button
-                onClick={handleCreateCampaign}
-                disabled={isSaving}
-              >
+              <Button onClick={handleCreateCampaign} disabled={isSaving}>
                 {isSaving ? 'Oluşturuluyor...' : 'Kampanya Oluştur'}
               </Button>
             </div>
@@ -344,7 +360,9 @@ export function CampaignManagementPage() {
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between">
-                <div className="text-2xl font-bold">₺{(stats?.totalCurrentAmount || 0).toLocaleString()}</div>
+                <div className="text-2xl font-bold">
+                  ₺{(stats?.totalCurrentAmount || 0).toLocaleString()}
+                </div>
                 <DollarSign className="w-8 h-8 text-blue-500" />
               </div>
             </CardContent>
@@ -355,7 +373,9 @@ export function CampaignManagementPage() {
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between">
-                <div className="text-2xl font-bold">₺{(stats?.totalGoalAmount || 0).toLocaleString()}</div>
+                <div className="text-2xl font-bold">
+                  ₺{(stats?.totalGoalAmount || 0).toLocaleString()}
+                </div>
                 <Target className="w-8 h-8 text-purple-500" />
               </div>
             </CardContent>
@@ -372,7 +392,11 @@ export function CampaignManagementPage() {
               <div className="text-center py-12">
                 <Target className="w-16 h-16 mx-auto text-gray-300 mb-4" />
                 <p className="text-gray-500 mb-4">Henüz kampanya oluşturulmamış</p>
-                <Button onClick={() => { setIsDialogOpen(true); }}>
+                <Button
+                  onClick={() => {
+                    setIsDialogOpen(true);
+                  }}
+                >
                   <Plus className="w-4 h-4 mr-2" />
                   İlk Kampanyanızı Oluşturun
                 </Button>
@@ -404,18 +428,27 @@ export function CampaignManagementPage() {
                         <div className="space-y-2 min-w-[200px]">
                           <div className="flex justify-between text-sm">
                             <span>₺{campaign.current_amount.toLocaleString()}</span>
-                            <span className="text-gray-500">₺{campaign.goal_amount.toLocaleString()}</span>
+                            <span className="text-gray-500">
+                              ₺{campaign.goal_amount.toLocaleString()}
+                            </span>
                           </div>
-                          <Progress value={calculateProgress(campaign.current_amount, campaign.goal_amount)} />
+                          <Progress
+                            value={calculateProgress(campaign.current_amount, campaign.goal_amount)}
+                          />
                           <div className="text-xs text-gray-500">
-                            %{calculateProgress(campaign.current_amount, campaign.goal_amount).toFixed(0)} tamamlandı
+                            %
+                            {calculateProgress(
+                              campaign.current_amount,
+                              campaign.goal_amount
+                            ).toFixed(0)}{' '}
+                            tamamlandı
                           </div>
                         </div>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-1">
-                          <Users className="w-4 h-4 text-gray-400" />
-                          0 {/* TODO: Calculate from donations table */}
+                          <Users className="w-4 h-4 text-gray-400" />0{' '}
+                          {/* TODO: Calculate from donations table */}
                         </div>
                       </TableCell>
                       <TableCell>
@@ -443,4 +476,3 @@ export function CampaignManagementPage() {
 }
 
 export default CampaignManagementPage;
-

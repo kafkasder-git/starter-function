@@ -31,7 +31,7 @@ export function FilePreview({ attachment, className }: FilePreviewProps) {
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))  } ${  sizes[i]}`;
+    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
   };
 
   // Get file icon based on type
@@ -50,9 +50,8 @@ export function FilePreview({ attachment, className }: FilePreviewProps) {
       return '📊';
     } else if (fileType.includes('zip') || fileType.includes('rar')) {
       return '📦';
-    } 
-      return '📎';
-    
+    }
+    return '📎';
   };
 
   // Handle audio playback
@@ -66,11 +65,17 @@ export function FilePreview({ attachment, className }: FilePreviewProps) {
 
       const audio = new Audio(attachment.fileUrl);
       setAudioElement(audio);
-      
-      audio.onplay = () => { setIsPlaying(true); };
-      audio.onpause = () => { setIsPlaying(false); };
-      audio.onended = () => { setIsPlaying(false); };
-      
+
+      audio.onplay = () => {
+        setIsPlaying(true);
+      };
+      audio.onpause = () => {
+        setIsPlaying(false);
+      };
+      audio.onended = () => {
+        setIsPlaying(false);
+      };
+
       await audio.play();
     } catch (error) {
       console.error('Audio playback error:', error);
@@ -95,25 +100,25 @@ export function FilePreview({ attachment, className }: FilePreviewProps) {
           src={attachment.fileUrl}
           alt={attachment.fileName}
           className="w-full h-auto object-contain"
-          onClick={() => { setIsPreviewOpen(true); }}
+          onClick={() => {
+            setIsPreviewOpen(true);
+          }}
         />
       </div>
-      
+
       <div className="flex items-center justify-between">
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-gray-900 truncate">
-            {attachment.fileName}
-          </p>
-          <p className="text-xs text-gray-500">
-            {formatFileSize(attachment.fileSize)}
-          </p>
+          <p className="text-sm font-medium text-gray-900 truncate">{attachment.fileName}</p>
+          <p className="text-xs text-gray-500">{formatFileSize(attachment.fileSize)}</p>
         </div>
-        
+
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
             size="sm"
-            onClick={() => { setIsPreviewOpen(true); }}
+            onClick={() => {
+              setIsPreviewOpen(true);
+            }}
             className="flex items-center gap-2"
           >
             Büyüt
@@ -136,40 +141,28 @@ export function FilePreview({ attachment, className }: FilePreviewProps) {
   const renderAudioPreview = () => (
     <div className="space-y-4">
       <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
-        <Button
-          onClick={handleAudioPlay}
-          size="sm"
-          className="h-12 w-12 rounded-full"
-        >
-          {isPlaying ? (
-            <Pause className="h-5 w-5" />
-          ) : (
-            <Play className="h-5 w-5" />
-          )}
+        <Button onClick={handleAudioPlay} size="sm" className="h-12 w-12 rounded-full">
+          {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
         </Button>
-        
+
         <div className="flex-1">
-          <p className="text-sm font-medium text-gray-900">
-            {attachment.fileName}
-          </p>
+          <p className="text-sm font-medium text-gray-900">{attachment.fileName}</p>
           <p className="text-xs text-gray-500">
             {attachment.duration ? `${attachment.duration} saniye` : 'Ses dosyası'}
           </p>
         </div>
-        
+
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => { setIsMuted(!isMuted); }}
+          onClick={() => {
+            setIsMuted(!isMuted);
+          }}
           className="h-8 w-8 p-0"
         >
-          {isMuted ? (
-            <VolumeX className="h-4 w-4" />
-          ) : (
-            <Volume2 className="h-4 w-4" />
-          )}
+          {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
         </Button>
-        
+
         <Button
           variant="outline"
           size="sm"
@@ -186,22 +179,14 @@ export function FilePreview({ attachment, className }: FilePreviewProps) {
   const renderGenericPreview = () => (
     <div className="space-y-4">
       <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
-        <div className="text-4xl">
-          {getFileIcon(attachment.fileType)}
-        </div>
-        
+        <div className="text-4xl">{getFileIcon(attachment.fileType)}</div>
+
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-gray-900 truncate">
-            {attachment.fileName}
-          </p>
-          <p className="text-xs text-gray-500">
-            {formatFileSize(attachment.fileSize)}
-          </p>
-          <p className="text-xs text-gray-400 capitalize">
-            {attachment.fileType}
-          </p>
+          <p className="text-sm font-medium text-gray-900 truncate">{attachment.fileName}</p>
+          <p className="text-xs text-gray-500">{formatFileSize(attachment.fileSize)}</p>
+          <p className="text-xs text-gray-400 capitalize">{attachment.fileType}</p>
         </div>
-        
+
         <Button
           variant="outline"
           size="sm"
@@ -221,16 +206,13 @@ export function FilePreview({ attachment, className }: FilePreviewProps) {
       return renderImagePreview();
     } else if (attachment.fileType.startsWith('audio/')) {
       return renderAudioPreview();
-    } 
-      return renderGenericPreview();
-    
+    }
+    return renderGenericPreview();
   };
 
   return (
     <>
-      <div className={cn('w-full', className)}>
-        {renderPreview()}
-      </div>
+      <div className={cn('w-full', className)}>{renderPreview()}</div>
 
       {/* Image preview modal */}
       <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
@@ -249,7 +231,7 @@ export function FilePreview({ attachment, className }: FilePreviewProps) {
               </Button>
             </DialogTitle>
           </DialogHeader>
-          
+
           <div className="p-6 pt-0">
             <div className="relative max-w-full max-h-[70vh] overflow-hidden">
               <img

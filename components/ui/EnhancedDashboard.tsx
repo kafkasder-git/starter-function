@@ -15,7 +15,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from './tabs';
 import MetricCard from './MetricCard';
 
 // Lazy load InteractiveChart for better performance
-const InteractiveChart = lazy(() => import('./InteractiveChart').then(module => ({ default: module.InteractiveChart })));
+const InteractiveChart = lazy(() =>
+  import('./InteractiveChart').then((module) => ({ default: module.InteractiveChart }))
+);
 // Auth import removed for simplified implementation
 import { useAdvancedMobile } from '../../hooks/useAdvancedMobile';
 import { PersonalizedQuickActions } from '../ux/PersonalizedQuickActions';
@@ -203,15 +205,15 @@ const EnhancedDashboard = memo(
   ({ className = '', onNavigate, onQuickAction }: EnhancedDashboardProps) => {
     const [activeTab, setActiveTab] = useState('overview');
     const [lastUpdate, setLastUpdate] = useState(new Date());
-    
+
     const { deviceInfo, triggerHapticFeedback } = useAdvancedMobile();
 
     // Use React Query for dashboard metrics
-    const { 
-      data: metricsData, 
-      isLoading: metricsLoading, 
+    const {
+      data: metricsData,
+      isLoading: metricsLoading,
       error: metricsError,
-      refetch: refetchMetrics 
+      refetch: refetchMetrics,
     } = useDashboardMetrics({
       enabled: true,
       staleTime: 5 * 60 * 1000, // 5 minutes
@@ -219,11 +221,11 @@ const EnhancedDashboard = memo(
     });
 
     // Use React Query for recent activities
-    const { 
-      data: activitiesData, 
-      isLoading: activitiesLoading, 
+    const {
+      data: activitiesData,
+      isLoading: activitiesLoading,
       error: activitiesError,
-      refetch: refetchActivities 
+      refetch: refetchActivities,
     } = useRecentActivities({
       limit: 10,
       enabled: true,
@@ -247,21 +249,21 @@ const EnhancedDashboard = memo(
       }
 
       return {
-        beneficiaries: { 
-          total: metricsData.totalMembers || 0, 
-          active: Math.floor((metricsData.totalMembers || 0) * 0.85) 
+        beneficiaries: {
+          total: metricsData.totalMembers || 0,
+          active: Math.floor((metricsData.totalMembers || 0) * 0.85),
         },
-        donations: { 
-          totalAmount: metricsData.totalDonations || 0, 
-          count: Math.floor((metricsData.totalDonations || 0) / 2000) 
+        donations: {
+          totalAmount: metricsData.totalDonations || 0,
+          count: Math.floor((metricsData.totalDonations || 0) / 2000),
         },
-        members: { 
-          total: metricsData.totalMembers || 0, 
-          active: Math.floor((metricsData.totalMembers || 0) * 0.9) 
+        members: {
+          total: metricsData.totalMembers || 0,
+          active: Math.floor((metricsData.totalMembers || 0) * 0.9),
         },
-        aidRequests: { 
-          total: metricsData.totalAidRequests || 0, 
-          pending: Math.floor((metricsData.totalAidRequests || 0) * 0.15) 
+        aidRequests: {
+          total: metricsData.totalAidRequests || 0,
+          pending: Math.floor((metricsData.totalAidRequests || 0) * 0.15),
         },
       };
     }, [metricsData]);
@@ -275,10 +277,10 @@ const EnhancedDashboard = memo(
       if (deviceInfo.isMobile) {
         triggerHapticFeedback('medium');
       }
-      
+
       // Update last refresh time
       setLastUpdate(new Date());
-      
+
       // Refetch both queries
       refetchMetrics();
       refetchActivities();
@@ -290,10 +292,10 @@ const EnhancedDashboard = memo(
         {
           title: 'Toplam Bağış',
           value: `₺${dashboardData.donations.totalAmount.toLocaleString()}`,
-          change: { 
-            value: metricsData?.monthlyDonationGrowth || 12.5, 
-            type: 'increase' as const, 
-            period: 'bu ay' 
+          change: {
+            value: metricsData?.monthlyDonationGrowth || 12.5,
+            type: 'increase' as const,
+            period: 'bu ay',
           },
           icon: <Heart className="w-5 h-5" />,
           color: 'green' as const,
@@ -304,10 +306,10 @@ const EnhancedDashboard = memo(
         {
           title: 'Aktif Üyeler',
           value: dashboardData.members.active.toString(),
-          change: { 
-            value: 8.3, 
-            type: 'increase' as const, 
-            period: 'bu ay' 
+          change: {
+            value: 8.3,
+            type: 'increase' as const,
+            period: 'bu ay',
           },
           icon: <Users className="w-5 h-5" />,
           color: 'blue' as const,
@@ -336,7 +338,7 @@ const EnhancedDashboard = memo(
           },
         },
       ],
-      [dashboardData, metricsData, onNavigate],
+      [dashboardData, metricsData, onNavigate]
     );
 
     // Show skeleton loader while loading
@@ -350,9 +352,7 @@ const EnhancedDashboard = memo(
         <div className="flex items-center justify-center min-h-[400px] p-8">
           <div className="text-center">
             <div className="text-red-500 text-6xl mb-4">⚠️</div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              Dashboard Yüklenemedi
-            </h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Dashboard Yüklenemedi</h3>
             <p className="text-gray-600 mb-4">
               Veriler yüklenirken bir hata oluştu. Lütfen tekrar deneyin.
             </p>
@@ -372,12 +372,19 @@ const EnhancedDashboard = memo(
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-neutral-900 sm:text-3xl dark:text-neutral-50">Dashboard</h1>
-            <p className="mt-1 text-neutral-600 dark:text-neutral-400">Dernek yönetim sistemi - Güncel durum özeti</p>
+            <h1 className="text-2xl font-bold text-neutral-900 sm:text-3xl dark:text-neutral-50">
+              Dashboard
+            </h1>
+            <p className="mt-1 text-neutral-600 dark:text-neutral-400">
+              Dernek yönetim sistemi - Güncel durum özeti
+            </p>
           </div>
 
           <div className="flex items-center gap-3">
-            <Badge variant="outline" className="border-success-200 bg-success-50 text-success-700 dark:border-success-500/40 dark:bg-success-500/10 dark:text-success-400">
+            <Badge
+              variant="outline"
+              className="border-success-200 bg-success-50 text-success-700 dark:border-success-500/40 dark:bg-success-500/10 dark:text-success-400"
+            >
               <Activity className="w-3 h-3 mr-1" />
               Sistem Aktif
             </Badge>
@@ -393,11 +400,12 @@ const EnhancedDashboard = memo(
                 <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
                 Yenile
               </Button>
-              
+
               <span className="text-xs text-neutral-500 dark:text-neutral-400">
-                Son güncelleme: {lastUpdate.toLocaleTimeString('tr-TR', { 
-                  hour: '2-digit', 
-                  minute: '2-digit' 
+                Son güncelleme:{' '}
+                {lastUpdate.toLocaleTimeString('tr-TR', {
+                  hour: '2-digit',
+                  minute: '2-digit',
                 })}
               </span>
             </div>
@@ -449,7 +457,9 @@ const EnhancedDashboard = memo(
                             className="rounded-lg border border-neutral-200 bg-neutral-50 p-3 transition-colors hover:bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-900/80 dark:hover:bg-neutral-800"
                           >
                             <div className="flex items-start justify-between mb-2">
-                              <h4 className="text-sm font-medium text-neutral-900 dark:text-neutral-100">{task.title}</h4>
+                              <h4 className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
+                                {task.title}
+                              </h4>
                               <Badge
                                 variant={task.priority === 'high' ? 'destructive' : 'secondary'}
                                 className="text-xs"
@@ -457,7 +467,9 @@ const EnhancedDashboard = memo(
                                 {task.priority === 'high' ? 'Acil' : 'Normal'}
                               </Badge>
                             </div>
-                            <p className="mb-2 text-xs text-neutral-600 dark:text-neutral-400">{task.description}</p>
+                            <p className="mb-2 text-xs text-neutral-600 dark:text-neutral-400">
+                              {task.description}
+                            </p>
                             <p className="mb-2 text-xs text-neutral-600 dark:text-neutral-400">
                               {task.category} • {task.assignee}
                             </p>
@@ -476,7 +488,9 @@ const EnhancedDashboard = memo(
 
                             <div className="flex items-center gap-2">
                               <Clock className="h-3 w-3 text-neutral-400" />
-                              <span className="text-xs text-neutral-500 dark:text-neutral-400">{task.deadline}</span>
+                              <span className="text-xs text-neutral-500 dark:text-neutral-400">
+                                {task.deadline}
+                              </span>
                             </div>
                           </div>
                         ))}
@@ -489,7 +503,9 @@ const EnhancedDashboard = memo(
 
             <TabsContent value="analytics" className="space-y-6">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <Suspense fallback={<div className="h-[300px] bg-gray-100 rounded-lg animate-pulse" />}>
+                <Suspense
+                  fallback={<div className="h-[300px] bg-gray-100 rounded-lg animate-pulse" />}
+                >
                   <InteractiveChart
                     title="Aylık Bağış Trendi"
                     description="Son 6 ayın bağış miktarları"
@@ -500,7 +516,9 @@ const EnhancedDashboard = memo(
                   />
                 </Suspense>
 
-                <Suspense fallback={<div className="h-[300px] bg-gray-100 rounded-lg animate-pulse" />}>
+                <Suspense
+                  fallback={<div className="h-[300px] bg-gray-100 rounded-lg animate-pulse" />}
+                >
                   <InteractiveChart
                     title="Yardım Dağılımı"
                     description="Yardım türlerine göre dağılım"
@@ -521,83 +539,87 @@ const EnhancedDashboard = memo(
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      {activitiesLoading ? (
-                        // Show skeleton for activities
-                        Array.from({ length: 5 }).map((_, i) => (
-                          <div key={i} className="flex items-center gap-4 p-3">
-                            <div className="h-8 w-8 bg-gray-200 rounded-lg animate-pulse" />
-                            <div className="flex-1 space-y-2">
-                              <div className="h-4 bg-gray-200 rounded animate-pulse" />
-                              <div className="h-3 bg-gray-200 rounded animate-pulse w-3/4" />
-                            </div>
-                            <div className="h-6 w-16 bg-gray-200 rounded animate-pulse" />
-                          </div>
-                        ))
-                      ) : (
-                        recentActivities.map((activity) => {
-                        const timeAgo = getTimeAgo(activity.timestamp);
-                        return (
-                          <div
-                            key={activity.id}
-                            className="flex cursor-pointer items-center gap-4 rounded-lg p-3 transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-800/80"
-                          >
-                            <div className={'flex-shrink-0 rounded-lg bg-neutral-100 p-2 dark:bg-neutral-800'}>
-                              {activity.icon &&
-                                React.createElement(activity.icon as unknown as LucideIcon, {
-                                  className: `h-4 w-4 ${activity.color ?? 'text-neutral-400'}`,
-                                })}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2 mb-1">
-                                <h4 className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
-                                  {activity.title}
-                                </h4>
-                                {activity.amount && (
-                                  <Badge variant="outline" className="text-xs">
-                                    {activity.amount.toLocaleString('tr-TR')}₺
-                                  </Badge>
-                                )}
+                      {activitiesLoading
+                        ? // Show skeleton for activities
+                          Array.from({ length: 5 }).map((_, i) => (
+                            <div key={i} className="flex items-center gap-4 p-3">
+                              <div className="h-8 w-8 bg-gray-200 rounded-lg animate-pulse" />
+                              <div className="flex-1 space-y-2">
+                                <div className="h-4 bg-gray-200 rounded animate-pulse" />
+                                <div className="h-3 bg-gray-200 rounded animate-pulse w-3/4" />
                               </div>
-                              <p className="mb-1 text-sm text-neutral-600 dark:text-neutral-400">{activity.description}</p>
-                              <div className="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400">
-                                <span>{activity.user}</span>
-                                <span>•</span>
-                                <span>{timeAgo}</span>
-                              </div>
+                              <div className="h-6 w-16 bg-gray-200 rounded animate-pulse" />
                             </div>
-                            <div className="flex flex-col items-end gap-1">
-                              <Badge
-                                variant={
-                                  activity.status === 'completed'
-                                    ? 'default'
-                                    : activity.status === 'pending'
-                                      ? 'secondary'
-                                      : 'outline'
-                                }
-                                className="text-xs"
+                          ))
+                        : recentActivities.map((activity) => {
+                            const timeAgo = getTimeAgo(activity.timestamp);
+                            return (
+                              <div
+                                key={activity.id}
+                                className="flex cursor-pointer items-center gap-4 rounded-lg p-3 transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-800/80"
                               >
-                                {activity.status === 'completed'
-                                  ? 'Tamamlandı'
-                                  : activity.status === 'pending'
-                                    ? 'Beklemede'
-                                    : 'Devam Ediyor'}
-                              </Badge>
-                              {activity.priority && (
                                 <div
-                                  className={`w-2 h-2 rounded-full ${
-                                    activity.priority === 'high'
-                                      ? 'bg-red-500'
-                                      : activity.priority === 'medium'
-                                        ? 'bg-yellow-500'
-                                        : 'bg-green-500'
-                                  }`}
-                                />
-                              )}
-                            </div>
-                          </div>
-                        );
-                        })
-                      )}
+                                  className={
+                                    'flex-shrink-0 rounded-lg bg-neutral-100 p-2 dark:bg-neutral-800'
+                                  }
+                                >
+                                  {activity.icon &&
+                                    React.createElement(activity.icon as unknown as LucideIcon, {
+                                      className: `h-4 w-4 ${activity.color ?? 'text-neutral-400'}`,
+                                    })}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-2 mb-1">
+                                    <h4 className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
+                                      {activity.title}
+                                    </h4>
+                                    {activity.amount && (
+                                      <Badge variant="outline" className="text-xs">
+                                        {activity.amount.toLocaleString('tr-TR')}₺
+                                      </Badge>
+                                    )}
+                                  </div>
+                                  <p className="mb-1 text-sm text-neutral-600 dark:text-neutral-400">
+                                    {activity.description}
+                                  </p>
+                                  <div className="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400">
+                                    <span>{activity.user}</span>
+                                    <span>•</span>
+                                    <span>{timeAgo}</span>
+                                  </div>
+                                </div>
+                                <div className="flex flex-col items-end gap-1">
+                                  <Badge
+                                    variant={
+                                      activity.status === 'completed'
+                                        ? 'default'
+                                        : activity.status === 'pending'
+                                          ? 'secondary'
+                                          : 'outline'
+                                    }
+                                    className="text-xs"
+                                  >
+                                    {activity.status === 'completed'
+                                      ? 'Tamamlandı'
+                                      : activity.status === 'pending'
+                                        ? 'Beklemede'
+                                        : 'Devam Ediyor'}
+                                  </Badge>
+                                  {activity.priority && (
+                                    <div
+                                      className={`w-2 h-2 rounded-full ${
+                                        activity.priority === 'high'
+                                          ? 'bg-red-500'
+                                          : activity.priority === 'medium'
+                                            ? 'bg-yellow-500'
+                                            : 'bg-green-500'
+                                      }`}
+                                    />
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })}
                     </div>
                   </CardContent>
                 </Card>
@@ -607,7 +629,7 @@ const EnhancedDashboard = memo(
         </div>
       </div>
     );
-  },
+  }
 );
 
 EnhancedDashboard.displayName = 'EnhancedDashboard';

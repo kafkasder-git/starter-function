@@ -101,7 +101,7 @@ export class ServiceManager {
    */
   async checkServiceHealth(serviceName: string): Promise<ServiceHealth> {
     const startTime = Date.now();
-    
+
     try {
       let health: ServiceHealth = {
         name: serviceName,
@@ -151,7 +151,7 @@ export class ServiceManager {
     try {
       // Try to get current account (this will fail if not authenticated, but that's ok)
       await account.get();
-      
+
       return {
         name: 'auth',
         status: 'healthy',
@@ -195,7 +195,7 @@ export class ServiceManager {
     try {
       // Try to list a collection (this will work even if collection is empty)
       const { error } = await db.list(collections.USER_PROFILES, []);
-      
+
       if (error && !error.message.includes('collection') && !error.message.includes('not found')) {
         throw error;
       }
@@ -230,7 +230,7 @@ export class ServiceManager {
     try {
       // Try to list buckets
       await storage.listBuckets();
-      
+
       return {
         name: 'storage',
         status: 'healthy',
@@ -258,7 +258,7 @@ export class ServiceManager {
     try {
       // Try to list functions
       await functions.list();
-      
+
       return {
         name: 'functions',
         status: 'healthy',
@@ -287,18 +287,21 @@ export class ServiceManager {
 
     const services = ['auth', 'database', 'storage', 'functions'];
     const healthChecks = await Promise.all(
-      services.map(service => this.checkServiceHealth(service))
+      services.map((service) => this.checkServiceHealth(service))
     );
 
-    const serviceHealth = healthChecks.reduce((acc, health) => {
-      acc[health.name as keyof Omit<ServiceStatus, 'overall' | 'timestamp'>] = health;
-      return acc;
-    }, {} as Omit<ServiceStatus, 'overall' | 'timestamp'>);
+    const serviceHealth = healthChecks.reduce(
+      (acc, health) => {
+        acc[health.name as keyof Omit<ServiceStatus, 'overall' | 'timestamp'>] = health;
+        return acc;
+      },
+      {} as Omit<ServiceStatus, 'overall' | 'timestamp'>
+    );
 
     // Determine overall status
-    const unhealthyCount = healthChecks.filter(h => h.status === 'unhealthy').length;
-    const degradedCount = healthChecks.filter(h => h.status === 'degraded').length;
-    
+    const unhealthyCount = healthChecks.filter((h) => h.status === 'unhealthy').length;
+    const degradedCount = healthChecks.filter((h) => h.status === 'degraded').length;
+
     let overall: 'healthy' | 'unhealthy' | 'degraded' = 'healthy';
     if (unhealthyCount > 0) {
       overall = 'unhealthy';
@@ -313,11 +316,11 @@ export class ServiceManager {
     };
 
     this.lastHealthCheck = status;
-    
-    logger.info('Service health check completed', { 
-      overall, 
-      unhealthy: unhealthyCount, 
-      degraded: degradedCount 
+
+    logger.info('Service health check completed', {
+      overall,
+      unhealthy: unhealthyCount,
+      degraded: degradedCount,
     });
 
     return status;
@@ -339,8 +342,8 @@ export class ServiceManager {
       }
     }, this.config.healthCheckInterval);
 
-    logger.info('Health checks started', { 
-      interval: this.config.healthCheckInterval 
+    logger.info('Health checks started', {
+      interval: this.config.healthCheckInterval,
     });
   }
 
@@ -374,12 +377,12 @@ export class ServiceManager {
    */
   updateConfig(newConfig: Partial<ServiceManagerConfig>): void {
     this.config = { ...this.config, ...newConfig };
-    
+
     // Restart health checks if interval changed
     if (newConfig.healthCheckInterval && this.healthCheckInterval) {
       this.startHealthChecks();
     }
-    
+
     logger.info('Service configuration updated', { config: this.config });
   }
 
@@ -426,11 +429,11 @@ export class ServiceManager {
       results.functions = { success: false, error: error.message };
     }
 
-    const success = Object.values(results).every(result => result.success);
-    
-    logger.info('Service testing completed', { 
-      success, 
-      results: Object.keys(results).length 
+    const success = Object.values(results).every((result) => result.success);
+
+    logger.info('Service testing completed', {
+      success,
+      results: Object.keys(results).length,
     });
 
     return { success, results };

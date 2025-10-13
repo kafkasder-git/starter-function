@@ -254,7 +254,8 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   private renderNetworkError() {
-    const error = (this.state.error || new Error('Unknown network error')) as unknown as NetworkError;
+    const error = (this.state.error ||
+      new Error('Unknown network error')) as unknown as NetworkError;
     const userMessage = getUserFriendlyErrorMessage(error);
     const suggestedActions = this.getSuggestedActions(error);
     const canRetry = isRetryableError(error);
@@ -419,7 +420,7 @@ export const withErrorBoundary = <P extends object>(
     type?: Props['type'];
     fallback?: ReactNode;
     componentName?: string;
-  },
+  }
 ) => {
   const WrappedComponent = (props: P) => (
     <ErrorBoundary

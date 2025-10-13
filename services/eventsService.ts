@@ -69,7 +69,7 @@ class EventsService {
     try {
       const queries = [
         queryHelpers.orderDesc('created_at'),
-        queryHelpers.limit(filters.limit || 50)
+        queryHelpers.limit(filters.limit || 50),
       ];
 
       if (filters.type) {
@@ -98,10 +98,9 @@ class EventsService {
         return { data: null, error: 'Failed to fetch events', success: false };
       }
 
-      const events = data?.documents?.map(doc => this.mapDocumentToEvent(doc)) || [];
+      const events = data?.documents?.map((doc) => this.mapDocumentToEvent(doc)) || [];
 
       return { data: events, error: null, success: true };
-
     } catch (error) {
       logger.error('Failed to get events', error);
       return { data: null, error: 'Failed to fetch events', success: false };
@@ -121,7 +120,6 @@ class EventsService {
 
       const event = this.mapDocumentToEvent(data);
       return { data: event, error: null, success: true };
-
     } catch (error) {
       logger.error('Failed to get event by ID', error);
       return { data: null, error: 'Failed to fetch event', success: false };
@@ -143,7 +141,7 @@ class EventsService {
         status: 'draft',
         created_by: 'current-user', // TODO: Get from auth
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       };
 
       const { data, error } = await db.create(collections.EVENTS, eventDoc, ID.unique());
@@ -154,7 +152,6 @@ class EventsService {
 
       const event = this.mapDocumentToEvent(data);
       return { data: event, error: null, success: true };
-
     } catch (error) {
       logger.error('Failed to create event', error);
       return { data: null, error: 'Failed to create event', success: false };
@@ -164,11 +161,14 @@ class EventsService {
   /**
    * Update event
    */
-  async updateEvent(eventId: string, updates: Partial<CreateEventData>): Promise<ApiResponse<Event>> {
+  async updateEvent(
+    eventId: string,
+    updates: Partial<CreateEventData>
+  ): Promise<ApiResponse<Event>> {
     try {
       const updateData = {
         ...updates,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       };
 
       const { data, error } = await db.update(collections.EVENTS, eventId, updateData);
@@ -179,7 +179,6 @@ class EventsService {
 
       const event = this.mapDocumentToEvent(data);
       return { data: event, error: null, success: true };
-
     } catch (error) {
       logger.error('Failed to update event', error);
       return { data: null, error: 'Failed to update event', success: false };
@@ -198,7 +197,6 @@ class EventsService {
       }
 
       return { data: true, error: null, success: true };
-
     } catch (error) {
       logger.error('Failed to delete event', error);
       return { data: null, error: 'Failed to delete event', success: false };
@@ -220,7 +218,7 @@ class EventsService {
       status: doc.status,
       createdBy: doc.created_by,
       createdAt: doc.created_at,
-      updatedAt: doc.updated_at
+      updatedAt: doc.updated_at,
     };
   }
 }

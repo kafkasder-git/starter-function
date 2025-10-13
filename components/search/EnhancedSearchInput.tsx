@@ -1,6 +1,6 @@
 /**
  * @fileoverview EnhancedSearchInput Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -11,7 +11,6 @@ import { Search, X, Filter, Clock, TrendingUp, Loader2, Command, History } from 
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Input } from '../ui/input';
-
 
 import { useSearchContext } from './SearchProvider';
 import { useIsMobile } from '../../hooks/useTouchDevice';
@@ -32,7 +31,7 @@ interface EnhancedSearchInputProps {
 
 /**
  * EnhancedSearchInput function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -56,7 +55,7 @@ export function EnhancedSearchInput({
   // Search history
   const [searchHistory, setSearchHistory] = useLocalStorage<string[]>(
     `search-history-${module}`,
-    [],
+    []
   );
 
   // Recent searches from localStorage
@@ -139,7 +138,7 @@ export function EnhancedSearchInput({
     }
 
     const filtered = moduleSuggestions.filter((suggestion) =>
-      normalizeText(suggestion).includes(normalizeText(query)),
+      normalizeText(suggestion).includes(normalizeText(query))
     );
 
     return {
@@ -172,7 +171,7 @@ export function EnhancedSearchInput({
               'pl-9 pr-20',
               sizeClasses[size],
               isFocused && 'ring-2 ring-primary/20',
-              className,
+              className
             )}
             autoFocus={autoFocus}
           />
@@ -207,7 +206,7 @@ export function EnhancedSearchInput({
         <Search
           className={cn(
             'absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400',
-            size === 'sm' ? 'w-4 h-4' : size === 'lg' ? 'w-6 h-6' : 'w-5 h-5',
+            size === 'sm' ? 'w-4 h-4' : size === 'lg' ? 'w-6 h-6' : 'w-5 h-5'
           )}
         />
 
@@ -227,7 +226,7 @@ export function EnhancedSearchInput({
             sizeClasses[size],
             isFocused && 'ring-2 ring-primary/20 border-primary/40',
             searchState.isLoading && 'pr-28',
-            className,
+            className
           )}
           autoFocus={autoFocus}
         />

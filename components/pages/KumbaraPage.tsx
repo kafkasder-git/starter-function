@@ -1,6 +1,6 @@
 /**
  * @fileoverview KumbaraPage Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -38,7 +38,7 @@ import type { Kumbara, KumbaraInsert, KumbaraStatus } from '@/types/kumbara';
 
 /**
  * KumbaraPage function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -116,7 +116,8 @@ function KumbaraPage() {
       kumbara.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       kumbara.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
       kumbara.code.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || kumbara.status === statusFilter as KumbaraStatus;
+    const matchesStatus =
+      statusFilter === 'all' || kumbara.status === (statusFilter as KumbaraStatus);
     return matchesSearch && matchesStatus;
   });
 
@@ -135,7 +136,11 @@ function KumbaraPage() {
       damaged: 'Hasarlı',
       removed: 'Kaldırıldı',
     };
-    return <Badge variant={variants[status]} size="lg" className="font-semibold">{labels[status]}</Badge>;
+    return (
+      <Badge variant={variants[status]} size="lg" className="font-semibold">
+        {labels[status]}
+      </Badge>
+    );
   };
 
   const generateQRCode = (kumbara: Kumbara) => {
@@ -395,7 +400,9 @@ function KumbaraPage() {
                       </TableCell>
                       <TableCell className="py-4">{getStatusBadge(kumbara.status)}</TableCell>
                       <TableCell className="text-slate-600 py-4 font-medium">
-                        {kumbara.lastCollection ? new Date(kumbara.lastCollection).toLocaleDateString('tr-TR') : 'Henüz toplanmadı'}
+                        {kumbara.lastCollection
+                          ? new Date(kumbara.lastCollection).toLocaleDateString('tr-TR')
+                          : 'Henüz toplanmadı'}
                       </TableCell>
                       <TableCell className="font-bold text-emerald-600 py-4">
                         ₺{kumbara.totalAmount.toLocaleString()}
@@ -476,7 +483,9 @@ function KumbaraPage() {
                     placeholder="Merkez Camii Kumbarası"
                     className="h-11 border-slate-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-xl"
                     value={formData.name}
-                    onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                    onChange={(e) => {
+                      setFormData((prev) => ({ ...prev, name: e.target.value }));
+                    }}
                   />
                 </div>
                 <div className="space-y-3">
@@ -488,7 +497,9 @@ function KumbaraPage() {
                     placeholder="Fatih Camii"
                     className="h-11 border-slate-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-xl"
                     value={formData.location}
-                    onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+                    onChange={(e) => {
+                      setFormData((prev) => ({ ...prev, location: e.target.value }));
+                    }}
                   />
                 </div>
               </div>
@@ -503,7 +514,9 @@ function KumbaraPage() {
                   rows={3}
                   className="border-slate-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-xl resize-none"
                   value={formData.address}
-                  onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
+                  onChange={(e) => {
+                    setFormData((prev) => ({ ...prev, address: e.target.value }));
+                  }}
                 />
               </div>
 
@@ -517,7 +530,9 @@ function KumbaraPage() {
                     placeholder="Ahmet Öztürk"
                     className="h-11 border-slate-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-xl"
                     value={formData.contactPerson}
-                    onChange={(e) => setFormData(prev => ({ ...prev, contactPerson: e.target.value }))}
+                    onChange={(e) => {
+                      setFormData((prev) => ({ ...prev, contactPerson: e.target.value }));
+                    }}
                   />
                 </div>
                 <div className="space-y-3">
@@ -529,7 +544,9 @@ function KumbaraPage() {
                     placeholder="0532 123 45 67"
                     className="h-11 border-slate-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-xl"
                     value={formData.phone}
-                    onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                    onChange={(e) => {
+                      setFormData((prev) => ({ ...prev, phone: e.target.value }));
+                    }}
                   />
                 </div>
               </div>
@@ -544,7 +561,9 @@ function KumbaraPage() {
                   rows={3}
                   className="border-slate-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-xl resize-none"
                   value={formData.notes}
-                  onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
+                  onChange={(e) => {
+                    setFormData((prev) => ({ ...prev, notes: e.target.value }));
+                  }}
                 />
               </div>
 
@@ -558,7 +577,7 @@ function KumbaraPage() {
                 >
                   İptal
                 </Button>
-                <Button 
+                <Button
                   className="flex-1 h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 rounded-xl shadow-lg"
                   onClick={handleAddKumbara}
                 >

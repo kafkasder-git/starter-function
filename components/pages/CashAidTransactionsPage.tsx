@@ -1,6 +1,6 @@
 /**
  * @fileoverview CashAidTransactionsPage Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -45,7 +45,7 @@ const initialTransactions: CashTransaction[] = [];
 
 /**
  * CashAidTransactionsPage function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -101,7 +101,7 @@ export function CashAidTransactionsPage() {
       .filter(
         (t) =>
           t.status === 'completed' &&
-          new Date(t.transactionDate).toDateString() === new Date().toDateString(),
+          new Date(t.transactionDate).toDateString() === new Date().toDateString()
       )
       .reduce((sum, t) => sum + t.amount, 0),
   };

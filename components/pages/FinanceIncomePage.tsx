@@ -88,7 +88,7 @@ function FinanceIncomePageContent() {
       const { data, error } = await db.list(collections.FINANCE_TRANSACTIONS, [
         // Assuming field mapping or direct field names
         // Filter by transaction_type: 'income'
-        Query.equal('transaction_type', 'income')
+        Query.equal('transaction_type', 'income'),
       ]);
 
       if (error) {
@@ -126,7 +126,7 @@ function FinanceIncomePageContent() {
       { month: 'Eylül', income: 61000, expense: 39000, balance: 22000 },
       { month: 'Ekim', income: 63800, expense: 49000, balance: 14800 },
     ],
-    [],
+    []
   );
 
   // Calculate current period stats
@@ -345,10 +345,7 @@ function FinanceIncomePageContent() {
             {incomeCategories.map((category) => {
               const percentage = Math.round((category.total / currentStats.totalIncome) * 100);
               return (
-                <div
-                  key={category.category}
-                  className="space-y-2"
-                >
+                <div key={category.category} className="space-y-2">
                   <div className="flex items-center justify-between text-sm">
                     <span className="font-medium text-slate-700">{category.category}</span>
                     <span className="font-semibold text-green-600">
@@ -377,10 +374,7 @@ function FinanceIncomePageContent() {
             {expenseCategories.map((category) => {
               const percentage = Math.round((category.total / currentStats.totalExpense) * 100);
               return (
-                <div
-                  key={category.category}
-                  className="space-y-2"
-                >
+                <div key={category.category} className="space-y-2">
                   <div className="flex items-center justify-between text-sm">
                     <span className="font-medium text-slate-700">{category.category}</span>
                     <span className="font-semibold text-red-600">

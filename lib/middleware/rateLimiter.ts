@@ -11,10 +11,13 @@ interface RateLimitConfig {
   skipFailedRequests?: boolean;
 }
 
-type RateLimitStore = Record<string, {
+type RateLimitStore = Record<
+  string,
+  {
     count: number;
     resetTime: number;
-  }>;
+  }
+>;
 
 class RateLimiter {
   private store: RateLimitStore = {};
@@ -30,7 +33,9 @@ class RateLimiter {
     };
 
     // Cleanup old entries every minute
-    setInterval(() => { this.cleanup(); }, 60000);
+    setInterval(() => {
+      this.cleanup();
+    }, 60000);
   }
 
   /**
@@ -154,11 +159,7 @@ export function getIdentifier(userId?: string): string {
  * Rate limit decorator for functions
  */
 export function rateLimit(limiter: RateLimiter) {
-  return function (
-    target: any,
-    propertyKey: string,
-    descriptor: PropertyDescriptor
-  ) {
+  return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
     const originalMethod = descriptor.value;
 
     descriptor.value = async function (...args: any[]) {

@@ -1,15 +1,15 @@
-"use client"
+'use client';
 
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
 
-import { useFormAutoScroll } from "@/hooks/useFormAutoScroll"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Heading } from "@/components/ui/heading"
-import { Text } from "@/components/ui/text"
+import { useFormAutoScroll } from '@/hooks/useFormAutoScroll';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Heading } from '@/components/ui/heading';
+import { Text } from '@/components/ui/text';
 import {
   Form,
   FormControl,
@@ -18,37 +18,37 @@ import {
   FormLabel,
   FormHelperText,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Separator } from "@/components/ui/separator"
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Separator } from '@/components/ui/separator';
 
 const loginSchema = z.object({
-  email: z.string().email("Please enter a valid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
+  email: z.string().email('Please enter a valid email address'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
   rememberMe: z.boolean().optional(),
-})
+});
 
-type LoginFormValues = z.infer<typeof loginSchema>
+type LoginFormValues = z.infer<typeof loginSchema>;
 
 export function LoginForm() {
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      email: '',
+      password: '',
       rememberMe: false,
     },
-  })
+  });
 
   // Add auto-scroll to first error
   useFormAutoScroll(form, {
     behavior: 'smooth',
     block: 'center',
-  })
+  });
 
   const onSubmit = () => {
     // Handle login logic here
-  }
+  };
 
   return (
     <div className="flex min-h-screen w-full items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
@@ -58,7 +58,7 @@ export function LoginForm() {
             Sign in to your account
           </Heading>
           <Text size="sm" color="neutral" className="mt-2">
-            Or{" "}
+            Or{' '}
             <a href="#" className="font-medium text-primary hover:text-primary/80">
               create a new account
             </a>
@@ -68,9 +68,7 @@ export function LoginForm() {
         <Card>
           <CardHeader>
             <CardTitle>Welcome back</CardTitle>
-            <CardDescription>
-              Enter your credentials to access your account
-            </CardDescription>
+            <CardDescription>Enter your credentials to access your account</CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...form}>
@@ -82,11 +80,7 @@ export function LoginForm() {
                     <FormItem>
                       <FormLabel>Email address</FormLabel>
                       <FormControl>
-                        <Input
-                          type="email"
-                          placeholder="john@example.com"
-                          {...field}
-                        />
+                        <Input type="email" placeholder="john@example.com" {...field} />
                       </FormControl>
                       <FormHelperText variant="default">
                         Enter the email address associated with your account
@@ -103,11 +97,7 @@ export function LoginForm() {
                     <FormItem>
                       <FormLabel>Password</FormLabel>
                       <FormControl>
-                        <Input
-                          type="password"
-                          placeholder="Enter your password"
-                          {...field}
-                        />
+                        <Input type="password" placeholder="Enter your password" {...field} />
                       </FormControl>
                       <FormHelperText variant="default">
                         Password must be at least 8 characters
@@ -124,10 +114,7 @@ export function LoginForm() {
                     render={({ field }) => (
                       <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                         <FormControl>
-                          <Checkbox
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
+                          <Checkbox checked={field.value} onCheckedChange={field.onChange} />
                         </FormControl>
                         <div className="space-y-1 leading-none">
                           <FormLabel>Remember me</FormLabel>
@@ -135,10 +122,7 @@ export function LoginForm() {
                       </FormItem>
                     )}
                   />
-                  <a
-                    href="#"
-                    className="text-sm font-medium text-primary hover:text-primary/80"
-                  >
+                  <a href="#" className="text-sm font-medium text-primary hover:text-primary/80">
                     Forgot password?
                   </a>
                 </div>
@@ -193,5 +177,5 @@ export function LoginForm() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

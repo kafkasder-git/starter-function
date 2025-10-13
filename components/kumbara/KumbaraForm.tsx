@@ -1,6 +1,6 @@
 /**
  * @fileoverview KumbaraForm Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -142,7 +142,7 @@ export type KumbaraFormMode = 'create' | 'edit';
 
 /**
  * KumbaraFormProps Interface
- * 
+ *
  * @interface KumbaraFormProps
  */
 export interface KumbaraFormProps {
@@ -156,7 +156,7 @@ export interface KumbaraFormProps {
 
 /**
  * CollectionFormProps Interface
- * 
+ *
  * @interface CollectionFormProps
  */
 export interface CollectionFormProps {
@@ -173,7 +173,7 @@ export interface CollectionFormProps {
  */
 /**
  * KumbaraForm function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -249,7 +249,7 @@ export function KumbaraForm({
   const isLoading = loading ?? isSubmitting;
 
   return (
-    <Card className={`border-0 shadow-xl bg-white/95 backdrop-blur-sm ${className}`}>
+    <Card className={`border-none shadow-xl bg-white/95 backdrop-blur-sm ${className}`}>
       <CardHeader className="space-y-3 pb-6">
         <CardTitle className="text-2xl text-slate-800 flex items-center gap-3">
           <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
@@ -488,7 +488,7 @@ export function KumbaraForm({
  */
 /**
  * CollectionForm function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -552,7 +552,7 @@ export function CollectionForm({
   const isLoading = loading ?? isSubmitting;
 
   return (
-    <Card className={`border-0 shadow-xl bg-white/95 backdrop-blur-sm ${className}`}>
+    <Card className={`border-none shadow-xl bg-white/95 backdrop-blur-sm ${className}`}>
       <CardHeader className="space-y-3 pb-6">
         <CardTitle className="text-2xl text-slate-800 flex items-center gap-3">
           <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center">

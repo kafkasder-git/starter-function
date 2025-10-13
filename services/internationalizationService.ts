@@ -12,7 +12,7 @@ export type SupportedLanguage = 'tr' | 'en' | 'ar' | 'ku' | 'de' | 'fr' | 'es';
 // Dil ayarları
 /**
  * LanguageSettings Interface
- * 
+ *
  * @interface LanguageSettings
  */
 export interface LanguageSettings {
@@ -28,7 +28,7 @@ export interface LanguageSettings {
 // Çeviri anahtarları
 /**
  * TranslationKeys Interface
- * 
+ *
  * @interface TranslationKeys
  */
 export interface TranslationKeys {
@@ -625,7 +625,7 @@ class InternationalizationService {
         'lang-ku',
         'lang-de',
         'lang-fr',
-        'lang-es',
+        'lang-es'
       );
       html.classList.add(`lang-${this.currentLanguage}`);
 
@@ -692,7 +692,7 @@ class InternationalizationService {
       window.dispatchEvent(
         new CustomEvent('languageChanged', {
           detail: { language, settings: this.settings },
-        }),
+        })
       );
     }
   }

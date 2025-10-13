@@ -24,7 +24,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/kibo-ui';
+} from '@/components/ui';
 
 // Form validation schema
 const formSchema = z.object({
@@ -70,7 +70,11 @@ export const KiboUIExample: React.FC = () => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'Active':
-        return <Badge variant="default" className="bg-green-100 text-green-800">Active</Badge>;
+        return (
+          <Badge variant="default" className="bg-green-100 text-green-800">
+            Active
+          </Badge>
+        );
       case 'Inactive':
         return <Badge variant="secondary">Inactive</Badge>;
       default:
@@ -105,9 +109,9 @@ export const KiboUIExample: React.FC = () => {
                   <FormItem>
                     <FormLabel>Full Name *</FormLabel>
                     <FormControl>
-                      <Input 
-                        placeholder="Enter your full name" 
-                        {...field} 
+                      <Input
+                        placeholder="Enter your full name"
+                        {...field}
                         clearable
                         helperText="This will be displayed on your profile"
                       />
@@ -124,12 +128,7 @@ export const KiboUIExample: React.FC = () => {
                   <FormItem>
                     <FormLabel>Email Address *</FormLabel>
                     <FormControl>
-                      <Input 
-                        type="email" 
-                        placeholder="Enter your email" 
-                        {...field}
-                        clearable
-                      />
+                      <Input type="email" placeholder="Enter your email" {...field} clearable />
                     </FormControl>
                     <FormDescription>
                       We&apos;ll use this to send you important updates
@@ -146,11 +145,13 @@ export const KiboUIExample: React.FC = () => {
                   <FormItem>
                     <FormLabel>Age *</FormLabel>
                     <FormControl>
-                      <Input 
-                        type="number" 
-                        placeholder="Enter your age" 
+                      <Input
+                        type="number"
+                        placeholder="Enter your age"
                         {...field}
-                        onChange={(e) => { field.onChange(parseInt(e.target.value) || 0); }}
+                        onChange={(e) => {
+                          field.onChange(parseInt(e.target.value) || 0);
+                        }}
                       />
                     </FormControl>
                     <FormMessage />
@@ -159,18 +160,20 @@ export const KiboUIExample: React.FC = () => {
               />
 
               <div className="flex gap-4">
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   className="flex-1"
                   loading={form.formState.isSubmitting}
                   loadingText="Creating User..."
                 >
                   Create User
                 </Button>
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  onClick={() => { form.reset(); }}
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    form.reset();
+                  }}
                 >
                   Reset Form
                 </Button>
@@ -231,9 +234,7 @@ export const KiboUIExample: React.FC = () => {
       <Card>
         <CardHeader>
           <CardTitle>Button Variants</CardTitle>
-          <CardDescription>
-            Different button styles and states available in Kibo UI
-          </CardDescription>
+          <CardDescription>Different button styles and states available in Kibo UI</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-4">
@@ -277,9 +278,7 @@ export const KiboUIExample: React.FC = () => {
       <Card>
         <CardHeader>
           <CardTitle>Input Variants</CardTitle>
-          <CardDescription>
-            Different input styles and states available in Kibo UI
-          </CardDescription>
+          <CardDescription>Different input styles and states available in Kibo UI</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-6">
@@ -309,15 +308,11 @@ export const KiboUIExample: React.FC = () => {
               <div className="space-y-3">
                 <Input placeholder="Clearable input" clearable />
                 <Input type="password" placeholder="Password input" />
-                <Input 
-                  placeholder="Input with helper text" 
+                <Input
+                  placeholder="Input with helper text"
                   helperText="This is helpful information"
                 />
-                <Input 
-                  placeholder="Input with character limit" 
-                  maxLength={50}
-                  showCharacterCount
-                />
+                <Input placeholder="Input with character limit" maxLength={50} showCharacterCount />
               </div>
             </div>
           </div>

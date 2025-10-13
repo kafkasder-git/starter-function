@@ -40,12 +40,14 @@ export function NewConversationDialog({
   open,
   onOpenChange,
   onConversationCreated,
-  className
+  className,
 }: NewConversationDialogProps) {
   const { user: currentUser } = useAuthStore();
-  
+
   // State
-  const [conversationType, setConversationType] = useState<ConversationType>(ConversationType.DIRECT);
+  const [conversationType, setConversationType] = useState<ConversationType>(
+    ConversationType.DIRECT
+  );
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [groupName, setGroupName] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
@@ -70,14 +72,11 @@ export function NewConversationDialog({
   const loadUsers = async () => {
     try {
       setLoading(true);
-      
-      const { data: userProfiles, error } = await db.list(
-        collections.USER_PROFILES,
-        [
-          queryHelpers.equal('is_active', true),
-          queryHelpers.orderAsc('name')
-        ]
-      );
+
+      const { data: userProfiles, error } = await db.list(collections.USER_PROFILES, [
+        queryHelpers.equal('is_active', true),
+        queryHelpers.orderAsc('name'),
+      ]);
 
       if (error) {
         console.error('Failed to load users:', error);
@@ -91,7 +90,7 @@ export function NewConversationDialog({
           name: profile.name || profile.email?.split('@')[0] || 'Unknown User',
           email: profile.email || '',
           role: profile.role || 'viewer',
-          avatar: profile.avatar_url
+          avatar: profile.avatar_url,
         }));
 
       setUsers(userList);
@@ -103,30 +102,30 @@ export function NewConversationDialog({
   };
 
   // Filter users based on search term
-  const filteredUsers = users.filter(user =>
-    user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredUsers = users.filter(
+    (user) =>
+      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Handle user selection
   const toggleUserSelection = (userId: string) => {
-    setSelectedUsers(prev => {
+    setSelectedUsers((prev) => {
       if (prev.includes(userId)) {
-        return prev.filter(id => id !== userId);
-      } 
-        // For direct messages, only allow one user
-        if (conversationType === ConversationType.DIRECT) {
-          return [userId];
-        }
-        return [...prev, userId];
-      
+        return prev.filter((id) => id !== userId);
+      }
+      // For direct messages, only allow one user
+      if (conversationType === ConversationType.DIRECT) {
+        return [userId];
+      }
+      return [...prev, userId];
     });
   };
 
   // Handle conversation type change
   const handleConversationTypeChange = (type: ConversationType) => {
     setConversationType(type);
-    
+
     // Clear selections when switching types
     setSelectedUsers([]);
     setGroupName('');
@@ -162,12 +161,11 @@ export function NewConversationDialog({
       const conversation = await messagingService.createConversation({
         type: conversationType,
         participantIds: selectedUsers,
-        name: conversationType === ConversationType.GROUP ? groupName : undefined
+        name: conversationType === ConversationType.GROUP ? groupName : undefined,
       });
 
       onConversationCreated(conversation.id);
       onOpenChange(false);
-
     } catch (error) {
       console.error('Failed to create conversation:', error);
       alert('Konuşma oluşturulamadı. Lütfen tekrar deneyin.');
@@ -184,7 +182,12 @@ export function NewConversationDialog({
   // Get user initials
   const getUserInitials = (user: User) => {
     const name = getUserDisplayName(user);
-    return name.split(' ').map(n => n.charAt(0)).join('').toUpperCase().slice(0, 2);
+    return name
+      .split(' ')
+      .map((n) => n.charAt(0))
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
   };
 
   return (
@@ -204,7 +207,9 @@ export function NewConversationDialog({
             <div className="flex gap-4">
               <Button
                 variant={conversationType === ConversationType.DIRECT ? 'default' : 'outline'}
-                onClick={() => { handleConversationTypeChange(ConversationType.DIRECT); }}
+                onClick={() => {
+                  handleConversationTypeChange(ConversationType.DIRECT);
+                }}
                 className="flex items-center gap-2"
               >
                 <MessageCircle className="h-4 w-4" />
@@ -212,7 +217,9 @@ export function NewConversationDialog({
               </Button>
               <Button
                 variant={conversationType === ConversationType.GROUP ? 'default' : 'outline'}
-                onClick={() => { handleConversationTypeChange(ConversationType.GROUP); }}
+                onClick={() => {
+                  handleConversationTypeChange(ConversationType.GROUP);
+                }}
                 className="flex items-center gap-2"
               >
                 <Users className="h-4 w-4" />
@@ -228,7 +235,9 @@ export function NewConversationDialog({
               <Input
                 id="groupName"
                 value={groupName}
-                onChange={(e) => { setGroupName(e.target.value); }}
+                onChange={(e) => {
+                  setGroupName(e.target.value);
+                }}
                 placeholder="Grup adını girin..."
                 maxLength={50}
               />
@@ -240,22 +249,22 @@ export function NewConversationDialog({
             <div className="space-y-2">
               <Label>Seçilen Kişiler ({selectedUsers.length})</Label>
               <div className="flex flex-wrap gap-2">
-                {selectedUsers.map(userId => {
-                  const user = users.find(u => u.id === userId);
+                {selectedUsers.map((userId) => {
+                  const user = users.find((u) => u.id === userId);
                   if (!user) return null;
 
                   return (
                     <Badge key={userId} variant="secondary" className="flex items-center gap-2">
                       <Avatar className="h-4 w-4">
-                        <AvatarFallback className="text-xs">
-                          {getUserInitials(user)}
-                        </AvatarFallback>
+                        <AvatarFallback className="text-xs">{getUserInitials(user)}</AvatarFallback>
                       </Avatar>
                       {getUserDisplayName(user)}
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => { toggleUserSelection(userId); }}
+                        onClick={() => {
+                          toggleUserSelection(userId);
+                        }}
                         className="h-4 w-4 p-0 hover:bg-transparent"
                       >
                         <X className="h-3 w-3" />
@@ -273,7 +282,9 @@ export function NewConversationDialog({
             <Input
               placeholder="Kişi ara..."
               value={searchTerm}
-              onChange={(e) => { setSearchTerm(e.target.value); }}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+              }}
             />
           </div>
 
@@ -299,14 +310,16 @@ export function NewConversationDialog({
                 </div>
               ) : (
                 <div className="p-2 space-y-1">
-                  {filteredUsers.map(user => (
+                  {filteredUsers.map((user) => (
                     <div
                       key={user.id}
                       className={cn(
                         'flex items-center gap-3 p-2 rounded-md cursor-pointer hover:bg-gray-50 transition-colors',
                         selectedUsers.includes(user.id) && 'bg-blue-50 border border-blue-200'
                       )}
-                      onClick={() => { toggleUserSelection(user.id); }}
+                      onClick={() => {
+                        toggleUserSelection(user.id);
+                      }}
                     >
                       <Avatar className="h-8 w-8">
                         <AvatarFallback className="bg-gray-200 text-gray-600 text-xs">
@@ -318,9 +331,7 @@ export function NewConversationDialog({
                         <p className="text-sm font-medium text-gray-900 truncate">
                           {getUserDisplayName(user)}
                         </p>
-                        <p className="text-xs text-gray-500 truncate">
-                          {user.email}
-                        </p>
+                        <p className="text-xs text-gray-500 truncate">{user.email}</p>
                       </div>
 
                       <div className="flex items-center gap-2">
@@ -343,14 +354,20 @@ export function NewConversationDialog({
         <div className="flex justify-end gap-3 pt-4 border-t">
           <Button
             variant="outline"
-            onClick={() => { onOpenChange(false); }}
+            onClick={() => {
+              onOpenChange(false);
+            }}
             disabled={creating}
           >
             İptal
           </Button>
           <Button
             onClick={handleCreateConversation}
-            disabled={creating || selectedUsers.length === 0 || (conversationType === ConversationType.GROUP && !groupName.trim())}
+            disabled={
+              creating ||
+              selectedUsers.length === 0 ||
+              (conversationType === ConversationType.GROUP && !groupName.trim())
+            }
           >
             {creating ? (
               <>

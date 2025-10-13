@@ -82,7 +82,7 @@ export function useUserPreferences() {
 
   const updatePreference = <K extends keyof typeof preferences>(
     key: K,
-    value: (typeof preferences)[K],
+    value: (typeof preferences)[K]
   ) => {
     setPreferences((prev) => ({
       ...prev,

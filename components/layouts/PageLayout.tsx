@@ -65,8 +65,19 @@ export function PageLayout({
                   </Button>
                 )}
                 <div className="min-w-0 flex-1">
-                  <Heading level={1} size="2xl" weight="medium" className="line-clamp-2 break-words">{title}</Heading>
-                  {subtitle && <Text size="sm" color="neutral" className="mt-1 line-clamp-2 break-words">{subtitle}</Text>}
+                  <Heading
+                    level={1}
+                    size="2xl"
+                    weight="medium"
+                    className="line-clamp-2 break-words"
+                  >
+                    {title}
+                  </Heading>
+                  {subtitle && (
+                    <Text size="sm" color="neutral" className="mt-1 line-clamp-2 break-words">
+                      {subtitle}
+                    </Text>
+                  )}
                 </div>
               </div>
 

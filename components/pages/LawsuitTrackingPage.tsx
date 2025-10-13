@@ -124,7 +124,13 @@ export function LawsuitTrackingPage() {
     };
 
     const { label, className } = config[stage];
-    return <Badge className={`${className} text-xs px-2 py-1 border border-gray-200 dark:border-gray-700 dark:bg-gray-900`}>{label}</Badge>;
+    return (
+      <Badge
+        className={`${className} text-xs px-2 py-1 border border-gray-200 dark:border-gray-700 dark:bg-gray-900`}
+      >
+        {label}
+      </Badge>
+    );
   };
 
   const getTypeLabel = (type: Lawsuit['caseType']) => {
@@ -353,12 +359,16 @@ export function LawsuitTrackingPage() {
                     </div>
                     <div className="flex items-center gap-2 text-sm">
                       <Calendar className="w-4 h-4 text-muted-foreground" />
-                      <span className="truncate">Başlangıç: {formatDateUtil(lawsuit.startDate)}</span>
+                      <span className="truncate">
+                        Başlangıç: {formatDateUtil(lawsuit.startDate)}
+                      </span>
                     </div>
                     {lawsuit.nextHearing && (
                       <div className="flex items-center gap-2 text-sm">
                         <Clock className="w-4 h-4 text-muted-foreground" />
-                        <span className="truncate">Duruşma: {formatDateUtil(lawsuit.nextHearing)}</span>
+                        <span className="truncate">
+                          Duruşma: {formatDateUtil(lawsuit.nextHearing)}
+                        </span>
                       </div>
                     )}
                   </div>

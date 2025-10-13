@@ -146,10 +146,11 @@ export function PartnersPage() {
     }
   };
 
-  const filteredPartners = partners.filter(partner => {
-    const matchesSearch = partner.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         partner.contactPerson.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         partner.email.toLowerCase().includes(searchQuery.toLowerCase());
+  const filteredPartners = partners.filter((partner) => {
+    const matchesSearch =
+      partner.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      partner.contactPerson.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      partner.email.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesType = typeFilter === 'all' || partner.type === typeFilter;
     return matchesSearch && matchesType;
   });
@@ -191,7 +192,9 @@ export function PartnersPage() {
               </div>
               <div>
                 <p className="text-sm text-gray-600">Bağışçı Kurumlar</p>
-                <p className="text-xl font-bold">{partners.filter(p => p.type === 'donor').length}</p>
+                <p className="text-xl font-bold">
+                  {partners.filter((p) => p.type === 'donor').length}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -204,7 +207,9 @@ export function PartnersPage() {
               </div>
               <div>
                 <p className="text-sm text-gray-600">Devlet Kurumları</p>
-                <p className="text-xl font-bold">{partners.filter(p => p.type === 'government').length}</p>
+                <p className="text-xl font-bold">
+                  {partners.filter((p) => p.type === 'government').length}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -217,7 +222,9 @@ export function PartnersPage() {
               </div>
               <div>
                 <p className="text-sm text-gray-600">Tedarikçiler</p>
-                <p className="text-xl font-bold">{partners.filter(p => p.type === 'supplier').length}</p>
+                <p className="text-xl font-bold">
+                  {partners.filter((p) => p.type === 'supplier').length}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -230,7 +237,9 @@ export function PartnersPage() {
               </div>
               <div>
                 <p className="text-sm text-gray-600">Sponsor Kuruluşlar</p>
-                <p className="text-xl font-bold">{partners.filter(p => p.type === 'sponsor').length}</p>
+                <p className="text-xl font-bold">
+                  {partners.filter((p) => p.type === 'sponsor').length}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -246,7 +255,9 @@ export function PartnersPage() {
               <Input
                 placeholder="Partner ara..."
                 value={searchQuery}
-                onChange={(e) => { setSearchQuery(e.target.value); }}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                }}
                 className="pl-10"
               />
             </div>
@@ -274,7 +285,10 @@ export function PartnersPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           {filteredPartners.map((partner) => (
-            <div key={partner.id} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
+            <div
+              key={partner.id}
+              className="border rounded-lg p-4 hover:bg-gray-50 transition-colors"
+            >
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
@@ -283,8 +297,11 @@ export function PartnersPage() {
                       {getTypeLabel(partner.type)}
                     </Badge>
                     <Badge className={getStatusColor(partner.status)}>
-                      {partner.status === 'active' ? 'Aktif' : 
-                       partner.status === 'inactive' ? 'Pasif' : 'Beklemede'}
+                      {partner.status === 'active'
+                        ? 'Aktif'
+                        : partner.status === 'inactive'
+                          ? 'Pasif'
+                          : 'Beklemede'}
                     </Badge>
                   </div>
                   <p className="text-gray-600 mb-3">{partner.description}</p>
@@ -313,9 +330,7 @@ export function PartnersPage() {
                         <Building2 className="h-4 w-4 text-gray-500" />
                         <span>{partner.address}</span>
                       </div>
-                      <div className="text-gray-500">
-                        Ortaklık: {partner.partnershipDate}
-                      </div>
+                      <div className="text-gray-500">Ortaklık: {partner.partnershipDate}</div>
                     </div>
                   </div>
                 </div>
@@ -323,9 +338,7 @@ export function PartnersPage() {
                   <Button variant="outline" size="sm">
                     Düzenle
                   </Button>
-                  <Button size="sm">
-                    Detaylar
-                  </Button>
+                  <Button size="sm">Detaylar</Button>
                 </div>
               </div>
             </div>

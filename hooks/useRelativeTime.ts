@@ -63,9 +63,7 @@ export function useRelativeTime(
   options?: UseRelativeTimeOptions
 ): string {
   // Format initial time
-  const [relativeTime, setRelativeTime] = useState<string>(() =>
-    formatRelativeTime(date)
-  );
+  const [relativeTime, setRelativeTime] = useState<string>(() => formatRelativeTime(date));
 
   // Store interval ID for cleanup
   const intervalIdRef = useRef<number | null>(null);
@@ -81,9 +79,10 @@ export function useRelativeTime(
     }
 
     // Calculate update interval
-    const interval = options?.updateInterval !== undefined
-      ? options.updateInterval
-      : getRelativeTimeUpdateInterval(date);
+    const interval =
+      options?.updateInterval !== undefined
+        ? options.updateInterval
+        : getRelativeTimeUpdateInterval(date);
 
     // If interval is null, date is too old for auto-updates
     if (interval === null) {
@@ -106,4 +105,3 @@ export function useRelativeTime(
 
   return relativeTime;
 }
-

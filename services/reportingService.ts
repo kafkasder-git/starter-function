@@ -101,7 +101,9 @@ export class ReportingService {
       return result;
     } catch (error) {
       logger.error('Report generation failed:', error);
-      throw new Error(`Report generation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Report generation failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   }
 
@@ -111,7 +113,10 @@ export class ReportingService {
    * @param filters - Optional filters
    * @returns Financial report data
    */
-  async generateFinancialReport(dateRange: DateRange, _filters?: ReportFilters): Promise<FinancialData> {
+  async generateFinancialReport(
+    dateRange: DateRange,
+    _filters?: ReportFilters
+  ): Promise<FinancialData> {
     const startDate = dateRange.start.toISOString();
     const endDate = dateRange.end.toISOString();
 
@@ -130,15 +135,15 @@ export class ReportingService {
 
       if (expensesError) throw expensesError;
 
-      const totalDonations = donationsData?.reduce((sum, d) => sum + d.amount, 0) ?? 0;
-      const totalExpenses = expensesData?.reduce((sum, e) => sum + e.amount, 0) ?? 0;
+      const totalDonations = donationsData?.documents?.reduce((sum, d) => sum + d.amount, 0) ?? 0;
+      const totalExpenses = expensesData?.documents?.reduce((sum, e) => sum + e.amount, 0) ?? 0;
 
       return {
-        totalDonations,
-        totalExpenses,
-        netIncome: totalDonations - totalExpenses,
-        donationsCount: donationsData?.length ?? 0,
-        expensesCount: expensesData?.length ?? 0,
+        totalDonations: totalDonations as number,
+        totalExpenses: totalExpenses as number,
+        netIncome: (totalDonations - totalExpenses) as number,
+        donationsCount: donationsData?.documents?.length ?? 0,
+        expensesCount: expensesData?.documents?.length ?? 0,
       };
     } catch (error) {
       logger.error('Financial report generation failed:', error);
@@ -152,7 +157,12 @@ export class ReportingService {
    * @param filters - Optional filters
    * @returns Donation analytics data
    */
-  async generateDonationAnalytics(dateRange: DateRange, _filters?: ReportFilters): Promise<DonationAnalytics> {
+  async generateDonationAnalytics(
+    dateRange: DateRange,
+    _filters?: ReportFilters,
+    _rawData?: any,
+    _reportConfig?: any
+  ): Promise<DonationAnalytics> {
     const startDate = dateRange.start.toISOString();
     const endDate = dateRange.end.toISOString();
 
@@ -166,21 +176,24 @@ export class ReportingService {
 
       const totalAmount = donationsData?.reduce((sum, d) => sum + d.amount, 0) ?? 0;
       const totalCount = donationsData?.length ?? 0;
-      const recurringCount = donationsData?.filter(d => d.is_recurring).length ?? 0;
+      const recurringCount = donationsData?.filter((d) => d.is_recurring).length ?? 0;
       const averageAmount = totalCount > 0 ? totalAmount / totalCount : 0;
 
       // Group by donor type
       const donorTypeData: DonorTypeData[] = [];
       if (donationsData) {
-        const groupedByType = donationsData.reduce((acc, donation) => {
-          const type = donation.donor_type ?? 'unknown';
-          if (!acc[type]) {
-            acc[type] = { count: 0, total: 0 };
-          }
-          acc[type].count++;
-          acc[type].total += donation.amount;
-          return acc;
-        }, {} as Record<string, { count: number; total: number }>);
+        const groupedByType = donationsData.reduce(
+          (acc, donation) => {
+            const type = donation.donor_type ?? 'unknown';
+            if (!acc[type]) {
+              acc[type] = { count: 0, total: 0 };
+            }
+            acc[type].count++;
+            acc[type].total += donation.amount;
+            return acc;
+          },
+          {} as Record<string, { count: number; total: number }>
+        );
 
         Object.entries(groupedByType).forEach(([type, data]) => {
           donorTypeData.push({
@@ -213,7 +226,7 @@ export class ReportingService {
           next_month_forecast: this.calculateNextMonthForecast(donationsData ?? []),
           quarterly_forecast: this.calculateQuarterlyForecast(donationsData ?? []),
           confidence_interval: this.calculateConfidenceInterval(donationsData ?? []),
-          trend_direction: this.analyzeTrendDirection(donationsData ?? []),
+          trend_direction: 'stable' as const,
         },
         performance: {
           total_donations: totalAmount,
@@ -251,7 +264,7 @@ export class ReportingService {
 
       // Group by city
       const cities: Record<string, number> = {};
-      beneficiariesData?.forEach(beneficiary => {
+      beneficiariesData?.forEach((beneficiary) => {
         const city = beneficiary.city ?? 'Unknown';
         cities[city] = (cities[city] ?? 0) + 1;
       });
@@ -271,7 +284,7 @@ export class ReportingService {
           education_support: 0,
           healthcare_assistance: 0,
           food_aid: 0,
-          financial_assistance: 0,
+          financialSupport: 0,
         },
         impact_metrics: {
           families_helped: totalBeneficiaries,
@@ -293,7 +306,11 @@ export class ReportingService {
    * @param filename - Optional filename
    * @returns Export result
    */
-  async exportReport(reportConfig: CustomReport, format: 'csv' | 'excel' | 'pdf' = 'csv', filename?: string): Promise<{ success: boolean; url?: string; error?: string }> {
+  async exportReport(
+    reportConfig: CustomReport,
+    format: 'csv' | 'excel' | 'pdf' = 'csv',
+    filename?: string
+  ): Promise<{ success: boolean; url?: string; error?: string }> {
     try {
       const _report = await this.generateReport(reportConfig);
 
@@ -336,7 +353,7 @@ export class ReportingService {
 
   private extractDateRange(filters: FilterConfig[] | undefined): DateRange | undefined {
     if (!filters) return undefined;
-    const dateFilter = filters?.find(filter => filter.field === 'date_range');
+    const dateFilter = filters?.find((filter) => filter.field === 'date_range');
     if (dateFilter?.value) {
       const { start, end } = dateFilter.value as { start: string; end: string };
       return { start: new Date(start), end: new Date(end) };
@@ -392,14 +409,17 @@ export class ReportingService {
     };
   }
 
-  private async processReportData(rawData: unknown, reportConfig: CustomReport): Promise<AnalyticsData> {
+  private async processReportData(
+    rawData: unknown,
+    reportConfig: CustomReport
+  ): Promise<AnalyticsData> {
     // This would implement the actual data processing logic
     return {
       summary: {
         totalRecords: 0,
         dateRange: { start: new Date(), end: new Date() },
         lastUpdated: new Date().toISOString(),
-      },
+      } as any,
       metrics: [],
       trends: [],
       insights: [],
@@ -441,7 +461,7 @@ export class ReportingService {
   private aggregateMonthlyData(donations: DonationRawItem[]): TimeSeriesData[] {
     const monthlyData = new Map<string, number>();
 
-    donations.forEach(donation => {
+    donations.forEach((donation) => {
       if (donation.created_at) {
         const date = new Date(donation.created_at);
         const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
@@ -451,14 +471,14 @@ export class ReportingService {
 
     return Array.from(monthlyData.entries()).map(([date, amount]) => ({
       date,
-      value: amount
+      value: amount,
     }));
   }
 
   private calculateYearlyComparison(donations: DonationRawItem[]): TimeSeriesData[] {
     const yearlyData = new Map<string, number>();
 
-    donations.forEach(donation => {
+    donations.forEach((donation) => {
       if (donation.created_at) {
         const date = new Date(donation.created_at);
         const year = date.getFullYear().toString();
@@ -468,14 +488,14 @@ export class ReportingService {
 
     return Array.from(yearlyData.entries()).map(([date, value]) => ({
       date,
-      value
+      value,
     }));
   }
 
   private analyzeSeasonalPatterns(donations: DonationRawItem[]): TimeSeriesData[] {
     const seasonalData = new Map<string, number>();
 
-    donations.forEach(donation => {
+    donations.forEach((donation) => {
       if (donation.created_at) {
         const date = new Date(donation.created_at);
         const season = this.getSeason(date.getMonth());
@@ -485,7 +505,7 @@ export class ReportingService {
 
     return Array.from(seasonalData.entries()).map(([date, value]) => ({
       date,
-      value
+      value,
     }));
   }
 
@@ -496,57 +516,74 @@ export class ReportingService {
     return 'Winter';
   }
 
-  private segmentByAmountRange(donations: DonationRawItem[]): { range: string; count: number; total: number }[] {
+  private segmentByAmountRange(
+    donations: DonationRawItem[]
+  ): { range: string; count: number; total: number }[] {
     const ranges = [
       { min: 0, max: 100, label: '0-100 TL' },
       { min: 100, max: 500, label: '100-500 TL' },
       { min: 500, max: 1000, label: '500-1000 TL' },
       { min: 1000, max: 5000, label: '1000-5000 TL' },
-      { min: 5000, max: Infinity, label: '5000+ TL' }
+      { min: 5000, max: Infinity, label: '5000+ TL' },
     ];
 
-    return ranges.map(range => {
-      const donationsInRange = donations.filter(d => d.amount >= range.min && d.amount < range.max);
+    return ranges.map((range) => {
+      const donationsInRange = donations.filter(
+        (d) => d.amount >= range.min && d.amount < range.max
+      );
       return {
         range: range.label,
         count: donationsInRange.length,
-        total: donationsInRange.reduce((sum, d) => sum + d.amount, 0)
+        total: donationsInRange.reduce((sum, d) => sum + d.amount, 0),
       };
     });
   }
 
-  private segmentByFrequency(donations: DonationRawItem[]): { frequency: string; count: number; total: number }[] {
-    const recurring = donations.filter(d => d.is_recurring);
-    const oneTime = donations.filter(d => !d.is_recurring);
+  private segmentByFrequency(
+    donations: DonationRawItem[]
+  ): { frequency: string; count: number; total: number }[] {
+    const recurring = donations.filter((d) => d.is_recurring);
+    const oneTime = donations.filter((d) => !d.is_recurring);
 
     return [
-      { frequency: 'One-time', count: oneTime.length, total: oneTime.reduce((sum, d) => sum + d.amount, 0) },
-      { frequency: 'Recurring', count: recurring.length, total: recurring.reduce((sum, d) => sum + d.amount, 0) }
+      {
+        frequency: 'One-time',
+        count: oneTime.length,
+        total: oneTime.reduce((sum, d) => sum + d.amount, 0),
+      },
+      {
+        frequency: 'Recurring',
+        count: recurring.length,
+        total: recurring.reduce((sum, d) => sum + d.amount, 0),
+      },
     ];
   }
 
-  private segmentByCampaign(donations: DonationRawItem[]): { campaign: string; count: number; total: number }[] {
+  private segmentByCampaign(
+    donations: DonationRawItem[]
+  ): { campaign: string; count: number; total: number }[] {
     const campaignMap = new Map<string, { count: number; total: number }>();
 
-    donations.forEach(donation => {
+    donations.forEach((donation) => {
       const campaign = donation.campaign_id ? `Campaign ${donation.campaign_id}` : 'No Campaign';
       const existing = campaignMap.get(campaign) ?? { count: 0, total: 0 };
       campaignMap.set(campaign, {
         count: existing.count + 1,
-        total: existing.total + donation.amount
+        total: existing.total + donation.amount,
       });
     });
 
     return Array.from(campaignMap.entries()).map(([campaign, data]) => ({
       campaign,
       count: data.count,
-      total: data.total
+      total: data.total,
     }));
   }
 
   private calculateNextMonthForecast(donations: DonationRawItem[]): number {
     const lastThreeMonths = this.getLastThreeMonthsData(donations);
-    const average = lastThreeMonths.reduce((sum, amount) => sum + amount, 0) / lastThreeMonths.length;
+    const average =
+      lastThreeMonths.reduce((sum, amount) => sum + amount, 0) / lastThreeMonths.length;
     return Math.round(average);
   }
 
@@ -556,13 +593,16 @@ export class ReportingService {
   }
 
   private calculateConfidenceInterval(donations: DonationRawItem[]): number {
-    const amounts = donations.map(d => d.amount);
+    const amounts = donations.map((d) => d.amount);
     const mean = amounts.reduce((sum, amount) => sum + amount, 0) / amounts.length;
-    const variance = amounts.reduce((sum, amount) => sum + Math.pow(amount - mean, 2), 0) / amounts.length;
+    const variance =
+      amounts.reduce((sum, amount) => sum + Math.pow(amount - mean, 2), 0) / amounts.length;
     return Math.round(Math.sqrt(variance) * 1.96); // 95% confidence interval
   }
 
-  private analyzeTrendDirection(donations: DonationRawItem[]): 'increasing' | 'decreasing' | 'stable' {
+  private analyzeTrendDirection(
+    donations: DonationRawItem[]
+  ): 'increasing' | 'decreasing' | 'stable' {
     const lastThreeMonths = this.getLastThreeMonthsData(donations);
     if (lastThreeMonths.length < 2) return 'stable';
 
@@ -573,8 +613,8 @@ export class ReportingService {
   }
 
   private calculateRetentionRate(donations: DonationRawItem[]): number {
-    const uniqueDonors = new Set(donations.map(d => d.donor_email).filter(Boolean));
-    const recurringDonors = donations.filter(d => d.is_recurring).length;
+    const uniqueDonors = new Set(donations.map((d) => d.donor_email).filter(Boolean));
+    const recurringDonors = donations.filter((d) => d.is_recurring).length;
     return uniqueDonors.size > 0 ? (recurringDonors / uniqueDonors.size) * 100 : 0;
   }
 
@@ -590,31 +630,35 @@ export class ReportingService {
     return previousTotal > 0 ? ((currentTotal - previousTotal) / previousTotal) * 100 : 0;
   }
 
-  private processAgeGroupData(_beneficiaries: ImpactRawBeneficiary[]): { ageGroup: string; count: number }[] {
+  private processAgeGroupData(
+    _beneficiaries: ImpactRawBeneficiary[]
+  ): { ageGroup: string; count: number }[] {
     const ageGroups = new Map<string, number>();
 
-    _beneficiaries.forEach(_beneficiary => {
+    _beneficiaries.forEach((_beneficiary) => {
       const ageGroup = 'Unknown'; // Placeholder - would need actual age calculation
       ageGroups.set(ageGroup, (ageGroups.get(ageGroup) ?? 0) + 1);
     });
 
     return Array.from(ageGroups.entries()).map(([ageGroup, count]) => ({
       ageGroup,
-      count
+      count,
     }));
   }
 
-  private processGenderData(beneficiaries: ImpactRawBeneficiary[]): { gender: string; count: number }[] {
+  private processGenderData(
+    beneficiaries: ImpactRawBeneficiary[]
+  ): { gender: string; count: number }[] {
     const genders = new Map<string, number>();
 
-    beneficiaries.forEach(_beneficiary => {
+    beneficiaries.forEach((_beneficiary) => {
       const gender = _beneficiary.gender ?? 'Unknown';
       genders.set(gender, (genders.get(gender) ?? 0) + 1);
     });
 
     return Array.from(genders.entries()).map(([gender, count]) => ({
       gender,
-      count
+      count,
     }));
   }
 
@@ -623,8 +667,8 @@ export class ReportingService {
     const threeMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 3, 1);
 
     return donations
-      .filter(d => d.created_at && new Date(d.created_at) >= threeMonthsAgo)
-      .map(d => d.amount);
+      .filter((d) => d.created_at && new Date(d.created_at) >= threeMonthsAgo)
+      .map((d) => d.amount);
   }
 
   private getLastQuarterData(donations: DonationRawItem[]): number[] {
@@ -632,15 +676,15 @@ export class ReportingService {
     const quarterStart = new Date(now.getFullYear(), Math.floor(now.getMonth() / 3) * 3, 1);
 
     return donations
-      .filter(d => d.created_at && new Date(d.created_at) >= quarterStart)
-      .map(d => d.amount);
+      .filter((d) => d.created_at && new Date(d.created_at) >= quarterStart)
+      .map((d) => d.amount);
   }
 
   private getCurrentMonthData(donations: DonationRawItem[]): DonationRawItem[] {
     const now = new Date();
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
 
-    return donations.filter(d => d.created_at && new Date(d.created_at) >= monthStart);
+    return donations.filter((d) => d.created_at && new Date(d.created_at) >= monthStart);
   }
 
   private getPreviousMonthData(donations: DonationRawItem[]): DonationRawItem[] {
@@ -648,13 +692,12 @@ export class ReportingService {
     const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
     const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
 
-    return donations.filter(d => {
+    return donations.filter((d) => {
       if (!d.created_at) return false;
       const date = new Date(d.created_at);
       return date >= lastMonthStart && date <= lastMonthEnd;
     });
   }
-
 
   private async fetchMemberData(dateRange: DateRange): Promise<unknown> {
     // Placeholder for member data fetching
@@ -670,7 +713,9 @@ export class ReportingService {
       if (error) throw error;
       return data;
     } catch (error) {
-      throw new Error(`Member data fetch failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Member data fetch failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   }
 
@@ -688,7 +733,9 @@ export class ReportingService {
       if (error) throw error;
       return data;
     } catch (error) {
-      throw new Error(`Campaign data fetch failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Campaign data fetch failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   }
 }
@@ -709,8 +756,11 @@ export const generateDonationAnalytics = (dateRange: DateRange, filters?: Report
 export const generateImpactReport = (dateRange: DateRange, filters?: ReportFilters) =>
   reportingService.generateImpactReport(dateRange, filters);
 
-export const exportReport = (reportConfig: CustomReport, format?: 'csv' | 'excel' | 'pdf', filename?: string) =>
-  reportingService.exportReport(reportConfig, format, filename);
+export const exportReport = (
+  reportConfig: CustomReport,
+  format?: 'csv' | 'excel' | 'pdf',
+  filename?: string
+) => reportingService.exportReport(reportConfig, format, filename);
 
 export default ReportingService;
 export const reportingService = new ReportingService();

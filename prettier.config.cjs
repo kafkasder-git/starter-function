@@ -8,20 +8,20 @@ module.exports = {
   trailingComma: 'all',
   arrowParens: 'always',
   endOfLine: 'lf',
-  
+
   // Bracket and spacing
   bracketSpacing: true,
   bracketSameLine: false,
   jsxSingleQuote: false,
   quoteProps: 'as-needed',
-  
+
   // Language-specific formatting
   embeddedLanguageFormatting: 'auto',
   htmlWhitespaceSensitivity: 'css',
-  
+
   // Plugin-specific options
   plugins: ['prettier-plugin-tailwindcss'],
-  
+
   // Override for specific file types
   overrides: [
     {

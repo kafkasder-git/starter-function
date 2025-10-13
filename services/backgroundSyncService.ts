@@ -1,6 +1,6 @@
 /**
  * @fileoverview backgroundSyncService Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -13,7 +13,7 @@ import { logger } from '../lib/logging/logger';
 
 /**
  * SyncTask Interface
- * 
+ *
  * @interface SyncTask
  */
 export interface SyncTask {
@@ -29,7 +29,7 @@ export interface SyncTask {
 
 /**
  * SyncOptions Interface
- * 
+ *
  * @interface SyncOptions
  */
 export interface SyncOptions {
@@ -41,7 +41,7 @@ export interface SyncOptions {
 
 /**
  * SyncResult Interface
- * 
+ *
  * @interface SyncResult
  */
 export interface SyncResult {
@@ -97,7 +97,7 @@ class BackgroundSyncService {
     entity: string,
     type: SyncTask['type'],
     data: any,
-    options: SyncOptions = {},
+    options: SyncOptions = {}
   ): Promise<string> {
     const taskId = `${entity}_${type}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
@@ -303,7 +303,7 @@ class BackgroundSyncService {
    */
   private async syncEntityTasks(
     _entity: string,
-    tasks: SyncTask[],
+    tasks: SyncTask[]
   ): Promise<{
     synced: SyncTask[];
     failed: SyncTask[];

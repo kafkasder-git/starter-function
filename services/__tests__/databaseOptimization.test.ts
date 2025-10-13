@@ -39,7 +39,7 @@ vi.mock('../indexManagementService', () => ({
           bitmapScans: 5,
           efficiency: 0.9,
         },
-      }),
+      })
     ),
   },
 }));
@@ -56,7 +56,7 @@ vi.mock('../connectionPoolingService', () => ({
         queryCount: 1000,
         errorCount: 0,
         lastHealthCheck: new Date(),
-      }),
+      })
     ),
     getConnectionHealth: vi.fn(() => ({
       status: 'healthy',
@@ -89,7 +89,7 @@ vi.mock('../performanceMonitoringService', () => ({
           issues: 0,
           recommendations: ['Performance is good! Keep monitoring metrics regularly.'],
         },
-      }),
+      })
     ),
     getMetricsHistory: vi.fn(() => Promise.resolve([])),
   },

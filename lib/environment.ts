@@ -172,7 +172,7 @@ export function getEnvironmentInfo() {
       configured: Boolean(
         environment.appwrite.endpoint &&
           environment.appwrite.projectId &&
-          environment.appwrite.databaseId,
+          environment.appwrite.databaseId
       ),
       endpoint: environment.appwrite.endpoint ? '✓' : '✗',
       projectId: environment.appwrite.projectId ? '✓' : '✗',
@@ -183,6 +183,5 @@ export function getEnvironmentInfo() {
     },
   };
 }
-
 
 export default environment;

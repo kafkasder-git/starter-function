@@ -1,6 +1,6 @@
 /**
  * @fileoverview aidRequestsService Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -14,17 +14,14 @@ import type {
   AidRequestFilters,
   AidRequestStats,
 } from '../types/aidRequest';
-import type {
-  PaginatedResponse,
-  ApiResponse,
-} from '../types/database';
+import type { PaginatedResponse, ApiResponse } from '../types/database';
 
 class AidRequestsService {
   // Get all aid requests with pagination and filters
   async getAidRequests(
     page = 1,
     pageSize = 10,
-    filters: AidRequestFilters = {},
+    filters: AidRequestFilters = {}
   ): Promise<PaginatedResponse<AidRequest>> {
     try {
       const queries: string[] = [];
@@ -163,7 +160,7 @@ class AidRequestsService {
   async assignAidRequest(
     id: string,
     assignedTo: string,
-    assignedBy: string,
+    assignedBy: string
   ): Promise<ApiResponse<AidRequest>> {
     try {
       const { data, error } = await db.update(collections.AID_APPLICATIONS, id, {
@@ -190,7 +187,7 @@ class AidRequestsService {
     id: string,
     approvedAmount: number,
     approvedBy: string,
-    disbursementMethod?: string,
+    disbursementMethod?: string
   ): Promise<ApiResponse<AidRequest>> {
     try {
       const now = new Date().toISOString();
@@ -220,7 +217,7 @@ class AidRequestsService {
   async rejectAidRequest(
     id: string,
     rejectedBy: string,
-    reason?: string,
+    reason?: string
   ): Promise<ApiResponse<AidRequest>> {
     try {
       const { data, error } = await db.update(collections.AID_APPLICATIONS, id, {
@@ -270,7 +267,13 @@ class AidRequestsService {
     try {
       // Get all aid requests for statistics
       const { data, error } = await db.list(collections.AID_APPLICATIONS, [
-        queryHelpers.select(['status', 'aid_type', 'urgency', 'requested_amount', 'approved_amount'])
+        queryHelpers.select([
+          'status',
+          'aid_type',
+          'urgency',
+          'requested_amount',
+          'approved_amount',
+        ]),
       ]);
 
       if (error) {
@@ -280,7 +283,7 @@ class AidRequestsService {
 
       const documents = data?.documents || [];
       const total = documents.length;
-      
+
       const stats: AidRequestStats = {
         total,
         pending: documents.filter((d: any) => d.status === 'pending').length,
@@ -288,8 +291,14 @@ class AidRequestsService {
         approved: documents.filter((d: any) => d.status === 'approved').length,
         rejected: documents.filter((d: any) => d.status === 'rejected').length,
         completed: documents.filter((d: any) => d.status === 'completed').length,
-        totalRequestedAmount: documents.reduce((sum: number, d: any) => sum + (d.requested_amount || 0), 0),
-        totalApprovedAmount: documents.reduce((sum: number, d: any) => sum + (d.approved_amount || 0), 0),
+        totalRequestedAmount: documents.reduce(
+          (sum: number, d: any) => sum + (d.requested_amount || 0),
+          0
+        ),
+        totalApprovedAmount: documents.reduce(
+          (sum: number, d: any) => sum + (d.approved_amount || 0),
+          0
+        ),
         byAidType: {},
         byUrgency: {},
       };
@@ -323,7 +332,7 @@ class AidRequestsService {
       const { data, error } = await db.list(collections.AID_APPLICATIONS, [
         queryHelpers.search('applicant_name', searchTerm),
         queryHelpers.orderDesc('created_at'),
-        queryHelpers.limit(limit)
+        queryHelpers.limit(limit),
       ]);
 
       if (error) {
@@ -343,7 +352,7 @@ class AidRequestsService {
     try {
       const { data, error } = await db.list(collections.AID_APPLICATIONS, [
         queryHelpers.equal('assigned_to', userId),
-        queryHelpers.orderDesc('created_at')
+        queryHelpers.orderDesc('created_at'),
       ]);
 
       if (error) {
@@ -363,7 +372,7 @@ class AidRequestsService {
     try {
       const { data, error } = await db.list(collections.AID_APPLICATIONS, [
         queryHelpers.orderDesc('created_at'),
-        queryHelpers.limit(limit)
+        queryHelpers.limit(limit),
       ]);
 
       if (error) {
@@ -402,11 +411,11 @@ class AidRequestsService {
   async bulkUpdateStatus(
     requestIds: string[],
     status: string,
-    updatedBy: string,
+    updatedBy: string
   ): Promise<ApiResponse<boolean>> {
     try {
       // Appwrite doesn't have bulk update, so we'll update each request individually
-      const updatePromises = requestIds.map(id => 
+      const updatePromises = requestIds.map((id) =>
         db.update(collections.AID_APPLICATIONS, id, {
           status,
           updated_by: updatedBy,
@@ -415,11 +424,14 @@ class AidRequestsService {
       );
 
       const results = await Promise.allSettled(updatePromises);
-      const errors = results.filter(result => result.status === 'rejected');
+      const errors = results.filter((result) => result.status === 'rejected');
 
       if (errors.length > 0) {
         logger.error('Error bulk updating aid request status:', errors);
-        return { data: null, error: `Toplu güncelleme başarısız: ${errors.length} kayıt güncellenemedi` };
+        return {
+          data: null,
+          error: `Toplu güncelleme başarısız: ${errors.length} kayıt güncellenemedi`,
+        };
       }
 
       return { data: true, error: null };

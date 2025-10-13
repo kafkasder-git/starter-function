@@ -1,6 +1,6 @@
 /**
  * @fileoverview AllAidListPage Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -49,7 +49,7 @@ const initialAidRecords: AidRecord[] = [];
 
 /**
  * AllAidListPage function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -105,7 +105,7 @@ export function AllAidListPage() {
         (r) =>
           r.status === 'delivered' &&
           r.amount > 0 &&
-          new Date(r.deliveryDate).getMonth() === new Date().getMonth(),
+          new Date(r.deliveryDate).getMonth() === new Date().getMonth()
       )
       .reduce((sum, r) => sum + r.amount, 0),
   };

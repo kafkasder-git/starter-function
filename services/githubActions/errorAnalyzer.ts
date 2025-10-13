@@ -75,21 +75,21 @@ class GitHubActionsErrorAnalyzer {
         errorType: 'build',
         severity: 'high',
         description: 'Module resolution error',
-        suggestedFix: 'Check import paths and ensure all dependencies are installed'
+        suggestedFix: 'Check import paths and ensure all dependencies are installed',
       },
       {
         pattern: /Type.*is not assignable|Type.*does not exist|Property.*does not exist/i,
         errorType: 'build',
         severity: 'high',
         description: 'TypeScript type error',
-        suggestedFix: 'Fix type definitions and ensure proper typing'
+        suggestedFix: 'Fix type definitions and ensure proper typing',
       },
       {
         pattern: /Syntax error|Unexpected token|Parse error/i,
         errorType: 'build',
         severity: 'critical',
         description: 'Syntax error',
-        suggestedFix: 'Fix syntax issues in the code'
+        suggestedFix: 'Fix syntax issues in the code',
       },
 
       // Test errors
@@ -98,14 +98,14 @@ class GitHubActionsErrorAnalyzer {
         errorType: 'test',
         severity: 'medium',
         description: 'Test failure',
-        suggestedFix: 'Review test logic and expected outcomes'
+        suggestedFix: 'Review test logic and expected outcomes',
       },
       {
         pattern: /Timeout|Test.*timed out/i,
         errorType: 'test',
         severity: 'low',
         description: 'Test timeout',
-        suggestedFix: 'Increase timeout or optimize test performance'
+        suggestedFix: 'Increase timeout or optimize test performance',
       },
 
       // Lint errors
@@ -114,7 +114,7 @@ class GitHubActionsErrorAnalyzer {
         errorType: 'lint',
         severity: 'low',
         description: 'Code style violation',
-        suggestedFix: 'Fix code style issues according to linting rules'
+        suggestedFix: 'Fix code style issues according to linting rules',
       },
 
       // Security errors
@@ -123,7 +123,7 @@ class GitHubActionsErrorAnalyzer {
         errorType: 'security',
         severity: 'high',
         description: 'Security vulnerability',
-        suggestedFix: 'Update dependencies or apply security patches'
+        suggestedFix: 'Update dependencies or apply security patches',
       },
 
       // Dependency errors
@@ -132,7 +132,7 @@ class GitHubActionsErrorAnalyzer {
         errorType: 'dependency',
         severity: 'medium',
         description: 'Dependency installation error',
-        suggestedFix: 'Check package.json and dependency versions'
+        suggestedFix: 'Check package.json and dependency versions',
       },
 
       // Deploy errors
@@ -141,8 +141,8 @@ class GitHubActionsErrorAnalyzer {
         errorType: 'deploy',
         severity: 'high',
         description: 'Deployment failure',
-        suggestedFix: 'Check deployment configuration and build process'
-      }
+        suggestedFix: 'Check deployment configuration and build process',
+      },
     ];
   }
 
@@ -163,7 +163,7 @@ class GitHubActionsErrorAnalyzer {
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
-      
+
       // Look for error patterns
       for (const pattern of this.errorPatterns) {
         if (pattern.pattern.test(line)) {
@@ -179,7 +179,7 @@ class GitHubActionsErrorAnalyzer {
             timestamp: metadata.timestamp,
             branch: metadata.branch,
             commitHash: metadata.commitHash,
-            resolved: false
+            resolved: false,
           };
 
           errors.push(error);
@@ -201,7 +201,7 @@ class GitHubActionsErrorAnalyzer {
 
     // Filter by time range if provided
     if (timeRange) {
-      filteredErrors = this.errors.filter(error => {
+      filteredErrors = this.errors.filter((error) => {
         const errorDate = new Date(error.timestamp);
         return errorDate >= timeRange.start && errorDate <= timeRange.end;
       });
@@ -213,13 +213,13 @@ class GitHubActionsErrorAnalyzer {
     const errorsBySeverity: Record<string, number> = {};
     const errorMessages: Record<string, number> = {};
 
-    filteredErrors.forEach(error => {
+    filteredErrors.forEach((error) => {
       // Count by type
       errorsByType[error.errorType] = (errorsByType[error.errorType] || 0) + 1;
-      
+
       // Count by severity
       errorsBySeverity[error.severity] = (errorsBySeverity[error.severity] || 0) + 1;
-      
+
       // Count by message
       const messageKey = this.normalizeErrorMessage(error.message);
       errorMessages[messageKey] = (errorMessages[messageKey] || 0) + 1;
@@ -243,7 +243,7 @@ class GitHubActionsErrorAnalyzer {
       errorsBySeverity,
       topErrors,
       trends,
-      recommendations
+      recommendations,
     };
   }
 
@@ -251,7 +251,7 @@ class GitHubActionsErrorAnalyzer {
    * Get workflow health status
    */
   getWorkflowHealth(workflowName: string): WorkflowHealth {
-    const workflowErrors = this.errors.filter(e => e.workflowName === workflowName);
+    const workflowErrors = this.errors.filter((e) => e.workflowName === workflowName);
     const totalRuns = workflowErrors.length + 10; // Assume some successful runs
     const errorRate = workflowErrors.length / totalRuns;
     const successRate = 1 - errorRate;
@@ -263,9 +263,10 @@ class GitHubActionsErrorAnalyzer {
       status = 'warning';
     }
 
-    const lastRun = workflowErrors.length > 0 
-      ? workflowErrors[workflowErrors.length - 1].timestamp
-      : new Date().toISOString();
+    const lastRun =
+      workflowErrors.length > 0
+        ? workflowErrors[workflowErrors.length - 1].timestamp
+        : new Date().toISOString();
 
     return {
       workflowName,
@@ -273,7 +274,7 @@ class GitHubActionsErrorAnalyzer {
       averageDuration: 0, // Would need duration data
       errorRate,
       lastRun,
-      status
+      status,
     };
   }
 
@@ -281,15 +282,15 @@ class GitHubActionsErrorAnalyzer {
    * Mark error as resolved
    */
   markErrorResolved(errorId: string, resolution: string): boolean {
-    const error = this.errors.find(e => e.id === errorId);
-    
+    const error = this.errors.find((e) => e.id === errorId);
+
     if (error) {
       error.resolved = true;
       error.resolution = resolution;
       logger.info(`Marked error ${errorId} as resolved`);
       return true;
     }
-    
+
     return false;
   }
 
@@ -297,19 +298,19 @@ class GitHubActionsErrorAnalyzer {
    * Get unresolved errors
    */
   getUnresolvedErrors(workflowName?: string): WorkflowError[] {
-    let filtered = this.errors.filter(e => !e.resolved);
-    
+    let filtered = this.errors.filter((e) => !e.resolved);
+
     if (workflowName) {
-      filtered = filtered.filter(e => e.workflowName === workflowName);
+      filtered = filtered.filter((e) => e.workflowName === workflowName);
     }
-    
+
     return filtered.sort((a, b) => {
       // Sort by severity and timestamp
       const severityOrder = { critical: 4, high: 3, medium: 2, low: 1 };
       const severityDiff = severityOrder[b.severity] - severityOrder[a.severity];
-      
+
       if (severityDiff !== 0) return severityDiff;
-      
+
       return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
     });
   }
@@ -347,7 +348,7 @@ class GitHubActionsErrorAnalyzer {
    */
   private extractStackTrace(lines: string[], errorLineIndex: number): string {
     const stackLines: string[] = [];
-    
+
     // Look ahead for stack trace
     for (let i = errorLineIndex + 1; i < Math.min(lines.length, errorLineIndex + 20); i++) {
       const line = lines[i];
@@ -356,7 +357,7 @@ class GitHubActionsErrorAnalyzer {
       }
       stackLines.push(line);
     }
-    
+
     return stackLines.join('\n').trim();
   }
 
@@ -369,8 +370,8 @@ class GitHubActionsErrorAnalyzer {
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
     errors
-      .filter(error => new Date(error.timestamp) >= thirtyDaysAgo)
-      .forEach(error => {
+      .filter((error) => new Date(error.timestamp) >= thirtyDaysAgo)
+      .forEach((error) => {
         const date = new Date(error.timestamp).toISOString().split('T')[0];
         trends[date] = (trends[date] || 0) + 1;
       });
@@ -449,9 +450,9 @@ class GitHubActionsErrorAnalyzer {
     const exportData = {
       errors: this.errors,
       patterns: this.errorPatterns,
-      exportedAt: new Date().toISOString()
+      exportedAt: new Date().toISOString(),
     };
-    
+
     return JSON.stringify(exportData, null, 2);
   }
 }

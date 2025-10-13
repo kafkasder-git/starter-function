@@ -1,6 +1,6 @@
 /**
  * @fileoverview PersonalizedQuickActions Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -52,7 +52,7 @@ interface PersonalizedQuickActionsProps {
 
 /**
  * PersonalizedQuickActions function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -259,7 +259,7 @@ export function PersonalizedQuickActions({
         },
       },
     ],
-    [userPreferences.usage, onQuickAction, onNavigate],
+    [userPreferences.usage, onQuickAction, onNavigate]
   );
 
   // Filter and sort actions based on context and usage
@@ -387,7 +387,7 @@ export function PersonalizedQuickActions({
                 variant="outline"
                 className={cn(
                   'h-auto p-3 flex flex-col items-start gap-2 hover:bg-accent/50',
-                  'transition-all duration-200 group',
+                  'transition-all duration-200 group'
                 )}
                 onClick={() => {
                   handleActionClick(action);
@@ -401,7 +401,7 @@ export function PersonalizedQuickActions({
                     <div
                       className={cn(
                         'px-1.5 py-0.5 rounded-md border text-xs flex items-center gap-1',
-                        getCategoryColor(action.category),
+                        getCategoryColor(action.category)
                       )}
                     >
                       {getCategoryIcon(action.category)}

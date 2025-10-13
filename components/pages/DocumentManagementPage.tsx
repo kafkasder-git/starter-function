@@ -18,7 +18,10 @@ import {
   Target,
 } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
-import { partnersService, type SponsorOrganization as ServiceSponsorOrganization } from '../../services/partnersService';
+import {
+  partnersService,
+  type SponsorOrganization as ServiceSponsorOrganization,
+} from '../../services/partnersService';
 import { logger } from '../../lib/logging/logger';
 import { LoadingSpinner } from '../shared/LoadingSpinner';
 import { toast } from 'sonner';
@@ -52,7 +55,7 @@ export default function PartnerSponsorsPage() {
   const [, setTotalCount] = useState(0);
   const [currentPage] = useState(1);
   const pageSize = 10;
-  
+
   const [filteredSponsors, setFilteredSponsors] = useState<SponsorOrganization[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<string>('all');
@@ -103,7 +106,7 @@ export default function PartnerSponsorsPage() {
           sponsor.phone.includes(searchTerm) ||
           sponsor.email.toLowerCase().includes(searchLower) ||
           sponsor.sponsorshipAreas.some((area) => area.toLowerCase().includes(searchLower)) ||
-          sponsor.tags.some((tag) => tag.toLowerCase().includes(searchLower)),
+          sponsor.tags.some((tag) => tag.toLowerCase().includes(searchLower))
       );
     }
 
@@ -128,9 +131,7 @@ export default function PartnerSponsorsPage() {
     } else if (activeTab === 'long-term') {
       // TODO: Add sponsorship type field to partners table for proper filtering
       // For now, filter by contract duration
-      filtered = filtered.filter(
-        (sponsor) => sponsor.contractStart && sponsor.contractEnd,
-      );
+      filtered = filtered.filter((sponsor) => sponsor.contractStart && sponsor.contractEnd);
     }
 
     setFilteredSponsors(filtered);
@@ -195,7 +196,13 @@ export default function PartnerSponsorsPage() {
         className = 'bg-gray-50 text-gray-700';
     }
 
-    return <Badge className={`${className} border border-gray-200 dark:border-gray-700 dark:bg-gray-900 px-2 py-1 text-xs`}>{label}</Badge>;
+    return (
+      <Badge
+        className={`${className} border border-gray-200 dark:border-gray-700 dark:bg-gray-900 px-2 py-1 text-xs`}
+      >
+        {label}
+      </Badge>
+    );
   };
 
   // Removed getSponsorshipTypeBadge since sponsorshipType field doesn't exist in service

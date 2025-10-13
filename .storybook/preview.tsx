@@ -54,7 +54,7 @@ const preview: Preview = {
       },
     },
   },
-  
+
   decorators: [
     (Story) => (
       <div style={{ padding: '2rem' }}>
@@ -62,7 +62,7 @@ const preview: Preview = {
       </div>
     ),
   ],
-  
+
   globalTypes: {
     theme: {
       name: 'Theme',

@@ -1,18 +1,13 @@
 /**
  * @fileoverview FilterPanel Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
 
 import { useState } from 'react';
 import { motion } from 'motion/react';
-import {
-  Filter,
-  X,
-  ChevronDown,
-  RefreshCw,
-} from 'lucide-react';
+import { Filter, X, ChevronDown, RefreshCw } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
@@ -44,7 +39,7 @@ interface FilterPanelProps {
 
 /**
  * FilterPanel function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -74,7 +69,7 @@ export function FilterPanel({
   const handleFilterChange = (
     field: string,
     value: any,
-    operator: FilterValue['operator'] = 'eq',
+    operator: FilterValue['operator'] = 'eq'
   ) => {
     if (value === undefined || value === null || value === '') {
       removeFilter(field);
@@ -82,7 +77,6 @@ export function FilterPanel({
       addFilter({ field, value, operator });
     }
   };
-
 
   // Render filter control based on type
   const renderFilterControl = (filter: FilterConfig) => {
@@ -154,12 +148,12 @@ export function FilterPanel({
                 max={filter.max}
                 className="h-9"
                 onChange={(e) => {
-                  const {value} = e.target;
+                  const { value } = e.target;
                   const maxValue = getFilterValue(filter.field)?.[1];
                   handleFilterChange(
                     filter.field,
                     [value ? Number(value) : undefined, maxValue],
-                    'between',
+                    'between'
                   );
                 }}
               />
@@ -170,12 +164,12 @@ export function FilterPanel({
                 max={filter.max}
                 className="h-9"
                 onChange={(e) => {
-                  const {value} = e.target;
+                  const { value } = e.target;
                   const minValue = getFilterValue(filter.field)?.[0];
                   handleFilterChange(
                     filter.field,
                     [minValue, value ? Number(value) : undefined],
-                    'between',
+                    'between'
                   );
                 }}
               />
@@ -209,7 +203,7 @@ export function FilterPanel({
                       break;
                     case 'last_week':
                       const lastWeekStart = new Date(
-                        today.getTime() - (today.getDay() + 7) * 24 * 60 * 60 * 1000,
+                        today.getTime() - (today.getDay() + 7) * 24 * 60 * 60 * 1000
                       );
                       startDate = lastWeekStart;
                       endDate = new Date(lastWeekStart.getTime() + 6 * 24 * 60 * 60 * 1000);

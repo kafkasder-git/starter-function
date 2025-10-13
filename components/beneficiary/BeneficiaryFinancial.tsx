@@ -1,6 +1,6 @@
 /**
  * @fileoverview BeneficiaryFinancial Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -31,7 +31,7 @@ interface BeneficiaryFinancialProps {
 
 /**
  * BeneficiaryFinancial function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -115,12 +115,20 @@ export function BeneficiaryFinancial({
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600">Mali Durum</span>
-                <span className={`font-medium ${
-                  financialHealth === 'positive' ? 'text-green-600' :
-                  financialHealth === 'neutral' ? 'text-yellow-600' : 'text-red-600'
-                }`}>
-                  {financialHealth === 'positive' ? 'Pozitif' :
-                   financialHealth === 'neutral' ? 'Nötr' : 'Negatif'}
+                <span
+                  className={`font-medium ${
+                    financialHealth === 'positive'
+                      ? 'text-green-600'
+                      : financialHealth === 'neutral'
+                        ? 'text-yellow-600'
+                        : 'text-red-600'
+                  }`}
+                >
+                  {financialHealth === 'positive'
+                    ? 'Pozitif'
+                    : financialHealth === 'neutral'
+                      ? 'Nötr'
+                      : 'Negatif'}
                 </span>
               </div>
               <Progress
@@ -141,7 +149,9 @@ export function BeneficiaryFinancial({
                   <p className="text-xs text-blue-600">Mevcut tasarruf</p>
                 </div>
               </div>
-              <span className="text-xl font-bold text-blue-700">{savings.toLocaleString('tr-TR')} ₺</span>
+              <span className="text-xl font-bold text-blue-700">
+                {savings.toLocaleString('tr-TR')} ₺
+              </span>
             </div>
           )}
 
@@ -156,7 +166,9 @@ export function BeneficiaryFinancial({
                   <p className="text-xs text-orange-600">Mevcut borçlar</p>
                 </div>
               </div>
-              <span className="text-xl font-bold text-orange-700">{debts.toLocaleString('tr-TR')} ₺</span>
+              <span className="text-xl font-bold text-orange-700">
+                {debts.toLocaleString('tr-TR')} ₺
+              </span>
             </div>
           )}
         </CardContent>

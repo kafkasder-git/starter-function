@@ -115,7 +115,9 @@ export function TasksPage() {
               </div>
               <div>
                 <p className="text-sm text-gray-600">Bekleyen</p>
-                <p className="text-xl font-bold">{tasks.filter(t => t.status === 'pending').length}</p>
+                <p className="text-xl font-bold">
+                  {tasks.filter((t) => t.status === 'pending').length}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -128,7 +130,9 @@ export function TasksPage() {
               </div>
               <div>
                 <p className="text-sm text-gray-600">Devam Eden</p>
-                <p className="text-xl font-bold">{tasks.filter(t => t.status === 'in_progress').length}</p>
+                <p className="text-xl font-bold">
+                  {tasks.filter((t) => t.status === 'in_progress').length}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -141,7 +145,9 @@ export function TasksPage() {
               </div>
               <div>
                 <p className="text-sm text-gray-600">Tamamlanan</p>
-                <p className="text-xl font-bold">{tasks.filter(t => t.status === 'completed').length}</p>
+                <p className="text-xl font-bold">
+                  {tasks.filter((t) => t.status === 'completed').length}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -162,7 +168,11 @@ export function TasksPage() {
                     {getStatusIcon(task.status)}
                     <h3 className="font-semibold">{task.title}</h3>
                     <Badge className={getPriorityColor(task.priority)}>
-                      {task.priority === 'high' ? 'Yüksek' : task.priority === 'medium' ? 'Orta' : 'Düşük'}
+                      {task.priority === 'high'
+                        ? 'Yüksek'
+                        : task.priority === 'medium'
+                          ? 'Orta'
+                          : 'Düşük'}
                     </Badge>
                   </div>
                   <p className="text-gray-600 mb-2">{task.description}</p>

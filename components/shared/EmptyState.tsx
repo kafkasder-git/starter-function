@@ -6,7 +6,19 @@
  */
 
 import type { ReactNode } from 'react';
-import { Search, Users, Heart, Package, FileX, Database, Inbox, Calendar, WifiOff, SearchX, AlertTriangle } from 'lucide-react';
+import {
+  Search,
+  Users,
+  Heart,
+  Package,
+  FileX,
+  Database,
+  Inbox,
+  Calendar,
+  WifiOff,
+  SearchX,
+  AlertTriangle,
+} from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card, CardContent } from '../ui/card';
 import { Heading } from '../ui/heading';
@@ -102,20 +114,30 @@ export function EmptyState({
   };
 
   const content = (
-    <Card className={`border-0 shadow-lg ${styles.background} ${className}`} role="status" aria-live="polite">
+    <Card
+      className={`border-none shadow-lg ${styles.background} ${className}`}
+      role="status"
+      aria-live="polite"
+    >
       <CardContent className="p-12 text-center">
         <div className="flex flex-col items-center space-y-6">
           {/* Icon */}
           <div
             className={`w-20 h-20 ${styles.iconBg} rounded-2xl flex items-center justify-center shadow-lg`}
           >
-            <div className="text-white" aria-hidden="true">{icon ?? getDefaultIcon()}</div>
+            <div className="text-white" aria-hidden="true">
+              {icon ?? getDefaultIcon()}
+            </div>
           </div>
 
           {/* Text Content */}
           <div className="space-y-3 max-w-md">
-            <Heading level={2} size="2xl" weight="semibold" color="neutral">{title}</Heading>
-            <Text color="neutral" className="leading-relaxed">{description}</Text>
+            <Heading level={2} size="2xl" weight="semibold" color="neutral">
+              {title}
+            </Heading>
+            <Text color="neutral" className="leading-relaxed">
+              {description}
+            </Text>
           </div>
 
           {/* Action Button */}
@@ -173,10 +195,14 @@ export const NoInternetConnection = ({ onRetry }: { onRetry?: () => void }) => (
     icon={<WifiOff className="w-10 h-10" />}
     title="İnternet Bağlantısı Yok"
     description="İnternet bağlantınızı kontrol edin ve tekrar deneyin."
-    action={onRetry ? {
-      label: 'Tekrar Dene',
-      onClick: onRetry,
-    } : undefined}
+    action={
+      onRetry
+        ? {
+            label: 'Tekrar Dene',
+            onClick: onRetry,
+          }
+        : undefined
+    }
     variant="offline"
   />
 );
@@ -186,10 +212,14 @@ export const NoResultsFound = ({ onClearFilters }: { onClearFilters?: () => void
     icon={<SearchX className="w-10 h-10" />}
     title="Sonuç Bulunamadı"
     description="Arama kriterlerinizi değiştirerek tekrar deneyin."
-    action={onClearFilters ? {
-      label: 'Filtreleri Temizle',
-      onClick: onClearFilters,
-    } : undefined}
+    action={
+      onClearFilters
+        ? {
+            label: 'Filtreleri Temizle',
+            onClick: onClearFilters,
+          }
+        : undefined
+    }
     variant="no-results"
   />
 );
@@ -199,10 +229,14 @@ export const ServerError = ({ onRetry }: { onRetry?: () => void }) => (
     icon={<AlertTriangle className="w-10 h-10" />}
     title="Sunucu Hatası"
     description="Bir şeyler yanlış gitti. Lütfen daha sonra tekrar deneyin."
-    action={onRetry ? {
-      label: 'Tekrar Dene',
-      onClick: onRetry,
-    } : undefined}
+    action={
+      onRetry
+        ? {
+            label: 'Tekrar Dene',
+            onClick: onRetry,
+          }
+        : undefined
+    }
     variant="error"
   />
 );

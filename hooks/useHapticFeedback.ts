@@ -43,12 +43,24 @@ export function useHapticFeedback() {
     navigator.vibrate(pattern);
   }, []);
 
-  const triggerSuccess = useCallback(() => { triggerHaptic('success'); }, [triggerHaptic]);
-  const triggerWarning = useCallback(() => { triggerHaptic('warning'); }, [triggerHaptic]);
-  const triggerError = useCallback(() => { triggerHaptic('error'); }, [triggerHaptic]);
-  const triggerLight = useCallback(() => { triggerHaptic('light'); }, [triggerHaptic]);
-  const triggerMedium = useCallback(() => { triggerHaptic('medium'); }, [triggerHaptic]);
-  const triggerHeavy = useCallback(() => { triggerHaptic('heavy'); }, [triggerHaptic]);
+  const triggerSuccess = useCallback(() => {
+    triggerHaptic('success');
+  }, [triggerHaptic]);
+  const triggerWarning = useCallback(() => {
+    triggerHaptic('warning');
+  }, [triggerHaptic]);
+  const triggerError = useCallback(() => {
+    triggerHaptic('error');
+  }, [triggerHaptic]);
+  const triggerLight = useCallback(() => {
+    triggerHaptic('light');
+  }, [triggerHaptic]);
+  const triggerMedium = useCallback(() => {
+    triggerHaptic('medium');
+  }, [triggerHaptic]);
+  const triggerHeavy = useCallback(() => {
+    triggerHaptic('heavy');
+  }, [triggerHaptic]);
 
   return {
     triggerHaptic,

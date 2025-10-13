@@ -1,6 +1,6 @@
 /**
  * @fileoverview useKeyboard Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -19,7 +19,7 @@ interface KeyboardShortcut {
 
 /**
  * useKeyboardShortcuts function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -41,10 +41,10 @@ export function useKeyboardShortcuts(shortcuts: KeyboardShortcut[]) {
 
       for (const shortcut of shortcuts) {
         const keyMatches = shortcut.key.toLowerCase() === event.key.toLowerCase();
-          const _metaMatches = !shortcut.metaKey || event.metaKey;
-          const _ctrlMatches = !shortcut.ctrlKey || event.ctrlKey;
-          const _shiftMatches = !shortcut.shiftKey || event.shiftKey;
-          const _altMatches = !shortcut.altKey || event.altKey;
+        const _metaMatches = !shortcut.metaKey || event.metaKey;
+        const _ctrlMatches = !shortcut.ctrlKey || event.ctrlKey;
+        const _shiftMatches = !shortcut.shiftKey || event.shiftKey;
+        const _altMatches = !shortcut.altKey || event.altKey;
 
         // Ensure exact modifier match
         const exactMetaMatch = shortcut.metaKey ? event.metaKey : !event.metaKey;
@@ -59,7 +59,7 @@ export function useKeyboardShortcuts(shortcuts: KeyboardShortcut[]) {
         }
       }
     },
-    [shortcuts],
+    [shortcuts]
   );
 
   useEffect(() => {
@@ -73,7 +73,7 @@ export function useKeyboardShortcuts(shortcuts: KeyboardShortcut[]) {
 // Global keyboard shortcuts
 /**
  * useGlobalShortcuts function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -143,7 +143,7 @@ export function useGlobalShortcuts({
 // Navigation shortcuts
 /**
  * useNavigationShortcuts function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -181,7 +181,7 @@ export function useNavigationShortcuts({
 // Table shortcuts
 /**
  * useTableShortcuts function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */

@@ -1,6 +1,6 @@
 /**
  * @fileoverview PageRenderer Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -12,7 +12,7 @@ import { useNavigation } from './NavigationManager';
 
 // Lazy load large components for better performance
 const BeneficiaryDetailPageComprehensive = lazy(
-  () => import('../pages/BeneficiaryDetailPageComprehensive'),
+  () => import('../pages/BeneficiaryDetailPageComprehensive')
 );
 
 // Demo components removed
@@ -27,7 +27,7 @@ interface PageRendererProps {
 
 /**
  * PageRenderer function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -50,7 +50,7 @@ export function PageRenderer({ onQuickAction }: PageRendererProps) {
     const renderPageWithTransition = (
       PageComponent: React.ComponentType<Record<string, unknown>>,
       props: Record<string, unknown> = {},
-      skeletonVariant: 'detail' | 'table' | 'form' | 'dashboard' = 'detail',
+      skeletonVariant: 'detail' | 'table' | 'form' | 'dashboard' = 'detail'
     ) => (
       <Suspense fallback={getSkeletonFallback(skeletonVariant)}>
         <PageComponent {...props} />
@@ -81,7 +81,7 @@ export function PageRenderer({ onQuickAction }: PageRendererProps) {
             beneficiaryId: selectedBeneficiaryId,
             onBack: backToBeneficiariesList,
           },
-          'detail',
+          'detail'
         );
       }
     }
@@ -113,7 +113,7 @@ export function PageRenderer({ onQuickAction }: PageRendererProps) {
     return renderPageWithTransition(
       routeConfig.component,
       componentProps,
-      routeConfig.skeletonVariant ?? 'detail',
+      routeConfig.skeletonVariant ?? 'detail'
     );
   }, [
     currentPage,

@@ -37,7 +37,7 @@ export function handleServiceError<T>(error: unknown, context: string): ApiRespo
 
 export async function safeExecute<T>(
   operation: () => Promise<T>,
-  context: string,
+  context: string
 ): Promise<ApiResponse<T>> {
   try {
     const result = await operation();
@@ -61,7 +61,7 @@ export function createNotFoundError(resource: string, id: string): ServiceError 
 export function createDuplicateError(resource: string, field: string): ServiceError {
   return new ServiceError(
     ServiceErrorCode.DUPLICATE_ENTRY,
-    `${resource} with this ${field} already exists`,
+    `${resource} with this ${field} already exists`
   );
 }
 

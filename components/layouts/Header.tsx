@@ -124,13 +124,32 @@ export function Header({
             <Building2 className="h-4 w-4 text-white drop-shadow-sm sm:h-5 sm:w-5" />
           </div>
           <div className="hidden md:block">
-          <Heading level={1} size="lg" weight="bold" className="text-xl tracking-tight text-neutral-900 dark:text-neutral-100">
-            Dernek Yönetim Sistemi
-          </Heading>
-          <Text size="sm" weight="medium" color="neutral" className="text-neutral-600 dark:text-neutral-400">Hayır İşleri Platformu</Text>
+            <Heading
+              level={1}
+              size="lg"
+              weight="bold"
+              className="text-xl tracking-tight text-neutral-900 dark:text-neutral-100"
+            >
+              Dernek Yönetim Sistemi
+            </Heading>
+            <Text
+              size="sm"
+              weight="medium"
+              color="neutral"
+              className="text-neutral-600 dark:text-neutral-400"
+            >
+              Hayır İşleri Platformu
+            </Text>
           </div>
           <div className="block md:hidden">
-            <Heading level={1} size="sm" weight="bold" className="tracking-tight text-neutral-900 dark:text-neutral-100">Dernek</Heading>
+            <Heading
+              level={1}
+              size="sm"
+              weight="bold"
+              className="tracking-tight text-neutral-900 dark:text-neutral-100"
+            >
+              Dernek
+            </Heading>
           </div>
         </div>
       </motion.div>
@@ -154,7 +173,10 @@ export function Header({
       </motion.div>
 
       {/* Enhanced Search - Hidden on small screens */}
-      <div className="relative mx-6 hidden max-w-md flex-1 sm:flex lg:mx-8 lg:max-w-xl" data-onboarding="search">
+      <div
+        className="relative mx-6 hidden max-w-md flex-1 sm:flex lg:mx-8 lg:max-w-xl"
+        data-onboarding="search"
+      >
         <div className="relative w-full">
           <label htmlFor="header-search" className="sr-only">
             Akıllı arama
@@ -233,9 +255,14 @@ export function Header({
 
         {/* Frontend Status - hidden on mobile for space */}
         <div className="hidden sm:flex items-center gap-2">
-          <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-success-50 dark:bg-success-950" title="Frontend Mode">
+          <div
+            className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-success-50 dark:bg-success-950"
+            title="Frontend Mode"
+          >
             <div className="h-2 w-2 animate-pulse rounded-full bg-success-500" />
-            <span className="text-xs font-medium text-success-700 dark:text-success-400">Online</span>
+            <span className="text-xs font-medium text-success-700 dark:text-success-400">
+              Online
+            </span>
           </div>
         </div>
 
@@ -281,7 +308,10 @@ export function Header({
                 <User className="h-4 w-4" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-64 border border-neutral-200 p-0 shadow-xl dark:border-neutral-800 dark:bg-neutral-900" align="end">
+            <PopoverContent
+              className="w-64 border border-neutral-200 p-0 shadow-xl dark:border-neutral-800 dark:bg-neutral-900"
+              align="end"
+            >
               <div className="border-b border-neutral-200 bg-gradient-to-r from-neutral-50 to-white p-4 dark:border-neutral-800 dark:from-neutral-900 dark:to-neutral-900">
                 <div className="space-y-2">
                   <div className="flex items-center gap-3">
@@ -292,7 +322,9 @@ export function Header({
                       <p className="truncate font-semibold text-neutral-900 dark:text-neutral-100">
                         {user?.name ?? user?.email?.split('@')[0] ?? 'Kullanıcı'}
                       </p>
-                      <p className="truncate text-sm text-neutral-600 dark:text-neutral-400">{user?.email ?? ''}</p>
+                      <p className="truncate text-sm text-neutral-600 dark:text-neutral-400">
+                        {user?.email ?? ''}
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-center justify-between">

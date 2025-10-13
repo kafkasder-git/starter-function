@@ -1,6 +1,6 @@
 /**
  * @fileoverview CaseManagementPage Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -60,7 +60,7 @@ interface DonorInstitution {
 
 /**
  * PartnerDonorsPage function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -87,7 +87,7 @@ export default function PartnerDonorsPage() {
           donor.contactPerson.toLowerCase().includes(searchLower) ||
           donor.phone.includes(searchTerm) ||
           donor.email.toLowerCase().includes(searchLower) ||
-          donor.tags.some((tag) => tag.toLowerCase().includes(searchLower)),
+          donor.tags.some((tag) => tag.toLowerCase().includes(searchLower))
       );
     }
 
@@ -141,7 +141,13 @@ export default function PartnerDonorsPage() {
     };
 
     const { label, className } = config[type];
-    return <Badge className={`${className} text-xs px-2 py-1 border border-gray-200 dark:border-gray-700 dark:bg-gray-900`}>{label}</Badge>;
+    return (
+      <Badge
+        className={`${className} text-xs px-2 py-1 border border-gray-200 dark:border-gray-700 dark:bg-gray-900`}
+      >
+        {label}
+      </Badge>
+    );
   };
 
   const formatCurrency = (amount: number) => {

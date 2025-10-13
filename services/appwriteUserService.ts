@@ -21,67 +21,67 @@ export const USER_PERMISSIONS = {
   READ_USER: 'read_user',
   UPDATE_USER: 'update_user',
   DELETE_USER: 'delete_user',
-  
+
   // Beneficiary management
   CREATE_BENEFICIARY: 'create_beneficiary',
   READ_BENEFICIARY: 'read_beneficiary',
   UPDATE_BENEFICIARY: 'update_beneficiary',
   DELETE_BENEFICIARY: 'delete_beneficiary',
-  
+
   // Donation management
   CREATE_DONATION: 'create_donation',
   READ_DONATION: 'read_donation',
   UPDATE_DONATION: 'update_donation',
   DELETE_DONATION: 'delete_donation',
-  
+
   // Campaign management
   CREATE_CAMPAIGN: 'create_campaign',
   READ_CAMPAIGN: 'read_campaign',
   UPDATE_CAMPAIGN: 'update_campaign',
   DELETE_CAMPAIGN: 'delete_campaign',
-  
+
   // Aid application management
   CREATE_AID_APPLICATION: 'create_aid_application',
   READ_AID_APPLICATION: 'read_aid_application',
   UPDATE_AID_APPLICATION: 'update_aid_application',
   DELETE_AID_APPLICATION: 'delete_aid_application',
-  
+
   // Finance management
   CREATE_FINANCE_TRANSACTION: 'create_finance_transaction',
   READ_FINANCE_TRANSACTION: 'read_finance_transaction',
   UPDATE_FINANCE_TRANSACTION: 'update_finance_transaction',
   DELETE_FINANCE_TRANSACTION: 'delete_finance_transaction',
-  
+
   // Legal consultation management
   CREATE_LEGAL_CONSULTATION: 'create_legal_consultation',
   READ_LEGAL_CONSULTATION: 'read_legal_consultation',
   UPDATE_LEGAL_CONSULTATION: 'update_legal_consultation',
   DELETE_LEGAL_CONSULTATION: 'delete_legal_consultation',
-  
+
   // Event management
   CREATE_EVENT: 'create_event',
   READ_EVENT: 'read_event',
   UPDATE_EVENT: 'update_event',
   DELETE_EVENT: 'delete_event',
-  
+
   // Inventory management
   CREATE_INVENTORY_ITEM: 'create_inventory_item',
   READ_INVENTORY_ITEM: 'read_inventory_item',
   UPDATE_INVENTORY_ITEM: 'update_inventory_item',
   DELETE_INVENTORY_ITEM: 'delete_inventory_item',
-  
+
   // Task management
   CREATE_TASK: 'create_task',
   READ_TASK: 'read_task',
   UPDATE_TASK: 'update_task',
   DELETE_TASK: 'delete_task',
-  
+
   // Notification management
   CREATE_NOTIFICATION: 'create_notification',
   READ_NOTIFICATION: 'read_notification',
   UPDATE_NOTIFICATION: 'update_notification',
   DELETE_NOTIFICATION: 'delete_notification',
-  
+
   // System management
   READ_SYSTEM_SETTINGS: 'read_system_settings',
   UPDATE_SYSTEM_SETTINGS: 'update_system_settings',
@@ -202,10 +202,12 @@ class AppwriteUserService {
   /**
    * Create a new user profile
    */
-  async createUser(data: CreateUserData): Promise<{ data: UserProfile | null; error: Error | null }> {
+  async createUser(
+    data: CreateUserData
+  ): Promise<{ data: UserProfile | null; error: Error | null }> {
     try {
       const permissions = ROLE_PERMISSIONS[data.role] || [];
-      
+
       const userData = {
         user_id: data.user_id,
         email: data.email,
@@ -248,7 +250,7 @@ class AppwriteUserService {
   async getUserById(userId: string): Promise<{ data: UserProfile | null; error: Error | null }> {
     try {
       const result = await db.get<UserProfile>(collections.USER_PROFILES, userId);
-      
+
       if (result.error) {
         logger.error(`Error getting user profile ${userId}:`, result.error);
         return { data: null, error: result.error };
@@ -266,10 +268,9 @@ class AppwriteUserService {
    */
   async getUserByEmail(email: string): Promise<{ data: UserProfile | null; error: Error | null }> {
     try {
-      const result = await db.list<UserProfile>(
-        collections.USER_PROFILES,
-        [queryHelpers.equal('email', email)]
-      );
+      const result = await db.list<UserProfile>(collections.USER_PROFILES, [
+        queryHelpers.equal('email', email),
+      ]);
 
       if (result.error) {
         logger.error(`Error getting user profile by email ${email}:`, result.error);
@@ -287,12 +288,13 @@ class AppwriteUserService {
   /**
    * Get user profile by Appwrite user ID
    */
-  async getUserByAppwriteId(appwriteUserId: string): Promise<{ data: UserProfile | null; error: Error | null }> {
+  async getUserByAppwriteId(
+    appwriteUserId: string
+  ): Promise<{ data: UserProfile | null; error: Error | null }> {
     try {
-      const result = await db.list<UserProfile>(
-        collections.USER_PROFILES,
-        [queryHelpers.equal('user_id', appwriteUserId)]
-      );
+      const result = await db.list<UserProfile>(collections.USER_PROFILES, [
+        queryHelpers.equal('user_id', appwriteUserId),
+      ]);
 
       if (result.error) {
         logger.error(`Error getting user profile by Appwrite ID ${appwriteUserId}:`, result.error);
@@ -310,13 +312,15 @@ class AppwriteUserService {
   /**
    * List all users with pagination and filtering
    */
-  async listUsers(options: {
-    page?: number;
-    limit?: number;
-    role?: keyof typeof USER_ROLES;
-    status?: 'active' | 'inactive' | 'suspended';
-    search?: string;
-  } = {}): Promise<{ data: UserProfile[] | null; total: number; error: Error | null }> {
+  async listUsers(
+    options: {
+      page?: number;
+      limit?: number;
+      role?: keyof typeof USER_ROLES;
+      status?: 'active' | 'inactive' | 'suspended';
+      search?: string;
+    } = {}
+  ): Promise<{ data: UserProfile[] | null; total: number; error: Error | null }> {
     try {
       const { page = 1, limit = 20, role, status, search } = options;
       const queries = [];
@@ -347,7 +351,7 @@ class AppwriteUserService {
       return {
         data: result.data?.documents || [],
         total: result.data?.total || 0,
-        error: null
+        error: null,
       };
     } catch (error) {
       logger.error('Error listing users:', error);
@@ -358,7 +362,10 @@ class AppwriteUserService {
   /**
    * Update user profile
    */
-  async updateUser(userId: string, data: UpdateUserData): Promise<{ data: UserProfile | null; error: Error | null }> {
+  async updateUser(
+    userId: string,
+    data: UpdateUserData
+  ): Promise<{ data: UserProfile | null; error: Error | null }> {
     try {
       const updateData: any = {
         updated_at: new Date().toISOString(),
@@ -372,11 +379,7 @@ class AppwriteUserService {
       if (data.status) updateData.status = data.status;
       if (data.profile_data) updateData.profile_data = JSON.stringify(data.profile_data);
 
-      const result = await db.update<UserProfile>(
-        collections.USER_PROFILES,
-        userId,
-        updateData
-      );
+      const result = await db.update<UserProfile>(collections.USER_PROFILES, userId, updateData);
 
       if (result.error) {
         logger.error(`Error updating user profile ${userId}:`, result.error);
@@ -416,14 +419,10 @@ class AppwriteUserService {
    */
   async updateLastLogin(userId: string): Promise<{ error: Error | null }> {
     try {
-      const result = await db.update<UserProfile>(
-        collections.USER_PROFILES,
-        userId,
-        {
-          last_login: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        }
-      );
+      const result = await db.update<UserProfile>(collections.USER_PROFILES, userId, {
+        last_login: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      });
 
       if (result.error) {
         logger.error(`Error updating last login for user ${userId}:`, result.error);
@@ -443,9 +442,9 @@ class AppwriteUserService {
   async hasPermission(userId: string, permission: string): Promise<boolean> {
     try {
       const { data: user } = await this.getUserById(userId);
-      
+
       if (!user) return false;
-      
+
       const permissions = JSON.parse(user.permissions || '[]');
       return permissions.includes(permission);
     } catch (error) {
@@ -460,9 +459,9 @@ class AppwriteUserService {
   async getUserPermissions(userId: string): Promise<string[]> {
     try {
       const { data: user } = await this.getUserById(userId);
-      
+
       if (!user) return [];
-      
+
       return JSON.parse(user.permissions || '[]');
     } catch (error) {
       logger.error(`Error getting permissions for user ${userId}:`, error);
@@ -486,16 +485,15 @@ class AppwriteUserService {
   /**
    * Get users by role
    */
-  async getUsersByRole(role: keyof typeof USER_ROLES): Promise<{ data: UserProfile[] | null; error: Error | null }> {
+  async getUsersByRole(
+    role: keyof typeof USER_ROLES
+  ): Promise<{ data: UserProfile[] | null; error: Error | null }> {
     try {
-      const result = await db.list<UserProfile>(
-        collections.USER_PROFILES,
-        [
-          queryHelpers.equal('role', role),
-          queryHelpers.equal('status', 'active'),
-          queryHelpers.orderAsc('name')
-        ]
-      );
+      const result = await db.list<UserProfile>(collections.USER_PROFILES, [
+        queryHelpers.equal('role', role),
+        queryHelpers.equal('status', 'active'),
+        queryHelpers.orderAsc('name'),
+      ]);
 
       if (result.error) {
         logger.error(`Error getting users by role ${role}:`, result.error);
@@ -521,8 +519,8 @@ class AppwriteUserService {
         role: USER_ROLES.ADMIN,
         profile_data: {
           is_initial_admin: true,
-          created_by: 'system'
-        }
+          created_by: 'system',
+        },
       };
 
       return await this.createUser(adminData);
@@ -548,9 +546,18 @@ class AppwriteUserService {
     try {
       const [totalResult, activeResult, inactiveResult, suspendedResult] = await Promise.all([
         db.list<UserProfile>(collections.USER_PROFILES, [queryHelpers.limit(1)]),
-        db.list<UserProfile>(collections.USER_PROFILES, [queryHelpers.equal('status', 'active'), queryHelpers.limit(1)]),
-        db.list<UserProfile>(collections.USER_PROFILES, [queryHelpers.equal('status', 'inactive'), queryHelpers.limit(1)]),
-        db.list<UserProfile>(collections.USER_PROFILES, [queryHelpers.equal('status', 'suspended'), queryHelpers.limit(1)]),
+        db.list<UserProfile>(collections.USER_PROFILES, [
+          queryHelpers.equal('status', 'active'),
+          queryHelpers.limit(1),
+        ]),
+        db.list<UserProfile>(collections.USER_PROFILES, [
+          queryHelpers.equal('status', 'inactive'),
+          queryHelpers.limit(1),
+        ]),
+        db.list<UserProfile>(collections.USER_PROFILES, [
+          queryHelpers.equal('status', 'suspended'),
+          queryHelpers.limit(1),
+        ]),
       ]);
 
       const stats = {
@@ -563,10 +570,10 @@ class AppwriteUserService {
 
       // Get role statistics
       for (const role of Object.values(USER_ROLES)) {
-        const roleResult = await db.list<UserProfile>(
-          collections.USER_PROFILES,
-          [queryHelpers.equal('role', role), queryHelpers.limit(1)]
-        );
+        const roleResult = await db.list<UserProfile>(collections.USER_PROFILES, [
+          queryHelpers.equal('role', role),
+          queryHelpers.limit(1),
+        ]);
         stats.byRole[role] = roleResult.data?.total || 0;
       }
 

@@ -23,14 +23,13 @@ const alertVariants = cva(
           'text-success bg-success/10 border-success/20 [&>svg]:text-success *:data-[slot=alert-description]:text-success/90',
         warning:
           'text-warning bg-warning/10 border-warning/20 [&>svg]:text-warning *:data-[slot=alert-description]:text-warning/90',
-        info:
-          'text-info bg-info/10 border-info/20 [&>svg]:text-info *:data-[slot=alert-description]:text-info/90',
+        info: 'text-info bg-info/10 border-info/20 [&>svg]:text-info *:data-[slot=alert-description]:text-info/90',
       },
     },
     defaultVariants: {
       variant: 'default',
     },
-  },
+  }
 );
 
 /**
@@ -54,7 +53,9 @@ const alertIcons = {
   info: Info,
 };
 
-export interface AlertProps extends React.ComponentProps<'div'>, VariantProps<typeof alertVariants> {
+export interface AlertProps
+  extends React.ComponentProps<'div'>,
+    VariantProps<typeof alertVariants> {
   dismissible?: boolean;
   onDismiss?: () => void;
   showIcon?: boolean;
@@ -108,9 +109,7 @@ function Alert({
     >
       {showIcon && <IconComponent className="mt-0.5" />}
 
-      <div className="col-start-2 flex-1">
-        {children}
-      </div>
+      <div className="col-start-2 flex-1">{children}</div>
 
       {dismissible && (
         <button
@@ -123,11 +122,7 @@ function Alert({
         </button>
       )}
 
-      {actions && (
-        <div className="col-start-2 mt-2 flex gap-2">
-          {actions}
-        </div>
-      )}
+      {actions && <div className="col-start-2 mt-2 flex gap-2">{actions}</div>}
     </div>
   );
 }
@@ -146,10 +141,7 @@ function AlertDescription({ className, ...props }: React.ComponentProps<'div'>) 
   return (
     <div
       data-slot="alert-description"
-      className={cn(
-        'grid justify-items-start gap-1 text-sm [&_p]:leading-relaxed mt-1',
-        className,
-      )}
+      className={cn('grid justify-items-start gap-1 text-sm [&_p]:leading-relaxed mt-1', className)}
       {...props}
     />
   );

@@ -26,12 +26,12 @@ export function MessageReadReceipts({
   readBy,
   sentAt,
   currentUserId,
-  className
+  className,
 }: MessageReadReceiptsProps) {
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
   // Filter out current user from read receipts
-  const readByOthers = readBy.filter(read => read.userId !== currentUserId);
+  const readByOthers = readBy.filter((read) => read.userId !== currentUserId);
   const readCount = readByOthers.length;
 
   // Format read time
@@ -44,27 +44,26 @@ export function MessageReadReceipts({
       return 'Şimdi';
     } else if (diffInMinutes < 60) {
       return `${Math.floor(diffInMinutes)} dk önce`;
-    } else if (diffInMinutes < 1440) { // 24 hours
-      return readTime.toLocaleTimeString('tr-TR', { 
-        hour: '2-digit', 
-        minute: '2-digit' 
+    } else if (diffInMinutes < 1440) {
+      // 24 hours
+      return readTime.toLocaleTimeString('tr-TR', {
+        hour: '2-digit',
+        minute: '2-digit',
       });
-    } 
-      return readTime.toLocaleDateString('tr-TR', { 
-        day: '2-digit', 
-        month: '2-digit',
-        year: readTime.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
-      });
-    
+    }
+    return readTime.toLocaleDateString('tr-TR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: readTime.getFullYear() !== now.getFullYear() ? 'numeric' : undefined,
+    });
   };
 
   // Get status icon
   const getStatusIcon = () => {
     if (readCount === 0) {
       return <Clock className="h-3 w-3 text-gray-400" />;
-    } 
-      return <CheckCheck className="h-3 w-3 text-blue-500" />;
-    
+    }
+    return <CheckCheck className="h-3 w-3 text-blue-500" />;
   };
 
   // Get status text
@@ -82,9 +81,7 @@ export function MessageReadReceipts({
     return (
       <div className={cn('flex items-center gap-1', className)}>
         {getStatusIcon()}
-        <span className="text-xs text-gray-500">
-          {formatReadTime(sentAt)}
-        </span>
+        <span className="text-xs text-gray-500">{formatReadTime(sentAt)}</span>
       </div>
     );
   }
@@ -94,14 +91,14 @@ export function MessageReadReceipts({
       <Button
         variant="ghost"
         size="sm"
-        onClick={() => { setIsDetailsOpen(true); }}
+        onClick={() => {
+          setIsDetailsOpen(true);
+        }}
         className={cn('h-auto p-0 hover:bg-transparent', className)}
       >
         <div className="flex items-center gap-1">
           {getStatusIcon()}
-          <span className="text-xs text-gray-500">
-            {formatReadTime(sentAt)}
-          </span>
+          <span className="text-xs text-gray-500">{formatReadTime(sentAt)}</span>
         </div>
       </Button>
 
@@ -133,16 +130,12 @@ export function MessageReadReceipts({
                         {read.userName.charAt(0).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
-                    
+
                     <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-900">
-                        {read.userName}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {formatReadTime(read.readAt)}
-                      </p>
+                      <p className="text-sm font-medium text-gray-900">{read.userName}</p>
+                      <p className="text-xs text-gray-500">{formatReadTime(read.readAt)}</p>
                     </div>
-                    
+
                     <CheckCheck className="h-4 w-4 text-blue-500" />
                   </div>
                 ))}

@@ -1,55 +1,79 @@
-"use client"
+'use client';
 
-import { TrendingUp, TrendingDown, Users, DollarSign, Activity, Calendar } from "lucide-react"
+import { TrendingUp, TrendingDown, Users, DollarSign, Activity, Calendar } from 'lucide-react';
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
-import { Progress } from "@/components/ui/progress"
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { Progress } from '@/components/ui/progress';
 
 // Mock data for the dashboard
 const stats = [
   {
-    title: "Total Revenue",
-    value: "$45,231.89",
-    change: "+20.1%",
-    trend: "up",
+    title: 'Total Revenue',
+    value: '$45,231.89',
+    change: '+20.1%',
+    trend: 'up',
     icon: DollarSign,
-    description: "from last month"
+    description: 'from last month',
   },
   {
-    title: "Active Users",
-    value: "2,350",
-    change: "+15.3%",
-    trend: "up",
+    title: 'Active Users',
+    value: '2,350',
+    change: '+15.3%',
+    trend: 'up',
     icon: Users,
-    description: "from last month"
+    description: 'from last month',
   },
   {
-    title: "Conversion Rate",
-    value: "3.2%",
-    change: "-2.4%",
-    trend: "down",
+    title: 'Conversion Rate',
+    value: '3.2%',
+    change: '-2.4%',
+    trend: 'down',
     icon: Activity,
-    description: "from last month"
+    description: 'from last month',
   },
   {
-    title: "Total Orders",
-    value: "1,234",
-    change: "+8.7%",
-    trend: "up",
+    title: 'Total Orders',
+    value: '1,234',
+    change: '+8.7%',
+    trend: 'up',
     icon: Calendar,
-    description: "from last month"
-  }
-]
+    description: 'from last month',
+  },
+];
 
 const recentOrders = [
-  { id: "ORD-001", customer: "John Doe", amount: "$299.00", status: "completed", date: "2024-01-15" },
-  { id: "ORD-002", customer: "Jane Smith", amount: "$149.50", status: "pending", date: "2024-01-14" },
-  { id: "ORD-003", customer: "Bob Johnson", amount: "$89.99", status: "completed", date: "2024-01-13" },
-  { id: "ORD-004", customer: "Alice Brown", amount: "$199.00", status: "processing", date: "2024-01-12" },
-]
+  {
+    id: 'ORD-001',
+    customer: 'John Doe',
+    amount: '$299.00',
+    status: 'completed',
+    date: '2024-01-15',
+  },
+  {
+    id: 'ORD-002',
+    customer: 'Jane Smith',
+    amount: '$149.50',
+    status: 'pending',
+    date: '2024-01-14',
+  },
+  {
+    id: 'ORD-003',
+    customer: 'Bob Johnson',
+    amount: '$89.99',
+    status: 'completed',
+    date: '2024-01-13',
+  },
+  {
+    id: 'ORD-004',
+    customer: 'Alice Brown',
+    amount: '$199.00',
+    status: 'processing',
+    date: '2024-01-12',
+  },
+];
 
 export function DashboardExample() {
   return (
@@ -66,20 +90,18 @@ export function DashboardExample() {
         {stats.map((stat) => (
           <Card key={stat.title}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                {stat.title}
-              </CardTitle>
+              <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
               <stat.icon className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stat.value}</div>
               <div className="flex items-center space-x-2 text-xs text-muted-foreground">
-                {stat.trend === "up" ? (
+                {stat.trend === 'up' ? (
                   <TrendingUp className="h-3 w-3 text-green-500" />
                 ) : (
                   <TrendingDown className="h-3 w-3 text-red-500" />
                 )}
-                <span className={stat.trend === "up" ? "text-green-500" : "text-red-500"}>
+                <span className={stat.trend === 'up' ? 'text-green-500' : 'text-red-500'}>
                   {stat.change}
                 </span>
                 <span>{stat.description}</span>
@@ -94,9 +116,7 @@ export function DashboardExample() {
         <Card className="col-span-4">
           <CardHeader>
             <CardTitle>Overview</CardTitle>
-            <CardDescription>
-              Revenue overview for the last 12 months
-            </CardDescription>
+            <CardDescription>Revenue overview for the last 12 months</CardDescription>
           </CardHeader>
           <CardContent className="pl-2">
             <div className="space-y-4">
@@ -138,9 +158,7 @@ export function DashboardExample() {
         <Card className="col-span-3">
           <CardHeader>
             <CardTitle>Recent Orders</CardTitle>
-            <CardDescription>
-              Latest orders from your customers
-            </CardDescription>
+            <CardDescription>Latest orders from your customers</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -151,10 +169,13 @@ export function DashboardExample() {
                     <p className="text-sm text-muted-foreground">{order.customer}</p>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Badge 
+                    <Badge
                       variant={
-                        order.status === "completed" ? "default" : 
-                        order.status === "pending" ? "secondary" : "outline"
+                        order.status === 'completed'
+                          ? 'default'
+                          : order.status === 'pending'
+                            ? 'secondary'
+                            : 'outline'
                       }
                     >
                       {order.status}
@@ -172,9 +193,7 @@ export function DashboardExample() {
       <Card>
         <CardHeader>
           <CardTitle>Recent Activity</CardTitle>
-          <CardDescription>
-            Latest updates and notifications
-          </CardDescription>
+          <CardDescription>Latest updates and notifications</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -214,5 +233,5 @@ export function DashboardExample() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

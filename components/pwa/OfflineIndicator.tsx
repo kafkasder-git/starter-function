@@ -52,7 +52,9 @@ export function OfflineIndicator({
 
   const networkInfo = {
     isOnline,
-    effectiveType: isInFigma ? 'wifi' : (navigator as NavigatorWithConnection).connection?.effectiveType,
+    effectiveType: isInFigma
+      ? 'wifi'
+      : (navigator as NavigatorWithConnection).connection?.effectiveType,
     connectionType: isInFigma ? 'wifi' : (navigator as NavigatorWithConnection).connection?.type,
   };
   const [showReconnecting, setShowReconnecting] = useState(false);
@@ -231,7 +233,12 @@ export function OfflineIndicator({
                         Temiz Frontend
                       </span>
                       {networkInfo.connectionType && networkInfo.connectionType !== 'unknown' && (
-                        <span>Bağlantı: {networkInfo.connectionType ? networkInfo.connectionType.toUpperCase() : 'UNKNOWN'}</span>
+                        <span>
+                          Bağlantı:{' '}
+                          {networkInfo.connectionType
+                            ? networkInfo.connectionType.toUpperCase()
+                            : 'UNKNOWN'}
+                        </span>
                       )}
                     </div>
                   ) : (
@@ -346,7 +353,9 @@ export function NetworkStatusBadge({ className = '' }: { className?: string }) {
 
   const networkInfo = {
     isOnline,
-    effectiveType: isInFigma ? 'wifi' : (navigator as NavigatorWithConnection).connection?.effectiveType,
+    effectiveType: isInFigma
+      ? 'wifi'
+      : (navigator as NavigatorWithConnection).connection?.effectiveType,
   };
 
   return (

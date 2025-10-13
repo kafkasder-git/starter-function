@@ -187,7 +187,7 @@ export function ExportModal({
                 'w-full p-4 rounded-lg border-2 transition-all duration-200 text-left',
                 config.format === format.value
                   ? 'border-primary bg-primary/5 shadow-md'
-                  : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50',
+                  : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
               )}
             >
               <div className="flex items-start gap-3">
@@ -196,7 +196,7 @@ export function ExportModal({
                     'w-8 h-8 rounded-lg flex items-center justify-center',
                     config.format === format.value
                       ? 'bg-primary text-white'
-                      : 'bg-gray-100 text-gray-600',
+                      : 'bg-gray-100 text-gray-600'
                   )}
                 >
                   {format.icon}
@@ -252,7 +252,9 @@ export function ExportModal({
               }}
             />
             <label htmlFor={field} className="text-sm font-medium cursor-pointer flex-1">
-              {(config.customHeaders && field in config.customHeaders) ? config.customHeaders[field] : field}
+              {config.customHeaders && field in config.customHeaders
+                ? config.customHeaders[field]
+                : field}
             </label>
           </div>
         ))}
@@ -332,7 +334,10 @@ export function ExportModal({
               <Select
                 value={config.orientation}
                 onValueChange={(value) => {
-                  setConfig((prev) => ({ ...prev, orientation: value as ExportConfig['orientation'] }));
+                  setConfig((prev) => ({
+                    ...prev,
+                    orientation: value as ExportConfig['orientation'],
+                  }));
                 }}
               >
                 <SelectTrigger>
@@ -440,8 +445,7 @@ export function ExportModal({
               <p>
                 • Tarih aralığı:{' '}
                 <strong>
-                  {formatDate(config.dateRange.start)} -{' '}
-                  {formatDate(config.dateRange.end)}
+                  {formatDate(config.dateRange.start)} - {formatDate(config.dateRange.end)}
                 </strong>
               </p>
             )}
@@ -462,7 +466,9 @@ export function ExportModal({
                       key={field}
                       className="px-3 py-2 text-left font-medium text-gray-700 border-r last:border-r-0"
                     >
-                      {(config.customHeaders && field in config.customHeaders) ? config.customHeaders[field] : field}
+                      {config.customHeaders && field in config.customHeaders
+                        ? config.customHeaders[field]
+                        : field}
                     </th>
                   ))}
                 </tr>
@@ -520,7 +526,7 @@ export function ExportModal({
         <div
           className={cn(
             'w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4',
-            result?.success ? 'bg-green-100' : 'bg-red-100',
+            result?.success ? 'bg-green-100' : 'bg-red-100'
           )}
         >
           {result?.success ? (
@@ -575,7 +581,7 @@ export function ExportModal({
       <DialogContent
         className={cn(
           'max-w-4xl max-h-[90vh] overflow-y-auto',
-          isMobile && 'mx-4 max-w-[calc(100vw-2rem)]',
+          isMobile && 'mx-4 max-w-[calc(100vw-2rem)]'
         )}
       >
         <DialogHeader>
@@ -600,7 +606,7 @@ export function ExportModal({
                   <div
                     className={cn(
                       'w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium',
-                      step === s.key ? 'bg-primary text-white' : 'bg-gray-200 text-gray-600',
+                      step === s.key ? 'bg-primary text-white' : 'bg-gray-200 text-gray-600'
                     )}
                   >
                     {index + 1}
@@ -608,7 +614,7 @@ export function ExportModal({
                   <span
                     className={cn(
                       'ml-2 text-sm',
-                      step === s.key ? 'text-primary font-medium' : 'text-gray-600',
+                      step === s.key ? 'text-primary font-medium' : 'text-gray-600'
                     )}
                   >
                     {s.label}

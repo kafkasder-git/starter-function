@@ -1,6 +1,6 @@
 /**
  * @fileoverview Audit Service - Audit logging and tracking
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -17,7 +17,7 @@ export enum AuditEventType {
   LOGOUT = 'logout',
   LOGIN_FAILED = 'login_failed',
   PASSWORD_RESET = 'password_reset',
-  
+
   // CRUD Operations
   CREATE = 'create',
   READ = 'read',
@@ -25,23 +25,23 @@ export enum AuditEventType {
   DELETE = 'delete',
   SOFT_DELETE = 'soft_delete',
   RESTORE = 'restore',
-  
+
   // Financial
   PAYMENT_CREATED = 'payment_created',
   PAYMENT_APPROVED = 'payment_approved',
   PAYMENT_REJECTED = 'payment_rejected',
   DONATION_RECEIVED = 'donation_received',
-  
+
   // Aid Management
   AID_REQUEST_CREATED = 'aid_request_created',
   AID_REQUEST_APPROVED = 'aid_request_approved',
   AID_REQUEST_REJECTED = 'aid_request_rejected',
   AID_DISTRIBUTED = 'aid_distributed',
-  
+
   // Data Export/Import
   DATA_EXPORTED = 'data_exported',
   DATA_IMPORTED = 'data_imported',
-  
+
   // System
   SETTINGS_CHANGED = 'settings_changed',
   USER_CREATED = 'user_created',
@@ -49,7 +49,7 @@ export enum AuditEventType {
   USER_DELETED = 'user_deleted',
   ROLE_CHANGED = 'role_changed',
   PERMISSION_CHANGED = 'permission_changed',
-  
+
   // Access
   ACCESS_DENIED = 'access_denied',
   UNAUTHORIZED_ACCESS_ATTEMPT = 'unauthorized_access_attempt',
@@ -310,7 +310,9 @@ class AuditService {
       }
 
       if (filter.start_date) {
-        queries.push(queryHelpers.greaterThanEqualDate('created_at', filter.start_date.toISOString()));
+        queries.push(
+          queryHelpers.greaterThanEqualDate('created_at', filter.start_date.toISOString())
+        );
       }
 
       if (filter.end_date) {
@@ -356,7 +358,7 @@ class AuditService {
 
       const stats: Record<string, number> = {};
 
-      logs.forEach(log => {
+      logs.forEach((log) => {
         const key = log.event_type;
         stats[key] = (stats[key] || 0) + 1;
       });
@@ -378,7 +380,7 @@ class AuditService {
 
       // Get old logs first
       const { data: oldLogs } = await db.list(this.collectionName, [
-        queryHelpers.lessThan('created_at', cutoffDate.toISOString())
+        queryHelpers.lessThan('created_at', cutoffDate.toISOString()),
       ]);
 
       if (oldLogs?.documents?.length) {
@@ -386,7 +388,9 @@ class AuditService {
         for (const log of oldLogs.documents) {
           await db.delete(this.collectionName, log.$id);
         }
-        logger.info(`Cleaned up ${oldLogs.documents.length} audit logs older than ${this.retentionDays} days`);
+        logger.info(
+          `Cleaned up ${oldLogs.documents.length} audit logs older than ${this.retentionDays} days`
+        );
       }
     } catch (error) {
       logger.error('Error cleaning up audit logs:', error);
@@ -400,12 +404,12 @@ class AuditService {
     try {
       const logs = JSON.parse(localStorage.getItem('audit_logs_fallback') || '[]');
       logs.push(entry);
-      
+
       // Keep only last 100 logs in local storage
       if (logs.length > 100) {
         logs.shift();
       }
-      
+
       localStorage.setItem('audit_logs_fallback', JSON.stringify(logs));
     } catch (error) {
       logger.error('Failed to log to local storage:', error);
@@ -426,4 +430,3 @@ class AuditService {
 export const auditService = new AuditService();
 
 export default auditService;
-

@@ -1,6 +1,6 @@
 /**
  * @fileoverview PullToRefresh Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -21,7 +21,7 @@ interface PullToRefreshProps {
 
 /**
  * PullToRefresh function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -57,7 +57,7 @@ export function PullToRefresh({
       isScrollingRef.current = false;
       setCanPull(true);
     },
-    [checkCanPull],
+    [checkCanPull]
   );
 
   // Handle touch move
@@ -83,7 +83,7 @@ export function PullToRefresh({
         }
       }
     },
-    [canPull, disabled, threshold],
+    [canPull, disabled, threshold]
   );
 
   // Handle touch end
@@ -167,7 +167,7 @@ export function PullToRefresh({
               }}
               className={cn(
                 'transition-colors duration-200',
-                isTriggered ? 'text-primary' : 'text-slate-400',
+                isTriggered ? 'text-primary' : 'text-slate-400'
               )}
             >
               <RefreshCw className="w-6 h-6" />
@@ -188,7 +188,7 @@ export function PullToRefresh({
             <motion.div
               className={cn(
                 'h-full transition-colors duration-200',
-                isTriggered ? 'bg-primary' : 'bg-slate-300',
+                isTriggered ? 'bg-primary' : 'bg-slate-300'
               )}
               style={{ width: `${progress * 100}%` }}
             />
@@ -199,7 +199,7 @@ export function PullToRefresh({
       {/* Content */}
       <motion.div
         animate={{
-          y: (isPulling || isRefreshing) ? pullDistance * 0.3 : 0,
+          y: isPulling || isRefreshing ? pullDistance * 0.3 : 0,
         }}
         transition={{ type: 'spring', damping: 20, stiffness: 300 }}
       >

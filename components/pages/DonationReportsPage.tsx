@@ -9,7 +9,6 @@ import {
   BarChart3,
   PieChart,
   Download,
-  Filter,
   RefreshCw,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
@@ -225,9 +224,7 @@ export function DonationReportsPage() {
                   </p>
                   <div className="mt-2 flex items-center gap-1">
                     <TrendingUp className="h-4 w-4 text-green-500" />
-                    <span className="text-sm font-medium text-green-600">
-                      +5.2%
-                    </span>
+                    <span className="text-sm font-medium text-green-600">+5.2%</span>
                   </div>
                 </div>
                 <div className="rounded-lg p-3 bg-purple-200">
@@ -246,17 +243,24 @@ export function DonationReportsPage() {
                     {analyticsData?.performance.growth_rate.toFixed(1) ?? '0'}%
                   </p>
                   <div className="mt-2 flex items-center gap-1">
-                    {analyticsData?.performance.growth_rate && analyticsData.performance.growth_rate > 0 ? (
+                    {analyticsData?.performance.growth_rate &&
+                    analyticsData.performance.growth_rate > 0 ? (
                       <TrendingUp className="h-4 w-4 text-green-500" />
                     ) : (
                       <TrendingDown className="h-4 w-4 text-red-500" />
                     )}
-                    <span className={`text-sm font-medium ${
-                      analyticsData?.performance.growth_rate && analyticsData.performance.growth_rate > 0 
-                        ? 'text-green-600' 
-                        : 'text-red-600'
-                    }`}>
-                      {analyticsData?.performance.growth_rate && analyticsData.performance.growth_rate > 0 ? '+' : ''}
+                    <span
+                      className={`text-sm font-medium ${
+                        analyticsData?.performance.growth_rate &&
+                        analyticsData.performance.growth_rate > 0
+                          ? 'text-green-600'
+                          : 'text-red-600'
+                      }`}
+                    >
+                      {analyticsData?.performance.growth_rate &&
+                      analyticsData.performance.growth_rate > 0
+                        ? '+'
+                        : ''}
                       {analyticsData?.performance.growth_rate.toFixed(1) ?? '0'}%
                     </span>
                   </div>
@@ -319,11 +323,15 @@ export function DonationReportsPage() {
                           <div>
                             <p className="text-sm text-gray-600">Gelecek Ay Tahmini</p>
                             <p className="text-2xl font-bold text-gray-900">
-                              ₺{analyticsData?.predictions.next_month_forecast.toLocaleString('tr-TR') ?? '0'}
+                              ₺
+                              {analyticsData?.predictions.next_month_forecast.toLocaleString(
+                                'tr-TR'
+                              ) ?? '0'}
                             </p>
                           </div>
                           <Badge variant="outline" className="text-green-600">
-                            %{analyticsData?.predictions.confidence_interval.toFixed(0) ?? '0'} Güven
+                            %{analyticsData?.predictions.confidence_interval.toFixed(0) ?? '0'}{' '}
+                            Güven
                           </Badge>
                         </div>
                       </div>
@@ -331,14 +339,20 @@ export function DonationReportsPage() {
                       <div className="grid grid-cols-2 gap-4">
                         <div className="rounded-lg bg-blue-50 p-4 text-center">
                           <p className="text-lg font-semibold text-gray-900">
-                            ₺{analyticsData?.predictions.quarterly_forecast.toLocaleString('tr-TR') ?? '0'}
+                            ₺
+                            {analyticsData?.predictions.quarterly_forecast.toLocaleString(
+                              'tr-TR'
+                            ) ?? '0'}
                           </p>
                           <p className="text-sm text-gray-600">Çeyreklik Tahmin</p>
                         </div>
                         <div className="rounded-lg bg-purple-50 p-4 text-center">
                           <p className="text-lg font-semibold text-gray-900">
-                            {analyticsData?.predictions.trend_direction === 'up' ? '↗' : 
-                             analyticsData?.predictions.trend_direction === 'down' ? '↘' : '→'}
+                            {analyticsData?.predictions.trend_direction === 'up'
+                              ? '↗'
+                              : analyticsData?.predictions.trend_direction === 'down'
+                                ? '↘'
+                                : '→'}
                           </p>
                           <p className="text-sm text-gray-600">Trend Yönü</p>
                         </div>
@@ -376,7 +390,10 @@ export function DonationReportsPage() {
                   <CardContent>
                     <div className="space-y-4">
                       {(analyticsData?.trends.yearly_comparison ?? []).map((year, index) => (
-                        <div key={year.year} className="flex items-center justify-between rounded-lg bg-gray-50 p-3">
+                        <div
+                          key={year.year}
+                          className="flex items-center justify-between rounded-lg bg-gray-50 p-3"
+                        >
                           <div>
                             <p className="font-medium text-gray-900">{year.year} Yılı</p>
                             <p className="text-sm text-gray-600">{year.count} bağış</p>
@@ -407,13 +424,20 @@ export function DonationReportsPage() {
                   <CardContent>
                     <div className="space-y-4">
                       {(analyticsData?.segmentation.by_donor_type ?? []).map((donorType, index) => (
-                        <div key={donorType.type} className="flex items-center justify-between rounded-lg bg-gray-50 p-3">
+                        <div
+                          key={donorType.type}
+                          className="flex items-center justify-between rounded-lg bg-gray-50 p-3"
+                        >
                           <div className="flex items-center gap-3">
                             <div className="h-4 w-4 rounded-full bg-blue-500" />
                             <span className="font-medium text-gray-900 capitalize">
-                              {donorType.type === 'individual' ? 'Bireysel' : 
-                               donorType.type === 'corporate' ? 'Kurumsal' : 
-                               donorType.type === 'anonymous' ? 'Anonim' : donorType.type}
+                              {donorType.type === 'individual'
+                                ? 'Bireysel'
+                                : donorType.type === 'corporate'
+                                  ? 'Kurumsal'
+                                  : donorType.type === 'anonymous'
+                                    ? 'Anonim'
+                                    : donorType.type}
                             </span>
                           </div>
                           <div className="text-right">
@@ -450,7 +474,9 @@ export function DonationReportsPage() {
                           <div className="mt-2 h-2 w-full rounded-full bg-gray-200">
                             <div
                               className="h-2 rounded-full bg-blue-600 transition-all duration-500"
-                              style={{ width: `${(range.count / Math.max(...(analyticsData?.segmentation.by_amount_range ?? []).map(r => r.count))) * 100}%` }}
+                              style={{
+                                width: `${(range.count / Math.max(...(analyticsData?.segmentation.by_amount_range ?? []).map((r) => r.count))) * 100}%`,
+                              }}
                             />
                           </div>
                         </div>

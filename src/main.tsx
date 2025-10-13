@@ -100,14 +100,14 @@ try {
         <App />
         {/* React Query DevTools - only in development */}
         {process.env.NODE_ENV === 'development' && (
-          <ReactQueryDevtools 
-            initialIsOpen={false} 
+          <ReactQueryDevtools
+            initialIsOpen={false}
             position="bottom-right"
-            buttonPosition="bottom-right"
+            buttonPosition="bottom-left"
           />
         )}
       </QueryClientProvider>
-    </React.StrictMode>,
+    </React.StrictMode>
   );
 } catch (error) {
   // Log error using logger

@@ -474,7 +474,7 @@ export function BeneficiaryDetailPageComprehensive({
     donors?.filter(
       (donor) =>
         donor.name.toLowerCase().includes(donorSearchTerm.toLowerCase()) ||
-        donor.email.toLowerCase().includes(donorSearchTerm.toLowerCase()),
+        donor.email.toLowerCase().includes(donorSearchTerm.toLowerCase())
     ) || [];
 
   // Bağlı kişiler filtreleme
@@ -633,7 +633,7 @@ export function BeneficiaryDetailPageComprehensive({
       logger.info('🔄 Searching relationships for UUID:', primaryUuid);
 
       const { data: relationships, error } = await db.list('family_relationships', [
-        queryHelpers.equal('primary_beneficiary_id', primaryUuid)
+        queryHelpers.equal('primary_beneficiary_id', primaryUuid),
       ]);
 
       if (error) {
@@ -711,7 +711,7 @@ export function BeneficiaryDetailPageComprehensive({
       const result = await beneficiariesService.getBeneficiaries(
         1, // page
         500, // pageSize - çok daha fazla kayıt getir
-        {}, // Tür filtresi yok - tüm kişiler
+        {} // Tür filtresi yok - tüm kişiler
       );
 
       if (result.data) {
@@ -721,7 +721,7 @@ export function BeneficiaryDetailPageComprehensive({
             ...person,
             yakinlik: 'Belirtilmemiş', // Varsayılan yakınlık
             durum: 'Aktif', // Varsayılan durum
-          })),
+          }))
         );
       } else if (result.error) {
         logger.error('❌ Error loading dependents:', result.error);
@@ -843,7 +843,7 @@ export function BeneficiaryDetailPageComprehensive({
         'to beneficiary:',
         beneficiaryId,
         'relationship:',
-        selectedRelationshipType,
+        selectedRelationshipType
       );
 
       // Integer ID'leri UUID'ye çevir ve family_relationships tablosuna kaydet
@@ -2056,7 +2056,10 @@ export function BeneficiaryDetailPageComprehensive({
 
           {/* Health Status */}
           <Accordion type="single" collapsible className="w-full">
-            <AccordionItem value="health" className="border border-gray-200 dark:border-gray-700 dark:bg-gray-900 bg-white shadow-sm">
+            <AccordionItem
+              value="health"
+              className="border border-gray-200 dark:border-gray-700 dark:bg-gray-900 bg-white shadow-sm"
+            >
               <AccordionTrigger className="pb-4">
                 <CardTitle className="flex items-center gap-2 text-sm font-semibold">
                   <Heart className="text-primary h-4 w-4" />
@@ -2659,7 +2662,7 @@ export function BeneficiaryDetailPageComprehensive({
                       label: 'Doküman Yükle',
                       onClick: () => {
                         const fileInput = document.getElementById(
-                          'file-upload',
+                          'file-upload'
                         ) as HTMLInputElement;
                         fileInput?.click();
                       },
@@ -2972,7 +2975,7 @@ export function BeneficiaryDetailPageComprehensive({
                               onClick={() =>
                                 handleRemoveConnection(
                                   person.relationship_id ?? '',
-                                  person.ad_soyad ?? '',
+                                  person.ad_soyad ?? ''
                                 )
                               }
                             >
@@ -3435,7 +3438,7 @@ export function BeneficiaryDetailPageComprehensive({
                       label: 'Fotoğraf Yükle',
                       onClick: () => {
                         const fileInput = document.getElementById(
-                          'photo-upload',
+                          'photo-upload'
                         ) as HTMLInputElement;
                         fileInput?.click();
                       },
@@ -3666,7 +3669,7 @@ export function BeneficiaryDetailPageComprehensive({
                     {donors
                       .reduce(
                         (sum, donor) => sum + parseInt(donor.totalDonation.replace(/[^0-9]/g, '')),
-                        0,
+                        0
                       )
                       .toLocaleString('tr-TR')}{' '}
                     TL
@@ -3811,7 +3814,7 @@ export function BeneficiaryDetailPageComprehensive({
                         .reduce(
                           (sum, sponsor) =>
                             sum + parseInt(sponsor.sponsorshipAmount.replace(/[^0-9]/g, '')),
-                          0,
+                          0
                         )
                         .toLocaleString('tr-TR')}{' '}
                       TL

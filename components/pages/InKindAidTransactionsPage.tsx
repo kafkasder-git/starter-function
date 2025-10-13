@@ -99,7 +99,9 @@ export function InKindAidTransactionsPage() {
       // Map database records to InKindTransaction interface
       const mappedTransactions: InKindTransaction[] = (data?.documents || []).map((doc: any) => ({
         id: doc.$id,
-        transactionNumber: doc.transaction_number || `AYT-${new Date(doc.created_at).getFullYear()}-${doc.$id.slice(-3)}`,
+        transactionNumber:
+          doc.transaction_number ||
+          `AYT-${new Date(doc.created_at).getFullYear()}-${doc.$id.slice(-3)}`,
         recipientName: doc.recipient_name || '',
         recipientId: doc.recipient_id || '',
         itemCategory: doc.item_category || 'Gıda',
@@ -184,7 +186,7 @@ export function InKindAidTransactionsPage() {
     todayDeliveries: transactions.filter(
       (t) =>
         t.status === 'delivered' &&
-        new Date(t.deliveryDate).toDateString() === new Date().toDateString(),
+        new Date(t.deliveryDate).toDateString() === new Date().toDateString()
     ).length,
   };
 
@@ -425,13 +427,17 @@ export function InKindAidTransactionsPage() {
                         <TableCell>
                           <div className="flex items-center gap-2">
                             <FileText className="h-4 w-4 text-gray-400" />
-                            <span className="font-mono text-sm">{transaction.transactionNumber}</span>
+                            <span className="font-mono text-sm">
+                              {transaction.transactionNumber}
+                            </span>
                           </div>
                         </TableCell>
                         <TableCell>
                           <div>
                             <p className="font-medium">{transaction.recipientName}</p>
-                            <p className="text-muted-foreground text-sm">{transaction.recipientId}</p>
+                            <p className="text-muted-foreground text-sm">
+                              {transaction.recipientId}
+                            </p>
                           </div>
                         </TableCell>
                         <TableCell>

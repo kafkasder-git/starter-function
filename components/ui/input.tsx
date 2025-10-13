@@ -30,29 +30,32 @@ export interface InputProps extends React.ComponentProps<'input'> {
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({
-    className,
-    type,
-    prefixIcon,
-    suffixIcon,
-    clearable = false,
-    loading = false,
-    error = false,
-    success = false,
-    warning = false,
-    helperText,
-    errorText,
-    successText,
-    warningText,
-    maxLength,
-    showCharacterCount = false,
-    onClear,
-    value,
-    onChange,
-    inputSize = 'md',
-    id,
-    ...props
-  }, ref) => {
+  (
+    {
+      className,
+      type,
+      prefixIcon,
+      suffixIcon,
+      clearable = false,
+      loading = false,
+      error = false,
+      success = false,
+      warning = false,
+      helperText,
+      errorText,
+      successText,
+      warningText,
+      maxLength,
+      showCharacterCount = false,
+      onClear,
+      value,
+      onChange,
+      inputSize = 'md',
+      id,
+      ...props
+    },
+    ref
+  ) => {
     const [showPassword, setShowPassword] = React.useState(false);
     const [inputValue, setInputValue] = React.useState(value || '');
     const isPassword = type === 'password';
@@ -77,10 +80,13 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     const helperId = `${inputId}-helper-text`;
     const charCountId = `${inputId}-character-count`;
 
-    const handleChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-      setInputValue(e.target.value);
-      onChange?.(e);
-    }, [onChange]);
+    const handleChange = React.useCallback(
+      (e: React.ChangeEvent<HTMLInputElement>) => {
+        setInputValue(e.target.value);
+        onChange?.(e);
+      },
+      [onChange]
+    );
 
     const handleClear = React.useCallback(() => {
       setInputValue('');
@@ -88,7 +94,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       // Trigger onChange with empty value
       const syntheticEvent = {
         target: { value: '' },
-        currentTarget: { value: '' }
+        currentTarget: { value: '' },
       } as React.ChangeEvent<HTMLInputElement>;
       onChange?.(syntheticEvent);
     }, [onClear, onChange]);
@@ -128,13 +134,13 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       <div className="relative w-full">
         <div className="relative">
           {prefixIcon && (
-            <div className={cn(
-              "absolute top-1/2 -translate-y-1/2 text-muted-foreground",
-              inputSize === 'sm' ? 'left-2.5' : inputSize === 'lg' ? 'left-4' : 'left-3'
-            )}>
-              <div className={iconSizeClasses[inputSize]}>
-                {prefixIcon}
-              </div>
+            <div
+              className={cn(
+                'absolute top-1/2 -translate-y-1/2 text-muted-foreground',
+                inputSize === 'sm' ? 'left-2.5' : inputSize === 'lg' ? 'left-4' : 'left-3'
+              )}
+            >
+              <div className={iconSizeClasses[inputSize]}>{prefixIcon}</div>
             </div>
           )}
 
@@ -143,17 +149,21 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             id={inputId}
             data-slot="input"
             className={cn(
-              'file:text-foreground placeholder:text-muted-foreground selection:bg-primary-500 selection:text-white dark:bg-input/30 border-input flex w-full min-w-0 rounded-lg border bg-white transition-all duration-200 outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50',
+              'file:text-foreground placeholder:text-muted-foreground selection:bg-primary-500 selection:text-white dark:bg-input/30 border-input flex w-full min-w-0 rounded-lg border bg-white transition-all duration-200 outline-none file:inline-flex file:h-7 file:border-none file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50',
               'focus-visible:border-ring focus-visible:ring-ring/20 focus-visible:ring-2 focus-visible:ring-offset-2',
               'hover:border-ring/60',
               sizeClasses[inputSize],
               prefixIcon && prefixPaddingClasses[inputSize],
               (suffixIcon || canClear || loading || isPassword) && suffixPaddingClasses[inputSize],
-              error && 'border-error-600 focus-visible:ring-error-500/20 focus-visible:border-error-600',
-              success && 'border-success-600 focus-visible:ring-success-500/20 focus-visible:border-success-600',
-              warning && !error && 'border-warning-600 focus-visible:ring-warning-500/20 focus-visible:border-warning-600',
+              error &&
+                'border-error-600 focus-visible:ring-error-500/20 focus-visible:border-error-600',
+              success &&
+                'border-success-600 focus-visible:ring-success-500/20 focus-visible:border-success-600',
+              warning &&
+                !error &&
+                'border-warning-600 focus-visible:ring-warning-500/20 focus-visible:border-warning-600',
               isOverLimit && 'border-error-600',
-              className,
+              className
             )}
             ref={ref}
             value={inputValue}
@@ -161,23 +171,32 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             maxLength={maxLength}
             aria-invalid={error || isOverLimit}
             aria-describedby={
-              error && errorText ? errorId :
-              warning && warningText ? warningId :
-              success && successText ? successId :
-              helperText ? helperId :
-              showCharacterCount && maxLength ? charCountId :
-              undefined
+              error && errorText
+                ? errorId
+                : warning && warningText
+                  ? warningId
+                  : success && successText
+                    ? successId
+                    : helperText
+                      ? helperId
+                      : showCharacterCount && maxLength
+                        ? charCountId
+                        : undefined
             }
             aria-label={props['aria-label'] || (isPassword ? 'Password input' : undefined)}
             {...props}
           />
 
-          <div className={cn(
-            "absolute top-1/2 -translate-y-1/2 flex items-center gap-1",
-            inputSize === 'sm' ? 'right-2.5' : inputSize === 'lg' ? 'right-4' : 'right-3'
-          )}>
+          <div
+            className={cn(
+              'absolute top-1/2 -translate-y-1/2 flex items-center gap-1',
+              inputSize === 'sm' ? 'right-2.5' : inputSize === 'lg' ? 'right-4' : 'right-3'
+            )}
+          >
             {loading && (
-              <Loader2 className={cn("animate-spin text-muted-foreground", iconSizeClasses[inputSize])} />
+              <Loader2
+                className={cn('animate-spin text-muted-foreground', iconSizeClasses[inputSize])}
+              />
             )}
 
             {!loading && isPassword && (
@@ -186,9 +205,13 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
                 onClick={togglePasswordVisibility}
                 className="text-muted-foreground hover:text-foreground transition-colors"
                 tabIndex={-1}
-                aria-label={showPassword ? "Hide password" : "Show password"}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
-                {showPassword ? <EyeOff className={iconSizeClasses[inputSize]} /> : <Eye className={iconSizeClasses[inputSize]} />}
+                {showPassword ? (
+                  <EyeOff className={iconSizeClasses[inputSize]} />
+                ) : (
+                  <Eye className={iconSizeClasses[inputSize]} />
+                )}
               </button>
             )}
 
@@ -205,7 +228,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             )}
 
             {!loading && !isPassword && !canClear && suffixIcon && (
-              <div className={cn("text-muted-foreground", iconSizeClasses[inputSize])}>
+              <div className={cn('text-muted-foreground', iconSizeClasses[inputSize])}>
                 {suffixIcon}
               </div>
             )}
@@ -213,7 +236,11 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         </div>
 
         {/* Helper Text / Error Text / Warning Text / Success Text */}
-        {(helperText || errorText || warningText || successText || (showCharacterCount && maxLength)) && (
+        {(helperText ||
+          errorText ||
+          warningText ||
+          successText ||
+          (showCharacterCount && maxLength)) && (
           <div className="mt-1 flex items-center justify-between text-xs">
             <div className="flex items-center gap-1">
               {error && errorText && (
@@ -241,10 +268,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             {showCharacterCount && maxLength && (
               <span
                 id={charCountId}
-                className={cn(
-                  "text-muted-foreground",
-                  isOverLimit && "text-error-600"
-                )}
+                className={cn('text-muted-foreground', isOverLimit && 'text-error-600')}
                 aria-live="polite"
               >
                 {currentLength}/{maxLength}
@@ -254,7 +278,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         )}
       </div>
     );
-  },
+  }
 );
 
 Input.displayName = 'Input';
@@ -281,42 +305,57 @@ export interface FloatingLabelInputProps extends Omit<InputProps, 'placeholder'>
 }
 
 export const FloatingLabelInput = React.forwardRef<HTMLInputElement, FloatingLabelInputProps>(
-  ({
-    label,
-    required = false,
-    className,
-    id,
-    error,
-    success,
-    warning,
-    inputSize = 'md',
-    value,
-    onChange,
-    onFocus,
-    onBlur,
-    ...props
-  }, ref) => {
+  (
+    {
+      label,
+      required = false,
+      className,
+      id,
+      error,
+      success,
+      warning,
+      inputSize = 'md',
+      value,
+      onChange,
+      onFocus,
+      onBlur,
+      ...props
+    },
+    ref
+  ) => {
     const [isFocused, setIsFocused] = React.useState(false);
     const [inputValue, setInputValue] = React.useState(value || '');
-    const inputId = React.useMemo(() => id || `floating-input-${Math.random().toString(36).substr(2, 9)}`, [id]);
+    const inputId = React.useMemo(
+      () => id || `floating-input-${Math.random().toString(36).substr(2, 9)}`,
+      [id]
+    );
 
     const hasValue = Boolean(inputValue) || Boolean(value);
     const isFloating = isFocused || hasValue;
 
-    const handleChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-      setInputValue(e.target.value);
-      onChange?.(e);
-    }, [onChange]);
+    const handleChange = React.useCallback(
+      (e: React.ChangeEvent<HTMLInputElement>) => {
+        setInputValue(e.target.value);
+        onChange?.(e);
+      },
+      [onChange]
+    );
 
-    const handleFocus = React.useCallback((e: React.FocusEvent<HTMLInputElement>) => {
-      setIsFocused(true);
-      onFocus?.(e);
-    }, [onFocus]);
+    const handleFocus = React.useCallback(
+      (e: React.FocusEvent<HTMLInputElement>) => {
+        setIsFocused(true);
+        onFocus?.(e);
+      },
+      [onFocus]
+    );
 
-    const handleBlur = React.useCallback((e: React.FocusEvent<HTMLInputElement>) => {
-      setIsFocused(false);
-      onBlur?.(e);
-    }, [onBlur]);
+    const handleBlur = React.useCallback(
+      (e: React.FocusEvent<HTMLInputElement>) => {
+        setIsFocused(false);
+        onBlur?.(e);
+      },
+      [onBlur]
+    );
 
     // Size-specific classes
     const labelSizeClasses = {
@@ -345,10 +384,7 @@ export const FloatingLabelInput = React.forwardRef<HTMLInputElement, FloatingLab
         <Input
           ref={ref}
           id={inputId}
-          className={cn(
-            inputPaddingClasses[inputSize],
-            className
-          )}
+          className={cn(inputPaddingClasses[inputSize], className)}
           value={inputValue}
           onChange={handleChange}
           onFocus={handleFocus}
@@ -367,18 +403,20 @@ export const FloatingLabelInput = React.forwardRef<HTMLInputElement, FloatingLab
           className={cn(
             'absolute pointer-events-none transition-all duration-200 ease-out bg-background',
             'text-muted-foreground',
-            isFloating
-              ? labelSizeClasses[inputSize].floating
-              : labelSizeClasses[inputSize].default,
+            isFloating ? labelSizeClasses[inputSize].floating : labelSizeClasses[inputSize].default,
             isFocused && 'text-ring',
             error && 'text-error-600',
             success && !error && 'text-success-600',
             warning && !error && !success && 'text-warning-600',
-            props.disabled && 'opacity-50',
+            props.disabled && 'opacity-50'
           )}
         >
           {label}
-          {required && <span className="text-error-500 ml-0.5" aria-hidden="true">*</span>}
+          {required && (
+            <span className="text-error-500 ml-0.5" aria-hidden="true">
+              *
+            </span>
+          )}
         </label>
       </div>
     );
@@ -451,7 +489,7 @@ export const InputGroup = React.forwardRef<HTMLDivElement, InputGroupProps>(
               isFirst && '[&>div>input]:rounded-l-lg',
               isLast && '[&>div>input]:rounded-r-lg',
               !isFirst && '[&>div>input]:border-l-0',
-              !isLast && '[&>div>input]:border-r-0',
+              !isLast && '[&>div>input]:border-r-0'
             ),
           });
         }
@@ -468,12 +506,7 @@ export const InputGroup = React.forwardRef<HTMLDivElement, InputGroupProps>(
     });
 
     return (
-      <div
-        ref={ref}
-        className={cn('flex w-full items-stretch', className)}
-        role="group"
-        {...props}
-      >
+      <div ref={ref} className={cn('flex w-full items-stretch', className)} role="group" {...props}>
         {childrenWithProps}
       </div>
     );

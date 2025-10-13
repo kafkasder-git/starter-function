@@ -45,8 +45,7 @@ const defaultRetryConfig: RetryConfig = {
   backoffMultiplier: 2,
   retryCondition: (error) => {
     // Retry on network errors and 5xx server errors
-    return error.name === 'NetworkError' || 
-           (error.status >= 500 && error.status < 600);
+    return error.name === 'NetworkError' || (error.status >= 500 && error.status < 600);
   },
 };
 
@@ -60,7 +59,7 @@ export async function withServiceWrapper<T>(
   const startTime = Date.now();
   let lastError: Error | undefined;
   let retryCount = 0;
-  
+
   const {
     retry = defaultRetryConfig,
     timeout = 30000,
@@ -82,13 +81,10 @@ export async function withServiceWrapper<T>(
       }
 
       // Race between service call and timeout
-      const result = await Promise.race([
-        serviceCall(),
-        timeoutPromise,
-      ]);
+      const result = await Promise.race([serviceCall(), timeoutPromise]);
 
       const duration = Date.now() - startTime;
-      
+
       if (enableLogging) {
         console.log(`Service call succeeded in ${duration}ms`, context);
       }
@@ -99,7 +95,6 @@ export async function withServiceWrapper<T>(
         retryCount,
         duration,
       };
-
     } catch (error) {
       lastError = error instanceof Error ? error : new Error(String(error));
       retryCount++;
@@ -110,8 +105,9 @@ export async function withServiceWrapper<T>(
       }
 
       // Check if we should retry
-      const shouldRetry = retryCount <= retry.maxRetries && 
-                         (!retry.retryCondition || retry.retryCondition(lastError));
+      const shouldRetry =
+        retryCount <= retry.maxRetries &&
+        (!retry.retryCondition || retry.retryCondition(lastError));
 
       if (!shouldRetry) {
         break;
@@ -119,13 +115,13 @@ export async function withServiceWrapper<T>(
 
       // Calculate delay with exponential backoff
       const delay = retry.delay * Math.pow(retry.backoffMultiplier, retryCount - 1);
-      
+
       if (enableLogging) {
         console.log(`Retrying in ${delay}ms...`);
       }
 
       // Wait before retry
-      await new Promise(resolve => setTimeout(resolve, delay));
+      await new Promise((resolve) => setTimeout(resolve, delay));
     }
   }
 
@@ -155,17 +151,14 @@ export function wrapService<T extends (...args: any[]) => Promise<any>>(
   options: ServiceCallOptions = {}
 ): T {
   return (async (...args: Parameters<T>) => {
-    const result = await withServiceWrapper(
-      () => serviceFunction(...args),
-      {
-        ...options,
-        context: {
-          ...options.context,
-          functionName: serviceFunction.name,
-          args: args.length > 0 ? 'provided' : 'none',
-        },
-      }
-    );
+    const result = await withServiceWrapper(() => serviceFunction(...args), {
+      ...options,
+      context: {
+        ...options.context,
+        functionName: serviceFunction.name,
+        args: args.length > 0 ? 'provided' : 'none',
+      },
+    });
 
     if (!result.success && result.error) {
       throw result.error;
@@ -186,10 +179,7 @@ export async function withBatchWrapper<T>(
   const results: T[] = [];
   const errors: Error[] = [];
 
-  const {
-    enableLogging = true,
-    context = {},
-  } = options;
+  const { enableLogging = true, context = {} } = options;
 
   if (enableLogging) {
     console.log(`Starting batch of ${serviceCalls.length} service calls`, context);
@@ -226,21 +216,21 @@ export async function withBatchWrapper<T>(
   const errorCount = errors.length;
 
   if (enableLogging) {
-    console.log(`Batch completed: ${successCount} successful, ${errorCount} failed in ${duration}ms`, context);
+    console.log(
+      `Batch completed: ${successCount} successful, ${errorCount} failed in ${duration}ms`,
+      context
+    );
   }
 
   // Report batch errors if any
   if (errorCount > 0) {
-    globalErrorHandler.reportManualError(
-      new Error(`Batch operation had ${errorCount} failures`),
-      {
-        ...context,
-        successCount,
-        errorCount,
-        duration,
-        errors: errors.map(e => e.message),
-      }
-    );
+    globalErrorHandler.reportManualError(new Error(`Batch operation had ${errorCount} failures`), {
+      ...context,
+      successCount,
+      errorCount,
+      duration,
+      errors: errors.map((e) => e.message),
+    });
   }
 
   return {
@@ -277,12 +267,12 @@ export class CircuitBreaker {
 
     try {
       const result = await serviceCall();
-      
+
       if (this.state === 'HALF_OPEN') {
         this.state = 'CLOSED';
         this.failureCount = 0;
       }
-      
+
       return result;
     } catch (error) {
       this.failureCount++;

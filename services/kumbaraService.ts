@@ -120,7 +120,7 @@ const kumbaraService = {
           (k) =>
             k.name.toLowerCase().includes(searchLower) ||
             k.location.toLowerCase().includes(searchLower) ||
-            k.code.toLowerCase().includes(searchLower),
+            k.code.toLowerCase().includes(searchLower)
         );
       }
 
@@ -379,7 +379,7 @@ const kumbaraService = {
   async getKumbaraAnalytics(
     kumbaraId: string,
     periodStart: string,
-    periodEnd: string,
+    periodEnd: string
   ): Promise<KumbaraAnalytics> {
     try {
       // Analytics data - replace with real API call

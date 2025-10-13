@@ -1,155 +1,189 @@
-"use client"
+'use client';
 
-import * as React from "react"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
-import { CalendarIcon, ChevronDown, ChevronRight, Mail, User, MapPin, FileText, CheckCircle, AlertCircle } from "lucide-react"
+import * as React from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import {
+  CalendarIcon,
+  ChevronDown,
+  ChevronRight,
+  Mail,
+  User,
+  MapPin,
+  FileText,
+  CheckCircle,
+  AlertCircle,
+} from 'lucide-react';
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Progress } from "@/components/ui/progress"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Switch } from "@/components/ui/switch"
-import { Textarea } from "@/components/ui/textarea"
-import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { cn } from "@/components/ui/utils"
-import { format } from "date-fns"
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Progress } from '@/components/ui/progress';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command';
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import { cn } from '@/components/ui/utils';
+import { format } from 'date-fns';
 
 // Form schemas
 const basicFormSchema = z.object({
-  firstName: z.string().min(2, "Ad en az 2 karakter olmalı"),
-  lastName: z.string().min(2, "Soyad en az 2 karakter olmalı"),
-  email: z.string().email("Geçerli bir email adresi girin"),
-  phone: z.string().min(10, "Telefon numarası en az 10 karakter olmalı"),
-  message: z.string().min(10, "Mesaj en az 10 karakter olmalı"),
-})
+  firstName: z.string().min(2, 'Ad en az 2 karakter olmalı'),
+  lastName: z.string().min(2, 'Soyad en az 2 karakter olmalı'),
+  email: z.string().email('Geçerli bir email adresi girin'),
+  phone: z.string().min(10, 'Telefon numarası en az 10 karakter olmalı'),
+  message: z.string().min(10, 'Mesaj en az 10 karakter olmalı'),
+});
 
 const multiStepFormSchema = z.object({
   // Step 1: Personal Info
-  firstName: z.string().min(2, "Ad en az 2 karakter olmalı"),
-  lastName: z.string().min(2, "Soyad en az 2 karakter olmalı"),
-  email: z.string().email("Geçerli bir email adresi girin"),
-  phone: z.string().min(10, "Telefon numarası en az 10 karakter olmalı"),
-  
+  firstName: z.string().min(2, 'Ad en az 2 karakter olmalı'),
+  lastName: z.string().min(2, 'Soyad en az 2 karakter olmalı'),
+  email: z.string().email('Geçerli bir email adresi girin'),
+  phone: z.string().min(10, 'Telefon numarası en az 10 karakter olmalı'),
+
   // Step 2: Address Info
-  address: z.string().min(5, "Adres en az 5 karakter olmalı"),
-  city: z.string().min(2, "Şehir en az 2 karakter olmalı"),
-  postalCode: z.string().min(5, "Posta kodu en az 5 karakter olmalı"),
-  country: z.string().min(2, "Ülke seçin"),
-  
+  address: z.string().min(5, 'Adres en az 5 karakter olmalı'),
+  city: z.string().min(2, 'Şehir en az 2 karakter olmalı'),
+  postalCode: z.string().min(5, 'Posta kodu en az 5 karakter olmalı'),
+  country: z.string().min(2, 'Ülke seçin'),
+
   // Step 3: Preferences
   newsletter: z.boolean().default(false),
   notifications: z.boolean().default(true),
-  language: z.string().min(1, "Dil seçin"),
-  terms: z.boolean().refine(val => val, "Şartları kabul etmelisiniz"),
-})
+  language: z.string().min(1, 'Dil seçin'),
+  terms: z.boolean().refine((val) => val, 'Şartları kabul etmelisiniz'),
+});
 
-const validationFormSchema = z.object({
-  email: z.string().email("Geçerli bir email adresi girin"),
-  password: z.string()
-    .min(8, "Şifre en az 8 karakter olmalı")
-    .regex(/[A-Z]/, "En az bir büyük harf içermeli")
-    .regex(/[a-z]/, "En az bir küçük harf içermeli")
-    .regex(/[0-9]/, "En az bir rakam içermeli"),
-  confirmPassword: z.string(),
-  age: z.number().min(18, "Yaş en az 18 olmalı"),
-  website: z.string().url("Geçerli bir URL girin").optional().or(z.literal("")),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Şifreler eşleşmiyor",
-  path: ["confirmPassword"],
-})
+const validationFormSchema = z
+  .object({
+    email: z.string().email('Geçerli bir email adresi girin'),
+    password: z
+      .string()
+      .min(8, 'Şifre en az 8 karakter olmalı')
+      .regex(/[A-Z]/, 'En az bir büyük harf içermeli')
+      .regex(/[a-z]/, 'En az bir küçük harf içermeli')
+      .regex(/[0-9]/, 'En az bir rakam içermeli'),
+    confirmPassword: z.string(),
+    age: z.number().min(18, 'Yaş en az 18 olmalı'),
+    website: z.string().url('Geçerli bir URL girin').optional().or(z.literal('')),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'Şifreler eşleşmiyor',
+    path: ['confirmPassword'],
+  });
 
-type BasicFormValues = z.infer<typeof basicFormSchema>
-type MultiStepFormValues = z.infer<typeof multiStepFormSchema>
-type ValidationFormValues = z.infer<typeof validationFormSchema>
+type BasicFormValues = z.infer<typeof basicFormSchema>;
+type MultiStepFormValues = z.infer<typeof multiStepFormSchema>;
+type ValidationFormValues = z.infer<typeof validationFormSchema>;
 
 export function FormExamplesPage() {
-  const [currentStep, setCurrentStep] = React.useState(1)
-  const [date, setDate] = React.useState<Date>()
-  const [open, setOpen] = React.useState(false)
+  const [currentStep, setCurrentStep] = React.useState(1);
+  const [date, setDate] = React.useState<Date>();
+  const [open, setOpen] = React.useState(false);
 
   // Basic Form
   const basicForm = useForm<BasicFormValues>({
     resolver: zodResolver(basicFormSchema),
     defaultValues: {
-      firstName: "",
-      lastName: "",
-      email: "",
-      phone: "",
-      message: "",
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      message: '',
     },
-  })
+  });
 
   // Multi-step Form
   const multiStepForm = useForm<MultiStepFormValues>({
     resolver: zodResolver(multiStepFormSchema),
     defaultValues: {
-      firstName: "",
-      lastName: "",
-      email: "",
-      phone: "",
-      address: "",
-      city: "",
-      postalCode: "",
-      country: "",
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      address: '',
+      city: '',
+      postalCode: '',
+      country: '',
       newsletter: false,
       notifications: true,
-      language: "",
+      language: '',
       terms: false,
     },
-  })
+  });
 
   // Validation Form
   const validationForm = useForm<ValidationFormValues>({
     resolver: zodResolver(validationFormSchema),
     defaultValues: {
-      email: "",
-      password: "",
-      confirmPassword: "",
+      email: '',
+      password: '',
+      confirmPassword: '',
       age: 18,
-      website: "",
+      website: '',
     },
-  })
+  });
 
   const onBasicSubmit = (data: BasicFormValues) => {
     // Form submitted successfully
     // In a real application, you would send this data to your API
-    alert(`Form başarıyla gönderildi! Ad: ${data.firstName} ${data.lastName}`)
-  }
+    alert(`Form başarıyla gönderildi! Ad: ${data.firstName} ${data.lastName}`);
+  };
 
   const onMultiStepSubmit = (data: MultiStepFormValues) => {
     // Multi-step form submitted successfully
     // In a real application, you would send this data to your API
-    alert(`Çok adımlı form başarıyla gönderildi! Email: ${data.email}`)
-  }
+    alert(`Çok adımlı form başarıyla gönderildi! Email: ${data.email}`);
+  };
 
   const onValidationSubmit = (data: ValidationFormValues) => {
     // Validation form submitted successfully
     // In a real application, you would send this data to your API
-    alert(`Validasyonlu form başarıyla gönderildi! Email: ${data.email}`)
-  }
+    alert(`Validasyonlu form başarıyla gönderildi! Email: ${data.email}`);
+  };
 
   const nextStep = () => {
     if (currentStep < 3) {
-      setCurrentStep(currentStep + 1)
+      setCurrentStep(currentStep + 1);
     }
-  }
+  };
 
   const prevStep = () => {
     if (currentStep > 1) {
-      setCurrentStep(currentStep - 1)
+      setCurrentStep(currentStep - 1);
     }
-  }
+  };
 
   return (
     <div className="container mx-auto p-6 space-y-8">
@@ -172,9 +206,7 @@ export function FormExamplesPage() {
           <Card>
             <CardHeader>
               <CardTitle>Basit İletişim Formu</CardTitle>
-              <CardDescription>
-                Temel form elemanları ve validasyon
-              </CardDescription>
+              <CardDescription>Temel form elemanları ve validasyon</CardDescription>
             </CardHeader>
             <CardContent>
               <Form {...basicForm}>
@@ -244,10 +276,10 @@ export function FormExamplesPage() {
                       <FormItem>
                         <FormLabel>Mesaj</FormLabel>
                         <FormControl>
-                          <Textarea 
-                            placeholder="Mesajınızı buraya yazın..." 
+                          <Textarea
+                            placeholder="Mesajınızı buraya yazın..."
                             className="min-h-[100px]"
-                            {...field} 
+                            {...field}
                           />
                         </FormControl>
                         <FormMessage />
@@ -270,9 +302,7 @@ export function FormExamplesPage() {
           <Card>
             <CardHeader>
               <CardTitle>Çok Adımlı Kayıt Formu</CardTitle>
-              <CardDescription>
-                Adım adım form doldurma örneği
-              </CardDescription>
+              <CardDescription>Adım adım form doldurma örneği</CardDescription>
             </CardHeader>
             <CardContent>
               {/* Progress Indicator */}
@@ -287,7 +317,10 @@ export function FormExamplesPage() {
               </div>
 
               <Form {...multiStepForm}>
-                <form onSubmit={multiStepForm.handleSubmit(onMultiStepSubmit)} className="space-y-6">
+                <form
+                  onSubmit={multiStepForm.handleSubmit(onMultiStepSubmit)}
+                  className="space-y-6"
+                >
                   {/* Step 1: Personal Info */}
                   {currentStep === 1 && (
                     <div className="space-y-4">
@@ -295,7 +328,7 @@ export function FormExamplesPage() {
                         <User className="h-5 w-5 text-blue-600" />
                         <h3 className="text-lg font-semibold">Kişisel Bilgiler</h3>
                       </div>
-                      
+
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <FormField
                           control={multiStepForm.control}
@@ -453,10 +486,7 @@ export function FormExamplesPage() {
                                 </FormDescription>
                               </div>
                               <FormControl>
-                                <Switch
-                                  checked={field.value}
-                                  onCheckedChange={field.onChange}
-                                />
+                                <Switch checked={field.value} onCheckedChange={field.onChange} />
                               </FormControl>
                             </FormItem>
                           )}
@@ -469,15 +499,10 @@ export function FormExamplesPage() {
                             <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                               <div className="space-y-0.5">
                                 <FormLabel className="text-base">Bildirimler</FormLabel>
-                                <FormDescription>
-                                  Push bildirimleri almak istiyorum
-                                </FormDescription>
+                                <FormDescription>Push bildirimleri almak istiyorum</FormDescription>
                               </div>
                               <FormControl>
-                                <Switch
-                                  checked={field.value}
-                                  onCheckedChange={field.onChange}
-                                />
+                                <Switch checked={field.value} onCheckedChange={field.onChange} />
                               </FormControl>
                             </FormItem>
                           )}
@@ -513,20 +538,17 @@ export function FormExamplesPage() {
                           render={({ field }) => (
                             <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                               <FormControl>
-                                <Checkbox
-                                  checked={field.value}
-                                  onCheckedChange={field.onChange}
-                                />
+                                <Checkbox checked={field.value} onCheckedChange={field.onChange} />
                               </FormControl>
                               <div className="space-y-1 leading-none">
                                 <FormLabel>
                                   <a href="#" className="text-primary hover:underline">
                                     Kullanım şartlarını
-                                  </a>{" "}
-                                  ve{" "}
+                                  </a>{' '}
+                                  ve{' '}
                                   <a href="#" className="text-primary hover:underline">
                                     gizlilik politikasını
-                                  </a>{" "}
+                                  </a>{' '}
                                   kabul ediyorum
                                 </FormLabel>
                                 <FormMessage />
@@ -549,7 +571,7 @@ export function FormExamplesPage() {
                       <ChevronRight className="mr-2 h-4 w-4 rotate-180" />
                       Önceki
                     </Button>
-                    
+
                     {currentStep < 3 ? (
                       <Button type="button" onClick={nextStep}>
                         Sonraki
@@ -579,7 +601,10 @@ export function FormExamplesPage() {
             </CardHeader>
             <CardContent>
               <Form {...validationForm}>
-                <form onSubmit={validationForm.handleSubmit(onValidationSubmit)} className="space-y-6">
+                <form
+                  onSubmit={validationForm.handleSubmit(onValidationSubmit)}
+                  className="space-y-6"
+                >
                   <FormField
                     control={validationForm.control}
                     name="email"
@@ -589,9 +614,7 @@ export function FormExamplesPage() {
                         <FormControl>
                           <Input type="email" placeholder="ornek@email.com" {...field} />
                         </FormControl>
-                        <FormDescription>
-                          Geçerli bir email adresi girin
-                        </FormDescription>
+                        <FormDescription>Geçerli bir email adresi girin</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -635,18 +658,16 @@ export function FormExamplesPage() {
                       <FormItem>
                         <FormLabel>Yaş</FormLabel>
                         <FormControl>
-                          <Input 
-                            type="number" 
-                            placeholder="18" 
+                          <Input
+                            type="number"
+                            placeholder="18"
                             {...field}
                             onChange={(e) => {
-                              field.onChange(parseInt(e.target.value) || 0)
+                              field.onChange(parseInt(e.target.value) || 0);
                             }}
                           />
                         </FormControl>
-                        <FormDescription>
-                          En az 18 yaşında olmalısınız
-                        </FormDescription>
+                        <FormDescription>En az 18 yaşında olmalısınız</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -661,9 +682,7 @@ export function FormExamplesPage() {
                         <FormControl>
                           <Input placeholder="https://example.com" {...field} />
                         </FormControl>
-                        <FormDescription>
-                          Geçerli bir URL formatında olmalı
-                        </FormDescription>
+                        <FormDescription>Geçerli bir URL formatında olmalı</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -672,7 +691,8 @@ export function FormExamplesPage() {
                   <Alert>
                     <AlertCircle className="h-4 w-4" />
                     <AlertDescription>
-                      Bu form gelişmiş validasyon kuralları içerir. Tüm alanların doğru şekilde doldurulması gerekmektedir.
+                      Bu form gelişmiş validasyon kuralları içerir. Tüm alanların doğru şekilde
+                      doldurulması gerekmektedir.
                     </AlertDescription>
                   </Alert>
 
@@ -691,9 +711,7 @@ export function FormExamplesPage() {
       <Card>
         <CardHeader>
           <CardTitle>Ek Form Bileşenleri</CardTitle>
-          <CardDescription>
-            Tarih seçici, dropdown ve diğer özel bileşenler
-          </CardDescription>
+          <CardDescription>Tarih seçici, dropdown ve diğer özel bileşenler</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -705,21 +723,16 @@ export function FormExamplesPage() {
                   <Button
                     variant="outline"
                     className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !date && "text-muted-foreground"
+                      'w-full justify-start text-left font-normal',
+                      !date && 'text-muted-foreground'
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {date ? format(date, "PPP") : "Tarih seçin"}
+                    {date ? format(date, 'PPP') : 'Tarih seçin'}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={date}
-                    onSelect={setDate}
-                    initialFocus
-                  />
+                  <Calendar mode="single" selected={date} onSelect={setDate} initialFocus />
                 </PopoverContent>
               </Popover>
             </div>
@@ -777,7 +790,7 @@ export function FormExamplesPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
 
 export default FormExamplesPage;

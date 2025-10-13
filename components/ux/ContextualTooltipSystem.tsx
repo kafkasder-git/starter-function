@@ -1,6 +1,6 @@
 /**
  * @fileoverview ContextualTooltipSystem Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -39,7 +39,7 @@ interface SmartTooltipProps {
 
 /**
  * SmartTooltip function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -96,15 +96,15 @@ export function SmartTooltip({
 
     switch (position) {
       case 'top':
-        return `${base  }bottom-full left-1/2 transform -translate-x-1/2 mb-2`;
+        return `${base}bottom-full left-1/2 transform -translate-x-1/2 mb-2`;
       case 'bottom':
-        return `${base  }top-full left-1/2 transform -translate-x-1/2 mt-2`;
+        return `${base}top-full left-1/2 transform -translate-x-1/2 mt-2`;
       case 'left':
-        return `${base  }right-full top-1/2 transform -translate-y-1/2 mr-2`;
+        return `${base}right-full top-1/2 transform -translate-y-1/2 mr-2`;
       case 'right':
-        return `${base  }left-full top-1/2 transform -translate-y-1/2 ml-2`;
+        return `${base}left-full top-1/2 transform -translate-y-1/2 ml-2`;
       default:
-        return `${base  }bottom-full left-1/2 transform -translate-x-1/2 mb-2`;
+        return `${base}bottom-full left-1/2 transform -translate-x-1/2 mb-2`;
     }
   };
 
@@ -113,30 +113,25 @@ export function SmartTooltip({
 
     switch (position) {
       case 'top':
-        return (
-          `${base 
-          }top-full left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-t-0 border-l-0`
-        );
+        return `${
+          base
+        }top-full left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-t-0 border-l-0`;
       case 'bottom':
-        return (
-          `${base 
-          }bottom-full left-1/2 transform -translate-x-1/2 translate-y-1/2 border-b-0 border-r-0`
-        );
+        return `${
+          base
+        }bottom-full left-1/2 transform -translate-x-1/2 translate-y-1/2 border-b-0 border-r-0`;
       case 'left':
-        return (
-          `${base 
-          }left-full top-1/2 transform -translate-x-1/2 -translate-y-1/2 border-l-0 border-b-0`
-        );
+        return `${
+          base
+        }left-full top-1/2 transform -translate-x-1/2 -translate-y-1/2 border-l-0 border-b-0`;
       case 'right':
-        return (
-          `${base 
-          }right-full top-1/2 transform translate-x-1/2 -translate-y-1/2 border-r-0 border-t-0`
-        );
+        return `${
+          base
+        }right-full top-1/2 transform translate-x-1/2 -translate-y-1/2 border-r-0 border-t-0`;
       default:
-        return (
-          `${base 
-          }top-full left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-t-0 border-l-0`
-        );
+        return `${
+          base
+        }top-full left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-t-0 border-l-0`;
     }
   };
 
@@ -164,7 +159,7 @@ export function SmartTooltip({
           className={cn(
             getPositionClasses(),
             'w-80 max-w-sm bg-popover border border-border rounded-lg shadow-lg overflow-hidden',
-            'animate-in fade-in-0 zoom-in-95 duration-200',
+            'animate-in fade-in-0 zoom-in-95 duration-200'
           )}
           onMouseEnter={() => {
             if (timeoutRef.current) {
@@ -281,7 +276,7 @@ interface ContextualHelpProps {
 
 /**
  * ContextualHelp function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */

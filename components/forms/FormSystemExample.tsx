@@ -1,6 +1,6 @@
 /**
  * @fileoverview FormSystemExample Component - Demonstrates the enhanced form system
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -9,58 +9,64 @@ import React, { useState } from 'react';
 import { User, Mail, Phone, MapPin, FileText, CreditCard } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
-import { 
-  FormSection, 
-  FormStepper, 
+import {
+  FormSection,
+  FormStepper,
   FormStepperProgress,
-  FormField, 
+  FormField,
   DependentFormField,
   DependencyConditions,
-  FormProvider 
+  FormProvider,
 } from './index';
 import type { ValidationError } from '../../types/validation';
 
 // Mock async validation function
 const validateEmailAvailability = async (email: string): Promise<ValidationError[] | null> => {
   // Simulate API call delay
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+
   // Mock validation logic
   if (email === 'taken@example.com') {
-    return [{ 
-      field: 'email', 
-      message: 'This email is already taken',
-      code: 'EMAIL_TAKEN',
-      severity: 'error' as const
-    }];
+    return [
+      {
+        field: 'email',
+        message: 'This email is already taken',
+        code: 'EMAIL_TAKEN',
+        severity: 'error' as const,
+      },
+    ];
   }
-  
+
   if (email.includes('invalid')) {
-    return [{ 
-      field: 'email', 
-      message: 'This email domain is not allowed',
-      code: 'INVALID_DOMAIN',
-      severity: 'error' as const
-    }];
+    return [
+      {
+        field: 'email',
+        message: 'This email domain is not allowed',
+        code: 'INVALID_DOMAIN',
+        severity: 'error' as const,
+      },
+    ];
   }
-  
+
   return null;
 };
 
 const validatePhoneNumber = async (phone: string): Promise<ValidationError[] | null> => {
-  await new Promise(resolve => setTimeout(resolve, 800));
-  
+  await new Promise((resolve) => setTimeout(resolve, 800));
+
   // Turkish phone number validation
   const phoneRegex = /^(\+90|0)?[5][0-9]{9}$/;
   if (!phoneRegex.test(phone.replace(/\s/g, ''))) {
-    return [{ 
-      field: 'phone', 
-      message: 'Please enter a valid Turkish phone number',
-      code: 'INVALID_PHONE',
-      severity: 'error' as const
-    }];
+    return [
+      {
+        field: 'phone',
+        message: 'Please enter a valid Turkish phone number',
+        code: 'INVALID_PHONE',
+        severity: 'error' as const,
+      },
+    ];
   }
-  
+
   return null;
 };
 
@@ -72,19 +78,19 @@ export const FormSystemExample: React.FC = () => {
     lastName: '',
     email: '',
     phone: '',
-    
+
     // Address Information
     hasAddress: false,
     street: '',
     city: '',
     postalCode: '',
-    
+
     // Additional Information
     contactMethod: '',
     otherContactMethod: '',
     hasSpecialNeeds: false,
     specialNeeds: '',
-    
+
     // Payment Information
     paymentMethod: '',
     cardNumber: '',
@@ -96,30 +102,30 @@ export const FormSystemExample: React.FC = () => {
     {
       label: 'Kişisel Bilgiler',
       description: 'Temel bilgilerinizi girin',
-      icon: <User className="w-4 h-4" />
+      icon: <User className="w-4 h-4" />,
     },
     {
       label: 'İletişim',
       description: 'İletişim bilgilerinizi girin',
-      icon: <Mail className="w-4 h-4" />
+      icon: <Mail className="w-4 h-4" />,
     },
     {
       label: 'Adres',
       description: 'Adres bilgilerinizi girin',
       icon: <MapPin className="w-4 h-4" />,
-      optional: true
+      optional: true,
     },
     {
       label: 'Ödeme',
       description: 'Ödeme bilgilerinizi girin',
-      icon: <CreditCard className="w-4 h-4" />
-    }
+      icon: <CreditCard className="w-4 h-4" />,
+    },
   ];
 
   const handleFieldChange = (fieldName: string, value: any) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [fieldName]: value
+      [fieldName]: value,
     }));
   };
 
@@ -144,9 +150,9 @@ export const FormSystemExample: React.FC = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-8">
+    <div className="max-w-4xl mx-auto p-6 space-y-6">
       <div className="text-center space-y-2">
-        <h1 className="text-3xl font-bold">Enhanced Form System Demo</h1>
+        <h1 className="text-2xl font-bold">Enhanced Form System Demo</h1>
         <p className="text-muted-foreground">
           Demonstrating FormSection, FormStepper, async validation, and field dependencies
         </p>
@@ -155,10 +161,7 @@ export const FormSystemExample: React.FC = () => {
       {/* Progress Indicator */}
       <Card className="p-6">
         <div className="space-y-4">
-          <FormStepperProgress 
-            totalSteps={steps.length} 
-            currentStep={currentStep} 
-          />
+          <FormStepperProgress totalSteps={steps.length} currentStep={currentStep} />
           <FormStepper
             steps={steps}
             currentStep={currentStep}
@@ -194,17 +197,21 @@ export const FormSystemExample: React.FC = () => {
                   label="Ad"
                   placeholder="Adınızı girin"
                   value={formData.firstName}
-                  onChange={(value) => { handleFieldChange('firstName', value); }}
+                  onChange={(value) => {
+                    handleFieldChange('firstName', value);
+                  }}
                   required={true}
                 />
-                
+
                 <FormField
                   id="lastName"
                   name="lastName"
                   label="Soyad"
                   placeholder="Soyadınızı girin"
                   value={formData.lastName}
-                  onChange={(value) => { handleFieldChange('lastName', value); }}
+                  onChange={(value) => {
+                    handleFieldChange('lastName', value);
+                  }}
                   required={true}
                 />
               </div>
@@ -229,13 +236,15 @@ export const FormSystemExample: React.FC = () => {
                     type="email"
                     placeholder="ornek@email.com"
                     value={formData.email}
-                    onChange={(value) => { handleFieldChange('email', value); }}
+                    onChange={(value) => {
+                      handleFieldChange('email', value);
+                    }}
                     required={true}
                     asyncValidator={validateEmailAvailability}
                     validationDelay={500}
                     description="E-posta adresiniz doğrulanacaktır"
                   />
-                  
+
                   <FormField
                     id="phone"
                     name="phone"
@@ -243,7 +252,9 @@ export const FormSystemExample: React.FC = () => {
                     type="tel"
                     placeholder="0555 123 45 67"
                     value={formData.phone}
-                    onChange={(value) => { handleFieldChange('phone', value); }}
+                    onChange={(value) => {
+                      handleFieldChange('phone', value);
+                    }}
                     required={true}
                     asyncValidator={validatePhoneNumber}
                     validationDelay={800}
@@ -266,23 +277,27 @@ export const FormSystemExample: React.FC = () => {
                     label="İletişim Yöntemi"
                     variant="select"
                     value={formData.contactMethod}
-                    onChange={(value) => { handleFieldChange('contactMethod', value); }}
+                    onChange={(value) => {
+                      handleFieldChange('contactMethod', value);
+                    }}
                     options={[
                       { value: 'email', label: 'E-posta' },
                       { value: 'phone', label: 'Telefon' },
                       { value: 'sms', label: 'SMS' },
-                      { value: 'other', label: 'Diğer' }
+                      { value: 'other', label: 'Diğer' },
                     ]}
                     required={true}
                   />
-                  
+
                   <DependentFormField
                     id="otherContactMethod"
                     name="otherContactMethod"
                     label="Diğer İletişim Yöntemi"
                     placeholder="Lütfen belirtin..."
                     value={formData.otherContactMethod}
-                    onChange={(value) => { handleFieldChange('otherContactMethod', value); }}
+                    onChange={(value) => {
+                      handleFieldChange('otherContactMethod', value);
+                    }}
                     dependsOn="contactMethod"
                     showWhen={DependencyConditions.equals('other')}
                     required={true}
@@ -308,21 +323,25 @@ export const FormSystemExample: React.FC = () => {
                   label="Adres bilgilerimi eklemek istiyorum"
                   variant="checkbox"
                   value={formData.hasAddress}
-                  onChange={(value) => { handleFieldChange('hasAddress', value); }}
+                  onChange={(value) => {
+                    handleFieldChange('hasAddress', value);
+                  }}
                 />
-                
+
                 <DependentFormField
                   id="street"
                   name="street"
                   label="Sokak/Cadde"
                   placeholder="Sokak adı ve numarası"
                   value={formData.street}
-                  onChange={(value) => { handleFieldChange('street', value); }}
+                  onChange={(value) => {
+                    handleFieldChange('street', value);
+                  }}
                   dependsOn="hasAddress"
                   showWhen={DependencyConditions.equals(true)}
                   required={true}
                 />
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <DependentFormField
                     id="city"
@@ -331,7 +350,9 @@ export const FormSystemExample: React.FC = () => {
                     placeholder="Şehir seçin"
                     variant="select"
                     value={formData.city}
-                    onChange={(value) => { handleFieldChange('city', value); }}
+                    onChange={(value) => {
+                      handleFieldChange('city', value);
+                    }}
                     dependsOn="hasAddress"
                     showWhen={DependencyConditions.equals(true)}
                     options={[
@@ -342,14 +363,16 @@ export const FormSystemExample: React.FC = () => {
                     ]}
                     required={true}
                   />
-                  
+
                   <DependentFormField
                     id="postalCode"
                     name="postalCode"
                     label="Posta Kodu"
                     placeholder="34000"
                     value={formData.postalCode}
-                    onChange={(value) => { handleFieldChange('postalCode', value); }}
+                    onChange={(value) => {
+                      handleFieldChange('postalCode', value);
+                    }}
                     dependsOn="hasAddress"
                     showWhen={DependencyConditions.equals(true)}
                     required={true}
@@ -374,11 +397,13 @@ export const FormSystemExample: React.FC = () => {
                     label="Ödeme Yöntemi"
                     variant="radio"
                     value={formData.paymentMethod}
-                    onChange={(value) => { handleFieldChange('paymentMethod', value); }}
+                    onChange={(value) => {
+                      handleFieldChange('paymentMethod', value);
+                    }}
                     options={[
                       { value: 'credit', label: 'Kredi Kartı' },
                       { value: 'debit', label: 'Banka Kartı' },
-                      { value: 'transfer', label: 'Banka Havalesi' }
+                      { value: 'transfer', label: 'Banka Havalesi' },
                     ]}
                     required={true}
                   />
@@ -399,12 +424,14 @@ export const FormSystemExample: React.FC = () => {
                     label="Kart Numarası"
                     placeholder="1234 5678 9012 3456"
                     value={formData.cardNumber}
-                    onChange={(value) => { handleFieldChange('cardNumber', value); }}
+                    onChange={(value) => {
+                      handleFieldChange('cardNumber', value);
+                    }}
                     dependsOn="paymentMethod"
                     showWhen={DependencyConditions.oneOf(['credit', 'debit'])}
                     required={true}
                   />
-                  
+
                   <div className="grid grid-cols-2 gap-4">
                     <DependentFormField
                       id="expiryDate"
@@ -412,12 +439,14 @@ export const FormSystemExample: React.FC = () => {
                       label="Son Kullanma"
                       placeholder="MM/YY"
                       value={formData.expiryDate}
-                      onChange={(value) => { handleFieldChange('expiryDate', value); }}
+                      onChange={(value) => {
+                        handleFieldChange('expiryDate', value);
+                      }}
                       dependsOn="paymentMethod"
                       showWhen={DependencyConditions.oneOf(['credit', 'debit'])}
                       required={true}
                     />
-                    
+
                     <DependentFormField
                       id="cvv"
                       name="cvv"
@@ -425,7 +454,9 @@ export const FormSystemExample: React.FC = () => {
                       placeholder="123"
                       type="password"
                       value={formData.cvv}
-                      onChange={(value) => { handleFieldChange('cvv', value); }}
+                      onChange={(value) => {
+                        handleFieldChange('cvv', value);
+                      }}
                       dependsOn="paymentMethod"
                       showWhen={DependencyConditions.oneOf(['credit', 'debit'])}
                       required={true}
@@ -448,9 +479,11 @@ export const FormSystemExample: React.FC = () => {
                     label="Özel ihtiyaçlarım var"
                     variant="switch"
                     value={formData.hasSpecialNeeds}
-                    onChange={(value) => { handleFieldChange('hasSpecialNeeds', value); }}
+                    onChange={(value) => {
+                      handleFieldChange('hasSpecialNeeds', value);
+                    }}
                   />
-                  
+
                   <DependentFormField
                     id="specialNeeds"
                     name="specialNeeds"
@@ -459,7 +492,9 @@ export const FormSystemExample: React.FC = () => {
                     placeholder="Lütfen özel ihtiyaçlarınızı belirtin..."
                     rows={4}
                     value={formData.specialNeeds}
-                    onChange={(value) => { handleFieldChange('specialNeeds', value); }}
+                    onChange={(value) => {
+                      handleFieldChange('specialNeeds', value);
+                    }}
                     dependsOn="hasSpecialNeeds"
                     showWhen={DependencyConditions.equals(true)}
                     required={true}
@@ -474,24 +509,26 @@ export const FormSystemExample: React.FC = () => {
             <Button
               type="button"
               variant="outline"
-              onClick={() => { setCurrentStep(Math.max(0, currentStep - 1)); }}
+              onClick={() => {
+                setCurrentStep(Math.max(0, currentStep - 1));
+              }}
               disabled={currentStep === 0}
             >
               Önceki
             </Button>
-            
+
             <div className="flex gap-2">
               {currentStep < steps.length - 1 ? (
                 <Button
                   type="button"
-                  onClick={() => { setCurrentStep(Math.min(steps.length - 1, currentStep + 1)); }}
+                  onClick={() => {
+                    setCurrentStep(Math.min(steps.length - 1, currentStep + 1));
+                  }}
                 >
                   Sonraki
                 </Button>
               ) : (
-                <Button type="submit">
-                  Gönder
-                </Button>
+                <Button type="submit">Gönder</Button>
               )}
             </div>
           </div>

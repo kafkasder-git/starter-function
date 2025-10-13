@@ -32,7 +32,7 @@ export function useAdvancedMobile() {
   useEffect(() => {
     const checkMobile = () => {
       const isMobile = /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(
-        navigator.userAgent,
+        navigator.userAgent
       );
       const isTouch = 'ontouchstart' in window;
       const viewport = { width: window.innerWidth, height: window.innerHeight };
@@ -63,7 +63,7 @@ export function useAdvancedMobile() {
         navigator.vibrate(patterns[type]);
       }
     },
-    [deviceInfo.isMobile],
+    [deviceInfo.isMobile]
   );
 
   // Clipboard helper
@@ -86,7 +86,7 @@ export function useAdvancedMobile() {
         return false;
       }
     },
-    [triggerHapticFeedback],
+    [triggerHapticFeedback]
   );
 
   return {

@@ -92,7 +92,7 @@ export class APISecurityMiddleware {
           limiter.cleanup();
         });
       },
-      5 * 60 * 1000,
+      5 * 60 * 1000
     );
 
     // Cleanup CSRF tokens every hour
@@ -100,7 +100,7 @@ export class APISecurityMiddleware {
       () => {
         CSRFTokenManager.cleanup();
       },
-      60 * 60 * 1000,
+      60 * 60 * 1000
     );
   }
 
@@ -205,7 +205,7 @@ export class APISecurityMiddleware {
             {
               rateLimitType: key.split(':')[0],
               resetTime: limiter.getResetTime(key),
-            },
+            }
           ),
           rateLimitInfo: {
             remaining: 0,
@@ -241,7 +241,7 @@ export class APISecurityMiddleware {
           {
             requestedVersion: version,
             supportedVersions: this.config.apiVersioning.supportedVersions,
-          },
+          }
         ),
       };
     }
@@ -278,7 +278,7 @@ export class APISecurityMiddleware {
           error: new ServiceError(
             ServiceErrorCode.VALIDATION_ERROR,
             `Request size exceeds maximum allowed size of ${this.config.inputValidation.maxRequestSize} bytes`,
-            { requestSize, maxSize: this.config.inputValidation.maxRequestSize },
+            { requestSize, maxSize: this.config.inputValidation.maxRequestSize }
           ),
         };
       }
@@ -313,7 +313,7 @@ export class APISecurityMiddleware {
         error: new ServiceError(
           ServiceErrorCode.VALIDATION_ERROR,
           'CSRF token is required for this operation',
-          { tokenName: this.config.csrfProtection.tokenName },
+          { tokenName: this.config.csrfProtection.tokenName }
         ),
       };
     }
@@ -324,7 +324,7 @@ export class APISecurityMiddleware {
         error: new ServiceError(
           ServiceErrorCode.VALIDATION_ERROR,
           'Invalid or expired CSRF token',
-          { tokenName: this.config.csrfProtection.tokenName },
+          { tokenName: this.config.csrfProtection.tokenName }
         ),
       };
     }
@@ -379,7 +379,7 @@ export function createSecurityContext(
     ipAddress?: string;
     userAgent?: string;
     version?: string;
-  } = {},
+  } = {}
 ): SecurityContext {
   return {
     userId: options.userId,

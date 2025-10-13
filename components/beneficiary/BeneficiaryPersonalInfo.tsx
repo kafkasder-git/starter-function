@@ -117,9 +117,7 @@ export function BeneficiaryPersonalInfo({
               ) : (
                 <div className="p-3 bg-gray-50 rounded-lg">
                   <p className="text-sm font-medium text-gray-900">
-                    {beneficiary?.birthDate
-                      ? formatDate(beneficiary.birthDate, 'long')
-                      : '-'}
+                    {beneficiary?.birthDate ? formatDate(beneficiary.birthDate, 'long') : '-'}
                   </p>
                 </div>
               )}
@@ -177,7 +175,9 @@ export function BeneficiaryPersonalInfo({
                 </Select>
               ) : (
                 <div className="p-3 bg-gray-50 rounded-lg">
-                  <p className="text-sm font-medium text-gray-900">{beneficiary?.maritalStatus ?? '-'}</p>
+                  <p className="text-sm font-medium text-gray-900">
+                    {beneficiary?.maritalStatus ?? '-'}
+                  </p>
                 </div>
               )}
             </div>
@@ -206,7 +206,9 @@ export function BeneficiaryPersonalInfo({
                 </Select>
               ) : (
                 <div className="p-3 bg-gray-50 rounded-lg">
-                  <p className="text-sm font-medium text-gray-900">{beneficiary?.education ?? '-'}</p>
+                  <p className="text-sm font-medium text-gray-900">
+                    {beneficiary?.education ?? '-'}
+                  </p>
                 </div>
               )}
             </div>
@@ -236,7 +238,9 @@ export function BeneficiaryPersonalInfo({
               </Select>
             ) : (
               <div className="p-3 bg-gray-50 rounded-lg">
-                <p className="text-sm font-medium text-gray-900">{beneficiary?.occupation ?? '-'}</p>
+                <p className="text-sm font-medium text-gray-900">
+                  {beneficiary?.occupation ?? '-'}
+                </p>
               </div>
             )}
           </div>
@@ -356,7 +360,9 @@ export function BeneficiaryPersonalInfo({
                 />
               ) : (
                 <div className="p-3 bg-gray-50 rounded-lg">
-                  <p className="text-sm font-medium text-gray-900">{beneficiary?.district ?? '-'}</p>
+                  <p className="text-sm font-medium text-gray-900">
+                    {beneficiary?.district ?? '-'}
+                  </p>
                 </div>
               )}
             </div>

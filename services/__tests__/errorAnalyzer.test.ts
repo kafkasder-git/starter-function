@@ -435,7 +435,7 @@ describe('ErrorAnalyzer', () => {
       // Should find at least one related error (same file or same type)
       expect(firstErrorAnalysis?.relatedErrors.length).toBeGreaterThan(0);
       expect(
-        firstErrorAnalysis?.relatedErrors.some((e) => e.file === 'src/test.ts' && e.line === 20),
+        firstErrorAnalysis?.relatedErrors.some((e) => e.file === 'src/test.ts' && e.line === 20)
       ).toBe(true);
     });
 
@@ -636,7 +636,7 @@ describe('ErrorAnalyzer', () => {
 
       const analyses = analyzer.analyze([error]);
       const importSuggestion = analyses[0].suggestions.find((s) =>
-        s.title.toLowerCase().includes('import'),
+        s.title.toLowerCase().includes('import')
       );
 
       expect(importSuggestion).toBeDefined();
@@ -655,7 +655,7 @@ describe('ErrorAnalyzer', () => {
 
       const analyses = analyzer.analyze([error]);
       const anySuggestion = analyses[0].suggestions.find((s) =>
-        s.title.toLowerCase().includes('any'),
+        s.title.toLowerCase().includes('any')
       );
 
       expect(anySuggestion).toBeDefined();
@@ -678,7 +678,7 @@ describe('ErrorAnalyzer', () => {
 
       const analyses = analyzer.analyze([error]);
       const cleanSuggestion = analyses[0].suggestions.find((s) =>
-        s.title.toLowerCase().includes('clean'),
+        s.title.toLowerCase().includes('clean')
       );
 
       expect(cleanSuggestion).toBeDefined();
@@ -711,7 +711,7 @@ describe('ErrorAnalyzer', () => {
 
       const analyses = analyzer.analyze([error]);
       const viteSuggestion = analyses[0].suggestions.find((s) =>
-        s.title.toLowerCase().includes('vite'),
+        s.title.toLowerCase().includes('vite')
       );
 
       expect(viteSuggestion).toBeDefined();
@@ -734,7 +734,7 @@ describe('ErrorAnalyzer', () => {
 
       const analyses = analyzer.analyze([error]);
       const tokenSuggestion = analyses[0].suggestions.find((s) =>
-        s.title.toLowerCase().includes('token'),
+        s.title.toLowerCase().includes('token')
       );
 
       expect(tokenSuggestion).toBeDefined();
@@ -752,7 +752,7 @@ describe('ErrorAnalyzer', () => {
 
       const analyses = analyzer.analyze([error]);
       const configSuggestion = analyses[0].suggestions.find((s) =>
-        s.title.toLowerCase().includes('configuration'),
+        s.title.toLowerCase().includes('configuration')
       );
 
       expect(configSuggestion).toBeDefined();
@@ -769,7 +769,7 @@ describe('ErrorAnalyzer', () => {
 
       const analyses = analyzer.analyze([error]);
       const buildSuggestion = analyses[0].suggestions.find((s) =>
-        s.title.toLowerCase().includes('build'),
+        s.title.toLowerCase().includes('build')
       );
 
       expect(buildSuggestion).toBeDefined();
@@ -807,7 +807,7 @@ describe('ErrorAnalyzer', () => {
 
       const analyses = analyzer.analyze([error]);
       const forceSuggestion = analyses[0].suggestions.find(
-        (s) => s.command === 'npm audit fix --force',
+        (s) => s.command === 'npm audit fix --force'
       );
 
       expect(forceSuggestion).toBeDefined();
@@ -824,7 +824,7 @@ describe('ErrorAnalyzer', () => {
 
       const analyses = analyzer.analyze([error]);
       const manualSuggestion = analyses[0].suggestions.find((s) =>
-        s.title.toLowerCase().includes('manual'),
+        s.title.toLowerCase().includes('manual')
       );
 
       expect(manualSuggestion).toBeDefined();
@@ -863,7 +863,7 @@ describe('ErrorAnalyzer', () => {
 
       const analyses = analyzer.analyze([error]);
       const peerSuggestion = analyses[0].suggestions.find((s) =>
-        s.title.toLowerCase().includes('peer'),
+        s.title.toLowerCase().includes('peer')
       );
 
       expect(peerSuggestion).toBeDefined();
@@ -886,7 +886,7 @@ describe('ErrorAnalyzer', () => {
 
       const analyses = analyzer.analyze([error]);
       const envSuggestion = analyses[0].suggestions.find((s) =>
-        s.title.toLowerCase().includes('environment'),
+        s.title.toLowerCase().includes('environment')
       );
 
       expect(envSuggestion).toBeDefined();
@@ -904,7 +904,7 @@ describe('ErrorAnalyzer', () => {
 
       const analyses = analyzer.analyze([error]);
       const configSuggestion = analyses[0].suggestions.find((s) =>
-        s.title.toLowerCase().includes('configuration'),
+        s.title.toLowerCase().includes('configuration')
       );
 
       expect(configSuggestion).toBeDefined();

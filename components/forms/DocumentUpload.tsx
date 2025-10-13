@@ -86,7 +86,7 @@ export function DocumentUpload({
   const validateFile = (file: File): string | null => {
     // MIME type validation
     if (!allowedTypes.includes(file.type)) {
-      return `Desteklenmeyen dosya tipi: ${file.type}. İzin verilen: ${allowedTypes.map(t => MIME_TYPE_LABELS[t] || t).join(', ')}`;
+      return `Desteklenmeyen dosya tipi: ${file.type}. İzin verilen: ${allowedTypes.map((t) => MIME_TYPE_LABELS[t] || t).join(', ')}`;
     }
 
     // File size validation
@@ -156,11 +156,7 @@ export function DocumentUpload({
       const progressPromise = (async () => {
         for (let progress = 0; progress <= 100; progress += 10) {
           await new Promise((resolve) => setTimeout(resolve, 50));
-          setFiles((prev) =>
-            prev.map((f) =>
-              f.id === uploadedFile.id ? { ...f, progress } : f,
-            ),
-          );
+          setFiles((prev) => prev.map((f) => (f.id === uploadedFile.id ? { ...f, progress } : f)));
         }
       })();
 
@@ -189,9 +185,7 @@ export function DocumentUpload({
         metadata: result.file?.metadata ?? {},
       };
 
-      setFiles((prev) =>
-        prev.map((f) => (f.id === uploadedFile.id ? finalFile : f)),
-      );
+      setFiles((prev) => prev.map((f) => (f.id === uploadedFile.id ? finalFile : f)));
 
       return finalFile;
     } catch (error) {
@@ -202,9 +196,7 @@ export function DocumentUpload({
         errorMessage,
       };
 
-      setFiles((prev) =>
-        prev.map((f) => (f.id === uploadedFile.id ? failedFile : f)),
-      );
+      setFiles((prev) => prev.map((f) => (f.id === uploadedFile.id ? failedFile : f)));
 
       throw error;
     }
@@ -294,37 +286,35 @@ export function DocumentUpload({
 
         <Upload className="w-12 h-12 mx-auto text-gray-400 mb-4" />
 
-        <p className="text-gray-700 font-medium mb-2">
-          Dosyaları buraya sürükleyin veya tıklayın
-        </p>
+        <p className="text-gray-700 font-medium mb-2">Dosyaları buraya sürükleyin veya tıklayın</p>
 
         <p className="text-sm text-gray-500 mb-4">
           Maksimum {maxFiles} dosya, dosya başına max {maxSizePerFile} MB
         </p>
 
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => fileInputRef.current?.click()}
-        >
+        <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
           Dosya Seç
         </Button>
 
         <p className="text-xs text-gray-400 mt-4">
-          İzin verilen formatlar: {allowedTypes.map(t => MIME_TYPE_LABELS[t] || t).join(', ')}
+          İzin verilen formatlar: {allowedTypes.map((t) => MIME_TYPE_LABELS[t] || t).join(', ')}
         </p>
       </div>
 
       {/* File List */}
       {files.length > 0 && (
         <div className="space-y-2">
-          <Heading level={3} size="sm" weight="medium" color="neutral">Yüklenen Dosyalar ({files.length})</Heading>
+          <Heading level={3} size="sm" weight="medium" color="neutral">
+            Yüklenen Dosyalar ({files.length})
+          </Heading>
           {files.map((file) => (
             <Card key={file.id} className="p-4">
               <div className="flex items-center gap-3">
                 {/* Status Icon */}
                 <div className="flex-shrink-0">
-                  {file.status === 'uploading' && <Loader2 className="w-5 h-5 text-blue-500 animate-spin" />}
+                  {file.status === 'uploading' && (
+                    <Loader2 className="w-5 h-5 text-blue-500 animate-spin" />
+                  )}
                   {file.status === 'success' && <CheckCircle className="w-5 h-5 text-green-500" />}
                   {file.status === 'error' && <AlertCircle className="w-5 h-5 text-red-500" />}
                 </div>
@@ -350,7 +340,9 @@ export function DocumentUpload({
 
                   {/* Error Message */}
                   {file.status === 'error' && (
-                    <Text size="xs" className="text-red-600 mt-1">{file.errorMessage}</Text>
+                    <Text size="xs" className="text-red-600 mt-1">
+                      {file.errorMessage}
+                    </Text>
                   )}
 
                   {/* Success Info */}
@@ -366,7 +358,9 @@ export function DocumentUpload({
                   type="button"
                   variant="ghost"
                   size="sm"
-                  onClick={() => { removeFile(file.id); }}
+                  onClick={() => {
+                    removeFile(file.id);
+                  }}
                   className="flex-shrink-0"
                 >
                   <X className="w-4 h-4" />
@@ -381,4 +375,3 @@ export function DocumentUpload({
 }
 
 export default DocumentUpload;
-

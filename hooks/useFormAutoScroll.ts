@@ -32,12 +32,7 @@ export function useFormAutoScroll<T extends Record<string, any>>(
   form: UseFormReturn<T>,
   options?: UseFormAutoScrollOptions
 ) {
-  const {
-    behavior = 'smooth',
-    block = 'center',
-    enabled = true,
-    offset = 0,
-  } = options || {};
+  const { behavior = 'smooth', block = 'center', enabled = true, offset = 0 } = options || {};
 
   const prevSubmitCountRef = useRef(0);
 
@@ -111,4 +106,3 @@ export function useFormAutoScroll<T extends Record<string, any>>(
     prevSubmitCountRef.current = submitCount;
   }, [form.formState, behavior, block, enabled, offset]);
 }
-

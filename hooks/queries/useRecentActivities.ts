@@ -118,24 +118,24 @@ export const useRecentActivities = (options?: {
   staleTime?: number;
 }) => {
   const limit = options?.limit || 10;
-  
+
   return useQuery({
     queryKey: activitiesKeys.recentWithLimit(limit),
     queryFn: async (): Promise<RecentActivity[]> => {
       try {
         // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
         // In real implementation, this would be an API call
         // const response = await fetch(`/api/activities/recent?limit=${limit}`);
         // const data = await response.json();
         // return data;
-        
+
         // Return mock data for now
         return mockActivities.slice(0, limit);
       } catch (error) {
         console.error('Failed to fetch recent activities:', error);
-        
+
         // Return empty array on error
         return [];
       }
@@ -155,19 +155,22 @@ export const useRecentActivities = (options?: {
 /**
  * Hook to fetch activities by type
  */
-export const useActivitiesByType = (type: string, options?: {
-  enabled?: boolean;
-  staleTime?: number;
-}) => {
+export const useActivitiesByType = (
+  type: string,
+  options?: {
+    enabled?: boolean;
+    staleTime?: number;
+  }
+) => {
   return useQuery({
     queryKey: activitiesKeys.byType(type),
     queryFn: async (): Promise<RecentActivity[]> => {
       try {
         // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 300));
-        
+        await new Promise((resolve) => setTimeout(resolve, 300));
+
         // Filter mock data by type
-        return mockActivities.filter(activity => activity.type === type);
+        return mockActivities.filter((activity) => activity.type === type);
       } catch (error) {
         console.error(`Failed to fetch activities for type ${type}:`, error);
         return [];

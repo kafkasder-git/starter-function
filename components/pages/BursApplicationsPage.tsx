@@ -102,22 +102,23 @@ export function BursApplicationsPage() {
     const school = descParts[0] || '';
     const grade = descParts[1] || '';
     const program = descParts[2] || '';
-    const familyIncomePart = descParts.find((p: string) => p.startsWith('Aile Geliri:')) || 'Aile Geliri: 0';
+    const familyIncomePart =
+      descParts.find((p: string) => p.startsWith('Aile Geliri:')) || 'Aile Geliri: 0';
     const familyIncome = parseFloat(familyIncomePart.replace('Aile Geliri: ', '')) || 0;
     const gpaPart = descParts.find((p: string) => p.startsWith('GPA:')) || 'GPA: 0';
     const gpa = parseFloat(gpaPart.replace('GPA: ', '')) || 0;
 
     const statusMap: Record<string, Application['status']> = {
-      'pending': 'pending',
-      'approved': 'approved',
-      'rejected': 'rejected',
-      'under_review': 'interview',
+      pending: 'pending',
+      approved: 'approved',
+      rejected: 'rejected',
+      under_review: 'interview',
     };
 
     const priorityMap: Record<string, Application['priority']> = {
-      'high': 'high',
-      'medium': 'medium',
-      'low': 'low',
+      high: 'high',
+      medium: 'medium',
+      low: 'low',
     };
 
     return {
@@ -355,9 +356,7 @@ export function BursApplicationsPage() {
             </Card>
           ) : (
             filteredApplications.map((application) => (
-              <div
-                key={application.id}
-              >
+              <div key={application.id}>
                 <Card>
                   <CardContent className="p-4">
                     <div className="mb-3 flex items-start justify-between">

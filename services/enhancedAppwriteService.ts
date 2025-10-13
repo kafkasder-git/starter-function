@@ -149,7 +149,7 @@ const enhancedAppwrite = {
   async query<T>(
     table: string,
     queryBuilder: QueryBuilderFn<T>,
-    options: SupabaseQueryOptions = {},
+    options: SupabaseQueryOptions = {}
   ): Promise<SupabaseResponse<T>> {
     const { retries = 3, timeout = 30000, fallbackData = null, checkNetwork = true } = options;
     const startTime = Date.now();
@@ -288,7 +288,7 @@ const enhancedAppwrite = {
   async insert<T>(
     table: string,
     data: any,
-    options: SupabaseQueryOptions = {},
+    options: SupabaseQueryOptions = {}
   ): Promise<SupabaseResponse<T | T[]>> {
     const { retries = 3, single = true, checkNetwork = true } = options;
     const startTime = Date.now();
@@ -299,7 +299,7 @@ const enhancedAppwrite = {
       }
 
       const { data: result, error } = await db.create(table, data);
-      
+
       if (error) {
         logger.error('Appwrite insert error:', error);
 
@@ -405,7 +405,7 @@ const enhancedAppwrite = {
     table: string,
     data: any,
     filter: any,
-    options: SupabaseQueryOptions = {},
+    options: SupabaseQueryOptions = {}
   ): Promise<SupabaseResponse<T | T[]>> {
     const { retries = 3, single = true, checkNetwork = true } = options;
     const startTime = Date.now();
@@ -519,7 +519,7 @@ const enhancedAppwrite = {
   async delete<T>(
     table: string,
     filter: any,
-    options: SupabaseQueryOptions = {},
+    options: SupabaseQueryOptions = {}
   ): Promise<SupabaseResponse<T | T[]>> {
     const { retries = 3, single = true, checkNetwork = true } = options;
     const startTime = Date.now();
@@ -631,7 +631,7 @@ const enhancedAppwrite = {
   async batchInsert<T>(
     table: string,
     data: any[],
-    options: SupabaseQueryOptions = {},
+    options: SupabaseQueryOptions = {}
   ): Promise<BatchOperationResult<T>> {
     const results: BatchOperationResult<T> = {
       successful: [],
@@ -672,7 +672,7 @@ const enhancedAppwrite = {
   async batchUpdate<T>(
     table: string,
     updates: Array<{ data: any; filter: any }>,
-    options: SupabaseQueryOptions = {},
+    options: SupabaseQueryOptions = {}
   ): Promise<BatchOperationResult<T>> {
     const results: BatchOperationResult<T> = {
       successful: [],
@@ -716,7 +716,7 @@ const enhancedAppwrite = {
   async batchDelete<T>(
     table: string,
     filters: any[],
-    options: SupabaseQueryOptions = {},
+    options: SupabaseQueryOptions = {}
   ): Promise<BatchOperationResult<T>> {
     const results: BatchOperationResult<T> = {
       successful: [],

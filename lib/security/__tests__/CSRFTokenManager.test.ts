@@ -150,7 +150,7 @@ describe('CSRFTokenManager', () => {
 
     it('should handle concurrent token generation', () => {
       const sessions = Array.from({ length: 100 }, (_, i) => `session-${i}`);
-      const tokens = sessions.map(session => CSRFTokenManager.generateToken(session));
+      const tokens = sessions.map((session) => CSRFTokenManager.generateToken(session));
 
       // All tokens should be unique
       const uniqueTokens = new Set(tokens);
@@ -163,4 +163,3 @@ describe('CSRFTokenManager', () => {
     });
   });
 });
-

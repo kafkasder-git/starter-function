@@ -1,6 +1,6 @@
 /**
  * @fileoverview PermissionManager Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -106,9 +106,9 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
 
 /**
  * PermissionManager Service
- * 
+ *
  * Service class for handling permissionmanager operations
- * 
+ *
  * @class PermissionManager
  */
 export class PermissionManager {
@@ -117,7 +117,7 @@ export class PermissionManager {
   static setCurrentUser(role: UserRole, customPermissions?: Permission[]): void {
     this.currentUser = {
       role,
-      permissions: customPermissions ?? ROLE_PERMISSIONS[role] || [],
+      permissions: customPermissions ?? (ROLE_PERMISSIONS[role] || []),
     };
   }
 
@@ -199,7 +199,7 @@ export class PermissionManager {
 // Permission decorators for functions
 /**
  * requirePermission function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -218,7 +218,7 @@ export function requirePermission(permission: Permission) {
 
 /**
  * requireRole function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -238,9 +238,9 @@ export function requireRole(role: UserRole) {
 // Audit logging
 /**
  * AuditLogger Service
- * 
+ *
  * Service class for handling auditlogger operations
- * 
+ *
  * @class AuditLogger
  */
 export class AuditLogger {
@@ -304,7 +304,7 @@ export class AuditLogger {
 
 /**
  * AuditLog Interface
- * 
+ *
  * @interface AuditLog
  */
 export interface AuditLog {

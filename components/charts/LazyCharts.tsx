@@ -1,6 +1,6 @@
 /**
  * @fileoverview LazyCharts Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -12,31 +12,31 @@ import { SkeletonLoader } from '../shared/LoadingSpinner';
 const InteractiveChart = lazy(() =>
   import('../ui/InteractiveChart').then((module) => ({
     default: module.InteractiveChart,
-  })),
+  }))
 );
 
 const AreaChart = lazy(() =>
   import('recharts').then((module) => ({
     default: module.AreaChart,
-  })),
+  }))
 );
 
 const LineChart = lazy(() =>
   import('recharts').then((module) => ({
     default: module.LineChart,
-  })),
+  }))
 );
 
 const BarChart = lazy(() =>
   import('recharts').then((module) => ({
     default: module.BarChart,
-  })),
+  }))
 );
 
 const PieChart = lazy(() =>
   import('recharts').then((module) => ({
     default: module.PieChart,
-  })),
+  }))
 );
 
 // Chart wrapper with loading fallback

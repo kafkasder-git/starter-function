@@ -1,9 +1,9 @@
 /**
  * @fileoverview Secure Storage Module - Encrypted localStorage wrapper
- * 
+ *
  * This module provides encrypted storage for sensitive data using AES encryption.
  * It should be used for storing sensitive information like tokens, user data, etc.
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -17,20 +17,20 @@ import { logger } from './logging/logger';
 const getEncryptionKey = (): string => {
   // Try to get from environment first
   const envKey = import.meta.env.VITE_ENCRYPTION_KEY;
-  
+
   if (envKey) {
     return envKey;
   }
-  
+
   // Generate a session key if not in environment
   // This will be different each session, which is more secure for sensitive data
   let sessionKey = sessionStorage.getItem('__session_key');
-  
+
   if (!sessionKey) {
     sessionKey = CryptoJS.lib.WordArray.random(32).toString();
     sessionStorage.setItem('__session_key', sessionKey);
   }
-  
+
   return sessionKey;
 };
 
@@ -51,7 +51,7 @@ interface StorageItem<T> {
 
 /**
  * Secure Storage Service
- * 
+ *
  * Provides encrypted storage operations with automatic expiration
  */
 export const secureStorage = {
@@ -61,21 +61,21 @@ export const secureStorage = {
   setItem: <T>(key: string, value: T, options: SecureStorageOptions = {}): void => {
     try {
       const { encrypt = true, expiresIn } = options;
-      
+
       const item: StorageItem<T> = {
         value,
         encrypted: encrypt,
         timestamp: Date.now(),
         expiresAt: expiresIn ? Date.now() + expiresIn : undefined,
       };
-      
+
       let dataToStore = JSON.stringify(item);
-      
+
       if (encrypt) {
         const encryptionKey = getEncryptionKey();
         dataToStore = CryptoJS.AES.encrypt(dataToStore, encryptionKey).toString();
       }
-      
+
       localStorage.setItem(key, dataToStore);
     } catch (error) {
       logger.error('SecureStorage: Failed to set item', { key, error });
@@ -89,13 +89,13 @@ export const secureStorage = {
   getItem: <T>(key: string): T | null => {
     try {
       const storedData = localStorage.getItem(key);
-      
+
       if (!storedData) {
         return null;
       }
-      
+
       let parsedData: StorageItem<T>;
-      
+
       try {
         // Try to parse as JSON first (unencrypted data)
         parsedData = JSON.parse(storedData) as StorageItem<T>;
@@ -105,26 +105,26 @@ export const secureStorage = {
           const encryptionKey = getEncryptionKey();
           const decrypted = CryptoJS.AES.decrypt(storedData, encryptionKey);
           const decryptedString = decrypted.toString(CryptoJS.enc.Utf8);
-          
+
           if (!decryptedString) {
             logger.warn('SecureStorage: Failed to decrypt data', { key });
             return null;
           }
-          
+
           parsedData = JSON.parse(decryptedString) as StorageItem<T>;
         } catch (decryptError) {
           logger.error('SecureStorage: Failed to decrypt item', { key, error: decryptError });
           return null;
         }
       }
-      
+
       // Check expiration
       if (parsedData.expiresAt && Date.now() > parsedData.expiresAt) {
         logger.debug('SecureStorage: Item expired', { key });
         localStorage.removeItem(key);
         return null;
       }
-      
+
       return parsedData.value;
     } catch (error) {
       logger.error('SecureStorage: Failed to get item', { key, error });
@@ -251,19 +251,19 @@ export const sensitiveStorage = {
  */
 export const migrateToSecureStorage = (keys: string[]): void => {
   logger.info('SecureStorage: Starting migration', { keys });
-  
+
   keys.forEach((key) => {
     try {
       const existingData = localStorage.getItem(key);
-      
+
       if (existingData) {
         // Try to parse as JSON
         try {
           const parsed = JSON.parse(existingData);
-          
+
           // Re-store with encryption
           secureStorage.setItem(key, parsed, { encrypt: true });
-          
+
           logger.debug('SecureStorage: Migrated key', { key });
         } catch {
           // If not JSON, store as string
@@ -274,7 +274,7 @@ export const migrateToSecureStorage = (keys: string[]): void => {
       logger.error('SecureStorage: Failed to migrate key', { key, error });
     }
   });
-  
+
   logger.info('SecureStorage: Migration completed');
 };
 

@@ -60,7 +60,11 @@ export interface Campaign extends BaseEntity<string> {
  * Campaign creation interface
  * Omits auto-generated and computed fields
  */
-export interface CampaignInsert extends Omit<Campaign, 'id' | 'created_at' | 'updated_at' | 'progress_percentage' | 'days_remaining' | 'is_active'> {
+export interface CampaignInsert
+  extends Omit<
+    Campaign,
+    'id' | 'created_at' | 'updated_at' | 'progress_percentage' | 'days_remaining' | 'is_active'
+  > {
   /** ID is auto-generated */
   id?: never;
   /** Created timestamp is auto-generated */
@@ -77,7 +81,10 @@ export interface CampaignInsert extends Omit<Campaign, 'id' | 'created_at' | 'up
  * Campaign update interface
  * Partial update excluding immutable and computed fields
  */
-export interface CampaignUpdate extends Partial<Omit<Campaign, 'id' | 'created_at' | 'progress_percentage' | 'days_remaining' | 'is_active'>> {
+export interface CampaignUpdate
+  extends Partial<
+    Omit<Campaign, 'id' | 'created_at' | 'progress_percentage' | 'days_remaining' | 'is_active'>
+  > {
   /** ID cannot be updated */
   id?: never;
   /** Created timestamp cannot be updated */

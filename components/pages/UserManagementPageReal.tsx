@@ -1,6 +1,6 @@
 /**
  * @fileoverview UserManagementPageReal Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -55,13 +55,7 @@ import {
 } from '../ui/dropdown-menu';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '../ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Skeleton } from '../ui/skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { useToast } from '../../hooks/use-toast';
@@ -121,86 +115,86 @@ const UserStatsCards = ({ stats }: { stats: UserStats | undefined }) => {
   }
 
   return (
-  <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-    <Card>
-      <CardContent className="p-4">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-blue-100 rounded-lg">
-            <Users className="h-5 w-5 text-blue-600" />
+    <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+      <Card>
+        <CardContent className="p-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-blue-100 rounded-lg">
+              <Users className="h-5 w-5 text-blue-600" />
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Toplam</p>
+              <p className="text-xl font-bold">{stats.total}</p>
+            </div>
           </div>
-          <div>
-            <p className="text-sm text-gray-600">Toplam</p>
-            <p className="text-xl font-bold">{stats.total}</p>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
 
-    <Card>
-      <CardContent className="p-4">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-green-100 rounded-lg">
-            <UserCheck className="h-5 w-5 text-green-600" />
+      <Card>
+        <CardContent className="p-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-green-100 rounded-lg">
+              <UserCheck className="h-5 w-5 text-green-600" />
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Aktif</p>
+              <p className="text-xl font-bold">{stats.active}</p>
+            </div>
           </div>
-          <div>
-            <p className="text-sm text-gray-600">Aktif</p>
-            <p className="text-xl font-bold">{stats.active}</p>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
 
-    <Card>
-      <CardContent className="p-4">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-gray-100 rounded-lg">
-            <UserX className="h-5 w-5 text-gray-600" />
+      <Card>
+        <CardContent className="p-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gray-100 rounded-lg">
+              <UserX className="h-5 w-5 text-gray-600" />
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Pasif</p>
+              <p className="text-xl font-bold">{stats.inactive}</p>
+            </div>
           </div>
-          <div>
-            <p className="text-sm text-gray-600">Pasif</p>
-            <p className="text-xl font-bold">{stats.inactive}</p>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
 
-    <Card>
-      <CardContent className="p-4">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-red-100 rounded-lg">
-            <XCircle className="h-5 w-5 text-red-600" />
+      <Card>
+        <CardContent className="p-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-red-100 rounded-lg">
+              <XCircle className="h-5 w-5 text-red-600" />
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Askıya Alınmış</p>
+              <p className="text-xl font-bold">{stats.suspended}</p>
+            </div>
           </div>
-          <div>
-            <p className="text-sm text-gray-600">Askıya Alınmış</p>
-            <p className="text-xl font-bold">{stats.suspended}</p>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
 
-    <Card>
-      <CardContent className="p-4">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-purple-100 rounded-lg">
-            <Activity className="h-5 w-5 text-purple-600" />
+      <Card>
+        <CardContent className="p-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-purple-100 rounded-lg">
+              <Activity className="h-5 w-5 text-purple-600" />
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Bu Ay Yeni</p>
+              <p className="text-xl font-bold">{stats.new_this_month}</p>
+            </div>
           </div>
-          <div>
-            <p className="text-sm text-gray-600">Bu Ay Yeni</p>
-            <p className="text-xl font-bold">{stats.new_this_month}</p>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 
-const UserTable = ({ 
-  users, 
-  onEdit, 
-  onDelete, 
-  onToggleStatus 
-}: { 
+const UserTable = ({
+  users,
+  onEdit,
+  onDelete,
+  onToggleStatus,
+}: {
   users: User[];
   onEdit: (user: User) => void;
   onDelete: (userId: string) => void;
@@ -240,18 +234,26 @@ const UserTable = ({
               </TableCell>
               <TableCell>
                 <Badge variant={user.role === 'admin' ? 'destructive' : 'secondary'}>
-                  {user.role === 'admin' ? 'Yönetici' : 
-                   user.role === 'moderator' ? 'Moderatör' : 'Kullanıcı'}
+                  {user.role === 'admin'
+                    ? 'Yönetici'
+                    : user.role === 'moderator'
+                      ? 'Moderatör'
+                      : 'Kullanıcı'}
                 </Badge>
               </TableCell>
               <TableCell>
                 <Badge variant={user.status === 'active' ? 'default' : 'secondary'}>
-                  {user.status === 'active' ? 'Aktif' : 
-                   user.status === 'inactive' ? 'Pasif' : 'Askıya Alınmış'}
+                  {user.status === 'active'
+                    ? 'Aktif'
+                    : user.status === 'inactive'
+                      ? 'Pasif'
+                      : 'Askıya Alınmış'}
                 </Badge>
               </TableCell>
               <TableCell>
-                {user.last_sign_in_at ? new Date(user.last_sign_in_at).toLocaleDateString('tr-TR') : 'Hiç giriş yapmamış'}
+                {user.last_sign_in_at
+                  ? new Date(user.last_sign_in_at).toLocaleDateString('tr-TR')
+                  : 'Hiç giriş yapmamış'}
               </TableCell>
               <TableCell className="text-right">
                 <DropdownMenu>
@@ -262,12 +264,18 @@ const UserTable = ({
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuLabel>İşlemler</DropdownMenuLabel>
-                    <DropdownMenuItem onClick={() => { onEdit(user); }}>
+                    <DropdownMenuItem
+                      onClick={() => {
+                        onEdit(user);
+                      }}
+                    >
                       <Edit className="mr-2 h-4 w-4" />
                       Düzenle
                     </DropdownMenuItem>
-                    <DropdownMenuItem 
-                      onClick={() => { onToggleStatus(user.id, user.status === 'active' ? 'inactive' : 'active'); }}
+                    <DropdownMenuItem
+                      onClick={() => {
+                        onToggleStatus(user.id, user.status === 'active' ? 'inactive' : 'active');
+                      }}
                     >
                       {user.status === 'active' ? (
                         <>
@@ -282,8 +290,10 @@ const UserTable = ({
                       )}
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem 
-                      onClick={() => { onDelete(user.id); }}
+                    <DropdownMenuItem
+                      onClick={() => {
+                        onDelete(user.id);
+                      }}
                       className="text-red-600"
                     >
                       <Trash2 className="mr-2 h-4 w-4" />
@@ -300,12 +310,12 @@ const UserTable = ({
   </Card>
 );
 
-const UserForm = ({ 
-  user, 
-  onSubmit, 
-  onCancel, 
-  isLoading 
-}: { 
+const UserForm = ({
+  user,
+  onSubmit,
+  onCancel,
+  isLoading,
+}: {
   user?: User;
   onSubmit: (data: UserFormData) => void;
   onCancel: () => void;
@@ -335,7 +345,9 @@ const UserForm = ({
             id="email"
             type="email"
             value={formData.email}
-            onChange={(e) => { setFormData({ ...formData, email: e.target.value }); }}
+            onChange={(e) => {
+              setFormData({ ...formData, email: e.target.value });
+            }}
             required
           />
         </div>
@@ -344,7 +356,9 @@ const UserForm = ({
           <Input
             id="full_name"
             value={formData.full_name}
-            onChange={(e) => { setFormData({ ...formData, full_name: e.target.value }); }}
+            onChange={(e) => {
+              setFormData({ ...formData, full_name: e.target.value });
+            }}
             required
           />
         </div>
@@ -353,7 +367,12 @@ const UserForm = ({
       <div className="grid grid-cols-2 gap-4">
         <div>
           <Label htmlFor="role">Rol</Label>
-          <Select value={formData.role} onValueChange={(value) => { setFormData({ ...formData, role: value as any }); }}>
+          <Select
+            value={formData.role}
+            onValueChange={(value) => {
+              setFormData({ ...formData, role: value as any });
+            }}
+          >
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
@@ -366,7 +385,12 @@ const UserForm = ({
         </div>
         <div>
           <Label htmlFor="status">Durum</Label>
-          <Select value={formData.status} onValueChange={(value) => { setFormData({ ...formData, status: value as any }); }}>
+          <Select
+            value={formData.status}
+            onValueChange={(value) => {
+              setFormData({ ...formData, status: value as any });
+            }}
+          >
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
@@ -385,7 +409,9 @@ const UserForm = ({
           <Input
             id="phone"
             value={formData.phone}
-            onChange={(e) => { setFormData({ ...formData, phone: e.target.value }); }}
+            onChange={(e) => {
+              setFormData({ ...formData, phone: e.target.value });
+            }}
           />
         </div>
         <div>
@@ -393,7 +419,9 @@ const UserForm = ({
           <Input
             id="organization"
             value={formData.organization}
-            onChange={(e) => { setFormData({ ...formData, organization: e.target.value }); }}
+            onChange={(e) => {
+              setFormData({ ...formData, organization: e.target.value });
+            }}
           />
         </div>
       </div>
@@ -485,10 +513,11 @@ export function UserManagementPageReal() {
   };
 
   // Filter users based on search term
-  const filteredUsers = users.filter(user =>
-    user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.organization?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredUsers = users.filter(
+    (user) =>
+      user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.organization?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   useEffect(() => {
@@ -534,16 +563,18 @@ export function UserManagementPageReal() {
           </Button>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button onClick={() => { setEditingUser(undefined); }}>
+              <Button
+                onClick={() => {
+                  setEditingUser(undefined);
+                }}
+              >
                 <Plus className="h-4 w-4 mr-2" />
                 Yeni Kullanıcı
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-2xl">
               <DialogHeader>
-                <DialogTitle>
-                  {editingUser ? 'Kullanıcı Düzenle' : 'Yeni Kullanıcı'}
-                </DialogTitle>
+                <DialogTitle>{editingUser ? 'Kullanıcı Düzenle' : 'Yeni Kullanıcı'}</DialogTitle>
                 <DialogDescription>
                   {editingUser ? 'Kullanıcı bilgilerini güncelleyin' : 'Yeni kullanıcı oluşturun'}
                 </DialogDescription>
@@ -551,7 +582,9 @@ export function UserManagementPageReal() {
               <UserForm
                 user={editingUser}
                 onSubmit={handleUserSubmit}
-                onCancel={() => { setIsDialogOpen(false); }}
+                onCancel={() => {
+                  setIsDialogOpen(false);
+                }}
                 isLoading={false}
               />
             </DialogContent>
@@ -565,7 +598,13 @@ export function UserManagementPageReal() {
           <AlertTriangle className="h-4 w-4" />
           <AlertDescription className="flex items-center justify-between">
             {error}
-            <Button variant="ghost" size="sm" onClick={() => { setError(null); }}>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                setError(null);
+              }}
+            >
               <X className="h-4 w-4" />
             </Button>
           </AlertDescription>
@@ -584,7 +623,9 @@ export function UserManagementPageReal() {
               <Input
                 placeholder="Kullanıcı ara..."
                 value={searchTerm}
-                onChange={(e) => { setSearchTerm(e.target.value); }}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                }}
                 className="pl-10"
               />
             </div>
@@ -604,7 +645,12 @@ export function UserManagementPageReal() {
       />
 
       {/* Delete Confirmation Dialog */}
-      <AlertDialog open={Boolean(deleteUserId)} onOpenChange={() => { setDeleteUserId(null); }}>
+      <AlertDialog
+        open={Boolean(deleteUserId)}
+        onOpenChange={() => {
+          setDeleteUserId(null);
+        }}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Kullanıcıyı Sil</AlertDialogTitle>

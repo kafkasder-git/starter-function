@@ -67,7 +67,7 @@ export function useMessagingBase(options: MessagingHookOptions = {}): MessagingB
       toast.error(errorMessage);
       logger.error(defaultMessage, err);
     },
-    [onError],
+    [onError]
   );
 
   const handleSuccess = useCallback(
@@ -75,7 +75,7 @@ export function useMessagingBase(options: MessagingHookOptions = {}): MessagingB
       onSuccess?.(message);
       toast.success(message);
     },
-    [onSuccess],
+    [onSuccess]
   );
 
   return {

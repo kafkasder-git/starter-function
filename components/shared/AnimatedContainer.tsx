@@ -1,6 +1,6 @@
 /**
  * @fileoverview AnimatedContainer Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -20,7 +20,7 @@ interface AnimatedContainerProps {
 
 /**
  * AnimatedContainer function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */

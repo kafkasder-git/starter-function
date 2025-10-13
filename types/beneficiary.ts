@@ -468,7 +468,7 @@ export function mapDBToBeneficiary(dbData: BeneficiaryDBFields): Beneficiary {
  * @returns Data for ihtiyac_sahipleri table with Turkish field names
  */
 export function mapBeneficiaryToDB(
-  beneficiary: Partial<Beneficiary>,
+  beneficiary: Partial<Beneficiary>
 ): Partial<BeneficiaryDBFields> {
   const dbData: Partial<BeneficiaryDBFields> = {};
 

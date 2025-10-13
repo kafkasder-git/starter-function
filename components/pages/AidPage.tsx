@@ -15,13 +15,7 @@ import { StatusBadge, PriorityBadge } from '../ui/status-badge';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import {
-  Search,
-  Plus,
-  Download,
-  Eye,
-  Edit,
-} from 'lucide-react';
+import { Search, Plus, Download, Eye, Edit } from 'lucide-react';
 import { PageLoading } from '../shared/LoadingSpinner';
 import { logger } from '../../lib/logging/logger';
 import { aidRequestsService } from '../../services/aidRequestsService';
@@ -71,66 +65,66 @@ const mapLocalToService = (localRequest: Partial<AidRequest>): Partial<ServiceAi
 // Type mapping helpers
 const mapAidTypeToLocal = (type: ServiceAidRequest['aid_type']): AidRequest['requestType'] => {
   const mapping: Record<ServiceAidRequest['aid_type'], AidRequest['requestType']> = {
-    'financial': 'Maddi',
-    'medical': 'Sağlık',
-    'education': 'Eğitim',
-    'housing': 'Barınma',
-    'food': 'Gıda',
-    'other': 'Acil Yardım'
+    financial: 'Maddi',
+    medical: 'Sağlık',
+    education: 'Eğitim',
+    housing: 'Barınma',
+    food: 'Gıda',
+    other: 'Acil Yardım',
   };
   return mapping[type] || 'Maddi';
 };
 
 const mapStatusToLocal = (status: ServiceAidRequest['status']): AidRequest['status'] => {
   const mapping: Record<ServiceAidRequest['status'], AidRequest['status']> = {
-    'pending': 'Yeni',
-    'under_review': 'İnceleniyor',
-    'approved': 'Onaylandı',
-    'rejected': 'Reddedildi',
-    'completed': 'Tamamlandı'
+    pending: 'Yeni',
+    under_review: 'İnceleniyor',
+    approved: 'Onaylandı',
+    rejected: 'Reddedildi',
+    completed: 'Tamamlandı',
   };
   return mapping[status] || 'Yeni';
 };
 
 const mapUrgencyToLocal = (urgency: ServiceAidRequest['urgency']): AidRequest['priority'] => {
   const mapping: Record<ServiceAidRequest['urgency'], AidRequest['priority']> = {
-    'low': 'Düşük',
-    'medium': 'Orta',
-    'high': 'Yüksek',
-    'critical': 'Acil'
+    low: 'Düşük',
+    medium: 'Orta',
+    high: 'Yüksek',
+    critical: 'Acil',
   };
   return mapping[urgency] || 'Orta';
 };
 
 const mapAidTypeToService = (type?: AidRequest['requestType']): ServiceAidRequest['aid_type'] => {
   const mapping: Record<AidRequest['requestType'], ServiceAidRequest['aid_type']> = {
-    'Maddi': 'financial',
-    'Sağlık': 'medical',
-    'Eğitim': 'education',
-    'Barınma': 'housing',
-    'Gıda': 'food',
-    'Acil Yardım': 'other'
+    Maddi: 'financial',
+    Sağlık: 'medical',
+    Eğitim: 'education',
+    Barınma: 'housing',
+    Gıda: 'food',
+    'Acil Yardım': 'other',
   };
   return mapping[type || 'Maddi'] || 'financial';
 };
 
 const mapStatusToService = (status?: AidRequest['status']): ServiceAidRequest['status'] => {
   const mapping: Record<AidRequest['status'], ServiceAidRequest['status']> = {
-    'Yeni': 'pending',
-    'İnceleniyor': 'under_review',
-    'Onaylandı': 'approved',
-    'Reddedildi': 'rejected',
-    'Tamamlandı': 'completed'
+    Yeni: 'pending',
+    İnceleniyor: 'under_review',
+    Onaylandı: 'approved',
+    Reddedildi: 'rejected',
+    Tamamlandı: 'completed',
   };
   return mapping[status || 'Yeni'] || 'pending';
 };
 
 const mapUrgencyToService = (priority?: AidRequest['priority']): ServiceAidRequest['urgency'] => {
   const mapping: Record<AidRequest['priority'], ServiceAidRequest['urgency']> = {
-    'Düşük': 'low',
-    'Orta': 'medium',
-    'Yüksek': 'high',
-    'Acil': 'critical'
+    Düşük: 'low',
+    Orta: 'medium',
+    Yüksek: 'high',
+    Acil: 'critical',
   };
   return mapping[priority || 'Orta'] || 'medium';
 };
@@ -201,7 +195,16 @@ export function AidPage() {
       }
       const dataToExport = response.data.map(mapServiceToLocal);
       const exportResult = await exportService.exportReport(
-        { data: dataToExport, metadata: { total_records: dataToExport.length, page: 1, page_size: 1000, execution_time: 0, generated_at: new Date() } },
+        {
+          data: dataToExport,
+          metadata: {
+            total_records: dataToExport.length,
+            page: 1,
+            page_size: 1000,
+            execution_time: 0,
+            generated_at: new Date(),
+          },
+        },
         { format: 'csv', filename: 'aid_requests_export.csv' }
       );
       if (exportResult.success && exportResult.downloadUrl) {
@@ -226,12 +229,15 @@ export function AidPage() {
   });
 
   const getStatusBadge = (status: AidRequest['status']) => {
-    const statusMap: Record<AidRequest['status'], 'success' | 'error' | 'warning' | 'info' | 'pending'> = {
-      'Yeni': 'info',
-      'İnceleniyor': 'pending',
-      'Onaylandı': 'success',
-      'Reddedildi': 'error',
-      'Tamamlandı': 'success',
+    const statusMap: Record<
+      AidRequest['status'],
+      'success' | 'error' | 'warning' | 'info' | 'pending'
+    > = {
+      Yeni: 'info',
+      İnceleniyor: 'pending',
+      Onaylandı: 'success',
+      Reddedildi: 'error',
+      Tamamlandı: 'success',
     };
 
     const statusType = statusMap[status] || 'pending';
@@ -241,10 +247,10 @@ export function AidPage() {
 
   const getPriorityBadge = (priority: AidRequest['priority']) => {
     const priorityMap: Record<AidRequest['priority'], 'high' | 'medium' | 'low'> = {
-      'Düşük': 'low',
-      'Orta': 'medium',
-      'Yüksek': 'high',
-      'Acil': 'high',
+      Düşük: 'low',
+      Orta: 'medium',
+      Yüksek: 'high',
+      Acil: 'high',
     };
 
     const priorityType = priorityMap[priority] || 'low';

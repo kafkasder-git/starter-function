@@ -1,0 +1,484 @@
+# 🤖 Dernek Yönetim Sistemi - AI Agent Kuralları
+
+## 📋 Proje Tanımı
+
+Bu proje, **kar amacı gütmeyen dernekler için modern, kapsamlı yönetim sistemi**dir. React + TypeScript + Vite + Appwrite teknoloji stack'i kullanılarak geliştirilmiştir.
+
+### 🏗️ Teknoloji Stack
+- **Frontend**: React 18, TypeScript, Vite
+- **Backend**: Appwrite (Database, Auth, Storage, Functions)
+- **UI**: Tailwind CSS, Radix UI, shadcn/ui
+- **State Management**: Zustand
+- **Routing**: React Router v7
+- **Forms**: React Hook Form + Zod
+- **Charts**: Recharts
+- **PWA**: Vite PWA Plugin
+
+## 🎯 Ana Modüller
+
+### 1. **Ana Sayfa (genel)** - Dashboard ve istatistikler
+### 2. **Bağış Yönetimi (bagis)** - Bağış listesi, raporlar, kumbara takibi
+### 3. **Yardım Yönetimi (yardim)** - İhtiyaç sahipleri, başvurular, nakit yardım
+### 4. **Burs Yönetimi (burs)** - Öğrenci listesi, burs başvuruları, yetim listesi
+### 5. **Fon Yönetimi (fon)** - Gelir-gider takibi, finansal raporlar
+### 6. **Mesajlaşma (mesaj)** - Kurum içi mesajlaşma, toplu mesaj
+### 7. **İş Yönetimi (is)** - Etkinlikler, toplantılar, görevler
+### 8. **Hukuki İşler (hukuki)** - Hukuki belgeler, danışmanlık
+### 9. **Partner Yönetimi (partner)** - Partner listesi, bağışçı yönetimi
+### 10. **Kullanıcı Yönetimi** - Rol bazlı yetkilendirme, sistem ayarları
+
+## 🗣️ İletişim Kuralları
+
+### ✅ ZORUNLU: TÜRKÇE KONUŞ
+- Tüm iletişim Türkçe olmalı
+- Kod yorumları Türkçe olmalı
+- Console log'ları Türkçe olabilir
+- Error mesajları Türkçe olmalı
+- Dokümantasyon Türkçe olmalı
+
+### 📝 Her Öneri İçin Açıklama Şablonu
+```
+🔧 NE YAPILACAK: [Yapılacak işlem]
+💡 NEDEN: [Neden gerekli - teknik/performans/güvenlik açısından]
+🎯 FAYDA: [Ne faydası olacak - kullanıcı/developer/maintenance açısından]
+📋 ÖRNEK: [Kod örneği Türkçe yorumlu]
+🔄 ALTERNATİF: [Varsa alternatif çözümler]
+```
+
+## 🏗️ Kod Standartları
+
+### TypeScript Kuralları
+```typescript
+// ✅ DOĞRU - Type safety ve açıklayıcı isimler
+interface İhtiyaçSahibi {
+  id: string;
+  ad: string;
+  soyad: string;
+  durum: 'aktif' | 'pasif' | 'beklemede';
+  oluşturulmaTarihi: Date;
+}
+
+// ✅ DOĞRU - Generic types ile esneklik
+const useİhtiyaçSahipleri = <T extends İhtiyaçSahibi>() => {
+  // Implementation
+}
+
+// ❌ YANLIŞ - Any kullanımı
+const veri: any = await getData();
+```
+
+### Component Yapısı
+```typescript
+// ✅ DOĞRU - Component interface'i
+interface İhtiyaçSahibiListesiProps {
+  ihtiyaçSahipleri: İhtiyaçSahibi[];
+  güncelleme: (id: string, veri: Partial<İhtiyaçSahibi>) => void;
+  yükleniyor?: boolean;
+}
+
+// ✅ DOĞRU - Component export
+export function İhtiyaçSahibiListesi({ 
+  ihtiyaçSahipleri, 
+  güncelleme, 
+  yükleniyor = false 
+}: İhtiyaçSahibiListesiProps) {
+  // Component implementation
+}
+```
+
+### Import Düzeni
+```typescript
+// ✅ DOĞRU - Import sıralaması
+// 1. React imports
+import React, { useState, useEffect } from 'react';
+
+// 2. Third-party imports
+import { toast } from 'sonner';
+import { useForm } from 'react-hook-form';
+
+// 3. Internal imports - @ ile başlayanlar
+import { İhtiyaçSahibi } from '@/types/ihtiyaçSahibi';
+import { useİhtiyaçSahipleriStore } from '@/stores/ihtiyaçSahipleriStore';
+
+// 4. Relative imports
+import './İhtiyaçSahibiListesi.css';
+```
+
+## 🔐 Appwrite Entegrasyonu
+
+### Database Operations
+```typescript
+// ✅ DOĞRU - Appwrite query'leri
+const ihtiyaçSahipleri = await db.list(collections.İHTİYAÇ_SAHİPLERİ, [
+  Query.equal('durum', 'aktif'),
+  Query.limit(50),
+  Query.orderDesc('$createdAt')
+]);
+
+// ✅ DOĞRU - Error handling
+try {
+  const sonuç = await db.create(collections.İHTİYAÇ_SAHİPLERİ, veri);
+  console.log('İhtiyaç sahibi başarıyla oluşturuldu:', sonuç.$id);
+  return sonuç;
+} catch (hata) {
+  console.error('İhtiyaç sahibi oluşturulurken hata:', hata);
+  throw new Error('İhtiyaç sahibi oluşturulamadı');
+}
+```
+
+### Authentication
+```typescript
+// ✅ DOĞRU - Auth store kullanımı
+const { kullanıcı, kimlikDoğrulandı } = useAuthStore();
+const yetkiVar = useAuthStore(state => state.yetkiKontrolü('ihtiyaç_sahipleri:okuma'));
+
+// ✅ DOĞRU - Permission guard
+<YetkiKoruması yetki="ihtiyaç_sahipleri:yazma">
+  <İhtiyaçSahibiFormu />
+</YetkiKoruması>
+```
+
+## 🎨 UI/UX Standartları
+
+### Design System Kullanımı
+```tsx
+// ✅ DOĞRU - Design tokens kullanımı
+<Button variant="primary" size="md" className="bg-primary-500">
+  Kaydet
+</Button>
+
+// ❌ YANLIŞ - Hardcoded styles
+<button className="bg-blue-500 text-white">
+  Kaydet
+</button>
+```
+
+### Responsive Design
+```tsx
+// ✅ DOĞRU - Mobile-first approach
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+  {/* İçerik */}
+</div>
+```
+
+### Accessibility
+```tsx
+// ✅ DOĞRU - ARIA labels
+<button 
+  aria-label="Kullanıcıyı düzenle"
+  aria-describedby="kullanıcı-açıklaması"
+>
+  Düzenle
+</button>
+```
+
+## 📝 Form Handling
+
+### React Hook Form + Zod
+```typescript
+// ✅ DOĞRU - Form validation schema
+const ihtiyaçSahibiŞeması = z.object({
+  ad: z.string().min(2, 'İsim en az 2 karakter olmalı'),
+  email: z.string().email('Geçerli email adresi giriniz'),
+  telefon: z.string().regex(/^[0-9]{10}$/, 'Telefon numarası 10 haneli olmalı'),
+});
+
+type İhtiyaçSahibiFormVerisi = z.infer<typeof ihtiyaçSahibiŞeması>;
+
+// ✅ DOĞRU - Form implementation
+export function İhtiyaçSahibiFormu() {
+  const form = useForm<İhtiyaçSahibiFormVerisi>({
+    resolver: zodResolver(ihtiyaçSahibiŞeması),
+  });
+  
+  // Form implementation
+}
+```
+
+## 🚀 Performance Optimization
+
+### Lazy Loading
+```typescript
+// ✅ DOĞRU - Lazy loading
+const İhtiyaçSahipleriSayfası = lazy(() => import('../components/pages/İhtiyaçSahipleriSayfası'));
+
+// Kullanım
+<Suspense fallback={<SayfaSkeleton />}>
+  <İhtiyaçSahipleriSayfası />
+</Suspense>
+```
+
+### Memoization
+```tsx
+// ✅ DOĞRU - Memoization
+const İhtiyaçSahibiKartı = memo(({ ihtiyaçSahibi, güncelleme }: İhtiyaçSahibiKartıProps) => {
+  // Component implementation
+});
+```
+
+## 🔒 Security ve Permissions
+
+### Role-based Access Control
+```tsx
+// ✅ DOĞRU - Permission guards
+<YetkiKoruması yetki="ihtiyaç_sahipleri:yazma">
+  <İhtiyaçSahibiFormu />
+</YetkiKoruması>
+
+// ✅ DOĞRU - Role checking
+const { kullanıcı } = useAuthStore();
+const adminMi = kullanıcı?.rol === 'admin';
+```
+
+### Input Sanitization
+```typescript
+// ✅ DOĞRU - Input sanitization
+const girdiTemizle = (girdi: string): string => {
+  return DOMPurify.sanitize(girdi.trim());
+};
+```
+
+## 🏪 State Management
+
+### Zustand Store Pattern
+```typescript
+// ✅ DOĞRU - Store structure
+interface İhtiyaçSahipleriDurumu {
+  ihtiyaçSahipleri: İhtiyaçSahibi[];
+  yükleniyor: boolean;
+  hata: string | null;
+}
+
+interface İhtiyaçSahipleriAksiyonları {
+  ihtiyaçSahipleriGetir: () => Promise<void>;
+  ihtiyaçSahibiEkle: (ihtiyaçSahibi: İhtiyaçSahibi) => void;
+  ihtiyaçSahibiGüncelle: (id: string, veri: Partial<İhtiyaçSahibi>) => void;
+}
+
+export const useİhtiyaçSahipleriStore = create<İhtiyaçSahipleriDurumu & İhtiyaçSahipleriAksiyonları>()(
+  devtools(
+    immer((set, get) => ({
+      // Implementation
+    }))
+  )
+);
+```
+
+## 🧪 Error Handling
+
+### Error Boundaries
+```tsx
+// ✅ DOĞRU - Error boundary
+<HataSınırı fallback={<HataFallback />}>
+  <İhtiyaçSahibiListesi />
+</HataSınırı>
+```
+
+### Service Error Handling
+```typescript
+// ✅ DOĞRU - Service error handling
+try {
+  const sonuç = await ihtiyaçSahipleriService.ihtiyaçSahibiOluştur(veri);
+  toast.success('Başarıyla oluşturuldu');
+  return sonuç;
+} catch (hata) {
+  if (hata instanceof AppwriteException) {
+    toast.error('Appwrite hatası: ' + hata.message);
+  } else {
+    toast.error('Beklenmeyen hata oluştu');
+  }
+  throw hata;
+}
+```
+
+## 📊 Logging ve Debugging
+
+### Console Log'ları
+```typescript
+// ✅ DOĞRU - Türkçe console log'lar
+console.log('İhtiyaç sahipleri listesi getiriliyor...');
+console.log(`${ihtiyaçSahipleri.length} ihtiyaç sahibi bulundu`);
+console.error('İhtiyaç sahipleri listesi alınırken hata:', hata);
+```
+
+### Logger Utility
+```typescript
+// ✅ DOĞRU - Logger utility
+export const logger = {
+  bilgi: (mesaj: string, veri?: any) => {
+    console.log(`ℹ️ ${mesaj}`, veri);
+  },
+  
+  başarı: (mesaj: string, veri?: any) => {
+    console.log(`✅ ${mesaj}`, veri);
+  },
+  
+  uyarı: (mesaj: string, veri?: any) => {
+    console.warn(`⚠️ ${mesaj}`, veri);
+  },
+  
+  hata: (mesaj: string, veri?: any) => {
+    console.error(`❌ ${mesaj}`, veri);
+  }
+};
+```
+
+## 🚫 Yasaklı Pattern'ler
+
+### ❌ YAPILMAMASI GEREKENLER
+```typescript
+// ❌ YANLIŞ - Any kullanımı
+const veri: any = await getData();
+
+// ❌ YANLIŞ - Hardcoded strings
+const mesaj = "Kullanıcı bulunamadı";
+
+// ❌ YANLIŞ - Console.log production'da
+console.log("Debug info");
+
+// ❌ YANLIŞ - Inline styles
+<div style={{color: 'red'}}>Hata</div>
+
+// ❌ YANLIŞ - Direct DOM manipulation
+document.getElementById('button').click();
+```
+
+## ✅ Önerilen Pattern'ler
+
+### ✅ YAPILMASI GEREKENLER
+```typescript
+// ✅ DOĞRU - Type safety
+const veri: İhtiyaçSahibi[] = await getData();
+
+// ✅ DOĞRU - Constants
+const MESAJLAR = {
+  KULLANICI_BULUNAMADI: "Kullanıcı bulunamadı"
+};
+
+// ✅ DOĞRU - Conditional logging
+if (process.env.NODE_ENV === 'development') {
+  console.log("Debug info");
+}
+
+// ✅ DOĞRU - CSS classes
+<div className="text-error-500">Hata</div>
+
+// ✅ DOĞRU - React patterns
+const handleClick = () => {
+  // Handle click
+};
+```
+
+## 🎯 Dernek Yönetimi Domain Knowledge
+
+### Finansal İşlemler
+- Tüm finansal işlemlerde audit trail
+- Para birimi: Türk Lirası (TRY)
+- Decimal precision: 2 ondalık basamak
+- Negatif değerler kontrolü
+
+### Bağış Yönetimi
+- Bağış türleri: Nakit, Ayni, Hizmet
+- Bağış durumları: Beklemede, Onaylandı, Reddedildi
+- Bağışçı bilgileri gizliliği
+
+### Yardım Başvuruları
+- Başvuru durumları: Yeni, İnceleniyor, Onaylandı, Reddedildi
+- Öncelik seviyeleri: Düşük, Orta, Yüksek, Acil
+- Doküman yükleme zorunluluğu
+
+### Kullanıcı Rolleri
+- **super_admin**: Tüm yetkiler
+- **admin**: Yönetim yetkileri
+- **manager**: Modül yönetimi
+- **operator**: İşlem yetkileri
+- **viewer**: Sadece görüntüleme
+- **volunteer**: Gönüllü yetkileri
+
+## 🔧 Geliştirme Workflow
+
+### 1. Yeni Özellik Geliştirme
+1. **Branch oluştur**: `feature/ihtiyaç-sahibi-yönetimi`
+2. **TypeScript tiplerini tanımla**
+3. **Service katmanını oluştur**
+4. **Component'leri geliştir**
+5. **Test'leri yaz**
+6. **ESLint kontrolü yap**
+7. **Pull request oluştur**
+
+### 2. Bug Fix
+1. **Issue'yu analiz et**
+2. **Root cause'u bul**
+3. **Minimal fix uygula**
+4. **Test'leri güncelle**
+5. **Deploy et**
+
+### 3. Code Review
+- TypeScript type safety kontrolü
+- Performance impact analizi
+- Security vulnerability kontrolü
+- UI/UX consistency kontrolü
+- Accessibility compliance kontrolü
+
+## 📚 Dokümantasyon
+
+### Component Dokümantasyonu
+```typescript
+/**
+ * İhtiyaçSahibiListesi Component
+ * 
+ * @description İhtiyaç sahiplerinin listesini gösterir ve CRUD işlemlerini yönetir
+ * @param ihtiyaçSahipleri - İhtiyaç sahibi nesnelerinin dizisi
+ * @param güncelleme - İhtiyaç sahiplerini güncelleme callback fonksiyonu
+ * @param yükleniyor - Yükleme durumu göstergesi
+ * 
+ * @example
+ * <İhtiyaçSahibiListesi 
+ *   ihtiyaçSahipleri={ihtiyaçSahipleri}
+ *   güncelleme={handleGüncelleme}
+ *   yükleniyor={false}
+ * />
+ */
+```
+
+## 🎯 Özel Kurallar
+
+### 1. Türkçe Dil Desteği
+- Tüm UI metinleri Türkçe olmalı
+- Error mesajları Türkçe olmalı
+- Console log'ları Türkçe olabilir
+- Kod yorumları Türkçe olmalı
+
+### 2. Dernek Yönetimi Özel Kuralları
+- Tüm finansal işlemlerde audit trail
+- Kullanıcı yetkileri role-based
+- Veri gizliliği ve GDPR compliance
+- Offline çalışma desteği
+
+### 3. Performance Hedefleri
+- Initial load < 3 saniye
+- Route transition < 500ms
+- Bundle size < 2MB
+- Lighthouse score > 90
+
+## 🚀 Agent Davranış Kuralları
+
+### Her Öneri İçin
+1. **Ne yapılacağını açıkla** (Türkçe)
+2. **Neden gerekli olduğunu açıkla** (Türkçe)
+3. **Ne faydası olacağını açıkla** (Türkçe)
+4. **Örnek kod ver** (Türkçe yorumlu)
+5. **Alternatif çözümler öner** (Türkçe)
+6. **Best practice'lere uygun ol**
+7. **Projeye özel domain knowledge kullan**
+
+### Öneri Şablonu
+```
+🔧 NE YAPILACAK: [Yapılacak işlem]
+💡 NEDEN: [Neden gerekli - teknik/performans/güvenlik açısından]
+🎯 FAYDA: [Ne faydası olacak - kullanıcı/developer/maintenance açısından]
+📋 ÖRNEK: [Kod örneği Türkçe yorumlu]
+🔄 ALTERNATİF: [Varsa alternatif çözümler]
+```
+
+Bu kurallar, Dernek Yönetim Sistemi projesinin tutarlı, güvenli ve performanslı geliştirilmesini sağlayacaktır.

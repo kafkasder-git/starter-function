@@ -6,7 +6,7 @@
 import { logger } from '../logging/logger';
 
 // Mock User Data
-export const mockUsers = {
+const mockUsers = {
   admin: {
     $id: 'mock-admin-001',
     email: 'admin@kafkasder.org',
@@ -133,4 +133,3 @@ export class MockDatabasesService {
 }
 
 export const getMockDatabasesService = () => new MockDatabasesService();
-

@@ -24,9 +24,7 @@ export function NotFoundPage() {
         <CardContent className="p-8 md:p-12 text-center">
           {/* 404 Illustration */}
           <div className="mb-8">
-            <div className="text-9xl font-bold text-gray-200 select-none">
-              404
-            </div>
+            <div className="text-9xl font-bold text-gray-200 select-none">404</div>
             <div className="mt-4 flex justify-center">
               <Search className="w-16 h-16 text-gray-400 animate-pulse" />
             </div>
@@ -37,14 +35,16 @@ export function NotFoundPage() {
             Sayfa Bulunamadı
           </Heading>
           <Text color="neutral" className="mb-8 max-w-md mx-auto">
-            Aradığınız sayfa mevcut değil, taşınmış veya silinmiş olabilir.
-            Lütfen URL&apos;yi kontrol edin veya ana sayfaya dönün.
+            Aradığınız sayfa mevcut değil, taşınmış veya silinmiş olabilir. Lütfen URL&apos;yi
+            kontrol edin veya ana sayfaya dönün.
           </Text>
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
-              onClick={() => { navigate(-1); }}
+              onClick={() => {
+                navigate(-1);
+              }}
               variant="outline"
               className="gap-2"
             >
@@ -62,9 +62,7 @@ export function NotFoundPage() {
 
           {/* Quick Links */}
           <div className="mt-12 pt-8 border-t border-gray-200">
-            <p className="text-sm text-gray-500 mb-4">
-              Hızlı Erişim:
-            </p>
+            <p className="text-sm text-gray-500 mb-4">Hızlı Erişim:</p>
             <div className="flex flex-wrap gap-2 justify-center">
               <Link to="/yardim">
                 <Button variant="ghost" size="sm">

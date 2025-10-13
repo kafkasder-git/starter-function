@@ -127,7 +127,7 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
       onValidationComplete,
       ...props
     },
-    ref,
+    ref
   ) => {
     const [showPassword, setShowPassword] = useState(false);
     const [isFocused, setIsFocused] = useState(false);
@@ -159,25 +159,38 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
           onValidationComplete?.(validationErrors);
         } catch {
           // console.error('Async validation error:', error);
-          setAsyncErrors([{
-            field: name,
-            message: 'Validation failed. Please try again.',
-            code: 'ASYNC_VALIDATION_ERROR',
-            severity: 'error'
-          }]);
-          onValidationComplete?.([{
-            field: name,
-            message: 'Validation failed. Please try again.',
-            code: 'ASYNC_VALIDATION_ERROR',
-            severity: 'error'
-          }]);
+          setAsyncErrors([
+            {
+              field: name,
+              message: 'Validation failed. Please try again.',
+              code: 'ASYNC_VALIDATION_ERROR',
+              severity: 'error',
+            },
+          ]);
+          onValidationComplete?.([
+            {
+              field: name,
+              message: 'Validation failed. Please try again.',
+              code: 'ASYNC_VALIDATION_ERROR',
+              severity: 'error',
+            },
+          ]);
         } finally {
           setIsAsyncValidating(false);
         }
       };
 
       runAsyncValidation();
-    }, [debouncedValue, asyncValidator, name, disabled, readOnly, required, onValidationStart, onValidationComplete]);
+    }, [
+      debouncedValue,
+      asyncValidator,
+      name,
+      disabled,
+      readOnly,
+      required,
+      onValidationStart,
+      onValidationComplete,
+    ]);
 
     // Clear async errors when value changes (before debounce)
     useEffect(() => {
@@ -246,7 +259,7 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
           hasWarning && 'border-warning-300 focus:border-warning-400 focus:ring-warning-200',
           isValid && 'border-success-300 focus:border-success-400 focus:ring-success-200',
           disabled && 'opacity-50 cursor-not-allowed',
-          inputClassName,
+          inputClassName
         ),
         'aria-invalid': hasError,
         'aria-describedby': hasError ? `${id}-error` : undefined,
@@ -270,9 +283,10 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
                 className={cn(
                   'transition-all duration-200',
                   hasError && 'border-error-300 focus:border-error-400 focus:ring-error-200',
-                  hasWarning && 'border-warning-300 focus:border-warning-400 focus:ring-warning-200',
+                  hasWarning &&
+                    'border-warning-300 focus:border-warning-400 focus:ring-warning-200',
                   isValid && 'border-success-300 focus:border-success-400 focus:ring-success-200',
-                  inputClassName,
+                  inputClassName
                 )}
                 onFocus={handleFocus}
                 onBlur={handleBlur}
@@ -302,7 +316,7 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
                 onBlur={handleBlur}
                 className={cn(
                   hasError && 'border-error-300 data-[state=checked]:bg-error-500',
-                  inputClassName,
+                  inputClassName
                 )}
               />
               {label && (
@@ -311,7 +325,7 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
                   className={cn(
                     'text-sm font-medium cursor-pointer',
                     disabled && 'opacity-50 cursor-not-allowed',
-                    labelClassName,
+                    labelClassName
                   )}
                 >
                   {label}
@@ -367,7 +381,7 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
                   className={cn(
                     'text-sm font-medium cursor-pointer',
                     disabled && 'opacity-50 cursor-not-allowed',
-                    labelClassName,
+                    labelClassName
                   )}
                 >
                   {label}
@@ -400,7 +414,7 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
                 inputSize={inputSize}
                 className={cn(
                   ((prefix ?? suffix) || type === 'password' || showValidationIcon) && 'pr-10',
-                  prefix && 'pl-10',
+                  prefix && 'pl-10'
                 )}
               />
 
@@ -449,7 +463,7 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
                 inputSize={inputSize}
                 className={cn(
                   ((prefix ?? suffix) || type === 'password' || showValidationIcon) && 'pr-10',
-                  prefix && 'pl-10',
+                  prefix && 'pl-10'
                 )}
               />
 
@@ -499,7 +513,7 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
               'text-sm font-medium text-neutral-700 block',
               required && "after:content-['*'] after:text-error-500 after:ml-1",
               disabled && 'opacity-50',
-              labelClassName,
+              labelClassName
             )}
           >
             {label}
@@ -524,7 +538,7 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
                     ? 'ring-2 ring-error-200'
                     : hasWarning
                       ? 'ring-2 ring-warning-200'
-                      : 'ring-2 ring-info-200',
+                      : 'ring-2 ring-info-200'
                 )}
               />
             )}
@@ -533,7 +547,12 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
 
         {/* Helper Text */}
         {helperText && (
-          <p className={helperTextVariants({ variant: helperTextVariant || (hasError ? 'error' : hasWarning ? 'warning' : 'default') })}>
+          <p
+            className={helperTextVariants({
+              variant:
+                helperTextVariant || (hasError ? 'error' : hasWarning ? 'warning' : 'default'),
+            })}
+          >
             {helperText}
           </p>
         )}
@@ -589,7 +608,7 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
         {children}
       </div>
     );
-  },
+  }
 );
 
 FormField.displayName = 'FormField';

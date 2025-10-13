@@ -1,6 +1,6 @@
 /**
  * @fileoverview exportService Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -27,7 +27,7 @@ import {
 
 /**
  * ExportProgress Interface
- * 
+ *
  * @interface ExportProgress
  */
 export interface ExportProgress {
@@ -39,7 +39,7 @@ export interface ExportProgress {
 
 /**
  * ExportResult Interface
- * 
+ *
  * @interface ExportResult
  */
 export interface ExportResult {
@@ -58,9 +58,9 @@ export interface ExportResult {
 
 /**
  * ExportService Service
- * 
+ *
  * Service class for handling exportservice operations
- * 
+ *
  * @class ExportService
  */
 export class ExportService {
@@ -72,7 +72,7 @@ export class ExportService {
   async exportReport(
     data: ReportResponse,
     config: ExportConfig,
-    progressCallback?: (progress: ExportProgress) => void,
+    progressCallback?: (progress: ExportProgress) => void
   ): Promise<ExportResult> {
     const exportId = this.generateExportId();
     const startTime = Date.now();
@@ -124,7 +124,7 @@ export class ExportService {
             config,
             exportId,
             needsOptimization,
-            optimizationOptions,
+            optimizationOptions
           );
           break;
         case ExportFormat.EXCEL:
@@ -133,7 +133,7 @@ export class ExportService {
             config,
             exportId,
             needsOptimization,
-            optimizationOptions,
+            optimizationOptions
           );
           break;
         case ExportFormat.CSV:
@@ -142,7 +142,7 @@ export class ExportService {
             config,
             exportId,
             needsOptimization,
-            optimizationOptions,
+            optimizationOptions
           );
           break;
         case ExportFormat.PNG:
@@ -197,7 +197,7 @@ export class ExportService {
    */
   async exportBatch(
     exports: { data: ReportResponse; config: ExportConfig }[],
-    progressCallback?: (overall: number, current: string) => void,
+    progressCallback?: (overall: number, current: string) => void
   ): Promise<ExportResult[]> {
     const results: ExportResult[] = [];
 
@@ -210,7 +210,7 @@ export class ExportService {
 
       progressCallback?.(
         (i / exports.length) * 100,
-        `Export ${i + 1}/${exports.length}: ${config.filename ?? 'report'}`,
+        `Export ${i + 1}/${exports.length}: ${config.filename ?? 'report'}`
       );
 
       const result = await this.exportReport(data, config);
@@ -226,7 +226,7 @@ export class ExportService {
   async exportAnalyticsData(
     analyticsData: AnalyticsData,
     config: ExportConfig,
-    progressCallback?: (progress: ExportProgress) => void,
+    progressCallback?: (progress: ExportProgress) => void
   ): Promise<ExportResult> {
     // Format analytics data for export
     const formattedData = DataFormattingUtils.formatAnalyticsData(analyticsData, {
@@ -260,7 +260,7 @@ export class ExportService {
   async exportFinancialData(
     financialData: FinancialData,
     config: ExportConfig,
-    progressCallback?: (progress: ExportProgress) => void,
+    progressCallback?: (progress: ExportProgress) => void
   ): Promise<ExportResult> {
     // Format financial data for export
     const formattedData = {
@@ -310,7 +310,7 @@ export class ExportService {
     config: ExportConfig,
     exportId: string,
     _needsOptimization: boolean,
-    _optimizationOptions: OptimizationOptions,
+    _optimizationOptions: OptimizationOptions
   ): Promise<ExportResult> {
     this.updateProgress(exportId, {
       stage: 'formatting',
@@ -346,7 +346,7 @@ export class ExportService {
     config: ExportConfig,
     exportId: string,
     needsOptimization: boolean,
-    optimizationOptions: OptimizationOptions,
+    optimizationOptions: OptimizationOptions
   ): Promise<ExportResult> {
     this.updateProgress(exportId, {
       stage: 'formatting',
@@ -362,7 +362,7 @@ export class ExportService {
       await OptimizationUtils.processInChunks(
         excelData,
         async (chunk) => this.processExcelChunk(chunk),
-        optimizationOptions,
+        optimizationOptions
       );
     }
 
@@ -394,7 +394,7 @@ export class ExportService {
     config: ExportConfig,
     exportId: string,
     needsOptimization: boolean,
-    optimizationOptions: OptimizationOptions,
+    optimizationOptions: OptimizationOptions
   ): Promise<ExportResult> {
     this.updateProgress(exportId, {
       stage: 'formatting',
@@ -416,11 +416,14 @@ export class ExportService {
       const stream = await OptimizationUtils.streamExport(
         data as Record<string, unknown>[],
         ExportFormat.CSV,
-        optimizationOptions,
+        optimizationOptions
       );
       csvContent = await this.streamToString(stream);
     } else {
-      csvContent = DataFormattingUtils.formatForCSV(this.flattenData(data) as Record<string, unknown>[], csvOptions);
+      csvContent = DataFormattingUtils.formatForCSV(
+        this.flattenData(data) as Record<string, unknown>[],
+        csvOptions
+      );
     }
 
     this.updateProgress(exportId, {
@@ -444,7 +447,7 @@ export class ExportService {
   private async exportToPNG<T>(
     _data: T,
     config: ExportConfig,
-    exportId: string,
+    exportId: string
   ): Promise<ExportResult> {
     this.updateProgress(exportId, {
       stage: 'formatting',
@@ -482,7 +485,7 @@ export class ExportService {
   private async exportToSVG<T>(
     _data: T,
     config: ExportConfig,
-    exportId: string,
+    exportId: string
   ): Promise<ExportResult> {
     this.updateProgress(exportId, {
       stage: 'formatting',
@@ -516,15 +519,17 @@ export class ExportService {
     if (typeof crypto !== 'undefined' && crypto.randomUUID) {
       return `export_${Date.now()}_${crypto.randomUUID().replace(/-/g, '')}`;
     }
-    
+
     // Fallback to secure random generation
     if (typeof window !== 'undefined' && window.crypto && window.crypto.getRandomValues) {
       const array = new Uint8Array(9);
       window.crypto.getRandomValues(array);
-      const randomString = Array.from(array, byte => byte.toString(36)).join('').substring(0, 9);
+      const randomString = Array.from(array, (byte) => byte.toString(36))
+        .join('')
+        .substring(0, 9);
       return `export_${Date.now()}_${randomString}`;
     }
-    
+
     // Last resort fallback
     return `export_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
@@ -608,7 +613,9 @@ export class ExportService {
     return result;
   }
 
-  private async processExcelChunk(chunk: { sheet: string; data: unknown[] }[]): Promise<{ sheet: string; data: unknown[]; processed: boolean; timestamp: Date }[]> {
+  private async processExcelChunk(
+    chunk: { sheet: string; data: unknown[] }[]
+  ): Promise<{ sheet: string; data: unknown[]; processed: boolean; timestamp: Date }[]> {
     // Process Excel chunk - format and validate data
     return chunk.map((item) => ({
       ...item,
@@ -627,7 +634,12 @@ export class ExportService {
     if (data && typeof data === 'object') {
       Object.entries(data).forEach(([key, value]) => {
         if (Array.isArray(value)) {
-          flattened.push(...value.map((item: unknown) => ({ category: key, ...(typeof item === 'object' && item !== null ? item : { value: item }) })));
+          flattened.push(
+            ...value.map((item: unknown) => ({
+              category: key,
+              ...(typeof item === 'object' && item !== null ? item : { value: item }),
+            }))
+          );
         } else if (typeof value === 'object' && value !== null) {
           flattened.push({ category: key, ...value });
         } else {

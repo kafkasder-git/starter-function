@@ -151,7 +151,7 @@ function TableHeader({ className, ...props }: React.ComponentProps<'thead'>) {
       className={cn(
         '[&_tr]:border-b',
         'bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-10 backdrop-blur',
-        className,
+        className
       )}
       {...props}
     />
@@ -162,7 +162,7 @@ function TableBody({ className, ...props }: React.ComponentProps<'tbody'>) {
   return (
     <tbody
       data-slot="table-body"
-      className={cn('[&_tr:last-child]:border-0', className)}
+      className={cn('[&_tr:last-child]:border-none', className)}
       {...props}
     />
   );
@@ -199,7 +199,7 @@ function TableRow({
         'hover:bg-muted/50',
         selected && 'bg-muted',
         selectable && 'cursor-pointer',
-        className,
+        className
       )}
       onClick={selectable ? () => onRowSelect?.(!selected) : undefined}
       role="row"
@@ -226,7 +226,7 @@ function TableHead({ className, ...props }: React.ComponentProps<'th'>) {
       data-slot="table-head"
       className={cn(
         'text-foreground h-10 px-2 text-left align-middle font-medium whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]',
-        className,
+        className
       )}
       {...props}
     />
@@ -253,7 +253,7 @@ function TableCell({ className, children, truncate = false, maxWidth, ...props }
       className={cn(
         'p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]',
         truncate ? 'truncate' : 'whitespace-nowrap',
-        className,
+        className
       )}
       style={maxWidth ? { maxWidth } : undefined}
       title={truncate && typeof children === 'string' ? children : undefined}

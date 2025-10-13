@@ -35,7 +35,10 @@ export function useStoreInitialization() {
       storeLogger.info('Auth store initialized');
       return true;
     } catch (err) {
-      storeLogger.error('Auth store initialization failed', err instanceof Error ? err : new Error('Unknown error'));
+      storeLogger.error(
+        'Auth store initialization failed',
+        err instanceof Error ? err : new Error('Unknown error')
+      );
       return false;
     }
   }, [authStore]);
@@ -46,7 +49,10 @@ export function useStoreInitialization() {
       storeLogger.info('Notification store initialized');
       return true;
     } catch (err) {
-      storeLogger.error('Notification store initialization failed', err instanceof Error ? err : new Error('Unknown error'));
+      storeLogger.error(
+        'Notification store initialization failed',
+        err instanceof Error ? err : new Error('Unknown error')
+      );
       return false;
     }
   }, [notificationStore]);
@@ -63,12 +69,17 @@ export function useStoreInitialization() {
           uiStore.setIsMobile(window.innerWidth <= 768);
         };
         window.addEventListener('resize', handleResize);
-        return () => { window.removeEventListener('resize', handleResize); };
+        return () => {
+          window.removeEventListener('resize', handleResize);
+        };
       }
       storeLogger.info('UI store initialized');
       return true;
     } catch (err) {
-      storeLogger.error('UI store initialization failed', err instanceof Error ? err : new Error('Unknown error'));
+      storeLogger.error(
+        'UI store initialization failed',
+        err instanceof Error ? err : new Error('Unknown error')
+      );
       return false;
     }
   }, [uiStore]);
@@ -115,34 +126,40 @@ export function useStoreInitialization() {
   }, [initializeAuth, initializeNotifications, initializeUI]);
 
   // Memoize store utils to prevent unnecessary re-renders
-  const storeUtils = useMemo(() => ({
-    resetStores: async () => {
-      try {
-        // Clear persisted state
-        if (useAuthStore.persist?.clearStorage) {
-          await useAuthStore.persist.clearStorage();
+  const storeUtils = useMemo(
+    () => ({
+      resetStores: async () => {
+        try {
+          // Clear persisted state
+          if (useAuthStore.persist?.clearStorage) {
+            await useAuthStore.persist.clearStorage();
+          }
+          if (useUIStore.persist?.clearStorage) {
+            await useUIStore.persist.clearStorage();
+          }
+          storeLogger.info('Store state cleared');
+          return true;
+        } catch (err) {
+          storeLogger.error(
+            'Failed to clear store state',
+            err instanceof Error ? err : new Error('Unknown error')
+          );
+          return false;
         }
-        if (useUIStore.persist?.clearStorage) {
-          await useUIStore.persist.clearStorage();
-        }
-        storeLogger.info('Store state cleared');
-        return true;
-      } catch (err) {
-        storeLogger.error('Failed to clear store state', err instanceof Error ? err : new Error('Unknown error'));
-        return false;
-      }
-    },
-    getStoreStates: () => ({
-      auth: useAuthStore.getState(),
-      notification: useNotificationStore.getState(),
-      ui: useUIStore.getState(),
+      },
+      getStoreStates: () => ({
+        auth: useAuthStore.getState(),
+        notification: useNotificationStore.getState(),
+        ui: useUIStore.getState(),
+      }),
+      isHydrated: () => {
+        const authHydrated = useAuthStore.persist?.hasHydrated() ?? true;
+        const uiHydrated = useUIStore.persist?.hasHydrated() ?? true;
+        return authHydrated && uiHydrated;
+      },
     }),
-    isHydrated: () => {
-      const authHydrated = useAuthStore.persist?.hasHydrated() ?? true;
-      const uiHydrated = useUIStore.persist?.hasHydrated() ?? true;
-      return authHydrated && uiHydrated;
-    },
-  }), [authStore, notificationStore, uiStore]);
+    [authStore, notificationStore, uiStore]
+  );
 
   return {
     isInitialized,

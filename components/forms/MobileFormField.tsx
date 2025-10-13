@@ -1,6 +1,6 @@
 /**
  * @fileoverview MobileFormField Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -45,7 +45,7 @@ export const MobileFormField = forwardRef<
       inputClassName,
       ...props
     },
-    ref,
+    ref
   ) => {
     const isMobile = useIsMobile();
     const [isFocused, setIsFocused] = useState(false);
@@ -169,7 +169,10 @@ export const MobileFormField = forwardRef<
       if (isMobile && mobileOptimizations) {
         // Scroll field into view after a small delay to allow keyboard to appear
         setTimeout(() => {
-          const element = (ref && typeof ref === 'object' && 'current' in ref) ? ref.current : document.activeElement;
+          const element =
+            ref && typeof ref === 'object' && 'current' in ref
+              ? ref.current
+              : document.activeElement;
           if (element && 'scrollIntoView' in element) {
             (element as HTMLElement).scrollIntoView({
               behavior: 'smooth',
@@ -201,7 +204,7 @@ export const MobileFormField = forwardRef<
           'focus:border-primary focus:ring-2 focus:ring-primary/20',
           'active:transform active:scale-[0.99]', // Subtle press feedback
         ],
-      inputClassName,
+      inputClassName
     );
 
     // Enhanced suffix with clear button for mobile
@@ -221,7 +224,7 @@ export const MobileFormField = forwardRef<
             tabIndex={-1}
           >
             <X className="w-4 h-4 text-gray-400" />
-          </Button>,
+          </Button>
         );
       }
 
@@ -230,7 +233,7 @@ export const MobileFormField = forwardRef<
         elements.push(
           <div key="suffix" className="text-slate-500">
             {props.suffix}
-          </div>,
+          </div>
         );
       }
 
@@ -254,13 +257,13 @@ export const MobileFormField = forwardRef<
             mobileOptimizations && [
               'touch-manipulation', // Better touch response
             ],
-          className,
+          className
         )}
         suffix={renderMobileSuffix()}
         {...getMobileProps()}
       />
     );
-  },
+  }
 );
 
 MobileFormField.displayName = 'MobileFormField';
@@ -277,7 +280,7 @@ interface MobileFormSectionProps {
 
 /**
  * MobileFormSection function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -297,7 +300,7 @@ export function MobileFormSection({
       className={cn(
         'bg-white rounded-lg border border-gray-200',
         isMobile ? 'p-4 mb-4' : 'p-6 mb-6',
-        className,
+        className
       )}
     >
       {title && (
@@ -329,7 +332,7 @@ export function MobileFormSection({
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
-            className="space-y-4"
+            className="space-y-3"
           >
             {children}
           </motion.div>
@@ -356,7 +359,7 @@ interface MobileFormNavigationProps {
 
 /**
  * MobileFormNavigation function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -384,7 +387,7 @@ export function MobileFormNavigation({
       className={cn(
         'fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 safe-bottom',
         'flex items-center justify-between gap-3',
-        className,
+        className
       )}
     >
       {/* Progress indicator */}

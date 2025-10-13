@@ -6,13 +6,13 @@
 import { databases, storage, ID, Query } from '../lib/appwrite';
 import { DATABASE_ID } from '../lib/appwrite';
 import { logger } from '../lib/logging/logger';
-import type { 
-  Conversation, 
-  Message, 
-  CreateConversationData, 
+import type {
+  Conversation,
+  Message,
+  CreateConversationData,
   SendMessageData,
   MessageFilters,
-  MessageAttachment
+  MessageAttachment,
 } from '../types/messaging';
 
 export class AppwriteMessagingService {
@@ -53,9 +53,9 @@ export class AppwriteMessagingService {
       if (!databases) {
         throw new Error('Databases service is not initialized');
       }
-      
+
       const conversationId = ID.unique();
-      
+
       // Konuşma oluştur
       const conversation = await databases.createDocument(
         DATABASE_ID,
@@ -66,7 +66,7 @@ export class AppwriteMessagingService {
           type: data.type,
           created_by: data.createdBy,
           avatar_url: data.avatarUrl || '',
-          is_active: true
+          is_active: true,
         }
       );
 
@@ -76,7 +76,7 @@ export class AppwriteMessagingService {
       }
 
       logger.info('Conversation created successfully', { conversationId });
-      
+
       return this.mapConversationFromAppwrite(conversation);
     } catch (error) {
       logger.error('Failed to create conversation:', error);
@@ -92,34 +92,26 @@ export class AppwriteMessagingService {
       if (!databases) {
         throw new Error('Databases service is not initialized');
       }
-      
+
       // Kullanıcının katıldığı konuşmaları getir
-      const participants = await databases.listDocuments(
-        DATABASE_ID,
-        'conversation_participants',
-        [
-          Query.equal('user_id', userId),
-          Query.limit(limit),
-          Query.offset(offset)
-        ]
-      );
+      const participants = await databases.listDocuments(DATABASE_ID, 'conversation_participants', [
+        Query.equal('user_id', userId),
+        Query.limit(limit),
+        Query.offset(offset),
+      ]);
 
       if (!participants.documents.length) {
         return [];
       }
 
-      const conversationIds = participants.documents.map(p => p.conversation_id);
-      
-      const conversations = await databases.listDocuments(
-        DATABASE_ID,
-        'conversations',
-        [
-          Query.equal('$id', conversationIds),
-          Query.equal('is_active', true)
-        ]
-      );
+      const conversationIds = participants.documents.map((p) => p.conversation_id);
 
-      return conversations.documents.map(conv => this.mapConversationFromAppwrite(conv));
+      const conversations = await databases.listDocuments(DATABASE_ID, 'conversations', [
+        Query.equal('$id', conversationIds),
+        Query.equal('is_active', true),
+      ]);
+
+      return conversations.documents.map((conv) => this.mapConversationFromAppwrite(conv));
     } catch (error) {
       logger.error('Failed to get conversations:', error);
       throw new Error('Konuşmalar yüklenemedi');
@@ -134,7 +126,7 @@ export class AppwriteMessagingService {
       if (!databases) {
         throw new Error('Databases service is not initialized');
       }
-      
+
       const conversation = await databases.getDocument(
         DATABASE_ID,
         'conversations',
@@ -156,19 +148,14 @@ export class AppwriteMessagingService {
       if (!databases) {
         throw new Error('Databases service is not initialized');
       }
-      
+
       for (const userId of userIds) {
-        await databases.createDocument(
-          DATABASE_ID,
-          'conversation_participants',
-          ID.unique(),
-          {
-            conversation_id: conversationId,
-            user_id: userId,
-            joined_at: new Date().toISOString(),
-            role: 'member'
-          }
-        );
+        await databases.createDocument(DATABASE_ID, 'conversation_participants', ID.unique(), {
+          conversation_id: conversationId,
+          user_id: userId,
+          joined_at: new Date().toISOString(),
+          role: 'member',
+        });
       }
 
       logger.info('Participants added to conversation', { conversationId, userIds });
@@ -190,24 +177,19 @@ export class AppwriteMessagingService {
       if (!databases) {
         throw new Error('Databases service is not initialized');
       }
-      
+
       const messageId = ID.unique();
-      
+
       // Mesaj oluştur
-      const message = await databases.createDocument(
-        DATABASE_ID,
-        'messages',
-        messageId,
-        {
-          conversation_id: data.conversationId,
-          sender_id: data.senderId,
-          content: data.content || '',
-          type: data.type,
-          reply_to: data.replyTo || null,
-          is_edited: false,
-          is_deleted: false
-        }
-      );
+      const message = await databases.createDocument(DATABASE_ID, 'messages', messageId, {
+        conversation_id: data.conversationId,
+        sender_id: data.senderId,
+        content: data.content || '',
+        type: data.type,
+        reply_to: data.replyTo || null,
+        is_edited: false,
+        is_deleted: false,
+      });
 
       // Dosya ekleri varsa işle
       if (data.attachments && data.attachments.length > 0) {
@@ -215,7 +197,7 @@ export class AppwriteMessagingService {
       }
 
       logger.info('Message sent successfully', { messageId });
-      
+
       return this.mapMessageFromAppwrite(message);
     } catch (error) {
       logger.error('Failed to send message:', error);
@@ -231,13 +213,13 @@ export class AppwriteMessagingService {
       if (!databases) {
         throw new Error('Databases service is not initialized');
       }
-      
+
       const queries = [
         Query.equal('conversation_id', filters.conversationId),
         Query.equal('is_deleted', false),
         Query.orderDesc('$createdAt'),
         Query.limit(filters.limit || 50),
-        Query.offset(filters.offset || 0)
+        Query.offset(filters.offset || 0),
       ];
 
       if (filters.senderId) {
@@ -248,13 +230,9 @@ export class AppwriteMessagingService {
         queries.push(Query.equal('type', filters.type));
       }
 
-      const messages = await databases.listDocuments(
-        DATABASE_ID,
-        'messages',
-        queries
-      );
+      const messages = await databases.listDocuments(DATABASE_ID, 'messages', queries);
 
-      return messages.documents.map(msg => this.mapMessageFromAppwrite(msg));
+      return messages.documents.map((msg) => this.mapMessageFromAppwrite(msg));
     } catch (error) {
       logger.error('Failed to get messages:', error);
       throw new Error('Mesajlar yüklenemedi');
@@ -269,28 +247,19 @@ export class AppwriteMessagingService {
       if (!databases) {
         throw new Error('Databases service is not initialized');
       }
-      
+
       // Mesajın sahibi kontrolü
-      const message = await databases.getDocument(
-        DATABASE_ID,
-        'messages',
-        messageId
-      );
+      const message = await databases.getDocument(DATABASE_ID, 'messages', messageId);
 
       if (message.sender_id !== userId) {
         throw new Error('Bu mesajı silme yetkiniz yok');
       }
 
       // Mesajı sil (soft delete)
-      await databases.updateDocument(
-        DATABASE_ID,
-        'messages',
-        messageId,
-        {
-          is_deleted: true,
-          content: '[Bu mesaj silindi]'
-        }
-      );
+      await databases.updateDocument(DATABASE_ID, 'messages', messageId, {
+        is_deleted: true,
+        content: '[Bu mesaj silindi]',
+      });
 
       logger.info('Message deleted successfully', { messageId });
       return true;
@@ -312,32 +281,23 @@ export class AppwriteMessagingService {
       if (!storage || !databases) {
         throw new Error('Storage or databases service is not initialized');
       }
-      
+
       for (const file of files) {
         const attachmentId = ID.unique();
-        
+
         // Dosyayı storage'a yükle
         const bucketId = this.getBucketForFileType(file.type);
-        const uploadedFile = await storage.createFile(
-          bucketId,
-          attachmentId,
-          file
-        );
+        const uploadedFile = await storage.createFile(bucketId, attachmentId, file);
 
         // Attachment kaydını oluştur
-        await databases.createDocument(
-          DATABASE_ID,
-          'message_attachments',
-          ID.unique(),
-          {
-            message_id: messageId,
-            file_id: uploadedFile.$id,
-            file_name: file.name,
-            file_size: file.size,
-            file_type: file.type,
-            bucket_id: bucketId
-          }
-        );
+        await databases.createDocument(DATABASE_ID, 'message_attachments', ID.unique(), {
+          message_id: messageId,
+          file_id: uploadedFile.$id,
+          file_name: file.name,
+          file_size: file.size,
+          file_type: file.type,
+          bucket_id: bucketId,
+        });
       }
 
       logger.info('Message attachments processed', { messageId, fileCount: files.length });
@@ -365,14 +325,12 @@ export class AppwriteMessagingService {
       if (!databases || !storage) {
         throw new Error('Databases or storage service is not initialized');
       }
-      
-      const attachments = await databases.listDocuments(
-        DATABASE_ID,
-        'message_attachments',
-        [Query.equal('message_id', messageId)]
-      );
 
-      return attachments.documents.map(att => ({
+      const attachments = await databases.listDocuments(DATABASE_ID, 'message_attachments', [
+        Query.equal('message_id', messageId),
+      ]);
+
+      return attachments.documents.map((att) => ({
         id: att.$id,
         messageId: att.message_id,
         fileId: att.file_id,
@@ -381,7 +339,7 @@ export class AppwriteMessagingService {
         fileType: att.file_type,
         bucketId: att.bucket_id,
         fileUrl: storage?.getFileView(att.bucket_id, att.file_id).toString() || '',
-        createdAt: new Date(att.$createdAt)
+        createdAt: new Date(att.$createdAt),
       }));
     } catch (error) {
       logger.error('Failed to get message attachments:', error);
@@ -401,17 +359,12 @@ export class AppwriteMessagingService {
       if (!databases) {
         throw new Error('Databases service is not initialized');
       }
-      
-      await databases.createDocument(
-        DATABASE_ID,
-        'user_presence',
-        ID.unique(),
-        {
-          user_id: userId,
-          is_online: isOnline,
-          last_seen: new Date().toISOString()
-        }
-      );
+
+      await databases.createDocument(DATABASE_ID, 'user_presence', ID.unique(), {
+        user_id: userId,
+        is_online: isOnline,
+        last_seen: new Date().toISOString(),
+      });
 
       logger.info('User presence updated', { userId, isOnline });
     } catch (error) {
@@ -422,40 +375,31 @@ export class AppwriteMessagingService {
   /**
    * Yazıyor durumunu güncelle
    */
-  async setTypingIndicator(conversationId: string, userId: string, isTyping: boolean): Promise<void> {
+  async setTypingIndicator(
+    conversationId: string,
+    userId: string,
+    isTyping: boolean
+  ): Promise<void> {
     try {
       if (!databases) {
         throw new Error('Databases service is not initialized');
       }
-      
+
       if (isTyping) {
-        await databases.createDocument(
-          DATABASE_ID,
-          'typing_indicators',
-          ID.unique(),
-          {
-            conversation_id: conversationId,
-            user_id: userId,
-            is_typing: true
-          }
-        );
+        await databases.createDocument(DATABASE_ID, 'typing_indicators', ID.unique(), {
+          conversation_id: conversationId,
+          user_id: userId,
+          is_typing: true,
+        });
       } else {
         // Mevcut typing indicator'ı sil
-        const existing = await databases.listDocuments(
-          DATABASE_ID,
-          'typing_indicators',
-          [
-            Query.equal('conversation_id', conversationId),
-            Query.equal('user_id', userId)
-          ]
-        );
+        const existing = await databases.listDocuments(DATABASE_ID, 'typing_indicators', [
+          Query.equal('conversation_id', conversationId),
+          Query.equal('user_id', userId),
+        ]);
 
         for (const indicator of existing.documents) {
-          await databases.deleteDocument(
-            DATABASE_ID,
-            'typing_indicators',
-            indicator.$id
-          );
+          await databases.deleteDocument(DATABASE_ID, 'typing_indicators', indicator.$id);
         }
       }
 
@@ -473,17 +417,12 @@ export class AppwriteMessagingService {
       if (!databases) {
         throw new Error('Databases service is not initialized');
       }
-      
-      await databases.createDocument(
-        DATABASE_ID,
-        'message_read_status',
-        ID.unique(),
-        {
-          message_id: messageId,
-          user_id: userId,
-          read_at: new Date().toISOString()
-        }
-      );
+
+      await databases.createDocument(DATABASE_ID, 'message_read_status', ID.unique(), {
+        message_id: messageId,
+        user_id: userId,
+        read_at: new Date().toISOString(),
+      });
 
       logger.info('Message marked as read', { messageId, userId });
     } catch (error) {
@@ -508,7 +447,7 @@ export class AppwriteMessagingService {
       createdBy: doc.created_by,
       isActive: doc.is_active,
       createdAt: new Date(doc.$createdAt),
-      updatedAt: new Date(doc.$updatedAt)
+      updatedAt: new Date(doc.$updatedAt),
     };
   }
 
@@ -524,11 +463,11 @@ export class AppwriteMessagingService {
       content: doc.content,
       type: doc.type,
       attachments: [], // Bu gerçek implementasyonda doldurulmalı
-      replyTo: doc.reply_to ? { id: doc.reply_to } as Message : undefined,
+      replyTo: doc.reply_to ? ({ id: doc.reply_to } as Message) : undefined,
       isDeleted: doc.is_deleted,
       createdAt: new Date(doc.$createdAt),
       updatedAt: new Date(doc.$updatedAt),
-      readBy: [] // Bu gerçek implementasyonda doldurulmalı
+      readBy: [], // Bu gerçek implementasyonda doldurulmalı
     };
   }
 }

@@ -68,47 +68,71 @@ const beneficiarySchema = z.object({
   notes: z.string().optional(),
 
   // Aile üyeleri
-  family_members: z.array(z.object({
-    name: z.string().min(2, 'İsim en az 2 karakter olmalıdır'),
-    surname: z.string().min(2, 'Soyisim en az 2 karakter olmalıdır'),
-    phone: z.string().regex(/^(\+90|0)?5[0-9]{9}$/, 'Geçerli telefon numarası giriniz'),
-    email: z.string().email('Geçerli e-posta adresi giriniz').optional().or(z.literal('')),
-    birth_date: z.string().optional(),
-    gender: z.enum(['male', 'female', 'other']).optional(),
-    identity_number: z.string().optional(),
-  })).optional(),
+  family_members: z
+    .array(
+      z.object({
+        name: z.string().min(2, 'İsim en az 2 karakter olmalıdır'),
+        surname: z.string().min(2, 'Soyisim en az 2 karakter olmalıdır'),
+        phone: z.string().regex(/^(\+90|0)?5[0-9]{9}$/, 'Geçerli telefon numarası giriniz'),
+        email: z.string().email('Geçerli e-posta adresi giriniz').optional().or(z.literal('')),
+        birth_date: z.string().optional(),
+        gender: z.enum(['male', 'female', 'other']).optional(),
+        identity_number: z.string().optional(),
+      })
+    )
+    .optional(),
 
   // İhtiyaçlar
-  needs: z.array(z.object({
-    type: z.string().min(2, 'İhtiyaç türü belirtilmelidir'),
-    description: z.string().min(10, 'Açıklama en az 10 karakter olmalıdır'),
-    priority: z.enum(['düşük', 'orta', 'yüksek']),
-    estimated_cost: z.number().min(0, 'Maliyet negatif olamaz').optional(),
-  })).optional(),
+  needs: z
+    .array(
+      z.object({
+        type: z.string().min(2, 'İhtiyaç türü belirtilmelidir'),
+        description: z.string().min(10, 'Açıklama en az 10 karakter olmalıdır'),
+        priority: z.enum(['düşük', 'orta', 'yüksek']),
+        estimated_cost: z.number().min(0, 'Maliyet negatif olamaz').optional(),
+      })
+    )
+    .optional(),
 
   // Sağlık bilgileri
-  health_info: z.object({
-    has_chronic_disease: z.boolean().optional(),
-    chronic_diseases: z.array(z.string()).optional(),
-    medications: z.array(z.string()).optional(),
-    allergies: z.array(z.string()).optional(),
-    disability_status: z.enum(['yok', 'hafif', 'orta', 'ağır']).optional(),
-  }).optional(),
+  health_info: z
+    .object({
+      has_chronic_disease: z.boolean().optional(),
+      chronic_diseases: z.array(z.string()).optional(),
+      medications: z.array(z.string()).optional(),
+      allergies: z.array(z.string()).optional(),
+      disability_status: z.enum(['yok', 'hafif', 'orta', 'ağır']).optional(),
+    })
+    .optional(),
 
   // Diğer bilgiler
-  other_info: z.object({
-    education_level: z.enum(['okur_yazar_değil', 'ilkokul', 'ortaokul', 'lise', 'üniversite', 'yüksek_lisans', 'doktora']).optional(),
-    occupation: z.string().optional(),
-    income_source: z.string().optional(),
-    hobbies: z.array(z.string()).optional(),
-    special_skills: z.array(z.string()).optional(),
-  }).optional(),
+  other_info: z
+    .object({
+      education_level: z
+        .enum([
+          'okur_yazar_değil',
+          'ilkokul',
+          'ortaokul',
+          'lise',
+          'üniversite',
+          'yüksek_lisans',
+          'doktora',
+        ])
+        .optional(),
+      occupation: z.string().optional(),
+      income_source: z.string().optional(),
+      hobbies: z.array(z.string()).optional(),
+      special_skills: z.array(z.string()).optional(),
+    })
+    .optional(),
 
   // Belgeler
-  documents: z.object({
-    photos: z.array(z.any()).optional(),
-    files: z.array(z.any()).optional(),
-  }).optional(),
+  documents: z
+    .object({
+      photos: z.array(z.any()).optional(),
+      files: z.array(z.any()).optional(),
+    })
+    .optional(),
 });
 
 type BeneficiaryFormData = z.infer<typeof beneficiarySchema>;
@@ -158,7 +182,9 @@ export default function BeneficiaryForm({
     storageKey: 'beneficiary-form',
     autoSaveInterval: 30000,
     excludeFields: ['documents'], // exclude file uploads
-    onRecover: () => { toast.info('Kaydedilmiş form verisi geri yüklendi'); },
+    onRecover: () => {
+      toast.info('Kaydedilmiş form verisi geri yüklendi');
+    },
   });
 
   // Add auto-scroll to first error
@@ -209,7 +235,10 @@ export default function BeneficiaryForm({
 
   const removeFamilyMember = (index: number) => {
     const currentMembers = getValues('family_members') ?? [];
-    setValue('family_members', currentMembers.filter((_, i) => i !== index));
+    setValue(
+      'family_members',
+      currentMembers.filter((_, i) => i !== index)
+    );
   };
 
   const addNeed = () => {
@@ -227,7 +256,10 @@ export default function BeneficiaryForm({
 
   const removeNeed = (index: number) => {
     const currentNeeds = getValues('needs') ?? [];
-    setValue('needs', currentNeeds.filter((_, i) => i !== index));
+    setValue(
+      'needs',
+      currentNeeds.filter((_, i) => i !== index)
+    );
   };
 
   // OCR sonucunu forma doldur
@@ -293,7 +325,9 @@ export default function BeneficiaryForm({
             </div>
             <Button
               type="button"
-              onClick={() => { setIsCameraOpen(true); }}
+              onClick={() => {
+                setIsCameraOpen(true);
+              }}
               className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium shadow-sm transition-all duration-200 hover:shadow-md"
             >
               <Camera className="h-5 w-5" />
@@ -313,13 +347,9 @@ export default function BeneficiaryForm({
               className="form-input"
             />
             {errors.full_name && (
-              <p className={helperTextVariants({ variant: 'error' })}>
-                {errors.full_name.message}
-              </p>
+              <p className={helperTextVariants({ variant: 'error' })}>{errors.full_name.message}</p>
             )}
-            <p className={helperTextVariants({ variant: 'default' })}>
-              Örnek: Ahmet Mehmet Yılmaz
-            </p>
+            <p className={helperTextVariants({ variant: 'default' })}>Örnek: Ahmet Mehmet Yılmaz</p>
           </div>
 
           <div className="space-y-2">
@@ -358,9 +388,7 @@ export default function BeneficiaryForm({
                 {errors.nationality.message}
               </p>
             )}
-            <p className={helperTextVariants({ variant: 'default' })}>
-              Vatandaşlık bilgisi
-            </p>
+            <p className={helperTextVariants({ variant: 'default' })}>Vatandaşlık bilgisi</p>
           </div>
 
           <div className="space-y-2">
@@ -375,9 +403,7 @@ export default function BeneficiaryForm({
               className="form-input"
             />
             {errors.country && (
-              <p className={helperTextVariants({ variant: 'error' })}>
-                {errors.country.message}
-              </p>
+              <p className={helperTextVariants({ variant: 'error' })}>{errors.country.message}</p>
             )}
             <p className={helperTextVariants({ variant: 'default' })}>
               2 harfli ülke kodu (ISO standardı)
@@ -400,11 +426,7 @@ export default function BeneficiaryForm({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <Label htmlFor="phone">Telefon *</Label>
-            <Input
-              id="phone"
-              {...register('phone')}
-              placeholder="05XX XXX XX XX"
-            />
+            <Input id="phone" {...register('phone')} placeholder="05XX XXX XX XX" />
             {errors.phone && (
               <p className={helperTextVariants({ variant: 'error' })}>{errors.phone.message}</p>
             )}
@@ -412,12 +434,7 @@ export default function BeneficiaryForm({
 
           <div>
             <Label htmlFor="email">E-posta</Label>
-            <Input
-              id="email"
-              type="email"
-              {...register('email')}
-              placeholder="ornek@email.com"
-            />
+            <Input id="email" type="email" {...register('email')} placeholder="ornek@email.com" />
             {errors.email && (
               <p className={helperTextVariants({ variant: 'error' })}>{errors.email.message}</p>
             )}
@@ -439,11 +456,7 @@ export default function BeneficiaryForm({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <Label htmlFor="city">Şehir *</Label>
-            <Input
-              id="city"
-              {...register('city')}
-              placeholder="Şehir"
-            />
+            <Input id="city" {...register('city')} placeholder="Şehir" />
             {errors.city && (
               <p className={helperTextVariants({ variant: 'error' })}>{errors.city.message}</p>
             )}
@@ -451,33 +464,22 @@ export default function BeneficiaryForm({
 
           <div>
             <Label htmlFor="settlement">Yerleşim Yeri *</Label>
-            <Input
-              id="settlement"
-              {...register('settlement')}
-              placeholder="İlçe/Mahalle"
-            />
+            <Input id="settlement" {...register('settlement')} placeholder="İlçe/Mahalle" />
             {errors.settlement && (
-              <p className={helperTextVariants({ variant: 'error' })}>{errors.settlement.message}</p>
+              <p className={helperTextVariants({ variant: 'error' })}>
+                {errors.settlement.message}
+              </p>
             )}
           </div>
 
           <div>
             <Label htmlFor="neighborhood">Mahalle</Label>
-            <Input
-              id="neighborhood"
-              {...register('neighborhood')}
-              placeholder="Mahalle"
-            />
+            <Input id="neighborhood" {...register('neighborhood')} placeholder="Mahalle" />
           </div>
 
           <div className="md:col-span-2">
             <Label htmlFor="address">Adres *</Label>
-            <Textarea
-              id="address"
-              {...register('address')}
-              placeholder="Detaylı adres"
-              rows={3}
-            />
+            <Textarea id="address" {...register('address')} placeholder="Detaylı adres" rows={3} />
             {errors.address && (
               <p className={helperTextVariants({ variant: 'error' })}>{errors.address.message}</p>
             )}
@@ -499,7 +501,11 @@ export default function BeneficiaryForm({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <Label htmlFor="category">Kategori *</Label>
-            <Select onValueChange={(value) => { setValue('category', value as any); }}>
+            <Select
+              onValueChange={(value) => {
+                setValue('category', value as any);
+              }}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Kategori seçin" />
               </SelectTrigger>
@@ -520,7 +526,11 @@ export default function BeneficiaryForm({
 
           <div>
             <Label htmlFor="aid_type">Yardım Türü *</Label>
-            <Select onValueChange={(value) => { setValue('aid_type', value as any); }}>
+            <Select
+              onValueChange={(value) => {
+                setValue('aid_type', value as any);
+              }}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Yardım türü seçin" />
               </SelectTrigger>
@@ -537,25 +547,21 @@ export default function BeneficiaryForm({
 
           <div>
             <Label htmlFor="fund_region">Bölge *</Label>
-            <Input
-              id="fund_region"
-              {...register('fund_region')}
-              placeholder="Bölge"
-            />
+            <Input id="fund_region" {...register('fund_region')} placeholder="Bölge" />
             {errors.fund_region && (
-              <p className={helperTextVariants({ variant: 'error' })}>{errors.fund_region.message}</p>
+              <p className={helperTextVariants({ variant: 'error' })}>
+                {errors.fund_region.message}
+              </p>
             )}
           </div>
 
           <div>
             <Label htmlFor="opened_by_unit">Açan Birim *</Label>
-            <Input
-              id="opened_by_unit"
-              {...register('opened_by_unit')}
-              placeholder="Açan birim"
-            />
+            <Input id="opened_by_unit" {...register('opened_by_unit')} placeholder="Açan birim" />
             {errors.opened_by_unit && (
-              <p className={helperTextVariants({ variant: 'error' })}>{errors.opened_by_unit.message}</p>
+              <p className={helperTextVariants({ variant: 'error' })}>
+                {errors.opened_by_unit.message}
+              </p>
             )}
           </div>
         </div>
@@ -565,7 +571,9 @@ export default function BeneficiaryForm({
             <Checkbox
               id="linked_orphan"
               checked={watchedValues.linked_orphan}
-              onCheckedChange={(checked) => { setValue('linked_orphan', Boolean(checked)); }}
+              onCheckedChange={(checked) => {
+                setValue('linked_orphan', Boolean(checked));
+              }}
             />
             <Label htmlFor="linked_orphan">Yetim ile bağlantılı</Label>
           </div>
@@ -574,7 +582,9 @@ export default function BeneficiaryForm({
             <Checkbox
               id="linked_card"
               checked={watchedValues.linked_card}
-              onCheckedChange={(checked) => { setValue('linked_card', Boolean(checked)); }}
+              onCheckedChange={(checked) => {
+                setValue('linked_card', Boolean(checked));
+              }}
             />
             <Label htmlFor="linked_card">Kart ile bağlantılı</Label>
           </div>
@@ -582,21 +592,13 @@ export default function BeneficiaryForm({
           {watchedValues.linked_card && (
             <div>
               <Label htmlFor="card_no">Kart Numarası</Label>
-              <Input
-                id="card_no"
-                {...register('card_no')}
-                placeholder="Kart numarası"
-              />
+              <Input id="card_no" {...register('card_no')} placeholder="Kart numarası" />
             </div>
           )}
 
           <div>
             <Label htmlFor="iban">IBAN</Label>
-            <Input
-              id="iban"
-              {...register('iban')}
-              placeholder="TR00 0000 0000 0000 0000 0000 00"
-            />
+            <Input id="iban" {...register('iban')} placeholder="TR00 0000 0000 0000 0000 0000 00" />
             {errors.iban && (
               <p className={helperTextVariants({ variant: 'error' })}>{errors.iban.message}</p>
             )}
@@ -604,12 +606,7 @@ export default function BeneficiaryForm({
 
           <div>
             <Label htmlFor="notes">Notlar</Label>
-            <Textarea
-              id="notes"
-              {...register('notes')}
-              placeholder="Ek notlar"
-              rows={3}
-            />
+            <Textarea id="notes" {...register('notes')} placeholder="Ek notlar" rows={3} />
           </div>
         </div>
       </CardContent>
@@ -626,9 +623,7 @@ export default function BeneficiaryForm({
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex justify-between items-center">
-          <p className="text-sm text-gray-600">
-            Aile üyelerini ekleyebilirsiniz
-          </p>
+          <p className="text-sm text-gray-600">Aile üyelerini ekleyebilirsiniz</p>
           <Button type="button" onClick={addFamilyMember} variant="outline">
             Aile Üyesi Ekle
           </Button>
@@ -640,7 +635,9 @@ export default function BeneficiaryForm({
               <h4 className="font-medium">Aile Üyesi {index + 1}</h4>
               <Button
                 type="button"
-                onClick={() => { removeFamilyMember(index); }}
+                onClick={() => {
+                  removeFamilyMember(index);
+                }}
                 variant="outline"
                 size="sm"
               >
@@ -651,18 +648,12 @@ export default function BeneficiaryForm({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor={`family_members.${index}.name`}>Ad</Label>
-                <Input
-                  {...register(`family_members.${index}.name`)}
-                  placeholder="Ad"
-                />
+                <Input {...register(`family_members.${index}.name`)} placeholder="Ad" />
               </div>
 
               <div>
                 <Label htmlFor={`family_members.${index}.surname`}>Soyad</Label>
-                <Input
-                  {...register(`family_members.${index}.surname`)}
-                  placeholder="Soyad"
-                />
+                <Input {...register(`family_members.${index}.surname`)} placeholder="Soyad" />
               </div>
 
               <div>
@@ -697,9 +688,7 @@ export default function BeneficiaryForm({
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex justify-between items-center">
-          <p className="text-sm text-gray-600">
-            İhtiyaçları ekleyebilirsiniz
-          </p>
+          <p className="text-sm text-gray-600">İhtiyaçları ekleyebilirsiniz</p>
           <Button type="button" onClick={addNeed} variant="outline">
             İhtiyaç Ekle
           </Button>
@@ -711,7 +700,9 @@ export default function BeneficiaryForm({
               <h4 className="font-medium">İhtiyaç {index + 1}</h4>
               <Button
                 type="button"
-                onClick={() => { removeNeed(index); }}
+                onClick={() => {
+                  removeNeed(index);
+                }}
                 variant="outline"
                 size="sm"
               >
@@ -722,15 +713,16 @@ export default function BeneficiaryForm({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor={`needs.${index}.type`}>Tür</Label>
-                <Input
-                  {...register(`needs.${index}.type`)}
-                  placeholder="İhtiyaç türü"
-                />
+                <Input {...register(`needs.${index}.type`)} placeholder="İhtiyaç türü" />
               </div>
 
               <div>
                 <Label htmlFor={`needs.${index}.priority`}>Öncelik</Label>
-                <Select onValueChange={(value) => { setValue(`needs.${index}.priority`, value as any); }}>
+                <Select
+                  onValueChange={(value) => {
+                    setValue(`needs.${index}.priority`, value as any);
+                  }}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Öncelik seçin" />
                   </SelectTrigger>
@@ -806,12 +798,12 @@ export default function BeneficiaryForm({
                   Adım {currentStep} / {totalSteps}
                 </h3>
                 <p className="text-sm text-gray-500">
-                  {currentStep === 1 && "Temel bilgileri girin"}
-                  {currentStep === 2 && "İletişim bilgilerini girin"}
-                  {currentStep === 3 && "Adres bilgilerini girin"}
-                  {currentStep === 4 && "Yardım bilgilerini girin"}
-                  {currentStep === 5 && "Aile üyelerini ekleyin"}
-                  {currentStep === 6 && "İhtiyaçları belirtin"}
+                  {currentStep === 1 && 'Temel bilgileri girin'}
+                  {currentStep === 2 && 'İletişim bilgilerini girin'}
+                  {currentStep === 3 && 'Adres bilgilerini girin'}
+                  {currentStep === 4 && 'Yardım bilgilerini girin'}
+                  {currentStep === 5 && 'Aile üyelerini ekleyin'}
+                  {currentStep === 6 && 'İhtiyaçları belirtin'}
                 </p>
               </div>
             </div>
@@ -894,7 +886,9 @@ export default function BeneficiaryForm({
       {/* Kamera Tarama Modal */}
       <CameraScanner
         isOpen={isCameraOpen}
-        onClose={() => { setIsCameraOpen(false); }}
+        onClose={() => {
+          setIsCameraOpen(false);
+        }}
         onScanComplete={handleOCRResult}
         title="Kimlik/Pasaport Tarama"
       />

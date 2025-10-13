@@ -116,7 +116,7 @@ export function SmartMobileForm({
   const totalSteps = Math.ceil(fields.length / fieldsPerStep);
   const currentFields = fields.slice(
     currentStep * fieldsPerStep,
-    (currentStep + 1) * fieldsPerStep,
+    (currentStep + 1) * fieldsPerStep
   );
 
   // Mobilde daha akıllı alan gruplama
@@ -313,7 +313,7 @@ export function SmartMobileForm({
                   }}
                   type="file"
                   accept="image/*"
-                  className="w-full text-sm text-gray-500 file:mr-4 file:rounded-full file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-blue-700 hover:file:bg-blue-100"
+                  className="w-full text-sm text-gray-500 file:mr-4 file:rounded-full file:border-none file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-blue-700 hover:file:bg-blue-100"
                   onFocus={() => {
                     handleFieldFocus(field.name);
                   }}
@@ -378,7 +378,9 @@ export function SmartMobileForm({
               className="mt-1 flex items-center gap-2 text-red-600"
             >
               <AlertCircle className="h-4 w-4" />
-              <span className="text-sm">{String(errors[field.name]?.message || 'Validation error')}</span>
+              <span className="text-sm">
+                {String(errors[field.name]?.message || 'Validation error')}
+              </span>
             </motion.div>
           )}
         </div>
@@ -423,7 +425,7 @@ export function SmartMobileForm({
 
   return (
     <div className={`mx-auto w-full max-w-md ${className}`} ref={formRef}>
-      <Card className="border-0 bg-white/95 shadow-xl backdrop-blur-sm">
+      <Card className="border-none bg-white/95 shadow-xl backdrop-blur-sm">
         <CardHeader className="pb-4">
           <CardTitle className="text-center text-xl font-semibold text-gray-900">{title}</CardTitle>
           {description && <p className="text-center text-sm text-gray-600">{description}</p>}
@@ -460,7 +462,7 @@ export function SmartMobileForm({
                 className="space-y-4"
               >
                 {(deviceInfo.isMobile ? smartFieldGrouping.currentFields || [] : currentFields).map(
-                  renderField,
+                  renderField
                 )}
               </motion.div>
             </AnimatePresence>

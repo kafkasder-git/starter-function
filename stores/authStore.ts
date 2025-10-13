@@ -115,7 +115,9 @@ interface RegisterData {
 type AuthStore = AuthState & AuthActions;
 
 // Build User object from Appwrite User and Database Profile
-const buildUserFromAppwriteUser = async (appwriteUser: Models.User<Models.Preferences>): Promise<User> => {
+const buildUserFromAppwriteUser = async (
+  appwriteUser: Models.User<Models.Preferences>
+): Promise<User> => {
   const prefs = appwriteUser.prefs || {};
 
   let role: UserRole = UserRole.VIEWER;
@@ -125,10 +127,9 @@ const buildUserFromAppwriteUser = async (appwriteUser: Models.User<Models.Prefer
 
   // Try to get user profile from database with better error handling
   try {
-    const { data: profileData, error } = await db.list(
-      collections.USER_PROFILES,
-      [Query.equal('$id', appwriteUser.$id)]
-    );
+    const { data: profileData, error } = await db.list(collections.USER_PROFILES, [
+      Query.equal('$id', appwriteUser.$id),
+    ]);
 
     if (!error && profileData?.documents?.[0]) {
       const profile = profileData.documents[0];
@@ -139,24 +140,24 @@ const buildUserFromAppwriteUser = async (appwriteUser: Models.User<Models.Prefer
 
       authLogger.info('Successfully fetched user profile from database', {
         userId: appwriteUser.$id,
-        role: profile.role
+        role: profile.role,
       });
     } else if (error) {
       authLogger.warn('Database query returned error, using preferences fallback', {
         userId: appwriteUser.$id,
         error: error.message,
-        errorType: (error as any).type || 'unknown'
+        errorType: (error as any).type || 'unknown',
       });
     } else {
       authLogger.info('No user profile found in database, using preferences', {
-        userId: appwriteUser.$id
+        userId: appwriteUser.$id,
       });
     }
   } catch (error: any) {
     authLogger.error('Failed to fetch user profile from database, using preferences', {
       userId: appwriteUser.$id,
       error: error.message,
-      errorType: (error as any).type || 'unknown'
+      errorType: (error as any).type || 'unknown',
     });
   }
 
@@ -169,7 +170,7 @@ const buildUserFromAppwriteUser = async (appwriteUser: Models.User<Models.Prefer
       authLogger.info('Using role from preferences', {
         userId: appwriteUser.$id,
         rawRole,
-        normalizedRole
+        normalizedRole,
       });
     }
   }
@@ -185,7 +186,7 @@ const buildUserFromAppwriteUser = async (appwriteUser: Models.User<Models.Prefer
   return {
     id: appwriteUser.$id,
     email,
-    name: appwriteUser.name || (prefs as any).name as string || email.split('@')[0] || 'User',
+    name: appwriteUser.name || ((prefs as any).name as string) || email.split('@')[0] || 'User',
     role,
     avatar,
     permissions: ROLE_PERMISSIONS[role],
@@ -250,13 +251,13 @@ export const useAuthStore = create<AuthStore>()(
                     });
                     authLogger.info('Updated Appwrite preferences with database role on init', {
                       userId: user.id,
-                      role: user.role
+                      role: user.role,
                     });
                   }
                 } catch (prefsError) {
                   authLogger.error('Failed to update Appwrite preferences on init', {
                     userId: user.id,
-                    error: prefsError
+                    error: prefsError,
                   });
                   // Continue even if preferences update fails
                 }
@@ -328,10 +329,19 @@ export const useAuthStore = create<AuthStore>()(
                   id: mockUser.$id,
                   email: mockUser.email,
                   name: mockUser.name,
-                  role: mockUser.labels.includes('admin') ? UserRole.ADMIN : 
-                        mockUser.labels.includes('manager') ? UserRole.MANAGER : UserRole.USER,
-                  permissions: ROLE_PERMISSIONS[mockUser.labels.includes('admin') ? UserRole.ADMIN : 
-                               mockUser.labels.includes('manager') ? UserRole.MANAGER : UserRole.USER],
+                  role: mockUser.labels.includes('admin')
+                    ? UserRole.ADMIN
+                    : mockUser.labels.includes('manager')
+                      ? UserRole.MANAGER
+                      : UserRole.VIEWER,
+                  permissions:
+                    ROLE_PERMISSIONS[
+                      mockUser.labels.includes('admin')
+                        ? UserRole.ADMIN
+                        : mockUser.labels.includes('manager')
+                          ? UserRole.MANAGER
+                          : UserRole.VIEWER
+                    ],
                   isActive: true,
                   createdAt: new Date(),
                   updatedAt: new Date(),
@@ -407,14 +417,14 @@ export const useAuthStore = create<AuthStore>()(
               const appwriteUser = await account.get();
               authLogger.info('Retrieved Appwrite user data', {
                 userId: appwriteUser.$id,
-                email: appwriteUser.email
+                email: appwriteUser.email,
               });
 
               const user = await buildUserFromAppwriteUser(appwriteUser);
               authLogger.info('Built user object successfully', {
                 userId: user.id,
                 role: user.role,
-                isActive: user.isActive
+                isActive: user.isActive,
               });
 
               // Update Appwrite preferences with database role if different
@@ -429,14 +439,14 @@ export const useAuthStore = create<AuthStore>()(
                   });
                   authLogger.info('Updated Appwrite preferences with database role', {
                     userId: user.id,
-                    role: user.role
+                    role: user.role,
                   });
                 }
               } catch (prefsError: any) {
                 authLogger.error('Failed to update Appwrite preferences', {
                   userId: user.id,
                   error: prefsError.message,
-                  errorType: (prefsError as any).type || 'unknown'
+                  errorType: (prefsError as any).type || 'unknown',
                 });
                 // Continue even if preferences update fails
               }
@@ -461,7 +471,6 @@ export const useAuthStore = create<AuthStore>()(
               let errorMessage = 'Giriş yapılamadı';
 
               if (error instanceof AppwriteException) {
-
                 switch (error.type) {
                   case 'user_invalid_credentials':
                     errorMessage = 'Geçersiz email veya şifre';
@@ -486,12 +495,14 @@ export const useAuthStore = create<AuthStore>()(
                   email,
                   errorType: error.type,
                   errorCode: error.code,
-                  errorMessage: error.message
+                  errorMessage: error.message,
                 });
               } else if (error instanceof Error) {
-
                 // Check for network errors
-                if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+                if (
+                  error.message.includes('Failed to fetch') ||
+                  error.message.includes('NetworkError')
+                ) {
                   errorMessage = 'Ağ bağlantısı hatası. Lütfen internet bağlantınızı kontrol edin.';
                 } else if (error.message.includes('timeout')) {
                   errorMessage = 'Bağlantı zaman aşımı. Lütfen tekrar deneyin.';
@@ -502,12 +513,12 @@ export const useAuthStore = create<AuthStore>()(
                 authLogger.error('Login error', {
                   email,
                   errorName: error.name,
-                  errorMessage: error.message
+                  errorMessage: error.message,
                 });
               } else {
                 authLogger.error('Unknown login error', {
                   email,
-                  error: error
+                  error: error,
                 });
               }
 
@@ -580,12 +591,7 @@ export const useAuthStore = create<AuthStore>()(
 
               // Create account
               const userId = ID.unique();
-              await account.create(
-                userId,
-                userData.email,
-                userData.password,
-                userData.name
-              );
+              await account.create(userId, userData.email, userData.password, userData.name);
 
               // Update preferences with role
               await account.updatePrefs({
@@ -607,7 +613,7 @@ export const useAuthStore = create<AuthStore>()(
               } catch (dbError) {
                 authLogger.error('Failed to create user profile in database', {
                   userId,
-                  error: dbError
+                  error: dbError,
                 });
                 // Continue even if database profile creation fails
               }
@@ -654,10 +660,7 @@ export const useAuthStore = create<AuthStore>()(
               if (!account) {
                 throw new Error('Appwrite account not configured');
               }
-              await account.createRecovery(
-                email,
-                `${window.location.origin}/reset-password`
-              );
+              await account.createRecovery(email, `${window.location.origin}/reset-password`);
 
               toast.success('Şifre sıfırlama bağlantısı email adresinize gönderildi', {
                 duration: 5000,
@@ -715,7 +718,7 @@ export const useAuthStore = create<AuthStore>()(
               } catch (dbError) {
                 authLogger.error('Failed to update user profile in database', {
                   userId: user.id,
-                  error: dbError
+                  error: dbError,
                 });
                 // Continue even if database update fails
               }
@@ -728,9 +731,7 @@ export const useAuthStore = create<AuthStore>()(
               toast.success('Profil başarıyla güncellendi', { duration: 3000 });
             } catch (error: unknown) {
               const errorMessage =
-                error instanceof AppwriteException
-                  ? error.message
-                  : 'Profil güncellenemedi';
+                error instanceof AppwriteException ? error.message : 'Profil güncellenemedi';
               toast.error(errorMessage, { duration: 4000 });
               throw new Error(errorMessage);
             }
@@ -788,7 +789,12 @@ export const useAuthStore = create<AuthStore>()(
           },
 
           checkSessionExpiry: () => {
-            const { session, isAuthenticated, sessionExpiryWarningShown, sessionExpiryWarningTime } = get();
+            const {
+              session,
+              isAuthenticated,
+              sessionExpiryWarningShown,
+              sessionExpiryWarningTime,
+            } = get();
 
             if (!isAuthenticated || !session) return;
 
@@ -816,7 +822,11 @@ export const useAuthStore = create<AuthStore>()(
             }
 
             // If warning was shown more than 5 minutes ago and no action, logout
-            if (sessionExpiryWarningShown && sessionExpiryWarningTime && now - sessionExpiryWarningTime.getTime() > fiveMinutes) {
+            if (
+              sessionExpiryWarningShown &&
+              sessionExpiryWarningTime &&
+              now - sessionExpiryWarningTime.getTime() > fiveMinutes
+            ) {
               get().handleSessionExpired();
             }
           },
@@ -920,10 +930,9 @@ export const useAuthStore = create<AuthStore>()(
           // Sync user profile with database
           syncUserProfile: async (userId: string) => {
             try {
-              const { data: profileData, error } = await db.list(
-                collections.USER_PROFILES,
-                [Query.equal('$id', userId)]
-              );
+              const { data: profileData, error } = await db.list(collections.USER_PROFILES, [
+                Query.equal('$id', userId),
+              ]);
 
               if (!error && profileData?.documents?.[0]) {
                 const profile = profileData.documents[0];
@@ -986,7 +995,9 @@ export const useAuthStore = create<AuthStore>()(
           migrate: (persistedState: any, version: number) => {
             // Clear any old Supabase data and reset to clean state
             if (version < 2) {
-              authLogger.info(`Migrating auth store from version ${version} to version 2 - clearing old data`);
+              authLogger.info(
+                `Migrating auth store from version ${version} to version 2 - clearing old data`
+              );
               return {
                 rememberMe: false,
                 loginAttempts: 0,
@@ -995,10 +1006,10 @@ export const useAuthStore = create<AuthStore>()(
             }
             return persistedState;
           },
-        },
-      ),
-    ),
-  ),
+        }
+      )
+    )
+  )
 );
 
 // Session expiry checker - runs every minute

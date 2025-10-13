@@ -1,24 +1,35 @@
-"use client"
+'use client';
 
-import * as React from "react"
-import { Code, Copy, Check, ExternalLink } from "lucide-react"
+import * as React from 'react';
+import { Code, Copy, Check, ExternalLink } from 'lucide-react';
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Progress } from "@/components/ui/progress"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Switch } from "@/components/ui/switch"
-import { Textarea } from "@/components/ui/textarea"
-import { Slider } from "@/components/ui/slider"
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Progress } from '@/components/ui/progress';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
+import { Slider } from '@/components/ui/slider';
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const codeExamples = {
   button: `import { Button } from "@/components/ui/button"
@@ -35,7 +46,7 @@ export function ButtonExample() {
     </div>
   )
 }`,
-  
+
   card: `import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 export function CardExample() {
@@ -51,7 +62,7 @@ export function CardExample() {
     </Card>
   )
 }`,
-  
+
   form: `import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
@@ -93,17 +104,19 @@ export function FormExample() {
       </form>
     </Form>
   )
-}`
-}
+}`,
+};
 
 function CodeBlock({ children, title }: { children: string; title: string }) {
-  const [copied, setCopied] = React.useState(false)
+  const [copied, setCopied] = React.useState(false);
 
   const copyToClipboard = async () => {
-    await navigator.clipboard.writeText(children)
-    setCopied(true)
-    setTimeout(() => { setCopied(false); }, 2000)
-  }
+    await navigator.clipboard.writeText(children);
+    setCopied(true);
+    setTimeout(() => {
+      setCopied(false);
+    }, 2000);
+  };
 
   return (
     <Card>
@@ -112,7 +125,7 @@ function CodeBlock({ children, title }: { children: string; title: string }) {
           <CardTitle className="text-lg">{title}</CardTitle>
           <Button variant="outline" size="sm" onClick={copyToClipboard}>
             {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-            {copied ? "Kopyalandı!" : "Kopyala"}
+            {copied ? 'Kopyalandı!' : 'Kopyala'}
           </Button>
         </div>
       </CardHeader>
@@ -122,7 +135,7 @@ function CodeBlock({ children, title }: { children: string; title: string }) {
         </pre>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 export function UIComponentsShowcase() {
@@ -139,9 +152,7 @@ export function UIComponentsShowcase() {
       <Card>
         <CardHeader>
           <CardTitle>Hızlı Navigasyon</CardTitle>
-          <CardDescription>
-            Bileşen kategorilerine hızlı erişim
-          </CardDescription>
+          <CardDescription>Bileşen kategorilerine hızlı erişim</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -180,9 +191,7 @@ export function UIComponentsShowcase() {
             <Card>
               <CardHeader>
                 <CardTitle>Button Bileşenleri</CardTitle>
-                <CardDescription>
-                  Farklı varyantlar ve boyutlar
-                </CardDescription>
+                <CardDescription>Farklı varyantlar ve boyutlar</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
@@ -212,9 +221,7 @@ export function UIComponentsShowcase() {
             <Card>
               <CardHeader>
                 <CardTitle>Badge Bileşenleri</CardTitle>
-                <CardDescription>
-                  Durum göstergeleri ve etiketler
-                </CardDescription>
+                <CardDescription>Durum göstergeleri ve etiketler</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex flex-wrap gap-2">
@@ -234,9 +241,7 @@ export function UIComponentsShowcase() {
             <Card>
               <CardHeader>
                 <CardTitle>Form Bileşenleri</CardTitle>
-                <CardDescription>
-                  Input, Select, Checkbox ve diğer form elemanları
-                </CardDescription>
+                <CardDescription>Input, Select, Checkbox ve diğer form elemanları</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="grid gap-4">
@@ -286,9 +291,7 @@ export function UIComponentsShowcase() {
             <Card>
               <CardHeader>
                 <CardTitle>Card Bileşenleri</CardTitle>
-                <CardDescription>
-                  İçerik gruplama ve düzenleme
-                </CardDescription>
+                <CardDescription>İçerik gruplama ve düzenleme</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid gap-4 md:grid-cols-2">
@@ -298,9 +301,7 @@ export function UIComponentsShowcase() {
                       <CardDescription>Bu bir basit kart örneğidir</CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-sm text-muted-foreground">
-                        Kart içeriği burada yer alır.
-                      </p>
+                      <p className="text-sm text-muted-foreground">Kart içeriği burada yer alır.</p>
                     </CardContent>
                   </Card>
                   <Card>
@@ -310,9 +311,7 @@ export function UIComponentsShowcase() {
                     </CardHeader>
                     <CardContent>
                       <div className="text-2xl font-bold">1,234</div>
-                      <p className="text-xs text-muted-foreground">
-                        +20.1% geçen aydan
-                      </p>
+                      <p className="text-xs text-muted-foreground">+20.1% geçen aydan</p>
                     </CardContent>
                   </Card>
                 </div>
@@ -323,9 +322,7 @@ export function UIComponentsShowcase() {
             <Card>
               <CardHeader>
                 <CardTitle>Progress ve Slider</CardTitle>
-                <CardDescription>
-                  İlerleme göstergeleri
-                </CardDescription>
+                <CardDescription>İlerleme göstergeleri</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
@@ -347,20 +344,14 @@ export function UIComponentsShowcase() {
             <Card>
               <CardHeader>
                 <CardTitle>Alert Bileşenleri</CardTitle>
-                <CardDescription>
-                  Bildirimler ve uyarılar
-                </CardDescription>
+                <CardDescription>Bildirimler ve uyarılar</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <Alert>
-                  <AlertDescription>
-                    Bu bir bilgi mesajıdır.
-                  </AlertDescription>
+                  <AlertDescription>Bu bir bilgi mesajıdır.</AlertDescription>
                 </Alert>
                 <Alert variant="destructive">
-                  <AlertDescription>
-                    Bu bir hata mesajıdır.
-                  </AlertDescription>
+                  <AlertDescription>Bu bir hata mesajıdır.</AlertDescription>
                 </Alert>
               </CardContent>
             </Card>
@@ -368,9 +359,7 @@ export function UIComponentsShowcase() {
             <Card>
               <CardHeader>
                 <CardTitle>Tooltip ve Hover Card</CardTitle>
-                <CardDescription>
-                  Yardımcı bilgiler ve açıklamalar
-                </CardDescription>
+                <CardDescription>Yardımcı bilgiler ve açıklamalar</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex gap-4">
@@ -384,7 +373,7 @@ export function UIComponentsShowcase() {
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
-                  
+
                   <HoverCard>
                     <HoverCardTrigger asChild>
                       <Button variant="outline">Hover for card</Button>
@@ -409,9 +398,7 @@ export function UIComponentsShowcase() {
       <Card>
         <CardHeader>
           <CardTitle>Kurulum Rehberi</CardTitle>
-          <CardDescription>
-            shadcn/ui bileşenlerini projenize nasıl ekleyeceğiniz
-          </CardDescription>
+          <CardDescription>shadcn/ui bileşenlerini projenize nasıl ekleyeceğiniz</CardDescription>
         </CardHeader>
         <CardContent>
           <Accordion type="single" collapsible className="w-full">
@@ -419,7 +406,9 @@ export function UIComponentsShowcase() {
               <AccordionTrigger>1. Bağımlılıkları Yükleyin</AccordionTrigger>
               <AccordionContent>
                 <pre className="bg-muted p-4 rounded-lg text-sm">
-                  <code>npm install @radix-ui/react-slot class-variance-authority clsx tailwind-merge</code>
+                  <code>
+                    npm install @radix-ui/react-slot class-variance-authority clsx tailwind-merge
+                  </code>
                 </pre>
               </AccordionContent>
             </AccordionItem>
@@ -443,7 +432,7 @@ export function UIComponentsShowcase() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
 
 export default UIComponentsShowcase;

@@ -1,6 +1,6 @@
 /**
  * @fileoverview securityConfigManager Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -153,9 +153,9 @@ export const SECURITY_PRESETS = {
 // Security configuration manager
 /**
  * SecurityConfigManager Service
- * 
+ *
  * Service class for handling securityconfigmanager operations
- * 
+ *
  * @class SecurityConfigManager
  */
 export class SecurityConfigManager {
@@ -191,7 +191,7 @@ export class SecurityConfigManager {
       throw new ServiceError(
         ServiceErrorCode.VALIDATION_ERROR,
         `Unknown security preset: ${preset}`,
-        { availablePresets: Object.keys(SECURITY_PRESETS) },
+        { availablePresets: Object.keys(SECURITY_PRESETS) }
       );
     }
 
@@ -212,7 +212,7 @@ export class SecurityConfigManager {
         throw new ServiceError(
           ServiceErrorCode.VALIDATION_ERROR,
           `Invalid security configuration: ${messages.join(', ')}`,
-          { validationErrors: error.issues },
+          { validationErrors: error.issues }
         );
       }
       throw error;
@@ -222,7 +222,7 @@ export class SecurityConfigManager {
   // Merge configurations
   private mergeConfigs(
     current: APISecurityConfig,
-    update: Partial<APISecurityConfig>,
+    update: Partial<APISecurityConfig>
   ): APISecurityConfig {
     return {
       rateLimiting: {
@@ -284,7 +284,7 @@ export class SecurityConfigManager {
     if (this.configHistory.length < steps + 1) {
       throw new ServiceError(
         ServiceErrorCode.VALIDATION_ERROR,
-        `Cannot rollback ${steps} steps. Only ${this.configHistory.length - 1} configurations available.`,
+        `Cannot rollback ${steps} steps. Only ${this.configHistory.length - 1} configurations available.`
       );
     }
 
@@ -355,7 +355,7 @@ export class SecurityConfigManager {
 
   // Get recommended configuration for environment
   getRecommendedConfig(
-    environment: 'development' | 'testing' | 'production' | 'high-security',
+    environment: 'development' | 'testing' | 'production' | 'high-security'
   ): APISecurityConfig {
     switch (environment) {
       case 'development':

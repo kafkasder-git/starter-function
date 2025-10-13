@@ -1,6 +1,6 @@
 /**
  * @fileoverview SearchProvider Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -36,7 +36,7 @@ interface SearchProviderProps {
   onSearch?: (
     query: string,
     filters: FilterValue[],
-    sort: SortConfig,
+    sort: SortConfig
   ) => Promise<SearchResult> | SearchResult;
   initialQuery?: string;
   initialFilters?: FilterValue[];
@@ -45,7 +45,7 @@ interface SearchProviderProps {
 
 /**
  * SearchProvider function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -72,7 +72,7 @@ export function SearchProvider({
 
 /**
  * useSearchContext function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -87,13 +87,11 @@ export function useSearchContext(): SearchContextType {
 // Helper hook for quick search setup
 /**
  * useQuickSearch function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
-export function useQuickSearch(
-  moduleName: keyof import('../../types/search').SEARCH_SUGGESTIONS,
-) {
+export function useQuickSearch(moduleName: keyof import('../../types/search').SEARCH_SUGGESTIONS) {
   const { setQuery } = useSearchContext();
 
   const quickSearch = (suggestion: string) => {

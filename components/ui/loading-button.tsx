@@ -79,7 +79,7 @@ const LoadingButton = React.forwardRef<HTMLButtonElement, LoadingButtonProps>(
       onClick,
       ...props
     },
-    ref,
+    ref
   ) => {
     const [announcement, setAnnouncement] = React.useState('');
 
@@ -184,7 +184,7 @@ const LoadingButton = React.forwardRef<HTMLButtonElement, LoadingButtonProps>(
         </motion.div>
       </>
     );
-  },
+  }
 );
 
 LoadingButton.displayName = 'LoadingButton';

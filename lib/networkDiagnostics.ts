@@ -6,7 +6,13 @@
 import { logger } from './logging/logger';
 
 export interface NetworkError {
-  type: 'NETWORK_ERROR' | 'CORS_ERROR' | 'TIMEOUT_ERROR' | 'AUTH_ERROR' | 'SERVER_ERROR' | 'UNKNOWN_ERROR';
+  type:
+    | 'NETWORK_ERROR'
+    | 'CORS_ERROR'
+    | 'TIMEOUT_ERROR'
+    | 'AUTH_ERROR'
+    | 'SERVER_ERROR'
+    | 'UNKNOWN_ERROR';
   message: string;
   status?: number;
   statusText?: string;
@@ -35,7 +41,7 @@ export class NetworkManager {
     isOnline: true,
     canReachAppwrite: false,
     canReachInternet: false,
-    connectionQuality: 'offline'
+    connectionQuality: 'offline',
   };
 
   static getInstance(): NetworkManager {
@@ -49,8 +55,8 @@ export class NetworkManager {
    * Enhanced fetch with retry logic and error handling
    */
   async fetchWithRetry(
-    url: string, 
-    options: RequestInit = {}, 
+    url: string,
+    options: RequestInit = {},
     maxRetries: number = 3
   ): Promise<Response> {
     let lastError: Error | null = null;
@@ -72,17 +78,17 @@ export class NetworkManager {
         if (!response.ok) {
           const error = this.createNetworkError(response, url);
           this.diagnostics.lastError = error;
-          
+
           // Don't retry on client errors (4xx)
           if (response.status >= 400 && response.status < 500) {
             throw error;
           }
-          
+
           // Retry on server errors (5xx) or network issues
           if (attempt === maxRetries) {
             throw error;
           }
-          
+
           logger.warn(`Request failed (attempt ${attempt}/${maxRetries}):`, error);
           await this.delay(this.calculateBackoffDelay(attempt));
           continue;
@@ -91,16 +97,15 @@ export class NetworkManager {
         // Update diagnostics on success
         this.updateDiagnostics(true, url);
         return response;
-
       } catch (error: any) {
         lastError = error;
-        
+
         // Don't retry on AbortError (timeout)
         if (error.name === 'AbortError') {
           const timeoutError: NetworkError = {
             type: 'TIMEOUT_ERROR',
             message: 'Request timeout - the server took too long to respond',
-            url
+            url,
           };
           this.diagnostics.lastError = timeoutError;
           throw timeoutError;
@@ -130,7 +135,7 @@ export class NetworkManager {
       isOnline: navigator.onLine,
       canReachAppwrite: false,
       canReachInternet: false,
-      connectionQuality: 'offline'
+      connectionQuality: 'offline',
     };
 
     if (!diagnostics.isOnline) {
@@ -142,21 +147,21 @@ export class NetworkManager {
     const internetTestUrls = [
       'https://httpbin.org/status/200',
       'https://www.google.com/favicon.ico',
-      'https://api.github.com/zen'
+      'https://api.github.com/zen',
     ];
 
     for (const url of internetTestUrls) {
       try {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
-        
+
         await fetch(url, {
           method: 'HEAD',
           mode: 'no-cors',
           cache: 'no-cache',
-          signal: controller.signal
+          signal: controller.signal,
         });
-        
+
         clearTimeout(timeoutId);
         diagnostics.canReachInternet = true;
         logger.info(`Internet connectivity test successful via ${url}`);
@@ -173,17 +178,19 @@ export class NetworkManager {
       if (appwriteEndpoint) {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-        
+
         try {
           const apiKey = import.meta.env.VITE_APPWRITE_API_KEY;
           await fetch(`${appwriteEndpoint}/health`, {
             method: 'HEAD',
-            headers: apiKey ? {
-              'X-Appwrite-Project': import.meta.env.VITE_APPWRITE_PROJECT_ID || '',
-              'X-Appwrite-Key': apiKey
-            } : {},
+            headers: apiKey
+              ? {
+                  'X-Appwrite-Project': import.meta.env.VITE_APPWRITE_PROJECT_ID || '',
+                  'X-Appwrite-Key': apiKey,
+                }
+              : {},
             cache: 'no-cache',
-            signal: controller.signal
+            signal: controller.signal,
           });
         } catch (error) {
           // Health endpoint requires authentication, ignore 401 errors
@@ -197,12 +204,12 @@ export class NetworkManager {
               appwriteStatus: 'unknown',
               lastChecked: new Date(),
               latency: null,
-              error: null
+              error: null,
             };
           }
           throw error;
         }
-        
+
         clearTimeout(timeoutId);
         diagnostics.canReachAppwrite = true;
         logger.info('Appwrite connectivity test successful');
@@ -261,7 +268,7 @@ export class NetworkManager {
       message,
       status: response.status,
       statusText: response.statusText,
-      url
+      url,
     };
   }
 
@@ -274,7 +281,8 @@ export class NetworkManager {
 
     if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
       type = 'NETWORK_ERROR';
-      message = 'Network error - unable to reach the server. Please check your internet connection and try again.';
+      message =
+        'Network error - unable to reach the server. Please check your internet connection and try again.';
     } else if (error.message.includes('CORS') || error.message.includes('cross-origin')) {
       type = 'CORS_ERROR';
       message = 'Cross-origin request blocked - this might be a configuration issue';
@@ -284,7 +292,10 @@ export class NetworkManager {
     } else if (error.message.includes('TypeError') && error.message.includes('fetch')) {
       type = 'NETWORK_ERROR';
       message = 'Network request failed - please check your connection and try again';
-    } else if (error.message.includes('ERR_NETWORK') || error.message.includes('ERR_INTERNET_DISCONNECTED')) {
+    } else if (
+      error.message.includes('ERR_NETWORK') ||
+      error.message.includes('ERR_INTERNET_DISCONNECTED')
+    ) {
       type = 'NETWORK_ERROR';
       message = 'No internet connection - please check your network settings';
     } else if (error.message.includes('ERR_CONNECTION_REFUSED')) {
@@ -299,7 +310,7 @@ export class NetworkManager {
       type,
       message,
       url,
-      details: error
+      details: error,
     };
   }
 
@@ -314,7 +325,7 @@ export class NetworkManager {
    * Delay utility
    */
   private delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   /**
@@ -343,7 +354,7 @@ export function getUserFriendlyErrorMessage(error: NetworkError): string {
     TIMEOUT_ERROR: 'Sunucu yanıt vermiyor. Lütfen daha sonra tekrar deneyin.',
     AUTH_ERROR: 'Oturum süreniz dolmuş. Lütfen tekrar giriş yapın.',
     SERVER_ERROR: 'Sunucu hatası oluştu. Lütfen daha sonra tekrar deneyin.',
-    UNKNOWN_ERROR: 'Bilinmeyen bir hata oluştu. Lütfen daha sonra tekrar deneyin.'
+    UNKNOWN_ERROR: 'Bilinmeyen bir hata oluştu. Lütfen daha sonra tekrar deneyin.',
   };
 
   return messages[error.type] || messages.UNKNOWN_ERROR;

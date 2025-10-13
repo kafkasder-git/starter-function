@@ -55,7 +55,7 @@ export function SkeletonLoader({
           {/* Stats Cards Skeleton */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             {Array.from({ length: 4 }).map((_, i) => (
-              <Card key={i} className="border-0 shadow-lg">
+              <Card key={i} className="border-none shadow-lg">
                 <CardContent className="p-6">
                   <div className="flex items-center gap-4">
                     <Skeleton className="w-14 h-14 rounded-xl" />
@@ -72,7 +72,7 @@ export function SkeletonLoader({
           {/* Main Content Skeleton */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Chart Skeleton */}
-            <Card className="lg:col-span-2 border-0 shadow-lg">
+            <Card className="lg:col-span-2 border-none shadow-lg">
               <CardHeader className="pb-6">
                 <Skeleton className="h-6 w-48" />
                 <Skeleton className="h-4 w-32" />
@@ -83,7 +83,7 @@ export function SkeletonLoader({
             </Card>
 
             {/* Activity Skeleton */}
-            <Card className="border-0 shadow-lg">
+            <Card className="border-none shadow-lg">
               <CardHeader className="pb-6">
                 <Skeleton className="h-6 w-36" />
               </CardHeader>
@@ -105,7 +105,7 @@ export function SkeletonLoader({
 
     case 'table':
       return (
-        <Card className={`border-0 shadow-lg ${className}`}>
+        <Card className={`border-none shadow-lg ${className}`}>
           <CardHeader className="pb-6">
             <div className="flex justify-between items-center">
               <div className="space-y-2">
@@ -143,7 +143,7 @@ export function SkeletonLoader({
       return (
         <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ${className}`}>
           {Array.from({ length: rows }).map((_, i) => (
-            <Card key={i} className="border-0 shadow-lg">
+            <Card key={i} className="border-none shadow-lg">
               <CardHeader className="pb-4">
                 <div className="flex items-center gap-3">
                   <Skeleton className="w-12 h-12 rounded-full" />
@@ -189,7 +189,7 @@ export function SkeletonLoader({
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-6">
               {Array.from({ length: 3 }).map((_, i) => (
-                <Card key={i} className="border-0 shadow-lg">
+                <Card key={i} className="border-none shadow-lg">
                   <CardHeader>
                     <Skeleton className="h-6 w-48" />
                   </CardHeader>
@@ -208,7 +208,7 @@ export function SkeletonLoader({
             {/* Sidebar */}
             <div className="space-y-6">
               {Array.from({ length: 2 }).map((_, i) => (
-                <Card key={i} className="border-0 shadow-lg">
+                <Card key={i} className="border-none shadow-lg">
                   <CardHeader>
                     <Skeleton className="h-5 w-36" />
                   </CardHeader>
@@ -226,7 +226,7 @@ export function SkeletonLoader({
 
     case 'form':
       return (
-        <Card className={`border-0 shadow-lg ${className}`}>
+        <Card className={`border-none shadow-lg ${className}`}>
           <CardHeader className="pb-6">
             <Skeleton className="h-6 w-48" />
             <Skeleton className="h-4 w-64" />

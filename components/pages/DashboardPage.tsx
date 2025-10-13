@@ -38,7 +38,7 @@ export function DashboardPage({ onNavigate, onQuickAction }: DashboardPageProps)
         subPageChange(normalizedPage);
       }
     },
-    [moduleChange, subPageChange, onNavigate],
+    [moduleChange, subPageChange, onNavigate]
   );
 
   const handleQuickAction = useCallback(
@@ -68,7 +68,7 @@ export function DashboardPage({ onNavigate, onQuickAction }: DashboardPageProps)
         subPageChange(action.subPage);
       }
     },
-    [moduleChange, onQuickAction, subPageChange],
+    [moduleChange, onQuickAction, subPageChange]
   );
 
   return <EnhancedDashboard onNavigate={handleNavigate} onQuickAction={handleQuickAction} />;

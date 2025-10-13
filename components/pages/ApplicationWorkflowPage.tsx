@@ -84,7 +84,7 @@ export default function PartnerListPage() {
           partner.contactPerson.toLowerCase().includes(searchLower) ||
           partner.phone.includes(searchTerm) ||
           partner.email.toLowerCase().includes(searchLower) ||
-          partner.tags.some((tag) => tag.toLowerCase().includes(searchLower)),
+          partner.tags.some((tag) => tag.toLowerCase().includes(searchLower))
       );
     }
 

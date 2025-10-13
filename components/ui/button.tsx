@@ -50,11 +50,11 @@ const useRipple = () => {
     const y = event.clientY - rect.top;
     const id = Date.now();
 
-    setRipples(prev => [...prev, { id, x, y }]);
+    setRipples((prev) => [...prev, { id, x, y }]);
 
     // Remove ripple after animation
     setTimeout(() => {
-      setRipples(prev => prev.filter(ripple => ripple.id !== id));
+      setRipples((prev) => prev.filter((ripple) => ripple.id !== id));
     }, 600);
   }, []);
 
@@ -81,28 +81,31 @@ export interface ButtonProps
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({
-    className,
-    variant,
-    size,
-    asChild = false,
-    loading = false,
-    loadingText,
-    iconLeft,
-    iconRight,
-    fullWidth = false,
-    ripple = false,
-    haptic,
-    tooltip,
-    badge,
-    ariaLabel,
-    disabled,
-    children,
-    badgeVariant,
-    touchOptimized = false,
-    onClick,
-    ...props
-  }, ref) => {
+  (
+    {
+      className,
+      variant,
+      size,
+      asChild = false,
+      loading = false,
+      loadingText,
+      iconLeft,
+      iconRight,
+      fullWidth = false,
+      ripple = false,
+      haptic,
+      tooltip,
+      badge,
+      ariaLabel,
+      disabled,
+      children,
+      badgeVariant,
+      touchOptimized = false,
+      onClick,
+      ...props
+    },
+    ref
+  ) => {
     const Comp = asChild ? Slot : 'button';
     const isDisabled = disabled || loading;
     const { ripples, addRipple } = useRipple();
@@ -135,7 +138,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       onClick?.(event);
     };
 
-    const resolvedBadgeVariant = badgeVariant ?? (variant === 'destructive' ? 'destructive' : 'info');
+    const resolvedBadgeVariant =
+      badgeVariant ?? (variant === 'destructive' ? 'destructive' : 'info');
 
     const buttonElement = (
       <Comp
@@ -158,17 +162,19 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         onClick={handleClick}
         {...props}
       >
-        {loading && (
-          <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-        )}
+        {loading && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
         {!loading && iconLeft && (
-          <span className="inline-flex" aria-hidden="true">{iconLeft}</span>
+          <span className="inline-flex" aria-hidden="true">
+            {iconLeft}
+          </span>
         )}
         <span className={cn(loading && iconLeft && 'sr-only')}>
-          {loading ? (loadingText || children) : children}
+          {loading ? loadingText || children : children}
         </span>
         {!loading && iconRight && (
-          <span className="inline-flex" aria-hidden="true">{iconRight}</span>
+          <span className="inline-flex" aria-hidden="true">
+            {iconRight}
+          </span>
         )}
 
         {/* Badge Indicator */}
@@ -184,21 +190,22 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         )}
 
         {/* Ripple Effect */}
-        {ripple && ripples.map((ripple) => (
-          <span
-            key={ripple.id}
-            className="absolute pointer-events-none animate-ping bg-white/60"
-            style={{
-              left: ripple.x - 10,
-              top: ripple.y - 10,
-              width: 20,
-              height: 20,
-              borderRadius: '50%',
-              transform: 'scale(0)',
-              animation: 'ripple 0.6s linear',
-            }}
-          />
-        ))}
+        {ripple &&
+          ripples.map((ripple) => (
+            <span
+              key={ripple.id}
+              className="absolute pointer-events-none animate-ping bg-white/60"
+              style={{
+                left: ripple.x - 10,
+                top: ripple.y - 10,
+                width: 20,
+                height: 20,
+                borderRadius: '50%',
+                transform: 'scale(0)',
+                animation: 'ripple 0.6s linear',
+              }}
+            />
+          ))}
       </Comp>
     );
 
@@ -206,9 +213,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     if (tooltip) {
       return (
         <Tooltip>
-          <TooltipTrigger asChild>
-            {buttonElement}
-          </TooltipTrigger>
+          <TooltipTrigger asChild>{buttonElement}</TooltipTrigger>
           <TooltipContent>
             <p>{tooltip}</p>
           </TooltipContent>

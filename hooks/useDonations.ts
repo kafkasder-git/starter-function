@@ -1,6 +1,6 @@
 /**
  * @fileoverview useDonations Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -19,7 +19,7 @@ import { useAppwriteData, useAppwritePagination } from './useAppwriteData';
 // Basic donations hook
 /**
  * useDonations function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -33,7 +33,7 @@ export function useDonations(
     memberId?: string;
     dateRange?: { start: string; end: string };
     realtime?: boolean;
-  } = {},
+  } = {}
 ) {
   const {
     includeDeleted = false,
@@ -113,7 +113,7 @@ export function useDonations(
         throw error;
       }
     },
-    [insert],
+    [insert]
   );
 
   // Update donation
@@ -131,7 +131,7 @@ export function useDonations(
         throw error;
       }
     },
-    [update],
+    [update]
   );
 
   // Process donation (mark as completed)
@@ -142,7 +142,7 @@ export function useDonations(
         processed_by: processedBy ?? 'current-user-id',
       });
     },
-    [updateDonation],
+    [updateDonation]
   );
 
   // Cancel donation
@@ -153,7 +153,7 @@ export function useDonations(
         notes: reason ? `İptal nedeni: ${reason}` : undefined,
       });
     },
-    [updateDonation],
+    [updateDonation]
   );
 
   // Refund donation
@@ -164,7 +164,7 @@ export function useDonations(
         notes: reason ? `İade nedeni: ${reason}` : undefined,
       });
     },
-    [updateDonation],
+    [updateDonation]
   );
 
   // Get donation statistics
@@ -228,7 +228,7 @@ export function useDonations(
 
       toast.success(`${ids.length} bağış ${statusText[status]} olarak işaretlendi`);
     },
-    [bulkUpdate],
+    [bulkUpdate]
   );
 
   // Get monthly donation trend
@@ -281,7 +281,7 @@ export function useDonations(
 // Paginated donations hook
 /**
  * useDonationsPaginated function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -291,7 +291,7 @@ export function useDonationsPaginated(
     includeDeleted?: boolean;
     searchQuery?: string;
     filters?: Record<string, any>;
-  } = {},
+  } = {}
 ) {
   const {
     pageSize = 20,
@@ -325,7 +325,7 @@ export function useDonationsPaginated(
 // Donations with member info hook
 /**
  * useDonationsWithMembers function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -334,7 +334,7 @@ export function useDonationsWithMembers(
     limit?: number;
     status?: string;
     includeDeleted?: boolean;
-  } = {},
+  } = {}
 ) {
   const { limit = 100, status, includeDeleted = false } = options;
 
@@ -399,7 +399,7 @@ export function useDonationsWithMembers(
 // Donation export data formatter
 /**
  * useDonationExportData function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -429,7 +429,7 @@ export function useDonationExportData() {
     (donations: Donation[]) => {
       return donations.map(formatDonationForExport);
     },
-    [formatDonationForExport],
+    [formatDonationForExport]
   );
 
   const getDonationSummary = useCallback((donations: Donation[]) => {

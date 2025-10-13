@@ -8,7 +8,16 @@ import { useState, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 // import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { FileAudio, FileText, Image as ImageIcon, Paperclip, Mic, Send, X, Smile } from 'lucide-react';
+import {
+  FileAudio,
+  FileText,
+  Image as ImageIcon,
+  Paperclip,
+  Mic,
+  Send,
+  X,
+  Smile,
+} from 'lucide-react';
 import { VoiceRecorder } from './VoiceRecorder';
 import { cn } from '@/lib/utils';
 import { MessageType } from '@/types/messaging';
@@ -31,39 +40,42 @@ export function MessageInput({
   placeholder = 'Mesaj yazın...',
   disabled = false,
   maxLength = 1000,
-  className
+  className,
 }: MessageInputProps) {
   const [message, setMessage] = useState('');
   const [attachments, setAttachments] = useState<File[]>([]);
   const [isRecording, setIsRecording] = useState(false);
   const [showVoiceRecorder, setShowVoiceRecorder] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
-  
+
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const typingTimeoutRef = useRef<number | null>(null);
 
   // Handle message input change
-  const handleMessageChange = useCallback((value: string) => {
-    setMessage(value);
-    
-    // Typing indicator logic
-    if (value.trim().length > 0 && !isTyping) {
-      setIsTyping(true);
-      onTyping?.(true);
-    }
-    
-    // Clear existing timeout
-    if (typingTimeoutRef.current) {
-      clearTimeout(typingTimeoutRef.current);
-    }
-    
-    // Set timeout to stop typing indicator
-    typingTimeoutRef.current = setTimeout(() => {
-      setIsTyping(false);
-      onTyping?.(false);
-    }, 2000);
-  }, [isTyping, onTyping]);
+  const handleMessageChange = useCallback(
+    (value: string) => {
+      setMessage(value);
+
+      // Typing indicator logic
+      if (value.trim().length > 0 && !isTyping) {
+        setIsTyping(true);
+        onTyping?.(true);
+      }
+
+      // Clear existing timeout
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+
+      // Set timeout to stop typing indicator
+      typingTimeoutRef.current = setTimeout(() => {
+        setIsTyping(false);
+        onTyping?.(false);
+      }, 2000);
+    },
+    [isTyping, onTyping]
+  );
 
   // Handle send message
   const handleSend = useCallback(() => {
@@ -74,18 +86,18 @@ export function MessageInput({
     // Determine message type
     let messageType: MessageType = MessageType.TEXT;
     if (attachments.length > 0) {
-      const hasVoice = attachments.some(file => file.type.startsWith('audio/'));
+      const hasVoice = attachments.some((file) => file.type.startsWith('audio/'));
       messageType = hasVoice ? MessageType.VOICE : MessageType.FILE;
     }
 
     onSendMessage(message.trim(), messageType, attachments.length > 0 ? attachments : undefined);
-    
+
     // Clear input and attachments
     setMessage('');
     setAttachments([]);
     setIsTyping(false);
     onTyping?.(false);
-    
+
     // Clear typing timeout
     if (typingTimeoutRef.current) {
       clearTimeout(typingTimeoutRef.current);
@@ -93,19 +105,22 @@ export function MessageInput({
   }, [message, attachments, onSendMessage, onTyping]);
 
   // Handle key press
-  const handleKeyPress = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
-  }, [handleSend]);
+  const handleKeyPress = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        handleSend();
+      }
+    },
+    [handleSend]
+  );
 
   // Handle file selection
   const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    
+
     // Validate file sizes (max 10MB per file)
-    const validFiles = files.filter(file => {
+    const validFiles = files.filter((file) => {
       if (file.size > 10 * 1024 * 1024) {
         alert(`${file.name} dosyası çok büyük. Maksimum 10MB olmalıdır.`);
         return false;
@@ -113,8 +128,8 @@ export function MessageInput({
       return true;
     });
 
-    setAttachments(prev => [...prev, ...validFiles]);
-    
+    setAttachments((prev) => [...prev, ...validFiles]);
+
     // Clear input
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -123,16 +138,16 @@ export function MessageInput({
 
   // Remove attachment
   const removeAttachment = useCallback((index: number) => {
-    setAttachments(prev => prev.filter((_, i) => i !== index));
+    setAttachments((prev) => prev.filter((_, i) => i !== index));
   }, []);
 
   // Handle voice recording
   const handleVoiceRecording = useCallback((audioBlob: Blob | null) => {
     if (audioBlob) {
       const audioFile = new File([audioBlob], 'voice-message.webm', {
-        type: audioBlob.type
+        type: audioBlob.type,
       });
-      setAttachments(prev => [...prev, audioFile]);
+      setAttachments((prev) => [...prev, audioFile]);
     }
     setShowVoiceRecorder(false);
     setIsRecording(false);
@@ -158,16 +173,24 @@ export function MessageInput({
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))  } ${  sizes[i]}`;
+    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
   };
 
   return (
-    <div className={cn('border-t border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-950', className)}>
+    <div
+      className={cn(
+        'border-t border-gray-200 bg-white p-4',
+        className
+      )}
+    >
       {/* Attachments preview */}
       {attachments.length > 0 && (
         <div className="mb-3 space-y-2">
           {attachments.map((file, index) => (
-            <div key={index} className="flex items-center gap-3 rounded-lg border border-neutral-200 bg-neutral-50 p-2 dark:border-neutral-700 dark:bg-neutral-900">
+            <div
+              key={index}
+              className="flex items-center gap-3 rounded-lg border border-neutral-200 bg-neutral-50 p-2 dark:border-neutral-700 dark:bg-neutral-900"
+            >
               <span className="flex h-8 w-8 items-center justify-center rounded-md bg-neutral-100 dark:bg-neutral-800">
                 {getFileIcon(file)}
               </span>
@@ -182,7 +205,9 @@ export function MessageInput({
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => { removeAttachment(index); }}
+                onClick={() => {
+                  removeAttachment(index);
+                }}
                 className="h-6 w-6 p-0 text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200"
                 aria-label={`${file.name} dosyasını kaldır`}
               >
@@ -214,7 +239,7 @@ export function MessageInput({
           size="sm"
           onClick={() => fileInputRef.current?.click()}
           disabled={disabled}
-          className="h-10 w-10 p-0 text-neutral-600 hover:text-neutral-800 dark:text-neutral-300 dark:hover:text-neutral-100"
+          className="h-10 w-10 p-0 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-full"
           aria-label="Dosya ekle"
         >
           <Paperclip className="h-4 w-4" />
@@ -235,18 +260,20 @@ export function MessageInput({
           <Textarea
             ref={inputRef}
             value={message}
-            onChange={(e) => { handleMessageChange(e.target.value); }}
+            onChange={(e) => {
+              handleMessageChange(e.target.value);
+            }}
             onKeyPress={handleKeyPress}
             placeholder={placeholder}
             disabled={disabled}
             maxLength={maxLength}
             rows={1}
-            className="min-h-[40px] max-h-32 resize-none text-neutral-900 dark:text-neutral-100"
+            className="min-h-[40px] max-h-32 resize-none text-gray-900 bg-gray-50 border-gray-200 focus:bg-white focus:border-blue-500 rounded-full"
           />
-          
+
           {/* Character count */}
           {message.length > maxLength * 0.8 && (
-            <div className="mt-1 text-right text-xs text-neutral-500 dark:text-neutral-400">
+            <div className="mt-1 text-right text-xs text-gray-500">
               {message.length}/{maxLength}
             </div>
           )}
@@ -256,11 +283,13 @@ export function MessageInput({
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => { setShowVoiceRecorder(true); }}
+          onClick={() => {
+            setShowVoiceRecorder(true);
+          }}
           disabled={disabled || showVoiceRecorder}
           className={cn(
-            'h-10 w-10 p-0 text-neutral-600 hover:text-neutral-800 dark:text-neutral-300 dark:hover:text-neutral-100',
-            isRecording && 'text-error-600'
+            'h-10 w-10 p-0 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-full',
+            isRecording && 'text-red-600'
           )}
           aria-label="Ses kaydı başlat"
         >
@@ -272,7 +301,7 @@ export function MessageInput({
           variant="ghost"
           size="sm"
           disabled={disabled}
-          className="h-10 w-10 p-0 text-neutral-600 hover:text-neutral-800 dark:text-neutral-300 dark:hover:text-neutral-100"
+          className="h-10 w-10 p-0 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-full"
           aria-label="Emoji paneli"
         >
           <Smile className="h-4 w-4" />
@@ -283,7 +312,7 @@ export function MessageInput({
           onClick={handleSend}
           disabled={disabled || (!message.trim() && attachments.length === 0)}
           size="sm"
-          className="h-10 px-4"
+          className="h-10 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-full"
           aria-label="Mesaj gönder"
         >
           <Send className="h-4 w-4" />

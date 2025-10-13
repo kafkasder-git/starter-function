@@ -170,21 +170,14 @@ export function ResponsiveTable<T extends Record<string, any>>({
         data.map((row, index) => {
           // Use custom renderer if provided
           if (mobileCardRenderer) {
-            return (
-              <div key={`mobile-card-${index}`}>
-                {mobileCardRenderer(row, index)}
-              </div>
-            );
+            return <div key={`mobile-card-${index}`}>{mobileCardRenderer(row, index)}</div>;
           }
 
           // Default card layout
           return (
             <Card
               key={`mobile-card-${index}`}
-              className={cn(
-                'transition-shadow',
-                onRowClick && 'cursor-pointer hover:shadow-md'
-              )}
+              className={cn('transition-shadow', onRowClick && 'cursor-pointer hover:shadow-md')}
               onClick={() => onRowClick?.(row)}
             >
               <CardContent className="p-4 min-h-[44px]">
@@ -223,4 +216,3 @@ export function ResponsiveTable<T extends Record<string, any>>({
 
 // Export type for external use
 export type { ResponsiveTableProps, ColumnDef };
-

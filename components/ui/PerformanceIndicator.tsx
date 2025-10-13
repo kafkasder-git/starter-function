@@ -17,16 +17,18 @@ interface PerformanceIndicatorProps {
   showBattery?: boolean;
 }
 
-export function PerformanceIndicator({ 
+export function PerformanceIndicator({
   className = '',
   showNetwork = true,
   showMemory = true,
   showBattery = true,
 }: PerformanceIndicatorProps) {
-  const [networkStatus, setNetworkStatus] = useState<'fast' | 'medium' | 'slow' | 'offline'>('fast');
+  const [networkStatus, setNetworkStatus] = useState<'fast' | 'medium' | 'slow' | 'offline'>(
+    'fast'
+  );
   const [memoryStatus, setMemoryStatus] = useState<'good' | 'warning' | 'critical'>('good');
   const [batteryStatus, setBatteryStatus] = useState<'good' | 'low' | 'critical'>('good');
-  
+
   const { metrics } = useMobilePerformance();
 
   // Network status monitoring
@@ -38,9 +40,9 @@ export function PerformanceIndicator({
       }
 
       // Simple network speed detection
-      const {connection} = (navigator as any);
+      const { connection } = navigator as any;
       if (connection) {
-        const {effectiveType} = connection;
+        const { effectiveType } = connection;
         if (effectiveType === '4g') {
           setNetworkStatus('fast');
         } else if (effectiveType === '3g') {
@@ -69,7 +71,7 @@ export function PerformanceIndicator({
       if ('memory' in performance) {
         const memInfo = (performance as any).memory;
         const memoryRatio = memInfo.usedJSHeapSize / memInfo.jsHeapSizeLimit;
-        
+
         if (memoryRatio > 0.9) {
           setMemoryStatus('critical');
         } else if (memoryRatio > 0.8) {
@@ -82,7 +84,9 @@ export function PerformanceIndicator({
 
     checkMemory();
     const interval = setInterval(checkMemory, 5000);
-    return () => { clearInterval(interval); };
+    return () => {
+      clearInterval(interval);
+    };
   }, []);
 
   // Battery status monitoring
@@ -185,9 +189,5 @@ export function PerformanceIndicator({
 
   if (indicators.length === 0) return null;
 
-  return (
-    <div className={`flex items-center gap-2 ${className}`}>
-      {indicators}
-    </div>
-  );
+  return <div className={`flex items-center gap-2 ${className}`}>{indicators}</div>;
 }

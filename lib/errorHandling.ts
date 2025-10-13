@@ -29,7 +29,7 @@ export enum ErrorSeverity {
 // Custom error interface
 /**
  * AppError Interface
- * 
+ *
  * @interface AppError
  */
 export interface AppError {
@@ -47,7 +47,7 @@ export interface AppError {
 // Error context for better debugging
 /**
  * ErrorContext Interface
- * 
+ *
  * @interface ErrorContext
  */
 export interface ErrorContext {
@@ -65,9 +65,9 @@ export interface ErrorContext {
  */
 /**
  * AppErrorClass Service
- * 
+ *
  * Service class for handling apperrorclass operations
- * 
+ *
  * @class AppErrorClass
  */
 export class AppErrorClass extends Error implements AppError {
@@ -112,9 +112,9 @@ export class AppErrorClass extends Error implements AppError {
  */
 /**
  * ErrorHandler Service
- * 
+ *
  * Service class for handling errorhandler operations
- * 
+ *
  * @class ErrorHandler
  */
 export class ErrorHandler {
@@ -134,10 +134,7 @@ export class ErrorHandler {
   /**
    * Handle and process errors
    */
-  public handleError(
-    error: Error | AppError,
-    context?: ErrorContext
-  ): AppError {
+  public handleError(error: Error | AppError, context?: ErrorContext): AppError {
     const appError = this.normalizeError(error, context);
     this.logError(appError);
     this.notifyUser(appError);
@@ -148,10 +145,7 @@ export class ErrorHandler {
   /**
    * Normalize different error types to AppError
    */
-  private normalizeError(
-    error: Error | AppError,
-    context?: ErrorContext
-  ): AppError {
+  private normalizeError(error: Error | AppError, context?: ErrorContext): AppError {
     if (error instanceof AppErrorClass) {
       return error;
     }
@@ -251,7 +245,7 @@ export class ErrorHandler {
    */
   private logError(error: AppError): void {
     this.errorLog.unshift(error);
-    
+
     // Keep log size manageable
     if (this.errorLog.length > this.maxLogSize) {
       this.errorLog = this.errorLog.slice(0, this.maxLogSize);
@@ -276,10 +270,14 @@ export class ErrorHandler {
 
     const toastOptions = {
       duration: error.severity === ErrorSeverity.CRITICAL ? 0 : 5000,
-      action: error.actionRequired ? {
-        label: 'Yeniden Dene',
-        onClick: () => { window.location.reload(); },
-      } : undefined,
+      action: error.actionRequired
+        ? {
+            label: 'Yeniden Dene',
+            onClick: () => {
+              window.location.reload();
+            },
+          }
+        : undefined,
     };
 
     switch (error.severity) {
@@ -303,9 +301,10 @@ export class ErrorHandler {
    */
   private reportError(error: AppError, context?: ErrorContext): void {
     // Only report high severity errors in production
-    if (import.meta.env.PROD &&
-        (error.severity === ErrorSeverity.HIGH || error.severity === ErrorSeverity.CRITICAL)) {
-
+    if (
+      import.meta.env.PROD &&
+      (error.severity === ErrorSeverity.HIGH || error.severity === ErrorSeverity.CRITICAL)
+    ) {
       // External error reporting can be configured here
       // Currently no external error tracking service is configured
     }
@@ -330,8 +329,8 @@ export class ErrorHandler {
    */
   public getErrorStats(): Record<string, number> {
     const stats: Record<string, number> = {};
-    
-    this.errorLog.forEach(error => {
+
+    this.errorLog.forEach((error) => {
       const key = `${error.type}_${error.severity}`;
       stats[key] = (stats[key] ?? 0) + 1;
     });
@@ -348,17 +347,13 @@ export const ErrorUtils = {
    * Create a network error
    */
   networkError: (message: string, details?: Record<string, unknown>): AppErrorClass => {
-    return new AppErrorClass(
-      ErrorType.NETWORK,
-      message,
-      ErrorSeverity.HIGH,
-      { 
-        details, 
-        userMessage: 'Ağ bağlantısı hatası. Lütfen internet bağlantınızı kontrol edin ve sayfayı yenileyin.',
-        actionRequired: true,
-        retryable: true
-      }
-    );
+    return new AppErrorClass(ErrorType.NETWORK, message, ErrorSeverity.HIGH, {
+      details,
+      userMessage:
+        'Ağ bağlantısı hatası. Lütfen internet bağlantınızı kontrol edin ve sayfayı yenileyin.',
+      actionRequired: true,
+      retryable: true,
+    });
   },
 
   /**
@@ -369,16 +364,17 @@ export const ErrorUtils = {
       ErrorType.NETWORK,
       `NetworkError when attempting to fetch resource${url ? ` from ${url}` : ''}`,
       ErrorSeverity.HIGH,
-      { 
-        details, 
-        userMessage: 'Sunucuya bağlanırken hata oluştu. Lütfen bağlantınızı kontrol edin ve tekrar deneyin.',
+      {
+        details,
+        userMessage:
+          'Sunucuya bağlanırken hata oluştu. Lütfen bağlantınızı kontrol edin ve tekrar deneyin.',
         actionRequired: true,
         retryable: true,
         suggestedActions: [
           'İnternet bağlantınızı kontrol edin',
           'Sayfayı yenileyin (F5)',
-          'Birkaç dakika sonra tekrar deneyin'
-        ]
+          'Birkaç dakika sonra tekrar deneyin',
+        ],
       }
     );
   },
@@ -387,45 +383,37 @@ export const ErrorUtils = {
    * Create a validation error
    */
   validationError: (message: string, details?: Record<string, unknown>): AppErrorClass => {
-    return new AppErrorClass(
-      ErrorType.VALIDATION,
-      message,
-      ErrorSeverity.MEDIUM,
-      { details, userMessage: 'Girilen bilgilerde hata var. Lütfen kontrol edin.' }
-    );
+    return new AppErrorClass(ErrorType.VALIDATION, message, ErrorSeverity.MEDIUM, {
+      details,
+      userMessage: 'Girilen bilgilerde hata var. Lütfen kontrol edin.',
+    });
   },
 
   /**
    * Create an authentication error
    */
   authError: (message: string, details?: Record<string, unknown>): AppErrorClass => {
-    return new AppErrorClass(
-      ErrorType.AUTHENTICATION,
-      message,
-      ErrorSeverity.CRITICAL,
-      { details, userMessage: 'Oturum süreniz dolmuş. Lütfen tekrar giriş yapın.', actionRequired: true }
-    );
+    return new AppErrorClass(ErrorType.AUTHENTICATION, message, ErrorSeverity.CRITICAL, {
+      details,
+      userMessage: 'Oturum süreniz dolmuş. Lütfen tekrar giriş yapın.',
+      actionRequired: true,
+    });
   },
 
   /**
    * Create a server error
    */
   serverError: (message: string, details?: Record<string, unknown>): AppErrorClass => {
-    return new AppErrorClass(
-      ErrorType.SERVER,
-      message,
-      ErrorSeverity.CRITICAL,
-      { details, userMessage: 'Sunucu hatası. Lütfen daha sonra tekrar deneyin.' }
-    );
+    return new AppErrorClass(ErrorType.SERVER, message, ErrorSeverity.CRITICAL, {
+      details,
+      userMessage: 'Sunucu hatası. Lütfen daha sonra tekrar deneyin.',
+    });
   },
 
   /**
    * Wrap async functions with error handling
    */
-  async withErrorHandling<T>(
-    fn: () => Promise<T>,
-    _context?: ErrorContext
-  ): Promise<T | null> {
+  async withErrorHandling<T>(fn: () => Promise<T>, _context?: ErrorContext): Promise<T | null> {
     try {
       return await fn();
     } catch (error) {
@@ -438,10 +426,7 @@ export const ErrorUtils = {
   /**
    * Wrap sync functions with error handling
    */
-  withSyncErrorHandling<T>(
-    fn: () => T,
-    context?: ErrorContext
-  ): T | null {
+  withSyncErrorHandling<T>(fn: () => T, context?: ErrorContext): T | null {
     try {
       return fn();
     } catch (error) {

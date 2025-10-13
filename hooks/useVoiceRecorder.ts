@@ -24,7 +24,7 @@ export function useVoiceRecorder(options: VoiceRecorderOptions = {}): UseVoiceRe
     audioBitsPerSecond = 128000, // 128 kbps
     mimeType = 'audio/webm;codecs=opus',
     onRecordingComplete,
-    onError
+    onError,
   } = options;
 
   const [isRecording, setIsRecording] = useState(false);
@@ -55,8 +55,8 @@ export function useVoiceRecorder(options: VoiceRecorderOptions = {}): UseVoiceRe
           echoCancellation: true,
           noiseSuppression: true,
           autoGainControl: true,
-          sampleRate: 44100
-        }
+          sampleRate: 44100,
+        },
       };
 
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
@@ -101,7 +101,9 @@ export function useVoiceRecorder(options: VoiceRecorderOptions = {}): UseVoiceRe
 
       // Check MediaRecorder support
       if (!isMediaRecorderSupported()) {
-        throw new Error('Tarayıcınız ses kaydını desteklemiyor. Lütfen güncel bir tarayıcı kullanın.');
+        throw new Error(
+          'Tarayıcınız ses kaydını desteklemiyor. Lütfen güncel bir tarayıcı kullanın.'
+        );
       }
 
       // Get microphone access
@@ -111,7 +113,7 @@ export function useVoiceRecorder(options: VoiceRecorderOptions = {}): UseVoiceRe
       // Create MediaRecorder
       const mediaRecorder = new MediaRecorder(stream, {
         mimeType,
-        audioBitsPerSecond
+        audioBitsPerSecond,
       });
 
       mediaRecorderRef.current = mediaRecorder;
@@ -128,10 +130,10 @@ export function useVoiceRecorder(options: VoiceRecorderOptions = {}): UseVoiceRe
         const blob = new Blob(chunksRef.current, { type: mimeType });
         setAudioBlob(blob);
         onRecordingComplete?.(blob);
-        logger.info('Voice recording completed', { 
+        logger.info('Voice recording completed', {
           duration,
           size: blob.size,
-          type: blob.type 
+          type: blob.type,
         });
       };
 
@@ -160,14 +162,21 @@ export function useVoiceRecorder(options: VoiceRecorderOptions = {}): UseVoiceRe
       }, 1000);
 
       logger.info('Voice recording started');
-
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Ses kaydı başlatılamadı.';
       setError(errorMessage);
       onError?.(errorMessage);
       logger.error('Failed to start recording', err);
     }
-  }, [isMediaRecorderSupported, getUserMedia, mimeType, audioBitsPerSecond, maxDuration, onRecordingComplete, onError]);
+  }, [
+    isMediaRecorderSupported,
+    getUserMedia,
+    mimeType,
+    audioBitsPerSecond,
+    maxDuration,
+    onRecordingComplete,
+    onError,
+  ]);
 
   /**
    * Stop recording
@@ -186,7 +195,9 @@ export function useVoiceRecorder(options: VoiceRecorderOptions = {}): UseVoiceRe
 
         // Stop audio stream
         if (audioStreamRef.current) {
-          audioStreamRef.current.getTracks().forEach(track => { track.stop(); });
+          audioStreamRef.current.getTracks().forEach((track) => {
+            track.stop();
+          });
           audioStreamRef.current = null;
         }
 
@@ -217,7 +228,9 @@ export function useVoiceRecorder(options: VoiceRecorderOptions = {}): UseVoiceRe
 
         // Stop audio stream
         if (audioStreamRef.current) {
-          audioStreamRef.current.getTracks().forEach(track => { track.stop(); });
+          audioStreamRef.current.getTracks().forEach((track) => {
+            track.stop();
+          });
           audioStreamRef.current = null;
         }
 
@@ -259,12 +272,12 @@ export function useVoiceRecorder(options: VoiceRecorderOptions = {}): UseVoiceRe
   const getAudioFileSize = useCallback((blob: Blob): string => {
     const bytes = blob.size;
     if (bytes === 0) return '0 Bytes';
-    
+
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    
-    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))  } ${  sizes[i]}`;
+
+    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
   }, []);
 
   /**
@@ -288,7 +301,9 @@ export function useVoiceRecorder(options: VoiceRecorderOptions = {}): UseVoiceRe
         stopRecording();
       }
       if (audioStreamRef.current) {
-        audioStreamRef.current.getTracks().forEach(track => { track.stop(); });
+        audioStreamRef.current.getTracks().forEach((track) => {
+          track.stop();
+        });
       }
       if (durationIntervalRef.current) {
         clearInterval(durationIntervalRef.current);
@@ -309,6 +324,6 @@ export function useVoiceRecorder(options: VoiceRecorderOptions = {}): UseVoiceRe
     formatDuration,
     getAudioFileSize,
     isRecordingSupported: isRecordingSupported(),
-    maxDuration
+    maxDuration,
   };
 }

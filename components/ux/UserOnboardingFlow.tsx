@@ -1,6 +1,6 @@
 /**
  * @fileoverview UserOnboardingFlow Module - Application module
- * 
+ *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
@@ -372,7 +372,7 @@ const onboardingSteps: Record<string, OnboardingStep[]> = {
 
 /**
  * UserOnboardingFlow function
- * 
+ *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
@@ -439,7 +439,7 @@ export function UserOnboardingFlow({
           completedAt: new Date().toISOString(),
           userRole,
           version: '1.0',
-        }),
+        })
       );
     } catch (error) {
       logger.warn('Error saving onboarding completion:', error);
@@ -477,7 +477,7 @@ export function UserOnboardingFlow({
                   key={index}
                   className={cn(
                     'w-2 h-2 rounded-full transition-colors',
-                    index <= currentStep ? 'bg-primary' : 'bg-muted',
+                    index <= currentStep ? 'bg-primary' : 'bg-muted'
                   )}
                 />
               ))}

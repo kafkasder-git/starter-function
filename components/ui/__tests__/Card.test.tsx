@@ -16,7 +16,7 @@ describe('Card Components', () => {
         'flex-col',
         'gap-6',
         'rounded-xl',
-        'border',
+        'border'
       );
       expect(card).toHaveAttribute('data-slot', 'card');
     });
@@ -25,7 +25,7 @@ describe('Card Components', () => {
       render(
         <Card className="custom-card" data-testid="card">
           Card content
-        </Card>,
+        </Card>
       );
 
       const card = screen.getByTestId('card');
@@ -54,7 +54,7 @@ describe('Card Components', () => {
       render(
         <CardHeader className="custom-header" data-testid="card-header">
           Header content
-        </CardHeader>,
+        </CardHeader>
       );
 
       const header = screen.getByTestId('card-header');
@@ -121,7 +121,7 @@ describe('Card Components', () => {
       render(
         <CardContent className="custom-content" data-testid="card-content">
           Content
-        </CardContent>,
+        </CardContent>
       );
 
       const content = screen.getByTestId('card-content');
@@ -143,7 +143,7 @@ describe('Card Components', () => {
       render(
         <CardFooter className="custom-footer" data-testid="card-footer">
           Footer
-        </CardFooter>,
+        </CardFooter>
       );
 
       const footer = screen.getByTestId('card-footer');
@@ -165,7 +165,7 @@ describe('Card Components', () => {
           <CardFooter>
             <button>Action</button>
           </CardFooter>
-        </Card>,
+        </Card>
       );
 
       expect(screen.getByRole('heading', { name: 'Test Card' })).toBeInTheDocument();
@@ -181,7 +181,7 @@ describe('Card Components', () => {
             <CardTitle>Title</CardTitle>
           </CardHeader>
           <CardContent data-testid="content">Content</CardContent>
-        </Card>,
+        </Card>
       );
 
       const card = screen.getByTestId('card');
