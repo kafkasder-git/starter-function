@@ -196,9 +196,9 @@ export function Header({
       >
         <Button
           variant="ghost"
-          size="sm"
+          size="icon"
           onClick={handleCommandPaletteOpen}
-          className="focus-corporate h-9 min-h-[44px] w-9 min-w-[44px] rounded-lg p-0 text-neutral-700 transition-all duration-200 hover:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-neutral-800"
+          className="text-neutral-700 hover:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-neutral-800"
           title="Komut Paleti"
           aria-label="Komut paletini aç"
         >
@@ -207,14 +207,14 @@ export function Header({
 
         <Button
           variant="ghost"
-          size="sm"
+          size="icon"
           onClick={(e: React.MouseEvent) => {
             e.preventDefault();
             e.stopPropagation();
             trackClick('header', 'mobile-search-open');
             setShowEnhancedSearch(true);
           }}
-          className="focus-corporate h-9 min-h-[44px] w-9 min-w-[44px] rounded-lg p-0 text-neutral-700 transition-all duration-200 hover:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-neutral-800"
+          className="text-neutral-700 hover:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-neutral-800"
           title="Arama"
           aria-label="Aramayı aç"
         >
