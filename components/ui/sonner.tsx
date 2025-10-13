@@ -16,8 +16,7 @@ interface ToasterProps {
   theme?: 'light' | 'dark' | 'system';
 }
 
-const Toaster = ({ ...props }: ToasterProps) => {
-  const { theme = 'system' } = useTheme();
+const Toaster = ({ theme = 'system', ...props }: ToasterProps) => {
 
   return (
     <Sonner
