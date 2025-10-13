@@ -232,23 +232,12 @@ export function Header({
         {/* Performance Indicators */}
         <PerformanceIndicator className="hidden lg:flex" />
 
-        {/* Frontend Status */}
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1" title="Frontend Mode">
+        {/* Frontend Status - hidden on mobile for space */}
+        <div className="hidden sm:flex items-center gap-2">
+          <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-success-50 dark:bg-success-950" title="Frontend Mode">
             <div className="h-2 w-2 animate-pulse rounded-full bg-success-500" />
-            <span className="text-xs text-success-600 dark:text-success-400">Online</span>
+            <span className="text-xs font-medium text-success-700 dark:text-success-400">Online</span>
           </div>
-
-          {/* Status */}
-          <div className="flex items-center gap-1" title="No Auth Required">
-            <div className="h-2 w-2 rounded-full bg-success-500" />
-            <span className="text-xs text-success-600 dark:text-success-400">Pure</span>
-          </div>
-        </div>
-
-        {/* Mobile Status */}
-        <div className="sm:hidden">
-          <div className="h-2 w-2 rounded-full bg-success-500" title="Online Mode" />
         </div>
 
         {/* Theme Toggle */}
