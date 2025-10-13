@@ -154,14 +154,16 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {...props}
       >
         {loading && (
-          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
         )}
         {!loading && iconLeft && (
-          <span className="mr-1">{iconLeft}</span>
+          <span className="inline-flex" aria-hidden="true">{iconLeft}</span>
         )}
-        {loading ? (loadingText || children) : children}
+        <span className={cn(loading && iconLeft && 'sr-only')}>
+          {loading ? (loadingText || children) : children}
+        </span>
         {!loading && iconRight && (
-          <span className="ml-1">{iconRight}</span>
+          <span className="inline-flex" aria-hidden="true">{iconRight}</span>
         )}
 
         {/* Badge Indicator */}
