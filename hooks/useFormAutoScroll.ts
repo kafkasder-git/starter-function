@@ -96,7 +96,7 @@ export function useFormAutoScroll<T extends Record<string, any>>(
           }
 
           // Try to focus the input element if it's focusable
-          const inputElement = element.querySelector('input, textarea, select') as HTMLElement | null;
+          const inputElement = element.querySelector('input, textarea, select');
           if (inputElement && typeof inputElement.focus === 'function') {
             // Small delay to ensure scroll is complete
             setTimeout(() => {

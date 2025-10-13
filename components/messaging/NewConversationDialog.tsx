@@ -15,8 +15,7 @@ import { Check, Users, MessageCircle, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
 import { db, collections, queryHelpers } from '@/lib/database';
-import type { ConversationType } from '@/types/messaging';
-import { ConversationType as ConversationTypeEnum } from '@/types/messaging';
+import { ConversationType } from '@/types/messaging';
 import type { UserRole } from '@/types/auth';
 
 interface NewConversationDialogProps {
@@ -46,7 +45,7 @@ export function NewConversationDialog({
   const { user: currentUser } = useAuthStore();
   
   // State
-  const [conversationType, setConversationType] = useState<ConversationType>(ConversationTypeEnum.DIRECT);
+  const [conversationType, setConversationType] = useState<ConversationType>(ConversationType.DIRECT);
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [groupName, setGroupName] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
@@ -60,7 +59,7 @@ export function NewConversationDialog({
       loadUsers();
     } else {
       // Reset state when dialog closes
-      setConversationType(ConversationTypeEnum.DIRECT);
+      setConversationType(ConversationType.DIRECT);
       setSelectedUsers([]);
       setGroupName('');
       setSearchTerm('');
@@ -114,13 +113,13 @@ export function NewConversationDialog({
     setSelectedUsers(prev => {
       if (prev.includes(userId)) {
         return prev.filter(id => id !== userId);
-      } else {
+      } 
         // For direct messages, only allow one user
-        if (conversationType === ConversationTypeEnum.DIRECT) {
+        if (conversationType === ConversationType.DIRECT) {
           return [userId];
         }
         return [...prev, userId];
-      }
+      
     });
   };
 
@@ -138,12 +137,12 @@ export function NewConversationDialog({
     if (!currentUser) return;
 
     // Validate input
-    if (conversationType === ConversationTypeEnum.DIRECT && selectedUsers.length !== 1) {
+    if (conversationType === ConversationType.DIRECT && selectedUsers.length !== 1) {
       alert('Doğrudan mesajlaşma için bir kişi seçmelisiniz.');
       return;
     }
 
-    if (conversationType === ConversationTypeEnum.GROUP) {
+    if (conversationType === ConversationType.GROUP) {
       if (selectedUsers.length < 1) {
         alert('Grup için en az bir kişi seçmelisiniz.');
         return;
@@ -163,7 +162,7 @@ export function NewConversationDialog({
       const conversation = await messagingService.createConversation({
         type: conversationType,
         participantIds: selectedUsers,
-        name: conversationType === ConversationTypeEnum.GROUP ? groupName : undefined
+        name: conversationType === ConversationType.GROUP ? groupName : undefined
       });
 
       onConversationCreated(conversation.id);
@@ -204,16 +203,16 @@ export function NewConversationDialog({
             <Label className="text-sm font-medium">Konuşma Türü</Label>
             <div className="flex gap-4">
               <Button
-                variant={conversationType === ConversationTypeEnum.DIRECT ? 'default' : 'outline'}
-                onClick={() => handleConversationTypeChange(ConversationTypeEnum.DIRECT)}
+                variant={conversationType === ConversationType.DIRECT ? 'default' : 'outline'}
+                onClick={() => { handleConversationTypeChange(ConversationType.DIRECT); }}
                 className="flex items-center gap-2"
               >
                 <MessageCircle className="h-4 w-4" />
                 Doğrudan Mesaj
               </Button>
               <Button
-                variant={conversationType === ConversationTypeEnum.GROUP ? 'default' : 'outline'}
-                onClick={() => handleConversationTypeChange(ConversationTypeEnum.GROUP)}
+                variant={conversationType === ConversationType.GROUP ? 'default' : 'outline'}
+                onClick={() => { handleConversationTypeChange(ConversationType.GROUP); }}
                 className="flex items-center gap-2"
               >
                 <Users className="h-4 w-4" />
@@ -223,13 +222,13 @@ export function NewConversationDialog({
           </div>
 
           {/* Group name input */}
-          {conversationType === ConversationTypeEnum.GROUP && (
+          {conversationType === ConversationType.GROUP && (
             <div className="space-y-2">
               <Label htmlFor="groupName">Grup Adı</Label>
               <Input
                 id="groupName"
                 value={groupName}
-                onChange={(e) => setGroupName(e.target.value)}
+                onChange={(e) => { setGroupName(e.target.value); }}
                 placeholder="Grup adını girin..."
                 maxLength={50}
               />
@@ -256,7 +255,7 @@ export function NewConversationDialog({
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => toggleUserSelection(userId)}
+                        onClick={() => { toggleUserSelection(userId); }}
                         className="h-4 w-4 p-0 hover:bg-transparent"
                       >
                         <X className="h-3 w-3" />
@@ -274,7 +273,7 @@ export function NewConversationDialog({
             <Input
               placeholder="Kişi ara..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => { setSearchTerm(e.target.value); }}
             />
           </div>
 
@@ -285,7 +284,7 @@ export function NewConversationDialog({
               {loading ? (
                 <div className="flex items-center justify-center h-32">
                   <div className="text-center text-gray-500">
-                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500 mx-auto mb-2"></div>
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500 mx-auto mb-2" />
                     <p className="text-sm">Yükleniyor...</p>
                   </div>
                 </div>
@@ -307,7 +306,7 @@ export function NewConversationDialog({
                         'flex items-center gap-3 p-2 rounded-md cursor-pointer hover:bg-gray-50 transition-colors',
                         selectedUsers.includes(user.id) && 'bg-blue-50 border border-blue-200'
                       )}
-                      onClick={() => toggleUserSelection(user.id)}
+                      onClick={() => { toggleUserSelection(user.id); }}
                     >
                       <Avatar className="h-8 w-8">
                         <AvatarFallback className="bg-gray-200 text-gray-600 text-xs">
@@ -344,18 +343,18 @@ export function NewConversationDialog({
         <div className="flex justify-end gap-3 pt-4 border-t">
           <Button
             variant="outline"
-            onClick={() => onOpenChange(false)}
+            onClick={() => { onOpenChange(false); }}
             disabled={creating}
           >
             İptal
           </Button>
           <Button
             onClick={handleCreateConversation}
-            disabled={creating || selectedUsers.length === 0 || (conversationType === ConversationTypeEnum.GROUP && !groupName.trim())}
+            disabled={creating || selectedUsers.length === 0 || (conversationType === ConversationType.GROUP && !groupName.trim())}
           >
             {creating ? (
               <>
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
                 Oluşturuluyor...
               </>
             ) : (

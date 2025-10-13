@@ -132,7 +132,7 @@ export const KiboUIExample: React.FC = () => {
                       />
                     </FormControl>
                     <FormDescription>
-                      We'll use this to send you important updates
+                      We&apos;ll use this to send you important updates
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -150,7 +150,7 @@ export const KiboUIExample: React.FC = () => {
                         type="number" 
                         placeholder="Enter your age" 
                         {...field}
-                        onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                        onChange={(e) => { field.onChange(parseInt(e.target.value) || 0); }}
                       />
                     </FormControl>
                     <FormMessage />
@@ -170,7 +170,7 @@ export const KiboUIExample: React.FC = () => {
                 <Button 
                   type="button" 
                   variant="outline" 
-                  onClick={() => form.reset()}
+                  onClick={() => { form.reset(); }}
                 >
                   Reset Form
                 </Button>

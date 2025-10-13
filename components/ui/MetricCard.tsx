@@ -5,8 +5,7 @@
  * @version 1.0.0
  */
 
-import React from 'react';
-import { motion } from 'motion/react';
+import React, { memo } from 'react';
 import { TrendingUp, TrendingDown, Activity } from 'lucide-react';
 import { Card, CardContent } from './card';
 import { Heading } from './heading';
@@ -28,44 +27,44 @@ interface MetricCardProps {
 
 const colorClasses = {
   blue: {
-    bg: 'bg-info-600',
-    light: 'bg-info-50',
-    text: 'text-info-700',
-    ring: 'ring-info-500/20',
+    bg: 'bg-blue-600',
+    light: 'bg-blue-50',
+    text: 'text-blue-700',
+    ring: 'ring-blue-500/20',
   },
   green: {
-    bg: 'bg-success-600',
-    light: 'bg-success-50',
-    text: 'text-success-700',
-    ring: 'ring-success-500/20',
+    bg: 'bg-green-600',
+    light: 'bg-green-50',
+    text: 'text-green-700',
+    ring: 'ring-green-500/20',
   },
   purple: {
-    bg: 'bg-primary-600',
-    light: 'bg-primary-50',
-    text: 'text-primary-700',
-    ring: 'ring-primary-500/20',
+    bg: 'bg-purple-600',
+    light: 'bg-purple-50',
+    text: 'text-purple-700',
+    ring: 'ring-purple-500/20',
   },
   orange: {
-    bg: 'bg-warning-600',
-    light: 'bg-warning-50',
-    text: 'text-warning-700',
-    ring: 'ring-warning-500/20',
+    bg: 'bg-orange-600',
+    light: 'bg-orange-50',
+    text: 'text-orange-700',
+    ring: 'ring-orange-500/20',
   },
   red: {
-    bg: 'bg-error-600',
-    light: 'bg-error-50',
-    text: 'text-error-700',
-    ring: 'ring-error-500/20',
+    bg: 'bg-red-600',
+    light: 'bg-red-50',
+    text: 'text-red-700',
+    ring: 'ring-red-500/20',
   },
 };
 
 /**
- * MetricCard function
+ * MetricCard function - Optimized with React.memo
  *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
-export function MetricCard({
+export const MetricCard = memo(({
   title,
   value,
   change,
@@ -73,20 +72,17 @@ export function MetricCard({
   color,
   loading,
   onClick,
-}: MetricCardProps) {
+}: MetricCardProps) => {
   const colors = colorClasses[color];
 
-  const CardWrapper = onClick ? motion.button : motion.div;
+  const CardWrapper = onClick ? 'button' : 'div';
 
   return (
     <CardWrapper
-      className={`w-full text-left ${onClick ? `cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 ${  colors.ring}` : ''}`}
+      className={`w-full text-left ${onClick ? `cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 ${colors.ring} hover:scale-[1.02] hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-150` : ''}`}
       onClick={onClick}
-      whileHover={onClick ? { scale: 1.02, y: -2 } : undefined}
-      whileTap={onClick ? { scale: 0.98 } : undefined}
-      transition={{ duration: 0.15 }}
     >
-      <Card className="h-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-white/80 backdrop-blur-sm">
+      <Card className="h-full border border-gray-200 shadow-md hover:shadow-lg transition-all duration-200 bg-white dark:border-gray-700 dark:bg-gray-900">
         <CardContent className="p-6">
           {loading ? (
             <div className="space-y-3">
@@ -104,40 +100,25 @@ export function MetricCard({
                 <div className="space-y-1">
                   <Text variant="label" size="sm" color="neutral" className="leading-tight">{title}</Text>
                   <div className="flex items-baseline gap-2">
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.1 }}
-                    >
-                      <Heading as="span" level={3} size="2xl" weight="bold" className="tabular-nums">
-                        {value}
-                      </Heading>
-                    </motion.div>
+                    <Heading as="span" level={3} size="2xl" weight="bold" className="tabular-nums">
+                      {value}
+                    </Heading>
                   </div>
                 </div>
 
-                <motion.div
-                  className={`p-3 rounded-xl ${colors.bg} shadow-lg`}
-                  whileHover={{ scale: 1.1 }}
-                  transition={{ duration: 0.15 }}
-                >
+                <div className={`p-3 rounded-xl ${colors.bg} shadow-lg hover:scale-110 transition-transform duration-150`}>
                   <div className="text-white">{icon}</div>
-                </motion.div>
+                </div>
               </div>
 
               {/* Change Indicator */}
               {change && (
-                <motion.div
-                  className="flex items-center gap-2"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.2 }}
-                >
+                <div className="flex items-center gap-2">
                   <div
                     className={`flex items-center gap-1 px-2 py-1 rounded-full ${
                       change.type === 'increase'
-                        ? 'bg-success-100 text-success-700'
-                        : 'bg-error-100 text-error-700'
+                        ? 'bg-green-100 text-green-700'
+                        : 'bg-red-100 text-red-700'
                     }`}
                   >
                     {change.type === 'increase' ? (
@@ -148,7 +129,7 @@ export function MetricCard({
                     <Text weight="semibold" size="xs">{Math.abs(change.value)}%</Text>
                   </div>
                   <Text size="xs" color="muted">{change.period}</Text>
-                </motion.div>
+                </div>
               )}
 
               {/* Activity Indicator */}
@@ -168,6 +149,6 @@ export function MetricCard({
       </Card>
     </CardWrapper>
   );
-}
+});
 
 export default MetricCard;

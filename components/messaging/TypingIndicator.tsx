@@ -24,9 +24,9 @@ export function TypingIndicator({ users, className }: TypingIndicatorProps) {
       return `${users[0]} yazıyor...`;
     } else if (users.length === 2) {
       return `${users[0]} ve ${users[1]} yazıyor...`;
-    } else {
+    } 
       return `${users.length} kişi yazıyor...`;
-    }
+    
   };
 
   return (

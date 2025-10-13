@@ -8,7 +8,7 @@
 import { motion } from 'motion/react';
 import type { ReactNode } from 'react';
 
-import { logger } from '../lib/logging/logger';
+// import { logger } from '../lib/logging/logger';
 interface AnimatedContainerProps {
   children: ReactNode;
   variant?: 'fadeIn' | 'slideUp' | 'slideDown' | 'slideLeft' | 'slideRight' | 'scale' | 'stagger';

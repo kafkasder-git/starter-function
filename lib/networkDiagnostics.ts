@@ -20,6 +20,10 @@ export interface NetworkDiagnostics {
   canReachInternet: boolean;
   lastError?: NetworkError;
   connectionQuality: 'excellent' | 'good' | 'poor' | 'offline';
+  appwriteStatus?: 'connected' | 'disconnected' | 'unknown';
+  lastChecked?: Date;
+  latency?: number | null;
+  error?: string | null;
 }
 
 /**
@@ -170,12 +174,34 @@ export class NetworkManager {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
         
-        await fetch(`${appwriteEndpoint}/health`, {
-          method: 'HEAD',
-          mode: 'no-cors',
-          cache: 'no-cache',
-          signal: controller.signal
-        });
+        try {
+          const apiKey = import.meta.env.VITE_APPWRITE_API_KEY;
+          await fetch(`${appwriteEndpoint}/health`, {
+            method: 'HEAD',
+            headers: apiKey ? {
+              'X-Appwrite-Project': import.meta.env.VITE_APPWRITE_PROJECT_ID || '',
+              'X-Appwrite-Key': apiKey
+            } : {},
+            cache: 'no-cache',
+            signal: controller.signal
+          });
+        } catch (error) {
+          // Health endpoint requires authentication, ignore 401 errors
+          if (error instanceof Error && error.message.includes('401')) {
+            logger.debug('Health endpoint requires authentication, skipping');
+            return {
+              isOnline: true,
+              canReachAppwrite: false,
+              canReachInternet: true,
+              connectionQuality: 'good',
+              appwriteStatus: 'unknown',
+              lastChecked: new Date(),
+              latency: null,
+              error: null
+            };
+          }
+          throw error;
+        }
         
         clearTimeout(timeoutId);
         diagnostics.canReachAppwrite = true;

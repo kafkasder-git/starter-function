@@ -3,82 +3,45 @@
  * @description Hook for messaging operations and state management
  */
 
-import { useState, useCallback, useEffect, useRef } from 'react';
-import { useAuthStore } from '@/stores/authStore';
+import { useCallback, useEffect, useRef } from 'react';
 import { messagingService } from '@/services/messagingService';
 import { logger } from '@/lib/logging/logger';
-import { toast } from 'sonner';
 import type {
   Conversation,
   Message,
   CreateConversationData,
   SendMessageData,
   MessageFilters,
-  ConversationFilters,
-  UseMessagingReturn,
-  ConversationType,
-  MessageType
+  UseMessagingReturn
 } from '@/types/messaging';
-
-interface UseMessagingOptions {
-  autoLoadConversations?: boolean;
-  autoLoadMessages?: boolean;
-  messageLimit?: number;
-  onError?: (error: string) => void;
-  onSuccess?: (message: string) => void;
-}
+import { useMessagingBase, type MessagingHookOptions } from './useMessagingBase';
 
 /**
  * Hook for messaging operations
  */
-export function useMessaging(options: UseMessagingOptions = {}): UseMessagingReturn {
+export function useMessaging(options: MessagingHookOptions = {}): UseMessagingReturn {
   const {
-    autoLoadConversations = true,
-    autoLoadMessages = true,
-    messageLimit = 50,
-    onError,
-    onSuccess
-  } = options;
-
-  const { user, isAuthenticated } = useAuthStore();
-  
-  // State
-  const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+    user,
+    isAuthenticated,
+    conversations,
+    setConversations,
+    selectedConversation,
+    setSelectedConversation,
+    messages,
+    setMessages,
+    loading,
+    setLoading,
+    error,
+    clearError,
+    handleError,
+    handleSuccess,
+    options: { autoLoadConversations, autoLoadMessages, messageLimit },
+  } = useMessagingBase(options);
 
   // Refs for pagination
   const messagesOffsetRef = useRef(0);
   const hasMoreMessagesRef = useRef(true);
   const isLoadingMessagesRef = useRef(false);
-
-  /**
-   * Clear error state
-   */
-  const clearError = useCallback(() => {
-    setError(null);
-  }, []);
-
-  /**
-   * Handle error
-   */
-  const handleError = useCallback((err: any, defaultMessage: string) => {
-    const errorMessage = err?.message || defaultMessage;
-    setError(errorMessage);
-    onError?.(errorMessage);
-    toast.error(errorMessage);
-    logger.error(defaultMessage, err);
-  }, [onError]);
-
-  /**
-   * Handle success
-   */
-  const handleSuccess = useCallback((message: string) => {
-    onSuccess?.(message);
-    toast.success(message);
-  }, [onSuccess]);
 
   /**
    * Create a new conversation
@@ -146,7 +109,16 @@ export function useMessaging(options: UseMessagingOptions = {}): UseMessagingRet
     } finally {
       setLoading(false);
     }
-  }, [isAuthenticated, user, handleError, handleSuccess, clearError]);
+  }, [
+    isAuthenticated,
+    user,
+    handleError,
+    handleSuccess,
+    clearError,
+    setLoading,
+    setConversations,
+    setSelectedConversation,
+  ]);
 
   /**
    * Load conversations
@@ -171,7 +143,7 @@ export function useMessaging(options: UseMessagingOptions = {}): UseMessagingRet
     } finally {
       setLoading(false);
     }
-  }, [isAuthenticated, user, handleError, clearError]);
+  }, [isAuthenticated, user, handleError, clearError, setLoading, setConversations]);
 
   /**
    * Get conversation by ID
@@ -210,7 +182,7 @@ export function useMessaging(options: UseMessagingOptions = {}): UseMessagingRet
     } finally {
       setLoading(false);
     }
-  }, [loadConversations, handleError, handleSuccess, clearError]);
+  }, [loadConversations, handleError, handleSuccess, clearError, setLoading]);
 
   /**
    * Remove participant from conversation
@@ -232,7 +204,7 @@ export function useMessaging(options: UseMessagingOptions = {}): UseMessagingRet
     } finally {
       setLoading(false);
     }
-  }, [loadConversations, handleError, handleSuccess, clearError]);
+  }, [loadConversations, handleError, handleSuccess, clearError, setLoading]);
 
   /**
    * Send a message
@@ -288,7 +260,14 @@ export function useMessaging(options: UseMessagingOptions = {}): UseMessagingRet
       handleError(err, 'Mesaj gönderilemedi');
       throw err;
     }
-  }, [selectedConversation, isAuthenticated, user, handleError]);
+  }, [
+    selectedConversation,
+    isAuthenticated,
+    user,
+    handleError,
+    setMessages,
+    setConversations,
+  ]);
 
   /**
    * Load messages for selected conversation
@@ -334,7 +313,14 @@ export function useMessaging(options: UseMessagingOptions = {}): UseMessagingRet
     } finally {
       setLoading(false);
     }
-  }, [selectedConversation, messageLimit, handleError, clearError]);
+  }, [
+    selectedConversation,
+    messageLimit,
+    handleError,
+    clearError,
+    setLoading,
+    setMessages,
+  ]);
 
   /**
    * Load more messages (pagination)
@@ -361,20 +347,34 @@ export function useMessaging(options: UseMessagingOptions = {}): UseMessagingRet
    * Mark message as read
    */
   const markAsRead = useCallback(async (messageId: string): Promise<void> => {
+    if (!user) {
+      return;
+    }
+
     try {
       await messagingService.markAsRead(messageId);
 
       // Update local message read status
-      setMessages(prev => prev.map(msg => 
-        msg.id === messageId 
-          ? { ...msg, readBy: [...msg.readBy, { userId: user!.id, userName: user!.name, readAt: new Date() }] }
+      setMessages(prev => prev.map(msg =>
+        msg.id === messageId
+          ? {
+              ...msg,
+              readBy: [
+                ...msg.readBy.filter(entry => entry.userId !== user.id),
+                {
+                  userId: user.id,
+                  userName: user.name ?? '',
+                  readAt: new Date(),
+                },
+              ],
+            }
           : msg
       ));
 
     } catch (err) {
       logger.error('Failed to mark message as read', err);
     }
-  }, [user]);
+  }, [user, setMessages]);
 
   /**
    * Delete a message
@@ -396,7 +396,7 @@ export function useMessaging(options: UseMessagingOptions = {}): UseMessagingRet
     } finally {
       setLoading(false);
     }
-  }, [handleError, handleSuccess, clearError]);
+  }, [handleError, handleSuccess, clearError, setLoading, setMessages]);
 
   /**
    * Get unread message count for a conversation
@@ -435,7 +435,7 @@ export function useMessaging(options: UseMessagingOptions = {}): UseMessagingRet
           }
         : conv
     ));
-  }, [user]);
+  }, [user, setMessages, setConversations]);
 
   /**
    * Update message read status (for realtime updates)
@@ -449,7 +449,7 @@ export function useMessaging(options: UseMessagingOptions = {}): UseMessagingRet
           }
         : msg
     ));
-  }, []);
+  }, [setMessages]);
 
   /**
    * Auto-load conversations on mount

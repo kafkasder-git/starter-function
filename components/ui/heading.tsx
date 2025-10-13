@@ -71,7 +71,7 @@ const Heading = React.forwardRef<HTMLHeadingElement, HeadingProps>(
     ...props 
   }, ref) => {
     // Map semantic level to HTML element
-    const Component = `h${level}` as 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
+    const Component = `h${level}`;
     
     // Default size mapping based on level if no size is provided
     const defaultSize = size || (() => {

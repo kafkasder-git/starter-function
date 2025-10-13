@@ -341,7 +341,7 @@ export function ProfilePage() {
     >
       <div className="p-6 max-w-4xl mx-auto space-y-6">
         {/* Desktop Profile Header */}
-        <Card className="border-0 shadow-md">
+        <Card className="border border-gray-200 shadow-md dark:border-gray-700 dark:bg-gray-900">
           <CardContent className="p-6">
             <div className="flex items-start gap-6">
               <div className="relative flex-shrink-0">
@@ -424,7 +424,7 @@ export function ProfilePage() {
 
           {/* Mobile-Optimized Personal Information Tab */}
           <TabsContent value="personal" className="space-y-4 sm:space-y-6">
-            <Card className="border-0 shadow-md">
+            <Card className="border border-gray-200 shadow-md dark:border-gray-700 dark:bg-gray-900">
               <CardHeader className="pb-4">
                 <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
                   <User className="w-5 h-5 text-blue-600" />
@@ -563,7 +563,7 @@ export function ProfilePage() {
 
           {/* Notifications Tab */}
           <TabsContent value="notifications" className="space-y-6">
-            <Card className="border-0 shadow-md">
+            <Card className="border border-gray-200 shadow-md dark:border-gray-700 dark:bg-gray-900">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2">
@@ -718,7 +718,7 @@ export function ProfilePage() {
 
           {/* Privacy Tab */}
           <TabsContent value="privacy" className="space-y-6">
-            <Card className="border-0 shadow-md">
+            <Card className="border border-gray-200 shadow-md dark:border-gray-700 dark:bg-gray-900">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2">

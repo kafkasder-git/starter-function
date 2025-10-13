@@ -93,7 +93,7 @@ interface EnhancedToastOptions {
  */
 export const enhancedToast = {
   success: (message: string, options?: EnhancedToastOptions) => {
-    return toast.success(
+    toast.success(
       <div role="status" aria-live="polite" aria-atomic="true" className="flex items-center gap-2">
         <CheckCircle2 className="h-5 w-5 text-success-600" aria-hidden="true" />
         <div className="flex-1">
@@ -130,7 +130,7 @@ export const enhancedToast = {
   },
 
   error: (message: string, options?: EnhancedToastOptions) => {
-    return toast.error(
+    toast.error(
       <div role="alert" aria-live="assertive" aria-atomic="true" className="flex items-center gap-2">
         <XCircle className="h-5 w-5 text-error-600" aria-hidden="true" />
         <div className="flex-1">
@@ -167,7 +167,7 @@ export const enhancedToast = {
   },
 
   warning: (message: string, options?: EnhancedToastOptions) => {
-    return toast.warning(
+    toast.warning(
       <div role="status" aria-live="polite" aria-atomic="true" className="flex items-center gap-2">
         <AlertTriangle className="h-5 w-5 text-warning-600" aria-hidden="true" />
         <div className="flex-1">
@@ -204,7 +204,7 @@ export const enhancedToast = {
   },
 
   info: (message: string, options?: EnhancedToastOptions) => {
-    return toast.info(
+    toast.info(
       <div role="status" aria-live="polite" aria-atomic="true" className="flex items-center gap-2">
         <Info className="h-5 w-5 text-info-600" aria-hidden="true" />
         <div className="flex-1">

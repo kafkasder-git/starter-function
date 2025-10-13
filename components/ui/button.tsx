@@ -76,6 +76,8 @@ export interface ButtonProps
   badge?: string | number;
   ariaLabel?: string;
   badgeVariant?: BadgeProps['variant'];
+  /** Ensure minimum touch target size for mobile accessibility (44x44px) */
+  touchOptimized?: boolean;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
@@ -97,6 +99,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     disabled,
     children,
     badgeVariant,
+    touchOptimized = false,
     onClick,
     ...props
   }, ref) => {
@@ -143,6 +146,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           loading && 'cursor-wait',
           ripple && 'relative overflow-hidden',
           badge && 'relative',
+          // Touch-optimized: Ensure minimum 44x44px touch target on mobile
+          touchOptimized && 'min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0',
           className
         )}
         ref={ref}

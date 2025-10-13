@@ -28,15 +28,13 @@ import {
 import { atom, useAtom } from "jotai";
 import throttle from "lodash.throttle";
 import { PlusIcon, TrashIcon } from "lucide-react";
-import type {
-  CSSProperties,
-  FC,
-  KeyboardEventHandler,
-  MouseEventHandler,
-  ReactNode,
-  RefObject,
-} from "react";
-import {
+import React, {
+  type CSSProperties,
+  type FC,
+  type KeyboardEventHandler,
+  type MouseEventHandler,
+  type ReactNode,
+  type RefObject,
   createContext,
   memo,
   useCallback,
@@ -62,26 +60,26 @@ const scrollXAtom = atom(0);
 export const useGanttDragging = () => useAtom(draggingAtom);
 export const useGanttScrollX = () => useAtom(scrollXAtom);
 
-export type GanttStatus = {
+export interface GanttStatus {
   id: string;
   name: string;
   color: string;
-};
+}
 
-export type GanttFeature = {
+export interface GanttFeature {
   id: string;
   name: string;
   startAt: Date;
   endAt: Date;
   status: GanttStatus;
   lane?: string; // Optional: features with the same lane will share a row
-};
+}
 
-export type GanttMarkerProps = {
+export interface GanttMarkerProps {
   id: string;
   date: Date;
   label: string;
-};
+}
 
 export type Range = "daily" | "monthly" | "quarterly";
 
@@ -94,7 +92,7 @@ export type TimelineData = {
   }[];
 }[];
 
-export type GanttContextProps = {
+export interface GanttContextProps {
   zoom: number;
   range: Range;
   columnWidth: number;
@@ -106,11 +104,11 @@ export type GanttContextProps = {
   timelineData: TimelineData;
   ref: RefObject<HTMLDivElement | null> | null;
   scrollToFeature?: (feature: GanttFeature) => void;
-};
+}
 
 const getsDaysIn = (range: Range) => {
   // For when range is daily
-  let fn = (_date: Date) => 1;
+  let fn = (_date?: Date) => 1;
 
   if (range === "monthly" || range === "quarterly") {
     fn = getDaysInMonth;
@@ -304,11 +302,11 @@ const GanttContext = createContext<GanttContextProps>({
   scrollToFeature: undefined,
 });
 
-export type GanttContentHeaderProps = {
+export interface GanttContentHeaderProps {
   renderHeaderItem: (index: number) => ReactNode;
   title: string;
   columns: number;
-};
+}
 
 export const GanttContentHeader: FC<GanttContentHeaderProps> = ({
   title,
@@ -438,9 +436,9 @@ const headers: Record<Range, FC> = {
   quarterly: QuarterlyHeader,
 };
 
-export type GanttHeaderProps = {
+export interface GanttHeaderProps {
   className?: string;
-};
+}
 
 export const GanttHeader: FC<GanttHeaderProps> = ({ className }) => {
   const gantt = useContext(GanttContext);
@@ -458,11 +456,11 @@ export const GanttHeader: FC<GanttHeaderProps> = ({ className }) => {
   );
 };
 
-export type GanttSidebarItemProps = {
+export interface GanttSidebarItemProps {
   feature: GanttFeature;
   onSelectItem?: (id: string) => void;
   className?: string;
-};
+}
 
 export const GanttSidebarItem: FC<GanttSidebarItemProps> = ({
   feature,
@@ -538,11 +536,11 @@ export const GanttSidebarHeader: FC = () => (
   </div>
 );
 
-export type GanttSidebarGroupProps = {
+export interface GanttSidebarGroupProps {
   children: ReactNode;
   name: string;
   className?: string;
-};
+}
 
 export const GanttSidebarGroup: FC<GanttSidebarGroupProps> = ({
   children,
@@ -560,10 +558,10 @@ export const GanttSidebarGroup: FC<GanttSidebarGroupProps> = ({
   </div>
 );
 
-export type GanttSidebarProps = {
+export interface GanttSidebarProps {
   children: ReactNode;
   className?: string;
-};
+}
 
 export const GanttSidebar: FC<GanttSidebarProps> = ({
   children,
@@ -581,10 +579,10 @@ export const GanttSidebar: FC<GanttSidebarProps> = ({
   </div>
 );
 
-export type GanttAddFeatureHelperProps = {
+export interface GanttAddFeatureHelperProps {
   top: number;
   className?: string;
-};
+}
 
 export const GanttAddFeatureHelper: FC<GanttAddFeatureHelperProps> = ({
   top,
@@ -626,10 +624,10 @@ export const GanttAddFeatureHelper: FC<GanttAddFeatureHelperProps> = ({
   );
 };
 
-export type GanttColumnProps = {
+export interface GanttColumnProps {
   index: number;
   isColumnSecondary?: (item: number) => boolean;
-};
+}
 
 export const GanttColumn: FC<GanttColumnProps> = ({
   index,
@@ -641,8 +639,8 @@ export const GanttColumn: FC<GanttColumnProps> = ({
   const [hovering, setHovering] = useState(false);
   const [windowScroll] = useWindowScroll();
 
-  const handleMouseEnter = () => setHovering(true);
-  const handleMouseLeave = () => setHovering(false);
+  const handleMouseEnter = () => { setHovering(true); };
+  const handleMouseLeave = () => { setHovering(false); };
 
   const top = useThrottle(
     mousePosition.y -
@@ -670,10 +668,10 @@ export const GanttColumn: FC<GanttColumnProps> = ({
   );
 };
 
-export type GanttColumnsProps = {
+export interface GanttColumnsProps {
   columns: number;
   isColumnSecondary?: (item: number) => boolean;
-};
+}
 
 export const GanttColumns: FC<GanttColumnsProps> = ({
   columns,
@@ -699,10 +697,10 @@ export const GanttColumns: FC<GanttColumnsProps> = ({
   );
 };
 
-export type GanttCreateMarkerTriggerProps = {
+export interface GanttCreateMarkerTriggerProps {
   onCreateMarker: (date: Date) => void;
   className?: string;
-};
+}
 
 export const GanttCreateMarkerTrigger: FC<GanttCreateMarkerTriggerProps> = ({
   onCreateMarker,
@@ -720,7 +718,7 @@ export const GanttCreateMarkerTrigger: FC<GanttCreateMarkerTriggerProps> = ({
 
   const date = getDateByMousePosition(gantt, x);
 
-  const handleClick = () => onCreateMarker(date);
+  const handleClick = () => { onCreateMarker(date); };
 
   return (
     <div
@@ -749,11 +747,11 @@ export const GanttCreateMarkerTrigger: FC<GanttCreateMarkerTriggerProps> = ({
   );
 };
 
-export type GanttFeatureDragHelperProps = {
+export interface GanttFeatureDragHelperProps {
   featureId: GanttFeature["id"];
   direction: "left" | "right";
   date: Date | null;
-};
+}
 
 export const GanttFeatureDragHelper: FC<GanttFeatureDragHelperProps> = ({
   direction,
@@ -767,7 +765,7 @@ export const GanttFeatureDragHelper: FC<GanttFeatureDragHelperProps> = ({
 
   const isPressed = Boolean(attributes["aria-pressed"]);
 
-  useEffect(() => setDragging(isPressed), [isPressed, setDragging]);
+  useEffect(() => { setDragging(isPressed); }, [isPressed, setDragging]);
 
   return (
     <div
@@ -815,7 +813,7 @@ export const GanttFeatureItemCard: FC<GanttFeatureItemCardProps> = ({
   const { attributes, listeners, setNodeRef } = useDraggable({ id });
   const isPressed = Boolean(attributes["aria-pressed"]);
 
-  useEffect(() => setDragging(isPressed), [isPressed, setDragging]);
+  useEffect(() => { setDragging(isPressed); }, [isPressed, setDragging]);
 
   return (
     <Card className="h-full w-full rounded-md bg-background p-2 text-xs shadow-sm">
@@ -980,10 +978,10 @@ export const GanttFeatureItem: FC<GanttFeatureItemProps> = ({
   );
 };
 
-export type GanttFeatureListGroupProps = {
+export interface GanttFeatureListGroupProps {
   children: ReactNode;
   className?: string;
-};
+}
 
 export const GanttFeatureListGroup: FC<GanttFeatureListGroupProps> = ({
   children,
@@ -994,12 +992,12 @@ export const GanttFeatureListGroup: FC<GanttFeatureListGroupProps> = ({
   </div>
 );
 
-export type GanttFeatureRowProps = {
+export interface GanttFeatureRowProps {
   features: GanttFeature[];
   onMove?: (id: string, startAt: Date, endAt: Date | null) => void;
   children?: (feature: GanttFeature) => ReactNode;
   className?: string;
-};
+}
 
 export const GanttFeatureRow: FC<GanttFeatureRowProps> = ({
   features,
@@ -1071,10 +1069,10 @@ export const GanttFeatureRow: FC<GanttFeatureRowProps> = ({
   );
 };
 
-export type GanttFeatureListProps = {
+export interface GanttFeatureListProps {
   className?: string;
   children: ReactNode;
-};
+}
 
 export const GanttFeatureList: FC<GanttFeatureListProps> = ({
   className,
@@ -1162,13 +1160,13 @@ export const GanttMarker: FC<
 
 GanttMarker.displayName = "GanttMarker";
 
-export type GanttProviderProps = {
+export interface GanttProviderProps {
   range?: Range;
   zoom?: number;
   onAddItem?: (date: Date) => void;
   children: ReactNode;
   className?: string;
-};
+}
 
 export const GanttProvider: FC<GanttProviderProps> = ({
   zoom = 100,
@@ -1403,10 +1401,10 @@ export const GanttProvider: FC<GanttProviderProps> = ({
   );
 };
 
-export type GanttTimelineProps = {
+export interface GanttTimelineProps {
   children: ReactNode;
   className?: string;
-};
+}
 
 export const GanttTimeline: FC<GanttTimelineProps> = ({
   children,
@@ -1422,9 +1420,9 @@ export const GanttTimeline: FC<GanttTimelineProps> = ({
   </div>
 );
 
-export type GanttTodayProps = {
+export interface GanttTodayProps {
   className?: string;
-};
+}
 
 export const GanttToday: FC<GanttTodayProps> = ({ className }) => {
   const label = "Today";

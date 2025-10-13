@@ -107,12 +107,12 @@ export function ConversationItem({
       return messageTime.toLocaleDateString('tr-TR', { 
         weekday: 'short' 
       });
-    } else {
+    } 
       return messageTime.toLocaleDateString('tr-TR', { 
         day: '2-digit', 
         month: '2-digit' 
       });
-    }
+    
   };
 
   // Check if last message is read

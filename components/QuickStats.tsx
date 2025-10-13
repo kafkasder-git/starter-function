@@ -50,7 +50,7 @@ export function StatCard({
   };
 
   return (
-    <Card className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-0 shadow-md overflow-hidden group">
+    <Card className="hover:shadow-lg transition-all duration-200 hover:-translate-y-1 border border-gray-200 shadow-md overflow-hidden group dark:border-gray-700 dark:bg-gray-900">
       <CardContent className="p-0">
         <div className="flex items-center">
           <div className="p-4 flex-1">
@@ -66,11 +66,11 @@ export function StatCard({
             {change && (
               <div className="flex items-center text-sm">
                 {changeType === 'increase' ? (
-                  <TrendingUp className="w-4 h-4 text-success-500 mr-1" />
+                  <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
                 ) : (
-                  <TrendingDown className="w-4 h-4 text-error-500 mr-1" />
+                  <TrendingDown className="w-4 h-4 text-red-500 mr-1" />
                 )}
-                <Text size="xs" weight="semibold" color={changeType === 'increase' ? 'success' : 'error'}>
+                <Text size="xs" weight="semibold" color={changeType === 'increase' ? 'green' : 'red'}>
                   {change}
                 </Text>
                 <Text size="xs" color="muted" className="ml-1">bu ay</Text>

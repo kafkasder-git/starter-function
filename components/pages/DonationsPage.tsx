@@ -562,8 +562,9 @@ export function DonationsPage() {
           <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
             <DialogTrigger asChild>
               <Button
+                variant="primaryGradient"
                 size="sm"
-                className="corporate-gradient order-1 min-h-[44px] min-w-[44px] flex-shrink-0 border-0 px-3 py-3 text-white shadow-lg transition-all duration-300 hover:shadow-xl sm:order-2 sm:px-6"
+                className="order-1 min-h-[44px] min-w-[44px] flex-shrink-0 border-0 px-3 py-3 text-white shadow-lg transition-all duration-300 hover:shadow-xl sm:order-2 sm:px-6"
               >
                 <Plus className="mr-1 h-4 w-4 sm:mr-2" />
                 <span className="hidden sm:inline">Yeni Bağış</span>
@@ -781,12 +782,13 @@ export function DonationsPage() {
                   İptal
                 </Button>
                 <Button
+                  variant="primaryGradient"
                   onClick={() => {
                     if (donationForm.isValid) {
                       handleCreateDonation(donationForm.values);
                     }
                   }}
-                  className="corporate-gradient min-h-[44px] px-6 shadow-md hover:shadow-lg"
+                  className="min-h-[44px] px-6 shadow-md hover:shadow-lg"
                   disabled={saving || !donationForm.isValid}
                 >
                   {saving ? (

@@ -124,7 +124,7 @@ export function ConversationList({
           <Input
             placeholder="Kişi veya konuşma ara..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => { setSearchTerm(e.target.value); }}
             className="pl-10"
           />
         </div>
@@ -135,7 +135,7 @@ export function ConversationList({
         {loading ? (
           <div className="flex items-center justify-center h-32">
             <div className="text-center text-gray-500">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-2"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-2" />
               <p>Konuşmalar yükleniyor...</p>
             </div>
           </div>
@@ -168,7 +168,7 @@ export function ConversationList({
                       conversation={conversation}
                       isSelected={conversation.id === selectedConversationId}
                       currentUserId={user.id}
-                      onClick={() => onConversationSelect(conversation.id)}
+                      onClick={() => { onConversationSelect(conversation.id); }}
                       onMenuClick={onConversationMenuClick}
                     />
                   ))}
@@ -189,7 +189,7 @@ export function ConversationList({
                       conversation={conversation}
                       isSelected={conversation.id === selectedConversationId}
                       currentUserId={user.id}
-                      onClick={() => onConversationSelect(conversation.id)}
+                      onClick={() => { onConversationSelect(conversation.id); }}
                       onMenuClick={onConversationMenuClick}
                     />
                   ))}
@@ -207,7 +207,7 @@ export function ConversationList({
             {filteredConversations.length} konuşma
           </span>
           <div className="flex items-center gap-1">
-            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+            <div className="w-2 h-2 bg-green-500 rounded-full" />
             <span>Çevrimiçi</span>
           </div>
         </div>

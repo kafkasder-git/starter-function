@@ -158,7 +158,7 @@ export default function BeneficiaryForm({
     storageKey: 'beneficiary-form',
     autoSaveInterval: 30000,
     excludeFields: ['documents'], // exclude file uploads
-    onRecover: () => toast.info('Kaydedilmiş form verisi geri yüklendi'),
+    onRecover: () => { toast.info('Kaydedilmiş form verisi geri yüklendi'); },
   });
 
   // Add auto-scroll to first error

@@ -8,12 +8,13 @@ import { toast } from 'sonner';
 import { create } from 'zustand';
 import { devtools, persist, subscribeWithSelector } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
-import { account, ID, Query } from '../lib/appwrite';
+import { account, ID, Query, isAppwriteConfigured } from '../lib/appwrite';
 import { db, collections } from '../lib/database';
 import { authLogger } from '../lib/logging';
 import { ROLE_PERMISSIONS, UserRole, type Permission } from '../types/auth';
 import { normalizeRoleToEnglish } from '../lib/roleMapping';
 import { AppwriteException } from 'appwrite';
+import { getMockAuthService, mockUsers } from '../lib/mock/mockData';
 
 // Error type for Appwrite auth operations
 // interface AuthError {
@@ -315,6 +316,42 @@ export const useAuthStore = create<AuthStore>()(
 
             try {
               authLogger.info('Attempting login', { email });
+
+              // Use mock auth service if Appwrite is not configured
+              if (!isAppwriteConfigured() || !account) {
+                authLogger.warn('Using mock authentication service');
+                const mockAuth = getMockAuthService();
+                await mockAuth.login(email, password);
+                const mockUser = await mockAuth.getCurrentUser();
+
+                const user: User = {
+                  id: mockUser.$id,
+                  email: mockUser.email,
+                  name: mockUser.name,
+                  role: mockUser.labels.includes('admin') ? UserRole.ADMIN : 
+                        mockUser.labels.includes('manager') ? UserRole.MANAGER : UserRole.USER,
+                  permissions: ROLE_PERMISSIONS[mockUser.labels.includes('admin') ? UserRole.ADMIN : 
+                               mockUser.labels.includes('manager') ? UserRole.MANAGER : UserRole.USER],
+                  isActive: true,
+                  createdAt: new Date(),
+                  updatedAt: new Date(),
+                };
+
+                set((state) => {
+                  state.user = user;
+                  state.isAuthenticated = true;
+                  state.session = {
+                    userId: user.id,
+                    expire: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+                  };
+                  state.isLoading = false;
+                  state.error = null;
+                });
+
+                toast.success('Giriş başarılı! (Development Mode)');
+                authLogger.info('Mock login successful', { userId: user.id });
+                return;
+              }
 
               // Development credentials fallback
               const DEV_CREDENTIALS = {

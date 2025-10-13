@@ -1145,7 +1145,7 @@ body {
 /* Enhanced Corporate Design Utilities */
 /* Safari iOS < 15.4 fallback - moved @layer content to regular CSS */
 .corporate-gradient {
-  background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+  background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%) !important;
 }
 
 .glass-morphism {
@@ -1607,7 +1607,7 @@ body {
   @layer utilities {
     /* Enhanced Corporate Design Utilities */
     .corporate-gradient {
-      background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+      background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%) !important;
     }
 
     .glass-morphism {

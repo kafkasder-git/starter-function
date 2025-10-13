@@ -174,7 +174,7 @@ export default function PartnerListPage() {
         className = 'bg-gray-50 text-gray-700';
     }
 
-    return <Badge className={`${className} border-0 px-2 py-1 text-xs`}>{label}</Badge>;
+    return <Badge className={`${className} border px-2 py-1 text-xs`}>{label}</Badge>;
   };
 
   const formatCurrency = (amount: number) => {

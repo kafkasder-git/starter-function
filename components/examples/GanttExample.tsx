@@ -16,8 +16,7 @@ import {
   type GanttStatus,
   type GanttMarkerProps,
 } from '@/components/kibo-ui/gantt';
-import { Card, CardHeader, CardTitle } from '@/components/kibo-ui';
-import { Badge } from '@/components/kibo-ui';
+import { Card, CardHeader, CardTitle, Badge } from '@/components/kibo-ui';
 
 // Sample data
 const sampleStatuses: GanttStatus[] = [

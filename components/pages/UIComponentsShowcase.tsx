@@ -445,3 +445,5 @@ export function UIComponentsShowcase() {
     </div>
   )
 }
+
+export default UIComponentsShowcase;

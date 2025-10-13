@@ -16,8 +16,8 @@ import {
   Search,
   TrendingUp,
 } from 'lucide-react';
-import { motion } from 'motion/react';
 import { useEffect, useMemo, useState, useCallback } from 'react';
+import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { useIsMobile } from '../../hooks/useTouchDevice';
 import { MobileInfoCard, ResponsiveCardGrid, TouchActionCard } from '../shared/ResponsiveCard';
@@ -187,7 +187,7 @@ export function BursStudentsPage() {
     };
 
     // Safe to access since status is typed as Student['status']
-    // eslint-disable-next-line security/detect-object-injection
+     
     return statusConfig[status];
   };
 
@@ -380,11 +380,8 @@ export function BursStudentsPage() {
           {isMobile ? (
             <div className="space-y-3 p-4">
               {filteredStudents.map((student, index) => (
-                <motion.div
+                <div
                   key={student.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
                 >
                   <TouchActionCard
                     icon={<GraduationCap className="h-5 w-5" />}
@@ -395,7 +392,7 @@ export function BursStudentsPage() {
                     }}
                     variant="secondary"
                   />
-                </motion.div>
+                </div>
               ))}
             </div>
           ) : (

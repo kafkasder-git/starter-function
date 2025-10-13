@@ -185,13 +185,17 @@ export interface CreateConversationData {
   type: ConversationType;
   participantIds: string[];
   name?: string;
+  createdBy: string;
+  avatarUrl?: string;
 }
 
 export interface SendMessageData {
   conversationId: string;
+  senderId: string;
   content?: string;
   type: MessageType;
   attachments?: File[];
+  replyTo?: string;
   replyToMessageId?: string;
 }
 
@@ -207,6 +211,8 @@ export interface MessageFilters {
   offset?: number;
   before?: Date;
   after?: Date;
+  senderId?: string;
+  type?: MessageType;
 }
 
 export interface ConversationFilters {

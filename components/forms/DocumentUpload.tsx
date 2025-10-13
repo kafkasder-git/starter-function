@@ -103,7 +103,7 @@ export function DocumentUpload({
     return null;
   };
 
-  const simulateVirusScan = async (_file?: File): Promise<boolean> => {
+  const simulateVirusScan = async (): Promise<boolean> => {
     // Placeholder for virus scanning
     // In real implementation, integrate with ClamAV or similar service
     await new Promise((resolve) => setTimeout(resolve, 500));

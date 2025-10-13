@@ -84,13 +84,14 @@ const mapUrgencyForDisplay = (urgency: AidRequest['urgency']): string => {
  */
 export function AidApplicationsPage() {
   const [applications, setApplications] = useState<AidRequest[]>([]);
+  const [_isLoading, _setIsLoading] = useState(true);
+  const [_error, _setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [priorityFilter, setPriorityFilter] = useState<string>('all');
   const [aidTypeFilter, setAidTypeFilter] = useState<string>('all');
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  // const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     applicantName: '',
     applicantId: '',
@@ -273,11 +274,11 @@ export function AidApplicationsPage() {
         </div>
       }
     >
-      <div className="safe-area space-y-4 p-3 sm:space-y-6 sm:p-6">
+      <div className="safe-area space-y-6 p-6">
         {/* Mobile-Optimized Stats Cards */}
-        <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-          <Card className="micro-interaction border-0 shadow-md transition-all duration-300 hover:shadow-lg">
-            <CardContent className="p-3 sm:p-4">
+        <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4">
+          <Card className="micro-interaction border border-gray-200 shadow-md transition-all duration-200 hover:shadow-lg dark:border-gray-700 dark:bg-gray-900">
+            <CardContent className="p-4 sm:p-6">
               <div className="mb-2 flex items-center justify-between">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100">
                   <FileText className="h-4 w-4 text-blue-600" />
@@ -291,8 +292,8 @@ export function AidApplicationsPage() {
             </CardContent>
           </Card>
 
-          <Card className="micro-interaction border-0 shadow-md transition-all duration-300 hover:shadow-lg">
-            <CardContent className="p-3 sm:p-4">
+          <Card className="micro-interaction border border-gray-200 shadow-md transition-all duration-200 hover:shadow-lg dark:border-gray-700 dark:bg-gray-900">
+            <CardContent className="p-4 sm:p-6">
               <div className="mb-2 flex items-center justify-between">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-yellow-100">
                   <Clock className="h-4 w-4 text-yellow-600" />
@@ -308,8 +309,8 @@ export function AidApplicationsPage() {
             </CardContent>
           </Card>
 
-          <Card className="micro-interaction border-0 shadow-md transition-all duration-300 hover:shadow-lg">
-            <CardContent className="p-3 sm:p-4">
+          <Card className="micro-interaction border border-gray-200 shadow-md transition-all duration-200 hover:shadow-lg dark:border-gray-700 dark:bg-gray-900">
+            <CardContent className="p-4 sm:p-6">
               <div className="mb-2 flex items-center justify-between">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100">
                   <CheckCircle className="h-4 w-4 text-green-600" />
@@ -327,8 +328,8 @@ export function AidApplicationsPage() {
             </CardContent>
           </Card>
 
-          <Card className="micro-interaction border-0 shadow-md transition-all duration-300 hover:shadow-lg">
-            <CardContent className="p-3 sm:p-4">
+          <Card className="micro-interaction border border-gray-200 shadow-md transition-all duration-200 hover:shadow-lg dark:border-gray-700 dark:bg-gray-900">
+            <CardContent className="p-4 sm:p-6">
               <div className="mb-2 flex items-center justify-between">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-red-100">
                   <XCircle className="h-4 w-4 text-red-600" />
@@ -346,7 +347,7 @@ export function AidApplicationsPage() {
         </div>
 
         {/* Mobile-Optimized Filters */}
-        <Card className="border-0 shadow-sm">
+        <Card className="border border-gray-200 shadow-md dark:border-gray-700 dark:bg-gray-900">
           <CardContent className="p-4 sm:p-6">
             <div className="space-y-4">
               {/* Search Input */}
@@ -409,7 +410,7 @@ export function AidApplicationsPage() {
         </Card>
 
         {/* Mobile-Optimized Applications List */}
-        <Card className="border-0 shadow-sm">
+        <Card className="border border-gray-200 shadow-md dark:border-gray-700 dark:bg-gray-900">
           <CardHeader className="pb-4">
             <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
               <FileCheck className="h-5 w-5 text-blue-600" />

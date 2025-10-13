@@ -18,7 +18,7 @@ import {
   Search,
   TrendingUp,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { PageLoading } from '../shared/LoadingSpinner';
 import { PageLayout } from '../layouts/PageLayout';
 import { Badge } from '../ui/badge';
@@ -30,23 +30,9 @@ import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { Textarea } from '../ui/textarea';
-
-interface Kumbara {
-  id: number;
-  code: string;
-  name: string;
-  location: string;
-  address: string;
-  status: 'Aktif' | 'Pasif' | 'Bakımda';
-  installDate: string;
-  lastCollection: string;
-  totalAmount: number;
-  monthlyAverage: number;
-  qrCode: string;
-  contactPerson?: string;
-  phone?: string;
-  notes?: string;
-}
+import { useToast } from '@/hooks/use-toast';
+import { kumbaraService } from '@/services/kumbaraService';
+import type { Kumbara, KumbaraInsert, KumbaraStatus } from '@/types/kumbara';
 
 // Real data will be fetched from API
 
@@ -56,31 +42,100 @@ interface Kumbara {
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
-export function KumbaraPage() {
-  const [loading] = useState(false);
+function KumbaraPage() {
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [kumbaralar] = useState<Kumbara[]>([]);
+  const [kumbaralar, setKumbaralar] = useState<Kumbara[]>([]);
   const [selectedKumbara, setSelectedKumbara] = useState<Kumbara | null>(null);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isQrDialogOpen, setIsQrDialogOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    location: '',
+    address: '',
+    contactPerson: '',
+    phone: '',
+    notes: '',
+  });
+  const { toast } = useToast();
+
+  // Load kumbaralar on component mount
+  useEffect(() => {
+    loadKumbaralar();
+  }, []);
+
+  const loadKumbaralar = async () => {
+    try {
+      setLoading(true);
+      const response = await kumbaraService.getKumbaras();
+      setKumbaralar(response.kumbaras || []);
+    } catch (error) {
+      toast('Kumbaralar yüklenirken hata oluştu');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAddKumbara = async () => {
+    try {
+      const kumbaraData: KumbaraInsert = {
+        name: formData.name,
+        location: formData.location,
+        address: formData.address,
+        contactPerson: formData.contactPerson || undefined,
+        phone: formData.phone || undefined,
+        notes: formData.notes || undefined,
+        status: 'active',
+        created_by: 'current-user', // This should come from auth context
+      };
+
+      const response = await kumbaraService.createKumbara(kumbaraData);
+      if (response) {
+        toast('Kumbara başarıyla eklendi');
+        setIsAddDialogOpen(false);
+        setFormData({
+          name: '',
+          location: '',
+          address: '',
+          contactPerson: '',
+          phone: '',
+          notes: '',
+        });
+        loadKumbaralar(); // Reload the list
+      } else {
+        toast('Kumbara eklenirken hata oluştu');
+      }
+    } catch (error) {
+      toast('Kumbara eklenirken hata oluştu');
+    }
+  };
 
   const filteredKumbaralar = kumbaralar.filter((kumbara) => {
     const matchesSearch =
       kumbara.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       kumbara.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
       kumbara.code.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || kumbara.status === statusFilter;
+    const matchesStatus = statusFilter === 'all' || kumbara.status === statusFilter as KumbaraStatus;
     return matchesSearch && matchesStatus;
   });
 
-  const getStatusBadge = (status: Kumbara['status']) => {
+  const getStatusBadge = (status: KumbaraStatus) => {
     const variants = {
-      Aktif: 'success' as const,
-      Pasif: 'outline' as const,
-      Bakımda: 'warning' as const,
+      active: 'success' as const,
+      inactive: 'outline' as const,
+      maintenance: 'warning' as const,
+      damaged: 'destructive' as const,
+      removed: 'secondary' as const,
     };
-    return <Badge variant={variants[status]} size="lg" className="font-semibold">{status}</Badge>;
+    const labels = {
+      active: 'Aktif',
+      inactive: 'Pasif',
+      maintenance: 'Bakımda',
+      damaged: 'Hasarlı',
+      removed: 'Kaldırıldı',
+    };
+    return <Badge variant={variants[status]} size="lg" className="font-semibold">{labels[status]}</Badge>;
   };
 
   const generateQRCode = (kumbara: Kumbara) => {
@@ -165,7 +220,7 @@ export function KumbaraPage() {
   };
 
   const totalKumbaralar = kumbaralar.length;
-  const aktifKumbaralar = kumbaralar.filter((k) => k.status === 'Aktif').length;
+  const aktifKumbaralar = kumbaralar.filter((k) => k.status === 'active').length;
   const toplamGelir = kumbaralar.reduce((sum, k) => sum + k.totalAmount, 0);
   const aylikOrtalama = kumbaralar.reduce((sum, k) => sum + k.monthlyAverage, 0);
 
@@ -203,7 +258,7 @@ export function KumbaraPage() {
       <div className="p-8 space-y-8 bg-gradient-to-br from-slate-50/50 to-blue-50/30">
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 group bg-gradient-to-br from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100">
+          <Card className="border border-gray-200 dark:border-gray-700 dark:bg-gray-900 shadow-lg hover:shadow-xl transition-all duration-300 group bg-gradient-to-br from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100">
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
                 <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
@@ -217,7 +272,7 @@ export function KumbaraPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 group bg-gradient-to-br from-emerald-50 to-green-50 hover:from-emerald-100 hover:to-green-100">
+          <Card className="border border-gray-200 dark:border-gray-700 dark:bg-gray-900 shadow-lg hover:shadow-xl transition-all duration-300 group bg-gradient-to-br from-emerald-50 to-green-50 hover:from-emerald-100 hover:to-green-100">
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
                 <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
@@ -231,7 +286,7 @@ export function KumbaraPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 group bg-gradient-to-br from-violet-50 to-purple-50 hover:from-violet-100 hover:to-purple-100">
+          <Card className="border border-gray-200 dark:border-gray-700 dark:bg-gray-900 shadow-lg hover:shadow-xl transition-all duration-300 group bg-gradient-to-br from-violet-50 to-purple-50 hover:from-violet-100 hover:to-purple-100">
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
                 <div className="w-14 h-14 bg-gradient-to-br from-violet-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
@@ -247,7 +302,7 @@ export function KumbaraPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 group bg-gradient-to-br from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100">
+          <Card className="border border-gray-200 dark:border-gray-700 dark:bg-gray-900 shadow-lg hover:shadow-xl transition-all duration-300 group bg-gradient-to-br from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100">
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
                 <div className="w-14 h-14 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
@@ -265,7 +320,7 @@ export function KumbaraPage() {
         </div>
 
         {/* Filters and Search */}
-        <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
+        <Card className="border border-gray-200 dark:border-gray-700 dark:bg-gray-900 shadow-xl bg-white/80 backdrop-blur-sm">
           <CardHeader className="pb-6">
             <div className="flex flex-col sm:flex-row gap-6 items-start sm:items-center justify-between">
               <div className="space-y-2">
@@ -290,9 +345,11 @@ export function KumbaraPage() {
                   </SelectTrigger>
                   <SelectContent className="rounded-xl border-slate-200 shadow-xl">
                     <SelectItem value="all">Tüm Durumlar</SelectItem>
-                    <SelectItem value="Aktif">Aktif</SelectItem>
-                    <SelectItem value="Pasif">Pasif</SelectItem>
-                    <SelectItem value="Bakımda">Bakımda</SelectItem>
+                    <SelectItem value="active">Aktif</SelectItem>
+                    <SelectItem value="inactive">Pasif</SelectItem>
+                    <SelectItem value="maintenance">Bakımda</SelectItem>
+                    <SelectItem value="damaged">Hasarlı</SelectItem>
+                    <SelectItem value="removed">Kaldırıldı</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -338,7 +395,7 @@ export function KumbaraPage() {
                       </TableCell>
                       <TableCell className="py-4">{getStatusBadge(kumbara.status)}</TableCell>
                       <TableCell className="text-slate-600 py-4 font-medium">
-                        {new Date(kumbara.lastCollection).toLocaleDateString('tr-TR')}
+                        {kumbara.lastCollection ? new Date(kumbara.lastCollection).toLocaleDateString('tr-TR') : 'Henüz toplanmadı'}
                       </TableCell>
                       <TableCell className="font-bold text-emerald-600 py-4">
                         ₺{kumbara.totalAmount.toLocaleString()}
@@ -395,7 +452,7 @@ export function KumbaraPage() {
 
         {/* Add New Kumbara Dialog */}
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-          <DialogContent className="max-w-lg border-0 shadow-2xl rounded-2xl bg-white">
+          <DialogContent className="max-w-lg border border-gray-200 dark:border-gray-700 dark:bg-gray-900 shadow-2xl rounded-2xl bg-white">
             <DialogHeader className="space-y-3 pb-6">
               <DialogTitle className="text-2xl text-slate-800 flex items-center gap-3">
                 <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
@@ -418,6 +475,8 @@ export function KumbaraPage() {
                     id="name"
                     placeholder="Merkez Camii Kumbarası"
                     className="h-11 border-slate-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-xl"
+                    value={formData.name}
+                    onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                   />
                 </div>
                 <div className="space-y-3">
@@ -428,6 +487,8 @@ export function KumbaraPage() {
                     id="location"
                     placeholder="Fatih Camii"
                     className="h-11 border-slate-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-xl"
+                    value={formData.location}
+                    onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
                   />
                 </div>
               </div>
@@ -441,6 +502,8 @@ export function KumbaraPage() {
                   placeholder="Tam adres bilgisi..."
                   rows={3}
                   className="border-slate-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-xl resize-none"
+                  value={formData.address}
+                  onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
                 />
               </div>
 
@@ -453,6 +516,8 @@ export function KumbaraPage() {
                     id="contact"
                     placeholder="Ahmet Öztürk"
                     className="h-11 border-slate-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-xl"
+                    value={formData.contactPerson}
+                    onChange={(e) => setFormData(prev => ({ ...prev, contactPerson: e.target.value }))}
                   />
                 </div>
                 <div className="space-y-3">
@@ -463,6 +528,8 @@ export function KumbaraPage() {
                     id="phone"
                     placeholder="0532 123 45 67"
                     className="h-11 border-slate-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-xl"
+                    value={formData.phone}
+                    onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
                   />
                 </div>
               </div>
@@ -476,6 +543,8 @@ export function KumbaraPage() {
                   placeholder="Özel notlar..."
                   rows={3}
                   className="border-slate-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-xl resize-none"
+                  value={formData.notes}
+                  onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
                 />
               </div>
 
@@ -489,7 +558,10 @@ export function KumbaraPage() {
                 >
                   İptal
                 </Button>
-                <Button className="flex-1 h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 rounded-xl shadow-lg">
+                <Button 
+                  className="flex-1 h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 rounded-xl shadow-lg"
+                  onClick={handleAddKumbara}
+                >
                   <QrCode className="w-5 h-5 mr-2" />
                   QR Kod ile Ekle
                 </Button>
@@ -500,7 +572,7 @@ export function KumbaraPage() {
 
         {/* QR Code Dialog */}
         <Dialog open={isQrDialogOpen} onOpenChange={setIsQrDialogOpen}>
-          <DialogContent className="max-w-md border-0 shadow-2xl rounded-2xl bg-white">
+          <DialogContent className="max-w-md border border-gray-200 dark:border-gray-700 dark:bg-gray-900 shadow-2xl rounded-2xl bg-white">
             <DialogHeader className="space-y-3 pb-6">
               <DialogTitle className="text-2xl text-slate-800 flex items-center gap-3">
                 <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center">
@@ -585,3 +657,5 @@ export function KumbaraPage() {
     </PageLayout>
   );
 }
+
+export default KumbaraPage;

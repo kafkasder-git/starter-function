@@ -83,11 +83,11 @@ export function MessageList({
 
   // Group consecutive messages from same sender
   const groupedMessages = useMemo(() => {
-    const groups: Array<{
+    const groups: {
       senderId: string;
       messages: Message[];
       showAvatar: boolean;
-    }> = [];
+    }[] = [];
 
     messages.forEach((message, index) => {
       const prevMessage = index > 0 ? messages[index - 1] : null;

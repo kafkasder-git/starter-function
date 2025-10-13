@@ -179,7 +179,7 @@ export default function PartnerAgreementsPage() {
     if (!config) return null;
 
     const { label, className } = config;
-    return <Badge className={`${className} border-0 px-2 py-1 text-xs`}>{label}</Badge>;
+    return <Badge className={`${className} border border-gray-200 dark:border-gray-700 dark:bg-gray-900 px-2 py-1 text-xs`}>{label}</Badge>;
   };
 
   const getRemainingTime = (endDate: string) => {

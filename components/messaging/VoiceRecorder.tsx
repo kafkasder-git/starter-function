@@ -64,8 +64,8 @@ export function VoiceRecorder({
       const audio = new Audio();
       audio.src = URL.createObjectURL(blob);
       
-      audio.onplay = () => setIsPlaying(true);
-      audio.onpause = () => setIsPlaying(false);
+      audio.onplay = () => { setIsPlaying(true); };
+      audio.onpause = () => { setIsPlaying(false); };
       audio.onended = () => {
         setIsPlaying(false);
         setAudioElement(null);

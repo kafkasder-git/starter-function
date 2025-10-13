@@ -5,8 +5,7 @@
  * @version 1.0.0
  */
 
-import React, { useState, useMemo } from 'react';
-import { motion } from 'motion/react';
+import React, { useState, useMemo, memo, useCallback } from 'react';
 // Optimized selective imports from recharts
 import {
   ResponsiveContainer,
@@ -72,15 +71,10 @@ const COLORS = {
 
 const PIE_COLORS = ['#2563eb', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'];
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+const CustomTooltip = memo(({ active, payload, label }: any) => {
   if (active && payload?.length) {
     return (
-      <motion.div
-        className="bg-white p-4 rounded-lg shadow-xl border border-gray-200/50 backdrop-blur-sm"
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.15 }}
-      >
+      <div className="bg-white p-4 rounded-lg shadow-xl border border-gray-200/50 backdrop-blur-sm">
         <p className="font-semibold text-gray-900 mb-2">{label}</p>
         {payload.map((entry: any, index: number) => (
           <div key={index} className="flex items-center gap-2">
@@ -90,19 +84,19 @@ const CustomTooltip = ({ active, payload, label }: any) => {
             </span>
           </div>
         ))}
-      </motion.div>
+      </div>
     );
   }
   return null;
-};
+});
 
 /**
- * InteractiveChart function
+ * InteractiveChart function - Optimized with React.memo
  *
  * @param {Object} params - Function parameters
  * @returns {void} Nothing
  */
-export function InteractiveChart({
+export const InteractiveChart = memo(({
   title,
   description,
   data,
@@ -113,16 +107,16 @@ export function InteractiveChart({
   showExport = true,
   className = '',
   loading = false,
-}: InteractiveChartProps) {
+}: InteractiveChartProps) => {
   const [activeType, setActiveType] = useState(type);
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const chartTypes = [
+  const chartTypes = useMemo(() => [
     { key: 'line', icon: LineChartIcon, label: 'Çizgi' },
     { key: 'area', icon: BarChart3, label: 'Alan' },
     { key: 'bar', icon: BarChart3, label: 'Çubuk' },
     { key: 'pie', icon: PieChartIcon, label: 'Pasta' },
-  ];
+  ], []);
 
   const processedData = useMemo(() => {
     if (!data || data.length === 0) return [];
@@ -133,7 +127,15 @@ export function InteractiveChart({
     }));
   }, [data]);
 
-  const renderChart = () => {
+  const handleTypeChange = useCallback((newType: string) => {
+    setActiveType(newType as any);
+  }, []);
+
+  const handleToggleExpanded = useCallback(() => {
+    setIsExpanded(prev => !prev);
+  }, []);
+
+  const renderChart = useMemo(() => {
     if (loading) {
       return (
         <div className="flex items-center justify-center h-full">
@@ -153,43 +155,27 @@ export function InteractiveChart({
       );
     }
 
-    if (!processedData.length) {
-      return (
-        <div className="flex items-center justify-center h-full text-gray-500">
-          <div className="text-center">
-            <BarChart3 className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-            <p className="text-sm">Görüntülenecek veri yok</p>
-          </div>
-        </div>
-      );
-    }
-
-    const commonProps = {
+    const chartProps = {
       data: processedData,
-      margin: { top: 5, right: 30, left: 20, bottom: 5 },
+      margin: { top: 20, right: 30, left: 20, bottom: 20 },
     };
 
     switch (activeType) {
       case 'area':
         return (
-          <ResponsiveContainer width="100%" height={height}>
-            <AreaChart {...commonProps}>
-              <defs>
-                <linearGradient id="colorGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor={color} stopOpacity={0.3} />
-                  <stop offset="95%" stopColor={color} stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-              <XAxis dataKey="name" stroke="#64748b" fontSize={12} />
-              <YAxis stroke="#64748b" fontSize={12} />
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart {...chartProps}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+              <XAxis dataKey="name" stroke="#666" />
+              <YAxis stroke="#666" />
               <Tooltip content={<CustomTooltip />} />
               <Area
                 type="monotone"
                 dataKey="value"
                 stroke={color}
-                strokeWidth={3}
-                fill="url(#colorGradient)"
+                fill={color}
+                fillOpacity={0.3}
+                strokeWidth={2}
               />
             </AreaChart>
           </ResponsiveContainer>
@@ -197,11 +183,11 @@ export function InteractiveChart({
 
       case 'bar':
         return (
-          <ResponsiveContainer width="100%" height={height}>
-            <BarChart {...commonProps}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-              <XAxis dataKey="name" stroke="#64748b" fontSize={12} />
-              <YAxis stroke="#64748b" fontSize={12} />
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart {...chartProps}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+              <XAxis dataKey="name" stroke="#666" />
+              <YAxis stroke="#666" />
               <Tooltip content={<CustomTooltip />} />
               <Bar dataKey="value" fill={color} radius={[4, 4, 0, 0]} />
             </BarChart>
@@ -210,17 +196,16 @@ export function InteractiveChart({
 
       case 'pie':
         return (
-          <ResponsiveContainer width="100%" height={height}>
+          <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
                 data={processedData}
                 cx="50%"
                 cy="50%"
-                labelLine={false}
-                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                 outerRadius={80}
-                fill={color}
+                fill="#8884d8"
                 dataKey="value"
+                label={({ name, value }) => `${name}: ${value}`}
               >
                 {processedData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
@@ -233,17 +218,17 @@ export function InteractiveChart({
 
       default: // line
         return (
-          <ResponsiveContainer width="100%" height={height}>
-            <LineChart {...commonProps}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-              <XAxis dataKey="name" stroke="#64748b" fontSize={12} />
-              <YAxis stroke="#64748b" fontSize={12} />
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart {...chartProps}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+              <XAxis dataKey="name" stroke="#666" />
+              <YAxis stroke="#666" />
               <Tooltip content={<CustomTooltip />} />
               <Line
                 type="monotone"
                 dataKey="value"
                 stroke={color}
-                strokeWidth={3}
+                strokeWidth={2}
                 dot={{ fill: color, strokeWidth: 2, r: 4 }}
                 activeDot={{ r: 6, stroke: color, strokeWidth: 2 }}
               />
@@ -251,7 +236,31 @@ export function InteractiveChart({
           </ResponsiveContainer>
         );
     }
-  };
+  }, [loading, processedData, activeType, color]);
+
+  // Handle empty data state
+  if (!loading && !processedData.length) {
+    return (
+      <Card className={`border border-gray-200 shadow-md ${className}`}>
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+              {description && <p className="text-sm text-gray-600 mt-1">{description}</p>}
+            </div>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-center h-64 text-gray-500">
+            <div className="text-center">
+              <BarChart3 className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+              <p className="text-sm">Görüntülenecek veri yok</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   const handleExport = () => {
     // Export implementation
@@ -269,7 +278,7 @@ export function InteractiveChart({
   };
 
   return (
-    <motion.div className={`w-full ${className}`} layout transition={{ duration: 0.3 }}>
+    <div className={`w-full ${className}`}>
       <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
         <CardHeader className="pb-4">
           <div className="flex items-start justify-between gap-4">
@@ -291,9 +300,7 @@ export function InteractiveChart({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => {
-                  setIsExpanded(!isExpanded);
-                }}
+                onClick={handleToggleExpanded}
                 className="h-8 px-3"
               >
                 <Maximize2 className="w-3 h-3" />
@@ -310,9 +317,7 @@ export function InteractiveChart({
                   className={`cursor-pointer transition-all duration-200 hover:scale-105 ${
                     activeType === key ? 'bg-primary text-white' : 'hover:bg-gray-50'
                   }`}
-                  onClick={() => {
-                    setActiveType(key as any);
-                  }}
+                  onClick={() => { handleTypeChange(key); }}
                 >
                   <Icon className="w-3 h-3 mr-1" />
                   {label}
@@ -323,16 +328,16 @@ export function InteractiveChart({
         </CardHeader>
 
         <CardContent className="pt-0">
-          <motion.div
+          <div
+            className="transition-all duration-300"
             style={{ height: isExpanded ? height * 1.5 : height }}
-            transition={{ duration: 0.3 }}
           >
-            {renderChart()}
-          </motion.div>
+            {renderChart}
+          </div>
         </CardContent>
       </Card>
-    </motion.div>
+    </div>
   );
-}
+});
 
 export default InteractiveChart;

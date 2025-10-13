@@ -6,7 +6,6 @@
  */
 
 import { Calendar, Clock, Filter, MapPin, Plus, Users } from 'lucide-react';
-import { motion } from 'motion/react';
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { logger } from '../../lib/logging/logger';
@@ -45,6 +44,8 @@ export function EventsPage() {
   const [filterType, setFilterType] = useState('all');
   const [showEventDialog, setShowEventDialog] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -58,15 +59,23 @@ export function EventsPage() {
   const [events, setEvents] = useState<Event[]>([]);
 
   const loadEvents = async () => {
-    setLoading(true);
-    const filters = filterType === 'all' ? {} : { type: filterType };
-    const result = await eventsService.getEvents(filters);
-    if (!result.error) {
-      setEvents(result.data || []);
-    } else {
-      logger.error('Error loading events:', result.error);
+    try {
+      setLoading(true);
+      setError(null);
+      const filters = filterType === 'all' ? {} : { type: filterType };
+      const result = await eventsService.getEvents(filters);
+      if (!result.error) {
+        setEvents(result.data || []);
+      } else {
+        setError('Etkinlikler yüklenirken hata oluştu.');
+        logger.error('Error loading events:', result.error);
+      }
+    } catch (err) {
+      setError('Etkinlikler yüklenirken beklenmeyen bir hata oluştu.');
+      logger.error('Unexpected error loading events:', err);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   useEffect(() => {
@@ -75,10 +84,10 @@ export function EventsPage() {
 
   const getEventTypeBadge = (type: Event['type']) => {
     const mapping = {
-      meeting: { label: 'Toplantı', variant: 'info' as const },
-      charity: { label: 'Hayır İşi', variant: 'success' as const },
+      meeting: { label: 'Toplantı', variant: 'default' as const },
+      charity: { label: 'Hayır İşi', variant: 'default' as const },
       education: { label: 'Eğitim', variant: 'default' as const },
-      social: { label: 'Sosyal', variant: 'warning' as const },
+      social: { label: 'Sosyal', variant: 'default' as const },
     };
     const config = mapping[type];
     return <Badge variant={config.variant}>{config.label}</Badge>;
@@ -143,18 +152,22 @@ export function EventsPage() {
     toast.success(`Etkinlik detayları açılıyor: ${eventId}`);
   };
 
+  const handleRetry = () => {
+    loadEvents();
+  };
+
   return (
-    <div className="min-h-full space-y-6 bg-slate-50/50 p-8">
+    <div className="min-h-full space-y-6 bg-gradient-to-br from-neutral-50 via-neutral-100 to-neutral-200 p-6 dark:from-neutral-900 dark:via-neutral-950 dark:to-neutral-950">
       {/* Desktop Header */}
       <div className="flex flex-col space-y-4">
         <div className="space-y-2">
-          <h1 className="flex items-center gap-3 text-3xl font-bold text-slate-800">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-slate-600 to-gray-700">
+          <h1 className="flex items-center gap-4 text-2xl font-bold text-neutral-900 dark:text-neutral-50">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-600 shadow-md">
               <Calendar className="h-6 w-6 text-white" />
             </div>
             Etkinlik Takvimi
           </h1>
-          <p className="text-slate-600">Dernek etkinliklerini planlayın ve takip edin</p>
+          <p className="text-neutral-600 dark:text-neutral-400">Dernek etkinliklerini planlayın ve takip edin</p>
         </div>
 
         {/* Desktop Actions and Filters */}
@@ -224,16 +237,39 @@ export function EventsPage() {
       </div>
 
       {/* Desktop Event Cards */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-        {events.map((event, index) => (
-          <motion.div
-            key={event.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
-          >
+      {loading ? (
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+          {[...Array(6)].map((_, i) => (
+            <Card key={i} className="border border-gray-200 shadow-md dark:border-gray-700 dark:bg-gray-900">
+              <CardContent className="p-6">
+                <div className="space-y-4">
+                  <div className="h-4 bg-gray-200 rounded w-3/4 animate-pulse" />
+                  <div className="h-3 bg-gray-200 rounded w-1/2 animate-pulse" />
+                  <div className="space-y-2">
+                    <div className="h-3 bg-gray-200 rounded w-full animate-pulse" />
+                    <div className="h-3 bg-gray-200 rounded w-2/3 animate-pulse" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : error ? (
+        <div className="text-center py-12">
+          <div className="text-red-500 mb-4">
+            <Calendar className="w-12 h-12 mx-auto mb-3" />
+            <p className="text-sm font-medium">{error}</p>
+          </div>
+          <Button variant="outline" size="sm" onClick={handleRetry}>
+            Tekrar Dene
+          </Button>
+        </div>
+      ) : events.length > 0 ? (
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+          {events.map((event) => (
             <Card
-              className="cursor-pointer border-0 shadow-md transition-all duration-200 hover:shadow-lg"
+              key={event.id}
+              className="cursor-pointer border border-gray-200 shadow-md transition-all duration-200 hover:shadow-lg hover:-translate-y-1 dark:border-gray-700 dark:bg-gray-900"
               onClick={() => {
                 handleViewEvent(event.id);
               }}
@@ -247,54 +283,54 @@ export function EventsPage() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p className="text-sm leading-relaxed text-slate-600">{event.description}</p>
+                <p className="text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">{event.description}</p>
 
                 {/* Mobile-Optimized Event Details */}
-                <div className="grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
-                  <div className="flex items-center gap-3 text-slate-600">
-                    <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-blue-100">
-                      <Calendar className="h-4 w-4 text-blue-600" />
+                <div className="grid grid-cols-1 gap-4 text-sm sm:grid-cols-2">
+                  <div className="flex items-center gap-3 text-neutral-600 dark:text-neutral-400">
+                    <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900">
+                      <Calendar className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                     </div>
                     <div>
                       <p className="font-medium">
                         {new Date(event.date).toLocaleDateString('tr-TR')}
                       </p>
-                      <p className="text-xs text-slate-500">Tarih</p>
+                      <p className="text-xs text-neutral-500 dark:text-neutral-500">Tarih</p>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3 text-slate-600">
-                    <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-green-100">
-                      <Clock className="h-4 w-4 text-green-600" />
+                  <div className="flex items-center gap-3 text-neutral-600 dark:text-neutral-400">
+                    <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-green-100 dark:bg-green-900">
+                      <Clock className="h-4 w-4 text-green-600 dark:text-green-400" />
                     </div>
                     <div>
                       <p className="font-medium">{event.time}</p>
-                      <p className="text-xs text-slate-500">Saat</p>
+                      <p className="text-xs text-neutral-500 dark:text-neutral-500">Saat</p>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3 text-slate-600 sm:col-span-2">
-                    <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-purple-100">
-                      <MapPin className="h-4 w-4 text-purple-600" />
+                  <div className="flex items-center gap-3 text-neutral-600 dark:text-neutral-400 sm:col-span-2">
+                    <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-purple-100 dark:bg-purple-900">
+                      <MapPin className="h-4 w-4 text-purple-600 dark:text-purple-400" />
                     </div>
                     <div>
                       <p className="font-medium">{event.location}</p>
-                      <p className="text-xs text-slate-500">Konum</p>
+                      <p className="text-xs text-neutral-500 dark:text-neutral-500">Konum</p>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3 text-slate-600 sm:col-span-2">
-                    <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-orange-100">
-                      <Users className="h-4 w-4 text-orange-600" />
+                  <div className="flex items-center gap-3 text-neutral-600 dark:text-neutral-400 sm:col-span-2">
+                    <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-900">
+                      <Users className="h-4 w-4 text-orange-600 dark:text-orange-400" />
                     </div>
                     <div className="flex-1">
                       <p className="font-medium">
                         {event.attendees} katılımcı
                         {event.maxAttendees && (
-                          <span className="text-slate-500"> / {event.maxAttendees} maksimum</span>
+                          <span className="text-neutral-500 dark:text-neutral-500"> / {event.maxAttendees} maksimum</span>
                         )}
                       </p>
-                      <p className="text-xs text-slate-500">Katılım</p>
+                      <p className="text-xs text-neutral-500 dark:text-neutral-500">Katılım</p>
                     </div>
                   </div>
                 </div>
@@ -302,13 +338,13 @@ export function EventsPage() {
                 {/* Mobile-Optimized Progress Bar */}
                 {event.maxAttendees && (
                   <div className="space-y-2">
-                    <div className="flex justify-between text-xs text-slate-600">
+                    <div className="flex justify-between text-xs text-neutral-600 dark:text-neutral-400">
                       <span>Doluluk Oranı</span>
                       <span>{Math.round((event.attendees / event.maxAttendees) * 100)}%</span>
                     </div>
-                    <div className="h-2 w-full rounded-full bg-slate-200">
+                    <div className="h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700">
                       <div
-                        className="h-2 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 transition-all duration-300"
+                        className="h-2 rounded-full bg-blue-500 transition-all duration-300"
                         style={{
                           width: `${Math.min((event.attendees / event.maxAttendees) * 100, 100)}%`,
                         }}
@@ -320,7 +356,7 @@ export function EventsPage() {
                 {/* Mobile Action Button */}
                 <Button
                   variant="outline"
-                  className="mt-4 min-h-[44px] w-full border-blue-200 hover:border-blue-300 hover:bg-blue-50"
+                  className="mt-4 min-h-[44px] w-full border-gray-200 hover:border-gray-300 hover:bg-gray-50 dark:border-gray-700 dark:hover:border-gray-600 dark:hover:bg-gray-800"
                   onClick={(e) => {
                     e.stopPropagation();
                     handleViewEvent(event.id);
@@ -330,24 +366,34 @@ export function EventsPage() {
                 </Button>
               </CardContent>
             </Card>
-          </motion.div>
-        ))}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-12">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-100 dark:bg-gray-800 shadow-md">
+            <Calendar className="h-8 w-8 text-gray-600 dark:text-gray-400" />
+          </div>
+          <h2 className="mb-2 text-xl font-semibold text-neutral-900 dark:text-neutral-50">Henüz etkinlik bulunmuyor</h2>
+          <p className="mb-4 text-neutral-600 dark:text-neutral-400">
+            Yeni etkinlikler burada görünecek.
+          </p>
+          <Button onClick={handleNewEvent}>
+            <Plus className="h-4 w-4 mr-2" />
+            İlk Etkinliği Oluştur
+          </Button>
+        </div>
+      )}
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="py-12 text-center"
-      >
-        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-slate-600 to-gray-700 shadow-lg">
+      <div className="py-12 text-center">
+        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-600 shadow-lg">
           <span className="text-2xl text-white">📅</span>
         </div>
-        <h2 className="mb-2 text-xl font-semibold text-slate-800">Etkinlik Yönetimi</h2>
-        <p className="mb-4 text-slate-600">
+        <h2 className="mb-2 text-xl font-semibold text-neutral-900 dark:text-neutral-50">Etkinlik Yönetimi</h2>
+        <p className="mb-4 text-neutral-600 dark:text-neutral-400">
           Gelişmiş takvim özellikleri yakında kullanılabilir olacak.
         </p>
         <Badge variant="secondary">Geliştiriliyor</Badge>
-      </motion.div>
+      </div>
 
       {/* Event Creation Dialog */}
       <Dialog open={showEventDialog} onOpenChange={setShowEventDialog}>

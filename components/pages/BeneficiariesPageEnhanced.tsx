@@ -708,12 +708,12 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
         subtitle="Dernek yardımlarından faydalanan kişileri yönetin"
         className="min-h-screen"
         actions={
-          <div className="flex w-full flex-wrap items-center justify-end gap-3 p-2 sm:w-auto sm:p-0">
+          <div className="flex w-full flex-wrap items-center justify-end gap-4 p-4 sm:w-auto sm:p-0">
             {/* Export Button */}
             <Button
               variant="outline"
               size="sm"
-              className="professional-card order-2 min-h-[44px] min-w-[44px] border-gray-300 px-3 transition-shadow hover:border-gray-400 hover:shadow-md sm:order-1 sm:px-4"
+              className="professional-card order-2 min-h-[44px] min-w-[44px] border-gray-300 px-4 transition-shadow hover:border-gray-400 hover:shadow-md sm:order-1 sm:px-6"
               onClick={handleExport}
             >
               <Download className="mr-1 h-4 w-4 sm:mr-2" />
@@ -725,8 +725,9 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
             <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
               <DialogTrigger asChild>
                 <Button
+                  variant="primaryGradient"
                   size="sm"
-                  className="corporate-gradient micro-interaction order-1 min-h-[44px] min-w-[44px] flex-shrink-0 border-0 px-3 py-3 text-white shadow-lg transition-all duration-300 hover:shadow-xl sm:order-2 sm:px-6"
+                  className="micro-interaction order-1 min-h-[44px] min-w-[44px] flex-shrink-0 border border-blue-600 px-4 py-3 text-white shadow-lg transition-all duration-200 hover:shadow-xl sm:order-2 sm:px-6"
                   type="button"
                   data-testid="new-beneficiary-btn"
                   aria-label="Yeni İhtiyaç Sahibi Ekle"
@@ -901,8 +902,9 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
                     İptal
                   </Button>
                   <Button
+                    variant="primaryGradient"
                     onClick={handleCreateBeneficiary}
-                    className="corporate-gradient min-h-[44px] px-6 shadow-md hover:shadow-lg"
+                    className="min-h-[44px] px-6 shadow-md hover:shadow-lg"
                     disabled={saving}
                   >
                     {saving ? (

@@ -204,7 +204,7 @@ export const useRole = (roles: string | string[]): boolean => {
  * const { role, permissions, isLoading } = useUserRole();
  */
 export const useUserRole = () => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   const [role, setRole] = useState<any | null>(null);
   const [permissions, setPermissions] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);

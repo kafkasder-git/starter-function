@@ -49,22 +49,22 @@ export function MessageReadReceipts({
         hour: '2-digit', 
         minute: '2-digit' 
       });
-    } else {
+    } 
       return readTime.toLocaleDateString('tr-TR', { 
         day: '2-digit', 
         month: '2-digit',
         year: readTime.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
       });
-    }
+    
   };
 
   // Get status icon
   const getStatusIcon = () => {
     if (readCount === 0) {
       return <Clock className="h-3 w-3 text-gray-400" />;
-    } else {
+    } 
       return <CheckCheck className="h-3 w-3 text-blue-500" />;
-    }
+    
   };
 
   // Get status text
@@ -94,7 +94,7 @@ export function MessageReadReceipts({
       <Button
         variant="ghost"
         size="sm"
-        onClick={() => setIsDetailsOpen(true)}
+        onClick={() => { setIsDetailsOpen(true); }}
         className={cn('h-auto p-0 hover:bg-transparent', className)}
       >
         <div className="flex items-center gap-1">

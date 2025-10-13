@@ -177,7 +177,7 @@ export function BeneficiaryDocuments({
     try {
       // Find Document
       const document = uploadedFiles.find(file => file.id === fileId);
-      if (!document || !document.bucket || !document.path) return;
+      if (!document?.bucket || !document.path) return;
 
       // Delete from Storage
       await fileStorageService.deleteFile(document.bucket, document.path);

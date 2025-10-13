@@ -124,10 +124,10 @@ export function Header({
             <Building2 className="h-4 w-4 text-white drop-shadow-sm sm:h-5 sm:w-5" />
           </div>
           <div className="hidden md:block">
-            <Heading level={1} size="lg" weight="bold" className="text-base tracking-tight text-neutral-900 sm:text-lg dark:text-neutral-100">
-              Dernek Yönetim Sistemi
-            </Heading>
-            <Text size="xs" weight="medium" color="neutral" className="-mt-0.5 text-neutral-600 dark:text-neutral-400">Hayır İşleri Platformu</Text>
+          <Heading level={1} size="lg" weight="bold" className="text-xl tracking-tight text-neutral-900 dark:text-neutral-100">
+            Dernek Yönetim Sistemi
+          </Heading>
+          <Text size="sm" weight="medium" color="neutral" className="text-neutral-600 dark:text-neutral-400">Hayır İşleri Platformu</Text>
           </div>
           <div className="block md:hidden">
             <Heading level={1} size="sm" weight="bold" className="tracking-tight text-neutral-900 dark:text-neutral-100">Dernek</Heading>
@@ -154,17 +154,16 @@ export function Header({
       </motion.div>
 
       {/* Enhanced Search - Hidden on small screens */}
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="relative mx-4 hidden max-w-md flex-1 sm:flex lg:mx-8 lg:max-w-xl"
-        data-onboarding="search"
-      >
+      <div className="relative mx-6 hidden max-w-md flex-1 sm:flex lg:mx-8 lg:max-w-xl" data-onboarding="search">
         <div className="relative w-full">
+          <label htmlFor="header-search" className="sr-only">
+            Akıllı arama
+          </label>
           <input
+            id="header-search"
             type="text"
             placeholder="Akıllı arama... (⌘K ile komut paleti)"
+            aria-label="Akıllı arama... (⌘K ile komut paleti)"
             onChange={(e) => {
               const query = e.target.value;
               trackSearch(query, 0);
@@ -185,7 +184,7 @@ export function Header({
             <Command className="h-3 w-3" />
           </Button>
         </div>
-      </motion.div>
+      </div>
 
       {/* Mobile Search & Command Buttons - Visible on small screens */}
       <motion.div

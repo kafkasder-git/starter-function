@@ -1,8 +1,38 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import App from './App';
 import './index.css';
 import { logger } from '../lib/logging/logger';
+
+// Create a client with optimized configuration
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      // Data stays fresh for 5 minutes
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      // Cache data for 10 minutes
+      gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
+      // Retry failed requests 3 times
+      retry: 3,
+      // Retry delay with exponential backoff
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+      // Refetch on window focus for real-time data
+      refetchOnWindowFocus: true,
+      // Refetch on reconnect
+      refetchOnReconnect: true,
+      // Don't refetch on mount if data exists and is fresh
+      refetchOnMount: true,
+    },
+    mutations: {
+      // Retry mutations once
+      retry: 1,
+      // Retry delay for mutations
+      retryDelay: 1000,
+    },
+  },
+});
 
 // Global error handlers for production
 if (typeof window !== 'undefined') {
@@ -66,7 +96,17 @@ try {
 
   ReactDOM.createRoot(rootElement).render(
     <React.StrictMode>
-      <App />
+      <QueryClientProvider client={queryClient}>
+        <App />
+        {/* React Query DevTools - only in development */}
+        {process.env.NODE_ENV === 'development' && (
+          <ReactQueryDevtools 
+            initialIsOpen={false} 
+            position="bottom-right"
+            buttonPosition="bottom-right"
+          />
+        )}
+      </QueryClientProvider>
     </React.StrictMode>,
   );
 } catch (error) {

@@ -124,7 +124,7 @@ export function LawsuitTrackingPage() {
     };
 
     const { label, className } = config[stage];
-    return <Badge className={`${className} text-xs px-2 py-1 border-0`}>{label}</Badge>;
+    return <Badge className={`${className} text-xs px-2 py-1 border border-gray-200 dark:border-gray-700 dark:bg-gray-900`}>{label}</Badge>;
   };
 
   const getTypeLabel = (type: Lawsuit['caseType']) => {

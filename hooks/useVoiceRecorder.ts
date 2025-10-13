@@ -129,7 +129,7 @@ export function useVoiceRecorder(options: VoiceRecorderOptions = {}): UseVoiceRe
         setAudioBlob(blob);
         onRecordingComplete?.(blob);
         logger.info('Voice recording completed', { 
-          duration: duration,
+          duration,
           size: blob.size,
           type: blob.type 
         });
@@ -186,7 +186,7 @@ export function useVoiceRecorder(options: VoiceRecorderOptions = {}): UseVoiceRe
 
         // Stop audio stream
         if (audioStreamRef.current) {
-          audioStreamRef.current.getTracks().forEach(track => track.stop());
+          audioStreamRef.current.getTracks().forEach(track => { track.stop(); });
           audioStreamRef.current = null;
         }
 
@@ -217,7 +217,7 @@ export function useVoiceRecorder(options: VoiceRecorderOptions = {}): UseVoiceRe
 
         // Stop audio stream
         if (audioStreamRef.current) {
-          audioStreamRef.current.getTracks().forEach(track => track.stop());
+          audioStreamRef.current.getTracks().forEach(track => { track.stop(); });
           audioStreamRef.current = null;
         }
 
@@ -264,7 +264,7 @@ export function useVoiceRecorder(options: VoiceRecorderOptions = {}): UseVoiceRe
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))  } ${  sizes[i]}`;
   }, []);
 
   /**
@@ -274,8 +274,7 @@ export function useVoiceRecorder(options: VoiceRecorderOptions = {}): UseVoiceRe
     return (
       typeof MediaRecorder !== 'undefined' &&
       typeof navigator !== 'undefined' &&
-      typeof navigator.mediaDevices !== 'undefined' &&
-      typeof navigator.mediaDevices.getUserMedia !== 'undefined' &&
+      typeof navigator.mediaDevices?.getUserMedia !== 'undefined' &&
       isMediaRecorderSupported()
     );
   }, [isMediaRecorderSupported]);
@@ -289,7 +288,7 @@ export function useVoiceRecorder(options: VoiceRecorderOptions = {}): UseVoiceRe
         stopRecording();
       }
       if (audioStreamRef.current) {
-        audioStreamRef.current.getTracks().forEach(track => track.stop());
+        audioStreamRef.current.getTracks().forEach(track => { track.stop(); });
       }
       if (durationIntervalRef.current) {
         clearInterval(durationIntervalRef.current);

@@ -6,7 +6,7 @@
  */
 
 import { useState } from 'react';
-import { PageLayout } from '@/components/PageLayout';
+import { PageLayout } from '@/components/layouts/PageLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

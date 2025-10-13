@@ -9,11 +9,11 @@ import {
   TrendingUp,
   Wallet,
 } from 'lucide-react';
-import { motion } from 'motion/react';
 import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { useIsMobile } from '../../hooks/useTouchDevice';
 import { db, collections } from '../../lib/database';
+import { Query } from '../../lib/appwrite';
 import { logger } from '../../lib/logging/logger';
 import { MobileInfoCard, ResponsiveCardGrid } from '../shared/ResponsiveCard';
 import { Badge } from '../ui/badge';
@@ -88,7 +88,7 @@ function FinanceIncomePageContent() {
       const { data, error } = await db.list(collections.FINANCE_TRANSACTIONS, [
         // Assuming field mapping or direct field names
         // Filter by transaction_type: 'income'
-        { attribute: 'transaction_type', value: 'income' }
+        Query.equal('transaction_type', 'income')
       ]);
 
       if (error) {
@@ -342,14 +342,11 @@ function FinanceIncomePageContent() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {incomeCategories.map((category, index) => {
+            {incomeCategories.map((category) => {
               const percentage = Math.round((category.total / currentStats.totalIncome) * 100);
               return (
-                <motion.div
+                <div
                   key={category.category}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1 }}
                   className="space-y-2"
                 >
                   <div className="flex items-center justify-between text-sm">
@@ -362,7 +359,7 @@ function FinanceIncomePageContent() {
                     <Progress value={percentage} className="h-2 flex-1" />
                     <span className="w-10 text-right text-xs text-slate-500">%{percentage}</span>
                   </div>
-                </motion.div>
+                </div>
               );
             })}
           </CardContent>
@@ -377,14 +374,11 @@ function FinanceIncomePageContent() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {expenseCategories.map((category, index) => {
+            {expenseCategories.map((category) => {
               const percentage = Math.round((category.total / currentStats.totalExpense) * 100);
               return (
-                <motion.div
+                <div
                   key={category.category}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1 }}
                   className="space-y-2"
                 >
                   <div className="flex items-center justify-between text-sm">
@@ -397,7 +391,7 @@ function FinanceIncomePageContent() {
                     <Progress value={percentage} className="h-2 flex-1 [&>div]:bg-red-500" />
                     <span className="w-10 text-right text-xs text-slate-500">%{percentage}</span>
                   </div>
-                </motion.div>
+                </div>
               );
             })}
           </CardContent>
@@ -414,13 +408,10 @@ function FinanceIncomePageContent() {
         </CardHeader>
         <CardContent className="p-4 sm:p-6">
           <div className="space-y-4">
-            {monthlyData.map((month, index) => (
-              <motion.div
+            {monthlyData.map((month) => (
+              <div
                 key={month.month}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="flex items-center justify-between rounded-lg bg-slate-50 p-3"
+                className="flex items-center justify-between rounded-lg bg-gray-50 p-4 transition-colors hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700"
               >
                 <div className="flex-1">
                   <div className="mb-1 font-medium text-slate-900">{month.month}</div>
@@ -436,7 +427,7 @@ function FinanceIncomePageContent() {
                 >
                   {month.balance >= 0 ? '+' : ''}₺{month.balance.toLocaleString()}
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </CardContent>
@@ -461,15 +452,12 @@ function FinanceIncomePageContent() {
         </CardHeader>
         <CardContent className="p-0 sm:p-6 sm:pt-0">
           <div className="space-y-3 p-4 sm:p-0">
-            {transactions.slice(0, 8).map((transaction, index) => {
+            {transactions.slice(0, 8).map((transaction) => {
               const statusConfig = getStatusBadge(transaction.status);
               return (
-                <motion.div
+                <div
                   key={transaction.id}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                  className="flex items-center justify-between rounded-lg border border-slate-200 p-4 transition-colors hover:bg-slate-50"
+                  className="flex items-center justify-between rounded-lg border border-gray-200 p-4 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
                 >
                   <div className="flex items-center gap-3">
                     <div
@@ -503,7 +491,7 @@ function FinanceIncomePageContent() {
                       {statusConfig.label}
                     </Badge>
                   </div>
-                </motion.div>
+                </div>
               );
             })}
           </div>
@@ -658,3 +646,5 @@ function FinanceIncomePageContent() {
     </div>
   );
 }
+
+export default FinanceIncomePage;

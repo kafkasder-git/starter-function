@@ -190,11 +190,11 @@ export const DependencyConditions = {
   matches: (pattern: RegExp) => (value: any) => pattern.test(String(value)),
   
   /** Show when multiple conditions are met (AND) */
-  and: (...conditions: Array<(value: any) => boolean>) => (value: any) =>
+  and: (...conditions: ((value: any) => boolean)[]) => (value: any) =>
     conditions.every(condition => condition(value)),
   
   /** Show when any condition is met (OR) */
-  or: (...conditions: Array<(value: any) => boolean>) => (value: any) =>
+  or: (...conditions: ((value: any) => boolean)[]) => (value: any) =>
     conditions.some(condition => condition(value)),
   
   /** Show when condition is not met (NOT) */

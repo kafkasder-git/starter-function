@@ -40,7 +40,7 @@
  */
 
 import * as React from 'react';
-import { type VariantProps } from 'class-variance-authority';
+import type { VariantProps } from 'class-variance-authority';
 import { cn } from './utils';
 import { skeletonVariants } from '@/lib/design-system/variants';
 

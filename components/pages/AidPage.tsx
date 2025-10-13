@@ -12,7 +12,6 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Badge } from '../ui/badge';
 import { StatusBadge, PriorityBadge } from '../ui/status-badge';
-import { Tooltip, TooltipTrigger, TooltipContent } from '../ui/tooltip';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
@@ -20,14 +19,9 @@ import {
   Search,
   Plus,
   Download,
-  HelpingHand,
-  Clock,
-  CheckCircle,
-  XCircle,
   Eye,
   Edit,
 } from 'lucide-react';
-import { actionIcons } from '../../lib/design-system/icons';
 import { PageLoading } from '../shared/LoadingSpinner';
 import { logger } from '../../lib/logging/logger';
 import { aidRequestsService } from '../../services/aidRequestsService';
@@ -307,13 +301,13 @@ export function AidPage() {
       <div className="p-6 space-y-6">
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-          <Card className="border-0 shadow-md">
+          <Card className="border border-gray-200 dark:border-gray-700 dark:bg-gray-900 shadow-md">
             <CardContent className="p-4">
               <div className="text-2xl font-bold text-blue-600">{aidRequests.length}</div>
               <p className="text-sm text-gray-600">Toplam Talep</p>
             </CardContent>
           </Card>
-          <Card className="border-0 shadow-md">
+          <Card className="border border-gray-200 dark:border-gray-700 dark:bg-gray-900 shadow-md">
             <CardContent className="p-4">
               <div className="text-2xl font-bold text-orange-600">
                 {aidRequests.filter((r) => r.status === 'Yeni').length}
@@ -321,7 +315,7 @@ export function AidPage() {
               <p className="text-sm text-gray-600">Yeni</p>
             </CardContent>
           </Card>
-          <Card className="border-0 shadow-md">
+          <Card className="border border-gray-200 dark:border-gray-700 dark:bg-gray-900 shadow-md">
             <CardContent className="p-4">
               <div className="text-2xl font-bold text-yellow-600">
                 {aidRequests.filter((r) => r.status === 'İnceleniyor').length}
@@ -329,7 +323,7 @@ export function AidPage() {
               <p className="text-sm text-gray-600">İnceleniyor</p>
             </CardContent>
           </Card>
-          <Card className="border-0 shadow-md">
+          <Card className="border border-gray-200 dark:border-gray-700 dark:bg-gray-900 shadow-md">
             <CardContent className="p-4">
               <div className="text-2xl font-bold text-red-600">
                 {aidRequests.filter((r) => r.priority === 'Acil').length}
@@ -337,7 +331,7 @@ export function AidPage() {
               <p className="text-sm text-gray-600">Acil</p>
             </CardContent>
           </Card>
-          <Card className="border-0 shadow-md">
+          <Card className="border border-gray-200 dark:border-gray-700 dark:bg-gray-900 shadow-md">
             <CardContent className="p-4">
               <div className="text-2xl font-bold text-green-600">
                 {aidRequests.filter((r) => r.status === 'Tamamlandı').length}
@@ -348,7 +342,7 @@ export function AidPage() {
         </div>
 
         {/* Filters and Search */}
-        <Card className="border-0 shadow-md">
+        <Card className="border border-gray-200 dark:border-gray-700 dark:bg-gray-900 shadow-md">
           <CardHeader>
             <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
               <CardTitle>Yardım Talep Listesi</CardTitle>

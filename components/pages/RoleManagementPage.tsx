@@ -143,7 +143,7 @@ export const RoleManagementPage: React.FC = () => {
               const resource = parts[0];
               if (resource && typeof resource === 'string') {
                 const safeResource = resource.trim();
-                // eslint-disable-next-line security/detect-object-injection
+                 
                 acc[safeResource] = (acc[safeResource] ?? 0) + 1;
               }
               return acc;

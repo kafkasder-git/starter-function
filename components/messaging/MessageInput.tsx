@@ -11,8 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { FileAudio, FileText, Image as ImageIcon, Paperclip, Mic, Send, X, Smile } from 'lucide-react';
 import { VoiceRecorder } from './VoiceRecorder';
 import { cn } from '@/lib/utils';
-import type { MessageType } from '@/types/messaging';
-import { MessageType as MessageTypeEnum } from '@/types/messaging';
+import { MessageType } from '@/types/messaging';
 
 interface MessageInputProps {
   onSendMessage: (content: string, type: MessageType, attachments?: File[]) => void;
@@ -73,10 +72,10 @@ export function MessageInput({
     }
 
     // Determine message type
-    let messageType: MessageType = MessageTypeEnum.TEXT;
+    let messageType: MessageType = MessageType.TEXT;
     if (attachments.length > 0) {
       const hasVoice = attachments.some(file => file.type.startsWith('audio/'));
-      messageType = hasVoice ? MessageTypeEnum.VOICE : MessageTypeEnum.FILE;
+      messageType = hasVoice ? MessageType.VOICE : MessageType.FILE;
     }
 
     onSendMessage(message.trim(), messageType, attachments.length > 0 ? attachments : undefined);
@@ -159,7 +158,7 @@ export function MessageInput({
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))  } ${  sizes[i]}`;
   };
 
   return (
@@ -183,7 +182,7 @@ export function MessageInput({
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => removeAttachment(index)}
+                onClick={() => { removeAttachment(index); }}
                 className="h-6 w-6 p-0 text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200"
                 aria-label={`${file.name} dosyasını kaldır`}
               >
@@ -236,7 +235,7 @@ export function MessageInput({
           <Textarea
             ref={inputRef}
             value={message}
-            onChange={(e) => handleMessageChange(e.target.value)}
+            onChange={(e) => { handleMessageChange(e.target.value); }}
             onKeyPress={handleKeyPress}
             placeholder={placeholder}
             disabled={disabled}
@@ -257,7 +256,7 @@ export function MessageInput({
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => setShowVoiceRecorder(true)}
+          onClick={() => { setShowVoiceRecorder(true); }}
           disabled={disabled || showVoiceRecorder}
           className={cn(
             'h-10 w-10 p-0 text-neutral-600 hover:text-neutral-800 dark:text-neutral-300 dark:hover:text-neutral-100',

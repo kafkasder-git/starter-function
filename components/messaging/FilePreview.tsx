@@ -31,7 +31,7 @@ export function FilePreview({ attachment, className }: FilePreviewProps) {
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))  } ${  sizes[i]}`;
   };
 
   // Get file icon based on type
@@ -50,9 +50,9 @@ export function FilePreview({ attachment, className }: FilePreviewProps) {
       return '📊';
     } else if (fileType.includes('zip') || fileType.includes('rar')) {
       return '📦';
-    } else {
+    } 
       return '📎';
-    }
+    
   };
 
   // Handle audio playback
@@ -67,9 +67,9 @@ export function FilePreview({ attachment, className }: FilePreviewProps) {
       const audio = new Audio(attachment.fileUrl);
       setAudioElement(audio);
       
-      audio.onplay = () => setIsPlaying(true);
-      audio.onpause = () => setIsPlaying(false);
-      audio.onended = () => setIsPlaying(false);
+      audio.onplay = () => { setIsPlaying(true); };
+      audio.onpause = () => { setIsPlaying(false); };
+      audio.onended = () => { setIsPlaying(false); };
       
       await audio.play();
     } catch (error) {
@@ -95,7 +95,7 @@ export function FilePreview({ attachment, className }: FilePreviewProps) {
           src={attachment.fileUrl}
           alt={attachment.fileName}
           className="w-full h-auto object-contain"
-          onClick={() => setIsPreviewOpen(true)}
+          onClick={() => { setIsPreviewOpen(true); }}
         />
       </div>
       
@@ -113,7 +113,7 @@ export function FilePreview({ attachment, className }: FilePreviewProps) {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setIsPreviewOpen(true)}
+            onClick={() => { setIsPreviewOpen(true); }}
             className="flex items-center gap-2"
           >
             Büyüt
@@ -160,7 +160,7 @@ export function FilePreview({ attachment, className }: FilePreviewProps) {
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => setIsMuted(!isMuted)}
+          onClick={() => { setIsMuted(!isMuted); }}
           className="h-8 w-8 p-0"
         >
           {isMuted ? (
@@ -221,9 +221,9 @@ export function FilePreview({ attachment, className }: FilePreviewProps) {
       return renderImagePreview();
     } else if (attachment.fileType.startsWith('audio/')) {
       return renderAudioPreview();
-    } else {
+    } 
       return renderGenericPreview();
-    }
+    
   };
 
   return (

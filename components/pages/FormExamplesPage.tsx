@@ -779,3 +779,5 @@ export function FormExamplesPage() {
     </div>
   )
 }
+
+export default FormExamplesPage;

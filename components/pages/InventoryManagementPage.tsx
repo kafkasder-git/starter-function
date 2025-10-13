@@ -34,7 +34,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { partnersService } from '../../services/partnersService';
 import { logger } from '../../lib/logging/logger';
-import { toast } from '../ui/toast'; // Assuming toast is imported from UI library
+import { useToast } from '@/hooks/use-toast';
 
 interface AssociationPartner {
   id: number;
@@ -124,6 +124,7 @@ export default function PartnerAssociationsPage() {
   const [filteredAssociations, setFilteredAssociations] = useState<AssociationPartner[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<string>('all');
+  const { toast } = useToast();
   const [filterFocusArea, setFilterFocusArea] = useState<string>('all');
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [selectedAssociation, setSelectedAssociation] = useState<AssociationPartner | null>(null);
@@ -139,7 +140,11 @@ export default function PartnerAssociationsPage() {
         const response = await partnersService.getPartners(1, 100); // Fetch first page with large limit
         if (response.error) {
           logger.error('Error fetching partners:', response.error);
-          toast.error('Dernekler yüklenirken hata oluştu');
+          toast({
+            title: 'Hata',
+            description: 'Dernekler yüklenirken hata oluştu',
+            variant: 'destructive',
+          });
           setAssociationsList([]);
         } else {
           const mappedAssociations = response.data?.map(mapPartnerToAssociationPartner) || [];
@@ -147,7 +152,11 @@ export default function PartnerAssociationsPage() {
         }
       } catch (error) {
         logger.error('Error loading associations:', error);
-        toast.error('Dernekler yüklenirken hata oluştu');
+        toast({
+          title: 'Hata',
+          description: 'Dernekler yüklenirken hata oluştu',
+          variant: 'destructive',
+        });
         setAssociationsList([]);
       } finally {
         setLoading(false);
@@ -263,7 +272,7 @@ export default function PartnerAssociationsPage() {
         className = 'bg-gray-50 text-gray-700';
     }
 
-    return <Badge className={`${className} border-0 px-2 py-1 text-xs`}>{label}</Badge>;
+    return <Badge className={`${className} border border-gray-200 dark:border-gray-700 dark:bg-gray-900 px-2 py-1 text-xs`}>{label}</Badge>;
   };
 
   const getFocusAreaBadge = (area: AssociationPartner['focusArea']) => {

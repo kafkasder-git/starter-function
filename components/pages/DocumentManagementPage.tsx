@@ -195,7 +195,7 @@ export default function PartnerSponsorsPage() {
         className = 'bg-gray-50 text-gray-700';
     }
 
-    return <Badge className={`${className} border-0 px-2 py-1 text-xs`}>{label}</Badge>;
+    return <Badge className={`${className} border border-gray-200 dark:border-gray-700 dark:bg-gray-900 px-2 py-1 text-xs`}>{label}</Badge>;
   };
 
   // Removed getSponsorshipTypeBadge since sponsorshipType field doesn't exist in service

@@ -3,8 +3,7 @@
  * @description Hook to safely handle navigation with startTransition to prevent Suspense warnings
  */
 
-import { useCallback } from 'react';
-import { startTransition } from 'react';
+import { useCallback, startTransition } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 /**

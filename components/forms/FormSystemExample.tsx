@@ -194,7 +194,7 @@ export const FormSystemExample: React.FC = () => {
                   label="Ad"
                   placeholder="Adınızı girin"
                   value={formData.firstName}
-                  onChange={(value) => handleFieldChange('firstName', value)}
+                  onChange={(value) => { handleFieldChange('firstName', value); }}
                   required={true}
                 />
                 
@@ -204,7 +204,7 @@ export const FormSystemExample: React.FC = () => {
                   label="Soyad"
                   placeholder="Soyadınızı girin"
                   value={formData.lastName}
-                  onChange={(value) => handleFieldChange('lastName', value)}
+                  onChange={(value) => { handleFieldChange('lastName', value); }}
                   required={true}
                 />
               </div>
@@ -229,7 +229,7 @@ export const FormSystemExample: React.FC = () => {
                     type="email"
                     placeholder="ornek@email.com"
                     value={formData.email}
-                    onChange={(value) => handleFieldChange('email', value)}
+                    onChange={(value) => { handleFieldChange('email', value); }}
                     required={true}
                     asyncValidator={validateEmailAvailability}
                     validationDelay={500}
@@ -243,7 +243,7 @@ export const FormSystemExample: React.FC = () => {
                     type="tel"
                     placeholder="0555 123 45 67"
                     value={formData.phone}
-                    onChange={(value) => handleFieldChange('phone', value)}
+                    onChange={(value) => { handleFieldChange('phone', value); }}
                     required={true}
                     asyncValidator={validatePhoneNumber}
                     validationDelay={800}
@@ -266,7 +266,7 @@ export const FormSystemExample: React.FC = () => {
                     label="İletişim Yöntemi"
                     variant="select"
                     value={formData.contactMethod}
-                    onChange={(value) => handleFieldChange('contactMethod', value)}
+                    onChange={(value) => { handleFieldChange('contactMethod', value); }}
                     options={[
                       { value: 'email', label: 'E-posta' },
                       { value: 'phone', label: 'Telefon' },
@@ -282,7 +282,7 @@ export const FormSystemExample: React.FC = () => {
                     label="Diğer İletişim Yöntemi"
                     placeholder="Lütfen belirtin..."
                     value={formData.otherContactMethod}
-                    onChange={(value) => handleFieldChange('otherContactMethod', value)}
+                    onChange={(value) => { handleFieldChange('otherContactMethod', value); }}
                     dependsOn="contactMethod"
                     showWhen={DependencyConditions.equals('other')}
                     required={true}
@@ -308,7 +308,7 @@ export const FormSystemExample: React.FC = () => {
                   label="Adres bilgilerimi eklemek istiyorum"
                   variant="checkbox"
                   value={formData.hasAddress}
-                  onChange={(value) => handleFieldChange('hasAddress', value)}
+                  onChange={(value) => { handleFieldChange('hasAddress', value); }}
                 />
                 
                 <DependentFormField
@@ -317,7 +317,7 @@ export const FormSystemExample: React.FC = () => {
                   label="Sokak/Cadde"
                   placeholder="Sokak adı ve numarası"
                   value={formData.street}
-                  onChange={(value) => handleFieldChange('street', value)}
+                  onChange={(value) => { handleFieldChange('street', value); }}
                   dependsOn="hasAddress"
                   showWhen={DependencyConditions.equals(true)}
                   required={true}
@@ -331,7 +331,7 @@ export const FormSystemExample: React.FC = () => {
                     placeholder="Şehir seçin"
                     variant="select"
                     value={formData.city}
-                    onChange={(value) => handleFieldChange('city', value)}
+                    onChange={(value) => { handleFieldChange('city', value); }}
                     dependsOn="hasAddress"
                     showWhen={DependencyConditions.equals(true)}
                     options={[
@@ -349,7 +349,7 @@ export const FormSystemExample: React.FC = () => {
                     label="Posta Kodu"
                     placeholder="34000"
                     value={formData.postalCode}
-                    onChange={(value) => handleFieldChange('postalCode', value)}
+                    onChange={(value) => { handleFieldChange('postalCode', value); }}
                     dependsOn="hasAddress"
                     showWhen={DependencyConditions.equals(true)}
                     required={true}
@@ -374,7 +374,7 @@ export const FormSystemExample: React.FC = () => {
                     label="Ödeme Yöntemi"
                     variant="radio"
                     value={formData.paymentMethod}
-                    onChange={(value) => handleFieldChange('paymentMethod', value)}
+                    onChange={(value) => { handleFieldChange('paymentMethod', value); }}
                     options={[
                       { value: 'credit', label: 'Kredi Kartı' },
                       { value: 'debit', label: 'Banka Kartı' },
@@ -399,7 +399,7 @@ export const FormSystemExample: React.FC = () => {
                     label="Kart Numarası"
                     placeholder="1234 5678 9012 3456"
                     value={formData.cardNumber}
-                    onChange={(value) => handleFieldChange('cardNumber', value)}
+                    onChange={(value) => { handleFieldChange('cardNumber', value); }}
                     dependsOn="paymentMethod"
                     showWhen={DependencyConditions.oneOf(['credit', 'debit'])}
                     required={true}
@@ -412,7 +412,7 @@ export const FormSystemExample: React.FC = () => {
                       label="Son Kullanma"
                       placeholder="MM/YY"
                       value={formData.expiryDate}
-                      onChange={(value) => handleFieldChange('expiryDate', value)}
+                      onChange={(value) => { handleFieldChange('expiryDate', value); }}
                       dependsOn="paymentMethod"
                       showWhen={DependencyConditions.oneOf(['credit', 'debit'])}
                       required={true}
@@ -425,7 +425,7 @@ export const FormSystemExample: React.FC = () => {
                       placeholder="123"
                       type="password"
                       value={formData.cvv}
-                      onChange={(value) => handleFieldChange('cvv', value)}
+                      onChange={(value) => { handleFieldChange('cvv', value); }}
                       dependsOn="paymentMethod"
                       showWhen={DependencyConditions.oneOf(['credit', 'debit'])}
                       required={true}
@@ -448,7 +448,7 @@ export const FormSystemExample: React.FC = () => {
                     label="Özel ihtiyaçlarım var"
                     variant="switch"
                     value={formData.hasSpecialNeeds}
-                    onChange={(value) => handleFieldChange('hasSpecialNeeds', value)}
+                    onChange={(value) => { handleFieldChange('hasSpecialNeeds', value); }}
                   />
                   
                   <DependentFormField
@@ -459,7 +459,7 @@ export const FormSystemExample: React.FC = () => {
                     placeholder="Lütfen özel ihtiyaçlarınızı belirtin..."
                     rows={4}
                     value={formData.specialNeeds}
-                    onChange={(value) => handleFieldChange('specialNeeds', value)}
+                    onChange={(value) => { handleFieldChange('specialNeeds', value); }}
                     dependsOn="hasSpecialNeeds"
                     showWhen={DependencyConditions.equals(true)}
                     required={true}
@@ -474,7 +474,7 @@ export const FormSystemExample: React.FC = () => {
             <Button
               type="button"
               variant="outline"
-              onClick={() => setCurrentStep(Math.max(0, currentStep - 1))}
+              onClick={() => { setCurrentStep(Math.max(0, currentStep - 1)); }}
               disabled={currentStep === 0}
             >
               Önceki
@@ -484,7 +484,7 @@ export const FormSystemExample: React.FC = () => {
               {currentStep < steps.length - 1 ? (
                 <Button
                   type="button"
-                  onClick={() => setCurrentStep(Math.min(steps.length - 1, currentStep + 1))}
+                  onClick={() => { setCurrentStep(Math.min(steps.length - 1, currentStep + 1)); }}
                 >
                   Sonraki
                 </Button>

@@ -99,9 +99,9 @@ export function DataTableWrapper<T extends Record<string, unknown>>({
     if (!sortField) return filteredData
 
     return [...filteredData].sort((a, b) => {
-      // eslint-disable-next-line security/detect-object-injection
+       
       const aValue = a[sortField]
-      // eslint-disable-next-line security/detect-object-injection
+       
       const bValue = b[sortField]
       
       // Convert to comparable values

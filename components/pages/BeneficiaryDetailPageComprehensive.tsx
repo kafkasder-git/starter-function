@@ -1039,7 +1039,7 @@ export function BeneficiaryDetailPageComprehensive({
 
           {/* Connected Records Skeleton */}
           <aside className="col-span-12 lg:col-span-3">
-            <Card className="h-fit border-0 bg-white shadow-sm">
+            <Card className="h-fit border border-gray-200 dark:border-gray-700 dark:bg-gray-900 bg-white shadow-sm">
               <CardHeader className="pb-4">
                 <Skeleton className="h-5 w-32" />
               </CardHeader>
@@ -1653,7 +1653,7 @@ export function BeneficiaryDetailPageComprehensive({
           {/* Detailed Information Cards */}
           <div className="grid grid-cols-12 gap-4">
             {/* Identity Information */}
-            <Card className="col-span-12 border-0 bg-white shadow-sm md:col-span-6 xl:col-span-3">
+            <Card className="col-span-12 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 bg-white shadow-sm md:col-span-6 xl:col-span-3">
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-sm font-semibold">
                   <User className="text-primary h-4 w-4" />
@@ -1739,7 +1739,7 @@ export function BeneficiaryDetailPageComprehensive({
             </Card>
 
             {/* Passport and Visa */}
-            <Card className="col-span-12 border-0 bg-white shadow-sm md:col-span-6 xl:col-span-3">
+            <Card className="col-span-12 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 bg-white shadow-sm md:col-span-6 xl:col-span-3">
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-sm font-semibold">
                   <FileText className="text-primary h-4 w-4" />
@@ -1806,7 +1806,7 @@ export function BeneficiaryDetailPageComprehensive({
             </Card>
 
             {/* Personal Data */}
-            <Card className="col-span-12 border-0 bg-white shadow-sm md:col-span-6 xl:col-span-3">
+            <Card className="col-span-12 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 bg-white shadow-sm md:col-span-6 xl:col-span-3">
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-sm font-semibold">
                   <Calendar className="text-primary h-4 w-4" />
@@ -1926,7 +1926,7 @@ export function BeneficiaryDetailPageComprehensive({
             </Card>
 
             {/* Work and Income */}
-            <Card className="col-span-12 border-0 bg-white shadow-sm md:col-span-6 xl:col-span-3">
+            <Card className="col-span-12 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 bg-white shadow-sm md:col-span-6 xl:col-span-3">
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-sm font-semibold">
                   <Users className="text-primary h-4 w-4" />
@@ -2056,7 +2056,7 @@ export function BeneficiaryDetailPageComprehensive({
 
           {/* Health Status */}
           <Accordion type="single" collapsible className="w-full">
-            <AccordionItem value="health" className="border-0 bg-white shadow-sm">
+            <AccordionItem value="health" className="border border-gray-200 dark:border-gray-700 dark:bg-gray-900 bg-white shadow-sm">
               <AccordionTrigger className="pb-4">
                 <CardTitle className="flex items-center gap-2 text-sm font-semibold">
                   <Heart className="text-primary h-4 w-4" />
@@ -2186,7 +2186,7 @@ export function BeneficiaryDetailPageComprehensive({
           {/* Bottom Row: Emergency, Tags, Special, Record */}
           <div className="grid grid-cols-12 gap-4">
             {/* Emergency Contact */}
-            <Card className="col-span-12 border-0 bg-white shadow-sm lg:col-span-4">
+            <Card className="col-span-12 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 bg-white shadow-sm lg:col-span-4">
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-sm font-semibold">
                   <AlertTriangle className="text-primary h-4 w-4" />
@@ -2290,7 +2290,7 @@ export function BeneficiaryDetailPageComprehensive({
             </Card>
 
             {/* Tags */}
-            <Card className="col-span-12 border-0 bg-white shadow-sm lg:col-span-4">
+            <Card className="col-span-12 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 bg-white shadow-sm lg:col-span-4">
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-sm font-semibold">
                   <Target className="text-primary h-4 w-4" />
@@ -2322,7 +2322,7 @@ export function BeneficiaryDetailPageComprehensive({
             </Card>
 
             {/* Special Situations */}
-            <Card className="col-span-12 border-0 bg-white shadow-sm lg:col-span-4">
+            <Card className="col-span-12 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 bg-white shadow-sm lg:col-span-4">
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-sm font-semibold">
                   <Shield className="text-primary h-4 w-4" />
@@ -2349,7 +2349,7 @@ export function BeneficiaryDetailPageComprehensive({
           </div>
 
           {/* Record Information */}
-          <Card className="border-0 bg-white shadow-sm">
+          <Card className="border border-gray-200 dark:border-gray-700 dark:bg-gray-900 bg-white shadow-sm">
             <CardHeader className="pb-4">
               <CardTitle className="flex items-center gap-2 text-sm font-semibold">
                 <Info className="text-primary h-4 w-4" />
@@ -2385,7 +2385,7 @@ export function BeneficiaryDetailPageComprehensive({
 
         {/* Connected Records Sidebar */}
         <aside className="col-span-12 lg:col-span-3">
-          <Card className="h-fit border-0 bg-white shadow-sm">
+          <Card className="h-fit border border-gray-200 dark:border-gray-700 dark:bg-gray-900 bg-white shadow-sm">
             <CardHeader className="pb-4">
               <CardTitle className="text-sm font-semibold">Bağlantılı Kayıtlar</CardTitle>
             </CardHeader>

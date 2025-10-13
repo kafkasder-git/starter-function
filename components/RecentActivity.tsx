@@ -37,11 +37,20 @@ interface Activity {
  */
 export function RecentActivity() {
   const [activities, setActivities] = useState<Activity[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchActivities = async () => {
       try {
-        // Mock data for now since service is not available
+        setLoading(true);
+        setError(null);
+        
+        // TODO: Replace with actual service call
+        // const response = await activitiesService.getRecentActivities();
+        // setActivities(response.data);
+        
+        // Mock data for demonstration
         const mockActivities: Activity[] = [
           {
             id: '1',
@@ -51,13 +60,39 @@ export function RecentActivity() {
             timestamp: new Date().toISOString(),
             user: 'Ahmet Yılmaz',
             status: 'pending'
+          },
+          {
+            id: '2',
+            type: 'donation',
+            title: 'Bağış Kaydı',
+            description: 'ABC Şirketi tarafından 5.000₺ bağış yapıldı.',
+            timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+            user: 'Muhasebe Ekibi',
+            amount: 5000,
+            status: 'success'
+          },
+          {
+            id: '3',
+            type: 'member',
+            title: 'Yeni Üye Kaydı',
+            description: 'Elif Öztürk sisteme üye olarak eklendi.',
+            timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
+            user: 'İnsan Kaynakları',
+            status: 'success'
           }
         ];
+        
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
         setActivities(mockActivities);
-      } catch {
-        // Error handling - could be logged to a service
+      } catch (err) {
+        setError('Aktiviteler yüklenirken bir hata oluştu.');
+        console.error('RecentActivity fetch error:', err);
+      } finally {
+        setLoading(false);
       }
     };
+    
     fetchActivities();
   }, []);
 
@@ -73,10 +108,10 @@ export function RecentActivity() {
 
   const getActivityColor = (type: Activity['type']) => {
     const colors: Record<Activity['type'], string> = {
-      donation: 'text-error-600 bg-error-50',
-      member: 'text-info-600 bg-info-50',
-      aid: 'text-primary-600 bg-primary-50',
-      event: 'text-success-600 bg-success-50',
+      donation: 'text-red-600 bg-red-50',
+      member: 'text-blue-600 bg-blue-50',
+      aid: 'text-purple-600 bg-purple-50',
+      event: 'text-green-600 bg-green-50',
     };
     return type in colors ? colors[type] : colors.donation;
   };
@@ -107,8 +142,15 @@ export function RecentActivity() {
     return <Text as="span" size="xs" color="muted">{relativeTime}</Text>;
   };
 
+  const handleRetry = () => {
+    setError(null);
+    setLoading(true);
+    // Re-trigger the effect by updating a dependency
+    window.location.reload();
+  };
+
   return (
-    <Card className="shadow-md border-0">
+    <Card className="shadow-md border border-gray-200 dark:border-gray-700 dark:bg-gray-900">
       <CardHeader className="flex flex-row items-center justify-between pb-3">
         <CardTitle>Son Aktiviteler</CardTitle>
         <Button variant="ghost" size="sm">
@@ -116,7 +158,29 @@ export function RecentActivity() {
         </Button>
       </CardHeader>
       <CardContent className="space-y-3 lg:space-y-4 max-h-96 overflow-y-auto scrollbar-thin px-6 py-6">
-        {activities.length > 0 ? (
+        {loading ? (
+          <div className="space-y-4">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="flex items-start gap-4 p-4">
+                <div className="w-10 h-10 bg-gray-200 rounded-lg animate-pulse" />
+                <div className="flex-1 space-y-2">
+                  <div className="h-4 bg-gray-200 rounded w-3/4 animate-pulse" />
+                  <div className="h-3 bg-gray-200 rounded w-1/2 animate-pulse" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : error ? (
+          <div className="text-center py-8">
+            <div className="text-red-500 mb-4">
+              <Calendar className="w-12 h-12 mx-auto mb-3" />
+              <p className="text-sm font-medium">{error}</p>
+            </div>
+            <Button variant="outline" size="sm" onClick={handleRetry}>
+              Tekrar Dene
+            </Button>
+          </div>
+        ) : activities.length > 0 ? (
           activities.map((activity) => (
             <div
               key={activity.id}
@@ -134,7 +198,7 @@ export function RecentActivity() {
                     {activity.title}
                   </Heading>
                   {activity.amount && (
-                    <span className="text-sm font-bold text-success-700 bg-success-50/80 px-2 py-1 rounded-lg border border-success-200/60">
+                    <span className="text-sm font-bold text-green-700 bg-green-50/80 px-2 py-1 rounded-lg border border-green-200/60">
                       ₺{activity.amount.toLocaleString()}
                     </span>
                   )}
@@ -164,8 +228,11 @@ export function RecentActivity() {
         ) : (
           <div className="text-center py-8 text-neutral-500">
             <Calendar className="w-12 h-12 mx-auto mb-3 text-neutral-400" />
-            <p className="text-sm">Henüz aktivite bulunmuyor</p>
+            <p className="text-sm font-medium">Henüz aktivite bulunmuyor</p>
             <p className="text-xs text-neutral-400 mt-1">Yeni işlemler burada görünecek</p>
+            <Button variant="outline" size="sm" className="mt-4">
+              Aktiviteleri Yenile
+            </Button>
           </div>
         )}
       </CardContent>

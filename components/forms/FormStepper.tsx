@@ -36,7 +36,7 @@ export interface FormStepperProps {
   /** Whether steps are clickable for navigation */
   clickable?: boolean;
   /** Step validation states */
-  stepStates?: Array<'pending' | 'current' | 'completed' | 'error'>;
+  stepStates?: ('pending' | 'current' | 'completed' | 'error')[];
   /** Additional CSS classes */
   className?: string;
   /** Whether the stepper is disabled */
@@ -58,7 +58,7 @@ export const FormStepper = React.forwardRef<HTMLDivElement, FormStepperProps>(
   }, ref) => {
     // Generate step states if not provided
     const getStepState = (index: number): 'pending' | 'current' | 'completed' | 'error' => {
-      if (stepStates && stepStates[index]) {
+      if (stepStates?.[index]) {
         return stepStates[index];
       }
       
@@ -127,8 +127,8 @@ export const FormStepper = React.forwardRef<HTMLDivElement, FormStepperProps>(
               type="button"
               variant="ghost"
               size="icon"
-              onClick={() => handleStepClick(index)}
-              onKeyDown={(e) => handleKeyDown(e, index)}
+              onClick={() => { handleStepClick(index); }}
+              onKeyDown={(e) => { handleKeyDown(e, index); }}
               disabled={!isClickable}
               aria-current={stepState === 'current' ? 'step' : undefined}
               aria-label={`Step ${index + 1}: ${step.label}${step.optional ? ' (optional)' : ''}`}
