@@ -48,12 +48,12 @@
     "analyze:chunks": "npx vite-bundle-visualizer",
     "lighthouse": "npx lighthouse http://localhost:5173 --view",
     "lighthouse:ci": "npx lighthouse http://localhost:5173 --output json --output-path ./lighthouse-report.json",
-    "mcp:start": "APPWRITE_PROJECT_ID=68e99f6c000183bafb39 APPWRITE_API_KEY=standard_312fec86d74bc55b3f6b026062001bfa144270f98504aa424c86054d9aa0b3a114fb5428bb24faef633a44a76ee5aff9eaa29a808bf78a1f0be63248c9582ca8ced7465a414e7572bed11156df1c859b0e57a5a30c9f74ebc73ef80bd2866c7a5fcd747477c9d08f8d4f4d975530acc666e872a9b33599b5421ae45ef9e3f67e APPWRITE_ENDPOINT=https://fra.cloud.appwrite.io/v1 uvx mcp-server-appwrite --databases --users --teams --storage --functions",
-    "mcp:start:all": "APPWRITE_PROJECT_ID=68e99f6c000183bafb39 APPWRITE_API_KEY=standard_312fec86d74bc55b3f6b026062001bfa144270f98504aa424c86054d9aa0b3a114fb5428bb24faef633a44a76ee5aff9eaa29a808bf78a1f0be63248c9582ca8ced7465a414e7572bed11156df1c859b0e57a5a30c9f74ebc73ef80bd2866c7a5fcd747477c9d08f8d4f4d975530acc666e872a9b33599b5421ae45ef9e3f67e APPWRITE_ENDPOINT=https://fra.cloud.appwrite.io/v1 uvx mcp-server-appwrite --all",
-    "mcp:debug": "APPWRITE_PROJECT_ID=68e99f6c000183bafb39 APPWRITE_API_KEY=standard_312fec86d74bc55b3f6b026062001bfa144270f98504aa424c86054d9aa0b3a114fb5428bb24faef633a44a76ee5aff9eaa29a808bf78a1f0be63248c9582ca8ced7465a414e7572bed11156df1c859b0e57a5a30c9f74ebc73ef80bd2866c7a5fcd747477c9d08f8d4f4d975530acc666e872a9b33599b5421ae45ef9e3f67e APPWRITE_ENDPOINT=https://fra.cloud.appwrite.io/v1 npx @modelcontextprotocol/inspector uvx mcp-server-appwrite",
-    "mcp:test": "APPWRITE_PROJECT_ID=68e99f6c000183bafb39 APPWRITE_API_KEY=standard_312fec86d74bc55b3f6b026062001bfa144270f98504aa424c86054d9aa0b3a114fb5428bb24faef633a44a76ee5aff9eaa29a808bf78a1f0be63248c9582ca8ced7465a414e7572bed11156df1c859b0e57a5a30c9f74ebc73ef80bd2866c7a5fcd747477c9d08f8d4f4d975530acc666e872a9b33599b5421ae45ef9e3f67e APPWRITE_ENDPOINT=https://fra.cloud.appwrite.io/v1 uvx mcp-server-appwrite --help",
-    "mcp:start:storage": "APPWRITE_PROJECT_ID=68e99f6c000183bafb39 APPWRITE_API_KEY=standard_312fec86d74bc55b3f6b026062001bfa144270f98504aa424c86054d9aa0b3a114fb5428bb24faef633a44a76ee5aff9eaa29a808bf78a1f0be63248c9582ca8ced7465a414e7572bed11156df1c859b0e57a5a30c9f74ebc73ef80bd2866c7a5fcd747477c9d08f8d4f4d975530acc666e872a9b33599b5421ae45ef9e3f67e APPWRITE_ENDPOINT=https://fra.cloud.appwrite.io/v1 uvx mcp-server-appwrite --storage --databases",
-    "mcp:start:full": "APPWRITE_PROJECT_ID=68e99f6c000183bafb39 APPWRITE_API_KEY=standard_312fec86d74bc55b3f6b026062001bfa144270f98504aa424c86054d9aa0b3a114fb5428bb24faef633a44a76ee5aff9eaa29a808bf78a1f0be63248c9582ca8ced7465a414e7572bed11156df1c859b0e57a5a30c9f74ebc73ef80bd2866c7a5fcd747477c9d08f8d4f4d975530acc666e872a9b33599b5421ae45ef9e3f67e APPWRITE_ENDPOINT=https://fra.cloud.appwrite.io/v1 uvx mcp-server-appwrite --all"
+    "mcp:start": "node scripts/run-mcp-server.cjs --databases --users --teams --storage --functions",
+    "mcp:start:all": "node scripts/run-mcp-server.cjs --all",
+    "mcp:debug": "node scripts/run-mcp-server.cjs --debug --all",
+    "mcp:test": "node scripts/run-mcp-server.cjs --help",
+    "mcp:start:storage": "node scripts/run-mcp-server.cjs --storage --databases",
+    "mcp:start:full": "node scripts/run-mcp-server.cjs --all"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -95,7 +95,6 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
-    "cn": "^0.1.1",
     "crypto-js": "^4.2.0",
     "date-fns": "^3.6.0",
     "embla-carousel-react": "^8.6.0",

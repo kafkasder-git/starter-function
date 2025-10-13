@@ -81,10 +81,10 @@ export const environment: EnvironmentConfig = {
   },
 
   appwrite: {
-    endpoint: getEnv('VITE_APPWRITE_ENDPOINT', 'https://fra.cloud.appwrite.io/v1'),
-    projectId: getEnv('VITE_APPWRITE_PROJECT_ID', '68e99f6c000183bafb39'),
-    projectName: getEnv('VITE_APPWRITE_PROJECT_NAME', 'KafkasPortal'),
-    databaseId: getEnv('VITE_APPWRITE_DATABASE_ID', ''),
+    endpoint: getEnv('VITE_APPWRITE_ENDPOINT'),
+    projectId: getEnv('VITE_APPWRITE_PROJECT_ID'),
+    projectName: getEnv('VITE_APPWRITE_PROJECT_NAME'),
+    databaseId: getEnv('VITE_APPWRITE_DATABASE_ID'),
   },
 
   sentry: getEnv('VITE_SENTRY_DSN')
@@ -98,7 +98,7 @@ export const environment: EnvironmentConfig = {
     ocr: getBoolEnv('VITE_ENABLE_OCR', true),
     pwa: getBoolEnv('VITE_ENABLE_PWA', true),
     analytics: getBoolEnv('VITE_ENABLE_ANALYTICS', false),
-    mockData: getBoolEnv('VITE_ENABLE_MOCK_DATA', true),
+    mockData: getBoolEnv('VITE_ENABLE_MOCK_DATA', false),
     offlineMode: getBoolEnv('VITE_ENABLE_OFFLINE_MODE', true),
   },
 

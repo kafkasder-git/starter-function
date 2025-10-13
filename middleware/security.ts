@@ -9,7 +9,7 @@ import { NextRequest, NextResponse } from 'next/server';
 // Removed Supabase admin import - using Appwrite instead
 import { rateLimit } from './rateLimit';
 import { validateCSRF } from './csrf';
-import { InputSanitizer } from '../lib/security/InputSanitizer';
+import { InputSanitizer } from '../lib/security/sanitization';
 import { Client, JWT } from 'appwrite';
 import { environment } from '../lib/environment';
 
@@ -36,10 +36,14 @@ export class SecurityMiddleware {
       // 1. Rate limiting
       const rateLimitResult = await rateLimit(request);
       if (!rateLimitResult.success) {
-        return NextResponse.json(
+        const response = NextResponse.json(
           { error: 'Too many requests', retryAfter: rateLimitResult.retryAfter },
           { status: 429 }
         );
+        if (rateLimitResult.retryAfter) {
+          response.headers.set('Retry-After', rateLimitResult.retryAfter.toString());
+        }
+        return response;
       }
 
       // 2. CSRF protection for state-changing operations
@@ -112,7 +116,9 @@ export class SecurityMiddleware {
       }
 
       // Check if token is expired
-      if (session.expire && session.expire < Date.now()) {
+      const expiresAt = session.expire ? new Date(session.expire).getTime() : undefined;
+
+      if (expiresAt && expiresAt < Date.now()) {
         return {
           success: false,
           error: 'Token expired',
@@ -166,37 +172,59 @@ export class SecurityMiddleware {
   }
 
   // Sanitize request body and query parameters
-  private async sanitizeRequest(request: NextRequest) {
+  private async sanitizeRequest(request: NextRequest): Promise<NextRequest> {
     const url = new URL(request.url);
 
-    // Sanitize query parameters
     const sanitizedSearchParams = new URLSearchParams();
     for (const [key, value] of url.searchParams.entries()) {
       sanitizedSearchParams.set(key, InputSanitizer.sanitize(value, 'text'));
     }
 
-    // Create new URL with sanitized params
-    const sanitizedUrl = new URL(url.pathname, url.origin);
-    sanitizedUrl.search = sanitizedSearchParams.toString();
+    const queryString = sanitizedSearchParams.toString();
+    const sanitizedUrl = `${url.origin}${url.pathname}${queryString ? `?${queryString}` : ''}`;
 
-    // Sanitize request body if present
-    let sanitizedBody = null;
-    if (request.body && ['POST', 'PUT', 'PATCH'].includes(request.method)) {
-      try {
-        const body = await request.json();
-        sanitizedBody = this.sanitizeObject(body);
-      } catch (error) {
-        // If body is not JSON, leave it as is
-        sanitizedBody = request.body;
+    const method = request.method.toUpperCase();
+    const headers = new Headers(request.headers);
+
+    if (['POST', 'PUT', 'PATCH'].includes(method)) {
+      const contentType = headers.get('content-type') || '';
+
+      if (contentType.includes('application/json')) {
+        try {
+          const body = await request.clone().json();
+          const sanitizedBody = JSON.stringify(this.sanitizeObject(body));
+          headers.set('content-type', 'application/json');
+          return new NextRequest(
+            new Request(sanitizedUrl, {
+              method: request.method,
+              headers,
+              body: sanitizedBody,
+            })
+          );
+        } catch (error) {
+          logger.warn('Failed to sanitize JSON body', {
+            path: url.pathname,
+            error: (error as Error).message,
+          });
+        }
       }
+
+      const rawBody = await request.arrayBuffer();
+      return new NextRequest(
+        new Request(sanitizedUrl, {
+          method: request.method,
+          headers,
+          body: rawBody,
+        })
+      );
     }
 
-    // Create new request with sanitized data
-    return new NextRequest(sanitizedUrl, {
-      method: request.method,
-      headers: request.headers,
-      body: sanitizedBody ? JSON.stringify(sanitizedBody) : request.body,
-    });
+    return new NextRequest(
+      new Request(sanitizedUrl, {
+        method: request.method,
+        headers,
+      })
+    );
   }
 
   // Recursively sanitize object properties
@@ -268,7 +296,7 @@ export class SecurityMiddleware {
     for (const [pattern, config] of Object.entries(permissionMap)) {
       if (path.startsWith(pattern) && config.methods.includes(method)) {
         const hasPermission = config.permissions.some(
-          (permission) => user.role === permission ?? user.permissions.includes(permission)
+          (permission) => user.role === permission || user.permissions.includes(permission)
         );
 
         if (!hasPermission) {
@@ -291,16 +319,22 @@ export class SecurityMiddleware {
     response.headers.set('X-XSS-Protection', '1; mode=block');
     response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
     response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+    response.headers.set('Cross-Origin-Resource-Policy', 'same-site');
+    response.headers.set('Cross-Origin-Opener-Policy', 'same-origin');
 
     // Content Security Policy
     const csp = [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+      "script-src 'self'",
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: https:",
-      "font-src 'self'",
+      "font-src 'self' data:",
       "connect-src 'self' https://cloud.appwrite.io https://*.appwrite.io",
+      "object-src 'none'",
+      "base-uri 'none'",
+      "form-action 'self'",
       "frame-ancestors 'none'",
+      'upgrade-insecure-requests',
     ].join('; ');
 
     response.headers.set('Content-Security-Policy', csp);

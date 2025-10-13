@@ -1,7 +1,7 @@
 # Appwrite Configuration
 # This file configures your Appwrite project for deployment
 
-projectId: '68e99f6c000183bafb39'
+projectId: ''
 
 # Sites configuration for your React panel application
 sites:
@@ -10,10 +10,10 @@ sites:
     buildCommand: 'npm run build'
     outputDirectory: 'dist'
     environmentVariables:
-      - VITE_APPWRITE_ENDPOINT: 'https://fra.cloud.appwrite.io/v1'
-      - VITE_APPWRITE_PROJECT_ID: '68e99f6c000183bafb39'
-      - VITE_APPWRITE_PROJECT_NAME: 'KafkasPortal'
-      - VITE_APPWRITE_DATABASE_ID: 'kafkasder_db'
+      - VITE_APPWRITE_ENDPOINT: '${VITE_APPWRITE_ENDPOINT}'
+      - VITE_APPWRITE_PROJECT_ID: '${VITE_APPWRITE_PROJECT_ID}'
+      - VITE_APPWRITE_PROJECT_NAME: '${VITE_APPWRITE_PROJECT_NAME}'
+      - VITE_APPWRITE_DATABASE_ID: '${VITE_APPWRITE_DATABASE_ID}'
     # Optional: Custom domain
     # customDomain: 'panel.yourdomain.com'
 

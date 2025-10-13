@@ -6,7 +6,7 @@
 import type { Models } from 'appwrite';
 import { toast } from 'sonner';
 import { create } from 'zustand';
-import { devtools, persist, subscribeWithSelector } from 'zustand/middleware';
+import { devtools, persist, subscribeWithSelector, createJSONStorage } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { account, ID, Query, isAppwriteConfigured } from '../lib/appwrite';
 import { db, collections } from '../lib/database';
@@ -15,6 +15,8 @@ import { ROLE_PERMISSIONS, UserRole, type Permission } from '../types/auth';
 import { normalizeRoleToEnglish } from '../lib/roleMapping';
 import { AppwriteException } from 'appwrite';
 import { getMockAuthService } from '../lib/mock/mockData';
+import { secureStorage } from '../lib/secureStorage';
+import { environment } from '../lib/environment';
 
 // Error type for Appwrite auth operations
 // interface AuthError {
@@ -113,6 +115,27 @@ interface RegisterData {
 }
 
 type AuthStore = AuthState & AuthActions;
+
+const securePersistStorage = {
+  getItem: (name: string): string | null => {
+    if (typeof window === 'undefined') {
+      return null;
+    }
+    return secureStorage.getItem<string>(name) ?? null;
+  },
+  setItem: (name: string, value: string): void => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    secureStorage.setItem(name, value, { encrypt: true });
+  },
+  removeItem: (name: string): void => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    secureStorage.removeItem(name);
+  },
+};
 
 // Build User object from Appwrite User and Database Profile
 const buildUserFromAppwriteUser = async (
@@ -318,8 +341,12 @@ export const useAuthStore = create<AuthStore>()(
             try {
               authLogger.info('Attempting login', { email });
 
-              // Use mock auth service if Appwrite is not configured
+              // Use mock auth service only when explicitly enabled and Appwrite is unavailable
               if (!isAppwriteConfigured() || !account) {
+                if (!environment.features.mockData) {
+                  throw new Error('Kimlik doğrulama servisi yapılandırılmamış. Lütfen sistem yöneticinizle iletişime geçin.');
+                }
+
                 authLogger.warn('Using mock authentication service');
                 const mockAuth = getMockAuthService();
                 await mockAuth.login(email, password);
@@ -358,52 +385,11 @@ export const useAuthStore = create<AuthStore>()(
                   state.error = null;
                 });
 
-                toast.success('Giriş başarılı! (Development Mode)');
+                toast.success('Giriş başarılı! (Mock Mode)');
                 authLogger.info('Mock login successful', { userId: user.id });
                 return;
               }
 
-              // Development credentials fallback
-              const DEV_CREDENTIALS = {
-                'admin@dernek.org': 'admin123',
-                'manager@dernek.org': 'manager123',
-                'operator@dernek.org': 'operator123',
-                'viewer@dernek.org': 'viewer123',
-                'isahamid095@gmail.com': 'Vadalov95.',
-              };
-
-              if (DEV_CREDENTIALS[email as keyof typeof DEV_CREDENTIALS] === password) {
-                authLogger.info('Using development credentials', { email });
-
-                const mockUser: User = {
-                  id: 'dev-user-' + Date.now(),
-                  email: email,
-                  name: email.split('@')[0] || 'Dev User',
-                  role: 'admin' as UserRole,
-                  avatar: undefined,
-                  permissions: ROLE_PERMISSIONS.admin,
-                  metadata: {},
-                  lastLogin: new Date(),
-                  isActive: true,
-                  createdAt: new Date(),
-                  updatedAt: new Date(),
-                };
-
-                set((state) => {
-                  state.user = mockUser;
-                  state.session = {
-                    userId: mockUser.id,
-                    expire: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-                  };
-                  state.isAuthenticated = true;
-                  state.isLoading = false;
-                  state.error = null;
-                });
-
-                get().resetLoginAttempts();
-                toast.success(`Hoş geldiniz, ${mockUser.name}!`, { duration: 3000 });
-                return;
-              }
               // Check if account is available
               if (!account) {
                 throw new Error('Appwrite account not configured');
@@ -982,6 +968,7 @@ export const useAuthStore = create<AuthStore>()(
         })),
         {
           name: 'auth-store',
+          storage: createJSONStorage(() => securePersistStorage),
           partialize: (state) => ({
             user: state.user,
             session: state.session,

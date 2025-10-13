@@ -119,7 +119,7 @@ const STORAGE_CONFIG: StorageConfig = {
     enableWatermarking: environment.features.security?.watermarking || false,
     enableEncryption: environment.features.security?.encryption || false,
   },
-  allowAnonymousUploads: true, // Allow anonymous uploads as fallback
+  allowAnonymousUploads: false, // Require authenticated uploads by default
 };
 
 // =============================================================================
@@ -189,6 +189,11 @@ export class FileStorageService {
       if (!this.config.allowAnonymousUploads) {
         const user = useAuthStore.getState().user;
         if (!user) {
+          void monitoring.trackSecurityEvent('unauthorized_upload_attempt', {
+            bucket: options.bucket || this.config.defaultBucket,
+            fileName: file.name,
+            ip: undefined,
+          });
           return { success: false, error: 'Authentication required for file uploads' };
         }
       }
@@ -696,6 +701,13 @@ export class FileStorageService {
    * Validate file
    */
   private validateFile(file: File, options: FileUploadOptions): { valid: boolean; error?: string } {
+    if (!file.type) {
+      return {
+        valid: false,
+        error: 'Unable to determine file type. Please upload a file with a valid MIME type.',
+      };
+    }
+
     // Check file size
     const maxSize = options.maxSize || this.config.uploadLimits.maxFileSize;
     if (file.size > maxSize) {

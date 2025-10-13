@@ -180,15 +180,15 @@ export class NetworkManager {
         const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
         try {
-          const apiKey = import.meta.env.VITE_APPWRITE_API_KEY;
+          const projectId = import.meta.env.VITE_APPWRITE_PROJECT_ID || '';
+          const headers: Record<string, string> = {};
+          if (projectId) {
+            headers['X-Appwrite-Project'] = projectId;
+          }
+
           await fetch(`${appwriteEndpoint}/health`, {
             method: 'HEAD',
-            headers: apiKey
-              ? {
-                  'X-Appwrite-Project': import.meta.env.VITE_APPWRITE_PROJECT_ID || '',
-                  'X-Appwrite-Key': apiKey,
-                }
-              : {},
+            headers,
             cache: 'no-cache',
             signal: controller.signal,
           });
