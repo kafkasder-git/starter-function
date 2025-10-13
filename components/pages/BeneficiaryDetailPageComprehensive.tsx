@@ -703,7 +703,7 @@ export function BeneficiaryDetailPageComprehensive({
     }
   };
 
-  // Mevcut bağlı kişileri yükle - Bakmakla Yükümlü Olunan Kişi türündeki kayıtlar
+  // Mevcut bağlı kişileri yükle
   const loadExistingDependents = async () => {
     setIsLoadingDependents(true);
     try {
@@ -804,7 +804,7 @@ export function BeneficiaryDetailPageComprehensive({
       // For now, we'll simulate the save operation
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      toast.success('Bakmakla yükümlü kişi başarıyla kaydedildi');
+      toast.success('Bağlı kişi başarıyla kaydedildi');
       handleCloseDependentPersonModal();
     } catch (error) {
       logger.error('Error saving dependent person:', error);
@@ -1091,13 +1091,8 @@ export function BeneficiaryDetailPageComprehensive({
                       (beneficiaryData.tur as string) ||
                       (beneficiaryData.Tur as string) ||
                       'İhtiyaç Sahibi';
-                    const displayType = tur.includes('Bakmakla Yükümlü')
-                      ? 'Bakmakla Yükümlü Olunan Kişi'
-                      : tur.includes('İhtiyaç Sahibi')
-                        ? 'İhtiyaç Sahibi'
-                        : tur; // Diğer türler olduğu gibi gösterilir
 
-                    return `${displayType} - Dosya No: #${beneficiaryData.id}`;
+                    return `${tur} - Dosya No: #${beneficiaryData.id}`;
                   })()}
                 </>
               ) : (
@@ -2384,10 +2379,6 @@ export function BeneficiaryDetailPageComprehensive({
                   />
                 </div>
               </div>
-              <p className="mt-4 text-xs leading-relaxed text-gray-500">
-                1. İşaretlemeli veriler, bakmakla yükümlü olan ve olunan kişilerle ortaktır.
-                Herhangi birisinde güncelleme, hepsinde aynı şekilde güncellenir.
-              </p>
             </CardContent>
           </Card>
         </section>
@@ -2943,18 +2934,7 @@ export function BeneficiaryDetailPageComprehensive({
                                   {person.ad_soyad}
                                 </h3>
                                 <div className="mt-1 flex items-center gap-2">
-                                  <Badge
-                                    variant={
-                                      person.tur?.includes('Bakmakla Yükümlü')
-                                        ? 'default'
-                                        : 'secondary'
-                                    }
-                                    className={
-                                      person.tur?.includes('Bakmakla Yükümlü')
-                                        ? 'bg-purple-100 text-purple-800'
-                                        : 'bg-blue-100 text-blue-800'
-                                    }
-                                  >
+                                  <Badge variant="secondary" className="bg-blue-100 text-blue-800">
                                     {person.tur}
                                   </Badge>
                                   <Badge variant="outline" className="bg-green-50 text-green-700">
@@ -3230,18 +3210,7 @@ export function BeneficiaryDetailPageComprehensive({
                               <div>
                                 <h3 className="font-semibold text-gray-900">{person.ad_soyad}</h3>
                                 <div className="flex items-center gap-2">
-                                  <Badge
-                                    variant={
-                                      person.tur?.includes('Bakmakla Yükümlü')
-                                        ? 'default'
-                                        : 'secondary'
-                                    }
-                                    className={
-                                      person.tur?.includes('Bakmakla Yükümlü')
-                                        ? 'bg-purple-100 text-purple-800'
-                                        : 'bg-blue-100 text-blue-800'
-                                    }
-                                  >
+                                  <Badge variant="secondary" className="bg-blue-100 text-blue-800">
                                     {person.tur ?? person.Tur ?? 'İhtiyaç Sahibi'}
                                   </Badge>
                                 </div>

@@ -13,7 +13,7 @@ export const createLazyComponent = (
   displayName: string,
 ) => {
   const Component = React.lazy(importFn);
-  (Component as React.ComponentType<Record<string, unknown>> & { displayName: string }).displayName = displayName;
+  (Component as unknown as React.ComponentType<Record<string, unknown>> & { displayName: string }).displayName = displayName;
   return Component;
 };
 

@@ -6,7 +6,6 @@
  */
 
 import {
-  AlertCircle,
   CheckCircle,
   Clock,
   Download,
@@ -27,7 +26,6 @@ import type { Beneficiary } from '../../types/beneficiary';
 import { PageLoading } from '../shared/LoadingSpinner';
 // OCR Scanner removed
 import { PageLayout } from '../layouts/PageLayout';
-import { NewCategoryNotification } from '../notifications/NewCategoryNotification';
 import { Badge } from '../ui/badge';
 import { StatusBadge } from '../ui/status-badge';
 import { Button } from '../ui/button';
@@ -126,7 +124,6 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
     suspended: 0,
     underEvaluation: 0,
     totalAidAmount: 0,
-    bakimYukumluCount: 0,
   });
   const [newBeneficiary, setNewBeneficiary] = useState<{
     ad_soyad: string;
@@ -259,12 +256,6 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
     try {
       const data = Array.isArray(beneficiaries) ? beneficiaries : [];
 
-      const bakimYukumluCount = data
-        .map((item) => (item.tur || '').toString())
-        .filter(
-          (key) => key.toLowerCase().includes('bakmakla') || key.toLowerCase().includes('yükümlü'),
-        ).length;
-
       setStats({
         total: data.length,
         active: data.length, // Varsayılan: hepsi aktif
@@ -272,7 +263,6 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
         suspended: 0,
         underEvaluation: 0,
         totalAidAmount: 0, // Bu veri tabloda yok
-        bakimYukumluCount,
       });
     } catch (error) {
       logger.error('Stats loading failed:', error);
@@ -283,7 +273,6 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
         suspended: 0,
         underEvaluation: 0,
         totalAidAmount: 0,
-        bakimYukumluCount: 0,
       });
     }
   }, [beneficiaries]);
@@ -364,16 +353,11 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
   const getCategoryBadge = (category: string) => {
     const categoryInfo = categoryMapping[category as keyof typeof categoryMapping];
     const categoryLabel = categoryInfo?.label ?? category;
-    const isNewCategory = category === 'Bakmakla Yükümlü Olunan Kişi';
 
     return (
       <Badge
-        variant={isNewCategory ? 'default' : 'outline'}
-        className={
-          isNewCategory
-            ? 'border-purple-200 bg-purple-100 text-purple-800'
-            : (categoryInfo?.color ?? '')
-        }
+        variant="outline"
+        className={categoryInfo?.color ?? 'bg-neutral-100 text-neutral-700 border-neutral-200'}
       >
         {categoryLabel}
       </Badge>
@@ -981,19 +965,6 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
               <CardContent className="p-3 sm:p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="text-xl text-purple-600 sm:text-2xl">
-                      {stats.bakimYukumluCount ?? 0}
-                    </div>
-                    <p className="text-xs text-gray-600 sm:text-sm">Bakmakla Yükümlü</p>
-                  </div>
-                  <AlertCircle className="h-8 w-8 text-purple-500 opacity-80" />
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="professional-card micro-interaction">
-              <CardContent className="p-3 sm:p-4">
-                <div className="flex items-center justify-between">
-                  <div>
                     <div className="text-lg text-emerald-600 sm:text-2xl">
                       ₺{(stats.totalAidAmount ?? 0).toLocaleString()}
                     </div>
@@ -1079,9 +1050,6 @@ export function BeneficiariesPageEnhanced({ onNavigateToDetail }: BeneficiariesP
 
         {/* OCR Scanner removed */}
       </PageLayout>
-
-      {/* New Category Notification */}
-      <NewCategoryNotification />
 
       {/* OCR Scanner Modal removed */}
     </>

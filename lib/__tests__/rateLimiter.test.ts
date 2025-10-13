@@ -1,11 +1,11 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { RateLimiter } from '../middleware/rateLimiter';
+import rateLimiterModule from '../middleware/rateLimiter';
 
 describe('RateLimiter', () => {
-  let rateLimiter: RateLimiter;
+  let rateLimiter: typeof rateLimiterModule.RateLimiter;
 
   beforeEach(() => {
-    rateLimiter = new RateLimiter({
+    rateLimiter = new rateLimiterModule.RateLimiter({
       windowMs: 60000,
       maxRequests: 5,
     });

@@ -7,7 +7,8 @@ import { NetworkManager, getUserFriendlyErrorMessage, isRetryableError } from '.
 import type { NetworkError } from '../networkDiagnostics';
 
 // Mock fetch
-global.fetch = vi.fn();
+const mockFetch = vi.fn();
+global.fetch = mockFetch;
 
 describe('NetworkManager', () => {
   let networkManager: NetworkManager;
@@ -25,8 +26,8 @@ describe('NetworkManager', () => {
 
   it('should test connectivity successfully', async () => {
     // Mock successful responses
-    (global.fetch as any).mockResolvedValueOnce({ ok: true }); // Internet test
-    (global.fetch as any).mockResolvedValueOnce({ ok: true }); // Supabase test
+    mockFetch.mockResolvedValueOnce({ ok: true }); // Internet test
+    mockFetch.mockResolvedValueOnce({ ok: true }); // Supabase test
 
     const diagnostics = await networkManager.testConnectivity();
 
@@ -38,7 +39,7 @@ describe('NetworkManager', () => {
 
   it('should handle network errors gracefully', async () => {
     // Mock network error
-    (global.fetch as any).mockRejectedValueOnce(new Error('Failed to fetch'));
+    mockFetch.mockRejectedValueOnce(new Error('Failed to fetch'));
 
     const diagnostics = await networkManager.testConnectivity();
 

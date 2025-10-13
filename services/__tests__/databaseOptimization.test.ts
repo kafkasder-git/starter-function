@@ -232,9 +232,9 @@ describe('Database Optimization Services Integration', () => {
   });
 
   describe('Service Health Checks', () => {
-    it('should have healthy services by default', () => {
+    it('should have healthy services by default', async () => {
       // Mock services should return healthy status by default
-      const alerts = mockServices.performanceMonitoring.getActiveAlerts();
+      const alerts = await mockServices.performanceMonitoring.getActiveAlerts();
       expect(Array.isArray(alerts)).toBe(true);
       expect(alerts.length).toBe(0); // No active alerts in mock
     });

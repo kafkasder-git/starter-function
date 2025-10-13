@@ -9,7 +9,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { toast } from 'sonner';
-import { Eye, EyeOff, Lock, Mail, Shield, AlertCircle, X } from 'lucide-react';
+import { Lock, Mail, Shield, AlertCircle, X } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
@@ -40,7 +40,6 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
     password: '',
     rememberMe: false,
   });
-  const [showPassword, setShowPassword] = useState(false);
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [showResetDialog, setShowResetDialog] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
@@ -150,56 +149,56 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 via-white to-slate-100 p-4">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-neutral-50 via-white to-neutral-100 p-4">
       {/* Background Decorations */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="bg-primary/5 absolute top-1/4 left-1/4 h-32 w-32 rounded-full blur-3xl" />
-        <div className="absolute right-1/4 bottom-1/4 h-40 w-40 rounded-full bg-blue-500/5 blur-3xl" />
-        <div className="absolute top-1/2 right-1/3 h-24 w-24 rounded-full bg-emerald-500/5 blur-2xl" />
+        <div className="absolute left-1/4 top-16 h-40 w-40 rounded-full bg-primary-500/10 blur-3xl" />
+        <div className="absolute bottom-24 right-1/5 h-48 w-48 rounded-full bg-info-500/10 blur-3xl" />
+        <div className="absolute right-1/3 top-1/2 h-32 w-32 rounded-full bg-success-500/10 blur-2xl" />
       </div>
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="relative z-10 w-full max-w-md"
+        className="relative z-10 w-full max-w-lg"
       >
-        <Card className="border-slate-200/60 bg-white/95 shadow-xl backdrop-blur-sm">
-          <CardHeader className="space-y-4 pb-6 text-center">
+        <Card className="border-primary-100/60 bg-white/90 shadow-xl shadow-primary-500/10 backdrop-blur-xl">
+          <CardHeader className="space-y-5 pb-0 text-center">
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
-              className="from-primary mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br via-blue-600 to-blue-800 shadow-lg motion-safe:animate-pulse"
+              className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary-500 via-info-500 to-primary-600 text-white shadow-lg shadow-primary-500/30"
             >
-              <Shield className="h-8 w-8 text-white" />
+              <Shield className="h-8 w-8" />
             </motion.div>
 
             <div className="space-y-2">
-              <CardTitle className="text-2xl font-bold tracking-tight text-slate-900">
+              <CardTitle className="text-3xl font-semibold tracking-tight text-neutral-900">
                 Dernek Yönetim Sistemi
               </CardTitle>
-              <CardDescription className="font-medium text-slate-600">
-                Hesabınızla giriş yapın
+              <CardDescription className="text-sm text-neutral-600">
+                Yetkilendirilmiş hesabınızla giriş yaparak yönetim paneline erişin.
               </CardDescription>
             </div>
           </CardHeader>
 
-          <CardContent className="space-y-6">
+          <CardContent className="space-y-6 pt-6">
             {error && (
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.2 }}
               >
-                <Alert variant="destructive" className="flex items-start gap-2 border-red-300">
+                <Alert variant="destructive" className="flex items-start gap-2 border-error-200">
                   <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0" />
                   <AlertDescription className="flex-1">
                     <div className="space-y-2">
                       <div className="font-medium">{error}</div>
                       {error.includes('Ağ bağlantısı') && (
-                        <div className="text-sm text-red-700">
-                          <ul className="list-disc list-inside space-y-1">
+                        <div className="text-sm text-error-700">
+                          <ul className="list-inside list-disc space-y-1">
                             <li>İnternet bağlantınızı kontrol edin</li>
                             <li>Sayfayı yenileyin (F5)</li>
                             <li>Birkaç dakika sonra tekrar deneyin</li>
@@ -207,8 +206,8 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
                         </div>
                       )}
                       {error.includes('Geçersiz email') && (
-                        <div className="text-sm text-red-700">
-                          <ul className="list-disc list-inside space-y-1">
+                        <div className="text-sm text-error-700">
+                          <ul className="list-inside list-disc space-y-1">
                             <li>Email adresinizi kontrol edin</li>
                             <li>Şifrenizi kontrol edin</li>
                             <li>Hesabınızın aktif olduğundan emin olun</li>
@@ -220,7 +219,7 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
                   <button
                     type="button"
                     onClick={clearError}
-                    className="flex-shrink-0 text-red-500 transition-colors hover:text-red-700"
+                    className="flex-shrink-0 text-error-500 transition-colors hover:text-error-700"
                     aria-label="Hata mesajını kapat"
                   >
                     <X className="h-4 w-4" />
@@ -229,112 +228,90 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
               </motion.div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-5">
               <div className="space-y-2">
-                <Label htmlFor="email" className="font-semibold text-slate-700">
+                <Label htmlFor="email" className="text-neutral-700">
                   Kullanıcı Adı / Email
                 </Label>
-                <div className="relative">
-                  <Mail className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-slate-500" />
-                  <Input
-                    id="email"
-                    type="text"
-                    placeholder="admin, manager, operator, viewer veya email adresi"
-                    value={credentials.email}
-                    onChange={(e) => {
-                      handleInputChange('email', e.target.value);
-                    }}
-                    className={`focus:border-primary focus:ring-primary/20 h-12 border-slate-300 bg-white pl-10 ${
-                      formErrors.email ? 'border-red-300 focus:border-red-400' : ''
-                    }`}
-                    disabled={isLoading}
-                  />
-                </div>
-                {formErrors.email && (
-                  <p className="text-sm font-medium text-red-600">{formErrors.email}</p>
-                )}
+                <Input
+                  id="email"
+                  type="text"
+                  prefixIcon={<Mail className="h-full w-full" />}
+                  placeholder="admin veya e-posta adresi"
+                  value={credentials.email}
+                  onChange={(e) => {
+                    handleInputChange('email', e.target.value);
+                  }}
+                  inputSize="lg"
+                  autoComplete="username"
+                  error={Boolean(formErrors.email)}
+                  errorText={formErrors.email}
+                  helperText="Yetkilendirilmiş kullanıcı adınızı veya e-posta adresinizi girin"
+                  disabled={isLoading}
+                />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password" className="font-semibold text-slate-700">
+                <Label htmlFor="password" className="text-neutral-700">
                   Şifre
                 </Label>
-                <div className="relative">
-                  <Lock className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-slate-500" />
-                  <Input
-                    id="password"
-                    type={showPassword ? 'text' : 'password'}
-                    placeholder="••••••••"
-                    value={credentials.password}
-                    onChange={(e) => {
-                      handleInputChange('password', e.target.value);
-                    }}
-                    className={`focus:border-primary focus:ring-primary/20 h-12 border-slate-300 bg-white pr-10 pl-10 ${
-                      formErrors.password ? 'border-red-300 focus:border-red-400' : ''
-                    }`}
-                    disabled={isLoading}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowPassword(!showPassword);
-                    }}
-                    className="absolute top-1/2 right-3 -translate-y-1/2 transform text-slate-500 transition-colors hover:text-slate-700"
-                    disabled={isLoading}
-                  >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
-                </div>
-                {formErrors.password && (
-                  <p className="text-sm font-medium text-red-600">{formErrors.password}</p>
-                )}
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="rememberMe"
-                  checked={credentials.rememberMe}
-                  onCheckedChange={(checked: boolean) => {
-                    handleInputChange('rememberMe', checked);
+                <Input
+                  id="password"
+                  type="password"
+                  prefixIcon={<Lock className="h-full w-full" />}
+                  placeholder="••••••••"
+                  value={credentials.password}
+                  onChange={(e) => {
+                    handleInputChange('password', e.target.value);
                   }}
+                  inputSize="lg"
+                  autoComplete="current-password"
+                  error={Boolean(formErrors.password)}
+                  errorText={formErrors.password}
+                  helperText="En az 6 karakter içermelidir"
                   disabled={isLoading}
                 />
-                <Label
-                  htmlFor="rememberMe"
-                  className="cursor-pointer text-sm font-medium text-slate-600"
-                >
-                  Beni hatırla
-                </Label>
               </div>
 
-              <Button
-                type="submit"
-                disabled={isLoading}
-                className="from-primary hover:from-primary/90 h-12 w-full bg-gradient-to-r to-blue-700 font-semibold text-white shadow-lg transition-all duration-200 hover:to-blue-700/90 hover:shadow-xl disabled:opacity-50"
-              >
-                {isLoading ? (
-                  <div className="flex items-center gap-2">
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                    Giriş yapılıyor...
-                  </div>
-                ) : (
-                  'Giriş Yap'
-                )}
-              </Button>
-            </form>
-
-            <div className="pt-4 text-center">
-              <p className="text-xs text-slate-500">
-                Şifrenizi mi unuttunuz?{' '}
+              <div className="flex items-center justify-between">
+                <label htmlFor="rememberMe" className="flex items-center gap-2 text-sm text-neutral-600">
+                  <Checkbox
+                    id="rememberMe"
+                    checked={credentials.rememberMe}
+                    onCheckedChange={(checked: boolean) => {
+                      handleInputChange('rememberMe', checked);
+                    }}
+                    disabled={isLoading}
+                  />
+                  Beni hatırla
+                </label>
                 <button
                   type="button"
                   onClick={() => {
                     setShowResetDialog(true);
                   }}
-                  className="text-primary font-medium hover:underline"
+                  className="text-sm font-medium text-primary-600 transition-colors hover:text-primary-500"
                 >
-                  Sıfırlama talebi
+                  Şifremi unuttum
                 </button>
+              </div>
+
+              <Button
+                type="submit"
+                variant="primaryGradient"
+                size="xl"
+                fullWidth
+                loading={isLoading}
+                loadingText="Giriş yapılıyor..."
+                className="shadow-lg shadow-primary-500/25"
+              >
+                Giriş Yap
+              </Button>
+            </form>
+
+            <div className="border-t pt-4 text-center">
+              <p className="text-xs text-neutral-500">
+                Şifre sıfırlama yardımı için lütfen yetkili sistem yöneticinizle iletişime geçin.
               </p>
             </div>
           </CardContent>
@@ -346,7 +323,7 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
           transition={{ delay: 0.5 }}
           className="mt-8 text-center"
         >
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-neutral-500">
             © 2024 Dernek Yönetim Sistemi. Tüm hakları saklıdır.
           </p>
         </motion.div>
@@ -356,7 +333,7 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
       <Dialog open={showResetDialog} onOpenChange={setShowResetDialog}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
+            <DialogTitle className="flex items-center gap-2 text-neutral-900">
               <Mail className="h-5 w-5" />
               Şifre Sıfırlama
             </DialogTitle>
@@ -365,9 +342,11 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
             </DialogDescription>
           </DialogHeader>
 
-          <form onSubmit={handlePasswordReset} className="space-y-4 py-4">
+          <form onSubmit={handlePasswordReset} className="space-y-5 py-4">
             <div className="space-y-2">
-              <Label htmlFor="resetEmail">E-posta Adresi</Label>
+              <Label htmlFor="resetEmail" className="text-neutral-700">
+                E-posta Adresi
+              </Label>
               <Input
                 id="resetEmail"
                 type="email"
@@ -377,6 +356,8 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
                 }}
                 placeholder="ornek@email.com"
                 required
+                inputSize="lg"
+                autoComplete="email"
                 disabled={isResetting}
               />
             </div>
@@ -393,15 +374,13 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
               >
                 İptal
               </Button>
-              <Button type="submit" disabled={isResetting}>
-                {isResetting ? (
-                  <div className="flex items-center gap-2">
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                    Gönderiliyor...
-                  </div>
-                ) : (
-                  'Sıfırlama Bağlantısı Gönder'
-                )}
+              <Button
+                type="submit"
+                variant="primaryGradient"
+                loading={isResetting}
+                loadingText="Gönderiliyor..."
+              >
+                Sıfırlama Bağlantısı Gönder
               </Button>
             </div>
           </form>

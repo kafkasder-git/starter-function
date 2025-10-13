@@ -9,22 +9,22 @@ import {
   GanttFeatureList,
   GanttFeatureListGroup,
   GanttFeatureRow,
-  GanttFeatureItem,
+  // GanttFeatureItem,
   GanttToday,
   GanttMarker,
   type GanttFeature,
   type GanttStatus,
   type GanttMarkerProps,
 } from '@/components/kibo-ui/gantt';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/kibo-ui';
+import { Card, CardHeader, CardTitle } from '@/components/kibo-ui';
 import { Badge } from '@/components/kibo-ui';
 
 // Sample data
 const sampleStatuses: GanttStatus[] = [
-  { id: 'todo', name: 'To Do', color: '#94a3b8' },
-  { id: 'in-progress', name: 'In Progress', color: '#3b82f6' },
-  { id: 'done', name: 'Done', color: '#10b981' },
-  { id: 'blocked', name: 'Blocked', color: '#ef4444' },
+  { id: 'todo', name: 'To Do', color: 'hsl(var(--neutral-400))' },
+  { id: 'in-progress', name: 'In Progress', color: 'hsl(var(--info-500))' },
+  { id: 'done', name: 'Done', color: 'hsl(var(--success-500))' },
+  { id: 'blocked', name: 'Blocked', color: 'hsl(var(--error-500))' },
 ];
 
 const sampleFeatures: GanttFeature[] = [
@@ -33,7 +33,7 @@ const sampleFeatures: GanttFeature[] = [
     name: 'User Authentication',
     startAt: new Date(2024, 0, 1),
     endAt: new Date(2024, 0, 15),
-    status: sampleStatuses[0],
+    status: sampleStatuses[0]!,
     lane: 'backend',
   },
   {
@@ -41,7 +41,7 @@ const sampleFeatures: GanttFeature[] = [
     name: 'Database Setup',
     startAt: new Date(2024, 0, 5),
     endAt: new Date(2024, 0, 20),
-    status: sampleStatuses[1],
+    status: sampleStatuses[1]!,
     lane: 'backend',
   },
   {
@@ -49,7 +49,7 @@ const sampleFeatures: GanttFeature[] = [
     name: 'Frontend Components',
     startAt: new Date(2024, 0, 10),
     endAt: new Date(2024, 0, 25),
-    status: sampleStatuses[0],
+    status: sampleStatuses[0]!,
     lane: 'frontend',
   },
   {
@@ -57,7 +57,7 @@ const sampleFeatures: GanttFeature[] = [
     name: 'API Integration',
     startAt: new Date(2024, 0, 15),
     endAt: new Date(2024, 0, 30),
-    status: sampleStatuses[2],
+    status: sampleStatuses[2]!,
     lane: 'frontend',
   },
   {
@@ -65,7 +65,7 @@ const sampleFeatures: GanttFeature[] = [
     name: 'Testing & QA',
     startAt: new Date(2024, 1, 1),
     endAt: new Date(2024, 1, 10),
-    status: sampleStatuses[0],
+    status: sampleStatuses[0]!,
     lane: 'testing',
   },
 ];
@@ -91,7 +91,7 @@ export const GanttExample: React.FC = () => {
   const handleFeatureMove = (id: string, startAt: Date, endAt: Date | null) => {
     setFeatures(prev => prev.map(feature => 
       feature.id === id 
-        ? { ...feature, startAt, endAt }
+        ? { ...feature, startAt, endAt: endAt || new Date(startAt.getTime() + 24 * 60 * 60 * 1000) }
         : feature
     ));
   };
@@ -102,7 +102,7 @@ export const GanttExample: React.FC = () => {
       name: `New Feature ${features.length + 1}`,
       startAt: date,
       endAt: new Date(date.getTime() + 7 * 24 * 60 * 60 * 1000), // 7 days later
-      status: sampleStatuses[0],
+      status: sampleStatuses[0]!,
       lane: 'general',
     };
     setFeatures(prev => [...prev, newFeature]);
@@ -112,14 +112,14 @@ export const GanttExample: React.FC = () => {
     setMarkers(prev => prev.filter(marker => marker.id !== id));
   };
 
-  const handleCreateMarker = (date: Date) => {
-    const newMarker: GanttMarkerProps = {
-      id: `marker-${Date.now()}`,
-      date,
-      label: `Marker ${markers.length + 1}`,
-    };
-    setMarkers(prev => [...prev, newMarker]);
-  };
+  // const handleCreateMarker = (date: Date) => {
+  //   const newMarker: GanttMarkerProps = {
+  //     id: `marker-${Date.now()}`,
+  //     date,
+  //     label: `Marker ${markers.length + 1}`,
+  //   };
+  //   setMarkers(prev => [...prev, newMarker]);
+  // };
 
   // Group features by lane
   const featuresByLane = features.reduce((acc, feature) => {
@@ -181,10 +181,10 @@ export const GanttExample: React.FC = () => {
                           <span className="truncate text-xs font-medium">
                             {feature.name}
                           </span>
-                          <div 
-                            className="w-2 h-2 rounded-full ml-2"
-                            style={{ backgroundColor: feature.status.color }}
-                          />
+                    <div 
+                      className="ml-2 h-2 w-2 rounded-full"
+                      style={{ backgroundColor: feature.status.color }}
+                    />
                         </div>
                       )}
                     </GanttFeatureRow>
@@ -221,7 +221,7 @@ export const GanttExample: React.FC = () => {
               className="flex items-center gap-2"
             >
               <div 
-                className="w-2 h-2 rounded-full"
+                className="h-2 w-2 rounded-full"
                 style={{ backgroundColor: status.color }}
               />
               <span className="text-xs">{status.name}</span>

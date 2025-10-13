@@ -170,7 +170,7 @@ const getAddRange = (range: Range) => {
 };
 
 const getDateByMousePosition = (context: GanttContextProps, mouseX: number) => {
-  const timelineStartDate = new Date(context.timelineData[0].year, 0, 1);
+  const timelineStartDate = new Date(context.timelineData[0]?.year || new Date().getFullYear(), 0, 1);
   const columnWidth = (context.columnWidth * context.zoom) / 100;
   const offset = Math.floor(mouseX / columnWidth);
   const daysIn = getsDaysIn(context.range);
@@ -1022,16 +1022,17 @@ export const GanttFeatureRow: FC<GanttFeatureRowProps> = ({
     // Find the first sub-row that's free (doesn't overlap)
     while (
       subRow < subRowEndTimes.length &&
-      subRowEndTimes[subRow] > feature.startAt
+      (subRowEndTimes[subRow] ?? 0) > feature.startAt.getTime()
     ) {
       subRow++;
     }
 
     // Update the end time for this sub-row
+    const endTime = feature.endAt instanceof Date ? feature.endAt.getTime() : feature.endAt;
     if (subRow === subRowEndTimes.length) {
-      subRowEndTimes.push(feature.endAt);
+      subRowEndTimes.push(endTime);
     } else {
-      subRowEndTimes[subRow] = feature.endAt;
+      subRowEndTimes[subRow] = endTime;
     }
 
     featureWithPositions.push({ ...feature, subRow });
@@ -1332,7 +1333,7 @@ export const GanttProvider: FC<GanttProviderProps> = ({
       }
 
       // Calculate timeline start date from timelineData
-      const timelineStartDate = new Date(timelineData[0].year, 0, 1);
+      const timelineStartDate = new Date(timelineData[0]?.year || new Date().getFullYear(), 0, 1);
 
       // Calculate the horizontal offset for the feature's start date
       const offset = getOffset(feature.startAt, timelineStartDate, {

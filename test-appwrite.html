@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appwrite Connection Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@21.2.1"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background-color: #0056b3; }
+        .config {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Appwrite Connection Test</h1>
+        
+        <div class="config">
+            <h3>Configuration:</h3>
+            <p><strong>Endpoint:</strong> <span id="endpoint">Loading...</span></p>
+            <p><strong>Project ID:</strong> <span id="projectId">Loading...</span></p>
+            <p><strong>Database ID:</strong> <span id="databaseId">Loading...</span></p>
+        </div>
+
+        <div id="status"></div>
+
+        <div>
+            <button onclick="testConnection()">Test Connection</button>
+            <button onclick="testAuth()">Test Authentication</button>
+            <button onclick="testDatabase()">Test Database</button>
+            <button onclick="testUserRegistration()">Test User Registration</button>
+        </div>
+
+        <div style="margin-top: 20px;">
+            <h3>Quick Auth Test:</h3>
+            <input type="email" id="testEmail" placeholder="Test email" style="padding: 8px; margin: 5px; width: 200px;">
+            <input type="password" id="testPassword" placeholder="Test password" style="padding: 8px; margin: 5px; width: 200px;">
+            <button onclick="testLogin()">Test Login</button>
+        </div>
+
+        <div id="results"></div>
+    </div>
+
+    <script>
+        // Configuration from your .env file
+        const config = {
+            endpoint: 'https://fra.cloud.appwrite.io/v1',
+            projectId: '68e99f6c000183bafb39',
+            databaseId: 'kafkasder_db'
+        };
+
+        // Initialize Appwrite client
+        const client = new Appwrite.Client();
+        client.setEndpoint(config.endpoint).setProject(config.projectId);
+
+        // Initialize services
+        const account = new Appwrite.Account(client);
+        const databases = new Appwrite.Databases(client);
+        
+        // Get ID utility
+        const { ID } = Appwrite;
+
+        // Display configuration
+        document.getElementById('endpoint').textContent = config.endpoint;
+        document.getElementById('projectId').textContent = config.projectId;
+        document.getElementById('databaseId').textContent = config.databaseId;
+
+        function addStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            const statusElement = document.createElement('div');
+            statusElement.className = `status ${type}`;
+            statusElement.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
+            statusDiv.appendChild(statusElement);
+        }
+
+        function addResult(title, content, type = 'info') {
+            const resultsDiv = document.getElementById('results');
+            const resultElement = document.createElement('div');
+            resultElement.className = `status ${type}`;
+            resultElement.innerHTML = `<strong>${title}</strong><br>${content}`;
+            resultsDiv.appendChild(resultElement);
+        }
+
+        async function testConnection() {
+            addStatus('Testing Appwrite connection...', 'info');
+            
+            try {
+                // Test basic connection by getting project info
+                const response = await fetch(`${config.endpoint}/health`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                if (response.ok) {
+                    addStatus('✅ Appwrite endpoint is reachable', 'success');
+                    addResult('Connection Test', 'Successfully connected to Appwrite endpoint', 'success');
+                } else if (response.status === 401) {
+                    addStatus('✅ Appwrite endpoint is reachable (401 is expected without auth)', 'success');
+                    addResult('Connection Test', 'Endpoint is working correctly - 401 is expected without authentication', 'success');
+                } else {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+            } catch (error) {
+                addStatus(`❌ Connection failed: ${error.message}`, 'error');
+                addResult('Connection Test', `Failed: ${error.message}`, 'error');
+            }
+        }
+
+        async function testAuth() {
+            addStatus('Testing authentication service...', 'info');
+            
+            try {
+                // Test if auth service is available (without actually logging in)
+                const response = await fetch(`${config.endpoint}/account`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Appwrite-Project': config.projectId
+                    }
+                });
+                
+                // We expect a 401 since we're not authenticated, but that means the service is working
+                if (response.status === 401) {
+                    addStatus('✅ Authentication service is available', 'success');
+                    addResult('Auth Test', 'Authentication service is responding correctly', 'success');
+                } else if (response.status === 403) {
+                    addStatus('✅ Authentication service is available (project access)', 'success');
+                    addResult('Auth Test', 'Authentication service is responding (project may have restricted access)', 'info');
+                } else {
+                    throw new Error(`Unexpected response: ${response.status}`);
+                }
+            } catch (error) {
+                addStatus(`❌ Auth service test failed: ${error.message}`, 'error');
+                addResult('Auth Test', `Failed: ${error.message}`, 'error');
+            }
+        }
+
+        async function testDatabase() {
+            addStatus('Testing database service...', 'info');
+            
+            try {
+                // Test if database service is available
+                const response = await fetch(`${config.endpoint}/databases/${config.databaseId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Appwrite-Project': config.projectId
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    addStatus('✅ Database service is available', 'success');
+                    addResult('Database Test', `Database "${data.name}" is accessible`, 'success');
+                } else if (response.status === 401) {
+                    addStatus('✅ Database service is available (authentication required)', 'info');
+                    addResult('Database Test', 'Database service is responding (authentication required for access)', 'info');
+                } else {
+                    throw new Error(`Database access failed: ${response.status} ${response.statusText}`);
+                }
+            } catch (error) {
+                addStatus(`❌ Database test failed: ${error.message}`, 'error');
+                addResult('Database Test', `Failed: ${error.message}`, 'error');
+            }
+        }
+
+        async function testUserRegistration() {
+            addStatus('Testing user registration...', 'info');
+            
+            const testEmail = `test${Date.now()}@example.com`;
+            const testPassword = 'TestPassword123!';
+            const userId = `user_${Date.now()}`;
+            
+            try {
+                const user = await account.create(userId, testEmail, testPassword);
+                addStatus('✅ User registration successful', 'success');
+                addResult('User Registration', `Created user: ${user.email}`, 'success');
+                
+                // Clean up - delete the test user
+                try {
+                    await account.deleteIdentity(user.$id);
+                    addStatus('🧹 Test user cleaned up', 'info');
+                } catch (cleanupError) {
+                    // Try alternative cleanup method
+                    try {
+                        await account.deleteSessions();
+                        addStatus('🧹 Test user sessions cleaned up', 'info');
+                    } catch (cleanupError2) {
+                        addStatus('⚠️ Could not clean up test user', 'info');
+                    }
+                }
+            } catch (error) {
+                addStatus(`❌ Registration failed: ${error.message}`, 'error');
+                addResult('User Registration', `Failed: ${error.message}`, 'error');
+            }
+        }
+
+        async function testLogin() {
+            const email = document.getElementById('testEmail').value;
+            const password = document.getElementById('testPassword').value;
+            
+            if (!email || !password) {
+                addStatus('❌ Please enter both email and password', 'error');
+                return;
+            }
+            
+            addStatus(`Testing login for ${email}...`, 'info');
+            
+            try {
+                const session = await account.createEmailPasswordSession(email, password);
+                addStatus('✅ Login successful!', 'success');
+                addResult('Login Test', `Logged in as: ${email}`, 'success');
+                
+                // Test getting current user
+                try {
+                    const user = await account.get();
+                    addResult('Current User', `User ID: ${user.$id}, Email: ${user.email}`, 'success');
+                } catch (userError) {
+                    addResult('Get User', `Login worked but couldn't get user info: ${userError.message}`, 'info');
+                }
+                
+                // Logout
+                try {
+                    await account.deleteSession('current');
+                    addStatus('🧹 Logged out successfully', 'info');
+                } catch (logoutError) {
+                    addStatus('⚠️ Could not logout', 'info');
+                }
+                
+            } catch (error) {
+                addStatus(`❌ Login failed: ${error.message}`, 'error');
+                addResult('Login Test', `Failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Run initial connection test
+        window.onload = function() {
+            addStatus('Appwrite test page loaded', 'info');
+            setTimeout(testConnection, 1000);
+        };
+    </script>
+</body>
+</html>

@@ -75,6 +75,10 @@ export const buttonVariants = cva(
           'bg-info-500 text-white shadow-sm hover:bg-info-600',
           'focus-visible:ring-info-500',
         ],
+        primaryGradient: [
+          'bg-primary-500 bg-gradient-to-r from-primary-500 via-info-500 to-primary-600 text-white shadow hover:from-primary-600 hover:via-info-600 hover:to-primary-700',
+          'focus-visible:ring-primary-500',
+        ],
       },
       size: {
         xs: 'h-7 px-2 text-xs',

@@ -61,26 +61,26 @@ class IntelligentStatsService {
 
       if (error) throw error;
 
-      const total = beneficiaries?.length ?? 0;
-      const active = beneficiaries?.filter((b) => b.status === 'active').length ?? 0;
-      const passive = beneficiaries?.filter((b) => b.status === 'passive').length ?? 0;
-      const suspended = beneficiaries?.filter((b) => b.status === 'suspended').length ?? 0;
-      const underEvaluation =
-        beneficiaries?.filter((b) => b.status === 'under_evaluation').length ?? 0;
+      const beneficiaryList = beneficiaries?.documents || [];
+      const total = beneficiaryList.length;
+      const active = beneficiaryList.filter((b) => b.status === 'active').length;
+      const passive = beneficiaryList.filter((b) => b.status === 'passive').length;
+      const suspended = beneficiaryList.filter((b) => b.status === 'suspended').length;
+      const underEvaluation = beneficiaryList.filter((b) => b.status === 'under_evaluation').length;
 
-      const totalAidAmount = beneficiaries?.reduce((sum, b) => sum + (b.toplam_tutar ?? 0), 0) || 0;
+      const totalAidAmount = beneficiaryList.reduce((sum, b) => sum + (b.toplam_tutar ?? 0), 0);
       const averageAidAmount = total > 0 ? totalAidAmount / total : 0;
 
       // Group by city
       const byCity: Record<string, number> = {};
-      beneficiaries?.forEach((b) => {
+      beneficiaryList.forEach((b) => {
         const city = b.sehir ?? 'Belirtilmemiş';
         byCity[city] = (byCity[city] ?? 0) + 1;
       });
 
       // Group by priority
       const byPriority: Record<string, number> = {};
-      beneficiaries?.forEach((b) => {
+      beneficiaryList.forEach((b) => {
         const priority = b.oncelik ?? 'Normal';
         byPriority[priority] = (byPriority[priority] ?? 0) + 1;
       });
@@ -119,21 +119,22 @@ class IntelligentStatsService {
 
       if (error) throw error;
 
-      const total = members?.length ?? 0;
-      const active = members?.filter((m) => m.membership_status === 'active').length ?? 0;
-      const inactive = members?.filter((m) => m.membership_status === 'inactive').length ?? 0;
-      const suspended = members?.filter((m) => m.membership_status === 'suspended').length ?? 0;
+      const memberList = members?.documents || [];
+      const total = memberList.length;
+      const active = memberList.filter((m) => m.membership_status === 'active').length;
+      const inactive = memberList.filter((m) => m.membership_status === 'inactive').length;
+      const suspended = memberList.filter((m) => m.membership_status === 'suspended').length;
 
       // Group by membership type
       const byMembershipType: Record<string, number> = {};
-      members?.forEach((m) => {
+      memberList.forEach((m) => {
         const type = m.membership_type ?? 'Bireysel';
         byMembershipType[type] = (byMembershipType[type] ?? 0) + 1;
       });
 
       // Group by city
       const byCity: Record<string, number> = {};
-      members?.forEach((m) => {
+      memberList.forEach((m) => {
         const city = m.city ?? 'Belirtilmemiş';
         byCity[city] = (byCity[city] ?? 0) + 1;
       });
@@ -141,21 +142,19 @@ class IntelligentStatsService {
       // Recent joins (last 30 days)
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-      const recentJoins =
-        members?.filter((m) => new Date(m.joined_date) >= thirtyDaysAgo).length ?? 0;
+      const recentJoins = memberList.filter((m) => new Date(m.joined_date) >= thirtyDaysAgo).length;
 
       // Average age
-      const ages =
-        members
-          ?.map((m) => {
-            if (m.birth_date) {
-              const birthDate = new Date(m.birth_date);
-              const today = new Date();
+      const ages = memberList
+        .map((m) => {
+          if (m.birth_date) {
+            const birthDate = new Date(m.birth_date);
+            const today = new Date();
               return today.getFullYear() - birthDate.getFullYear();
             }
             return null;
           })
-          .filter((age) => age !== null) || [];
+          .filter((age) => age !== null);
 
       const averageAge =
         ages.length > 0 ? ages.reduce((sum, age) => sum + age, 0) / ages.length : 0;
@@ -192,43 +191,44 @@ class IntelligentStatsService {
 
       if (error) throw error;
 
-      const total = donations?.length ?? 0;
-      const totalAmount = donations?.reduce((sum, d) => sum + (d.amount ?? 0), 0) || 0;
+      const donationList = donations?.documents || [];
+      const total = donationList.length;
+      const totalAmount = donationList.reduce((sum, d) => sum + (d.amount ?? 0), 0);
       const averageAmount = total > 0 ? totalAmount / total : 0;
 
       // Group by status
       const byStatus: Record<string, number> = {};
-      donations?.forEach((d) => {
+      donationList.forEach((d) => {
         const status = d.status ?? 'pending';
         byStatus[status] = (byStatus[status] ?? 0) + 1;
       });
 
       // Group by category
       const byCategory: Record<string, number> = {};
-      donations?.forEach((d) => {
+      donationList.forEach((d) => {
         const category = d.category ?? 'Genel';
         byCategory[category] = (byCategory[category] ?? 0) + 1;
       });
 
       // Group by payment method
       const byPaymentMethod: Record<string, number> = {};
-      donations?.forEach((d) => {
+      donationList.forEach((d) => {
         const method = d.payment_method ?? 'bank_transfer';
         byPaymentMethod[method] = (byPaymentMethod[method] ?? 0) + 1;
       });
 
       // Group by type
       const byType: Record<string, number> = {};
-      donations?.forEach((d) => {
+      donationList.forEach((d) => {
         const type = d.donation_type ?? 'cash';
         byType[type] = (byType[type] ?? 0) + 1;
       });
 
       // Monthly trend (last 6 months)
-      const monthlyTrend = this.calculateMonthlyTrend(donations || []);
+      const monthlyTrend = this.calculateMonthlyTrend(donationList);
 
       // Top donors
-      const topDonors = this.calculateTopDonors(donations || []);
+      const topDonors = this.calculateTopDonors(donationList);
 
       return {
         total,
@@ -264,34 +264,33 @@ class IntelligentStatsService {
 
       if (error) throw error;
 
-      const total = aidRequests?.length ?? 0;
-      const pending = aidRequests?.filter((a) => a.status === 'pending').length ?? 0;
-      const underReview = aidRequests?.filter((a) => a.status === 'under_review').length ?? 0;
-      const approved = aidRequests?.filter((a) => a.status === 'approved').length ?? 0;
-      const rejected = aidRequests?.filter((a) => a.status === 'rejected').length ?? 0;
-      const completed = aidRequests?.filter((a) => a.status === 'completed').length ?? 0;
+      const aidRequestList = aidRequests?.documents || [];
+      const total = aidRequestList.length;
+      const pending = aidRequestList.filter((a) => a.status === 'pending').length;
+      const underReview = aidRequestList.filter((a) => a.status === 'under_review').length;
+      const approved = aidRequestList.filter((a) => a.status === 'approved').length;
+      const rejected = aidRequestList.filter((a) => a.status === 'rejected').length;
+      const completed = aidRequestList.filter((a) => a.status === 'completed').length;
 
-      const totalRequestedAmount =
-        aidRequests?.reduce((sum, a) => sum + (a.requested_amount ?? 0), 0) || 0;
-      const totalApprovedAmount =
-        aidRequests?.reduce((sum, a) => sum + (a.approved_amount ?? 0), 0) || 0;
+      const totalRequestedAmount = aidRequestList.reduce((sum, a) => sum + (a.requested_amount ?? 0), 0);
+      const totalApprovedAmount = aidRequestList.reduce((sum, a) => sum + (a.approved_amount ?? 0), 0);
 
       // Group by aid type
       const byAidType: Record<string, number> = {};
-      aidRequests?.forEach((a) => {
+      aidRequestList.forEach((a) => {
         const type = a.aid_type ?? 'Genel';
         byAidType[type] = (byAidType[type] ?? 0) + 1;
       });
 
       // Group by urgency
       const byUrgency: Record<string, number> = {};
-      aidRequests?.forEach((a) => {
+      aidRequestList.forEach((a) => {
         const urgency = a.urgency ?? 'Normal';
         byUrgency[urgency] = (byUrgency[urgency] ?? 0) + 1;
       });
 
       // Average processing days
-      const avgProcessingDays = this.calculateAverageProcessingDays(aidRequests || []);
+      const avgProcessingDays = this.calculateAverageProcessingDays(aidRequestList);
 
       return {
         total,

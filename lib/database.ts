@@ -42,10 +42,26 @@ export const collections = {
   ROLES: 'roles',
   PERMISSIONS: 'permissions',
   SYSTEM_SETTINGS: 'system_settings',
+  // Messaging collections
+  MESSAGES: 'messages',
+  CONVERSATIONS: 'conversations',
+  CONVERSATION_PARTICIPANTS: 'conversation_participants',
+  MESSAGE_ATTACHMENTS: 'message_attachments',
+  MESSAGE_READ_STATUS: 'message_read_status',
+  USER_PRESENCE: 'user_presence',
+  TYPING_INDICATORS: 'typing_indicators',
 } as const;
 
 // Export for backward compatibility with existing code
 export const TABLES = collections;
+
+/**
+ * Storage buckets for messaging
+ */
+export const STORAGE_BUCKETS = {
+  MESSAGE_ATTACHMENTS: 'message_attachments',
+  VOICE_MESSAGES: 'voice_messages',
+} as const;
 
 /**
  * Field mapping for database collections

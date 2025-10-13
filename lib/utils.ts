@@ -7,6 +7,8 @@
 
 // Frontend Utilities
 import { formatDate as formatDateNew } from './utils/dateFormatter';
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 
 /**
  * Generate a unique ID
@@ -189,4 +191,12 @@ export function searchIncludes(text: string, searchTerm: string): boolean {
       .replace(/ç/g, 'c');
 
   return normalizeText(text).includes(normalizeText(searchTerm));
+}
+
+/**
+ * Utility function for combining class names
+ * Combines clsx and tailwind-merge for optimal class handling
+ */
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
 }

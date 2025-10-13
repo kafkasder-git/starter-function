@@ -20,6 +20,15 @@ import { storageService } from '../lib/storage/storageService';
 import { functionsService } from '../lib/functions/functionsService';
 import { serviceManager } from '../lib/services/serviceManager';
 
+// New services
+import eventsService from './eventsService';
+import legalConsultationsService from './legalConsultationsService';
+import queryOptimizationService from './queryOptimizationService';
+import indexManagementService from './indexManagementService';
+import connectionPoolingService from './connectionPoolingService';
+import { githubActionsErrorAnalyzer } from './githubActions/errorAnalyzer';
+import { githubActionsErrorParser } from './githubActions/errorParser';
+
 // =============================================================================
 // CORE SERVICES
 // =============================================================================
@@ -47,6 +56,15 @@ export { default as kumbaraService } from './kumbaraService';
 export { default as reportsService } from './reportingService';
 export { default as statsService } from './safeStatsService';
 export { default as intelligentStatsService } from './intelligentStatsService';
+
+// New services
+export { default as eventsService } from './eventsService';
+export { default as legalConsultationsService } from './legalConsultationsService';
+export { default as queryOptimizationService } from './queryOptimizationService';
+export { default as indexManagementService } from './indexManagementService';
+export { default as connectionPoolingService } from './connectionPoolingService';
+export { githubActionsErrorAnalyzer } from './githubActions/errorAnalyzer';
+export { githubActionsErrorParser } from './githubActions/errorParser';
 
 // =============================================================================
 // APPWRITE SERVICES

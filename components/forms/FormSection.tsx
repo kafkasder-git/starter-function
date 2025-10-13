@@ -122,7 +122,7 @@ export const FormSection = forwardRef<HTMLDivElement, FormSectionProps>(
             <Button
               type="button"
               variant="ghost"
-              size="icon-sm"
+              size="sm"
               onClick={handleToggle}
               disabled={disabled}
               aria-expanded={isOpen}

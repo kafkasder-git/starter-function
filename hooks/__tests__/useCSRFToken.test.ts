@@ -71,7 +71,7 @@ describe('useCSRFToken', () => {
   });
 
   describe('Token Generation', () => {
-    it('should generate token when user is authenticated', () => {
+    it('should generate token when user is authenticated', async () => {
       const mockUser = { id: 'user-123', email: 'test@example.com' };
 
       mockUseAuthStore.mockReturnValue({
@@ -80,13 +80,18 @@ describe('useCSRFToken', () => {
       } as any);
 
       const { result } = renderHook(() => useCSRFToken());
+
+      // Wait for token generation
+      await act(async () => {
+        await new Promise(resolve => setTimeout(resolve, 0));
+      });
 
       expect(result.current.token).toMatch(/^user-123-/);
       expect(result.current.isLoading).toBe(false);
       expect(result.current.error).toBe(null);
     });
 
-    it('should store token in sessionStorage', () => {
+    it('should store token in sessionStorage', async () => {
       const mockUser = { id: 'user-123', email: 'test@example.com' };
 
       mockUseAuthStore.mockReturnValue({
@@ -96,9 +101,14 @@ describe('useCSRFToken', () => {
 
       const { result } = renderHook(() => useCSRFToken());
 
-      // Check that token is generated and matches expected format
-      expect(result.current.token).toBeNull();
-      // Note: sessionStorage check removed as token generation is async
+      // Wait for token generation
+      await act(async () => {
+        await new Promise(resolve => setTimeout(resolve, 0));
+      });
+
+      // Check that token is generated and stored
+      expect(result.current.token).toMatch(/^user-123-/);
+      expect(sessionStorageMock.getItem('csrf_token')).toMatch(/^user-123-/);
     });
 
     it('should not generate token when user is not authenticated', () => {
@@ -129,8 +139,11 @@ describe('useCSRFToken', () => {
   });
 
   describe('Token Retrieval from Storage', () => {
-    it('should use existing token from sessionStorage', () => {
+    it('should use existing token from sessionStorage', async () => {
       const mockUser = { id: 'user-123', email: 'test@example.com' };
+
+      // Pre-set a token in sessionStorage
+      sessionStorageMock.setItem('csrf_token', 'user-123-existing-token');
 
       mockUseAuthStore.mockReturnValue({
         user: mockUser,
@@ -139,8 +152,12 @@ describe('useCSRFToken', () => {
 
       const { result } = renderHook(() => useCSRFToken());
 
-      // Test that token is generated (the sessionStorage logic is complex to test with hooks)
-      expect(result.current.token).toBeNull();
+      // Wait for token generation
+      await act(async () => {
+        await new Promise(resolve => setTimeout(resolve, 0));
+      });
+
+      expect(result.current.token).toMatch(/^user-123-/);
       expect(result.current.isLoading).toBe(false);
       expect(result.current.error).toBe(null);
     });

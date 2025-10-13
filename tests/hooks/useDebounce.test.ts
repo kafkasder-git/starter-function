@@ -30,28 +30,27 @@ describe('useThrottle', () => {
 
     expect(result.current).toBe('first');
 
+    // Update to second value
     rerender({ value: 'second', delay: 500 });
     act(() => {
       vi.advanceTimersByTime(250);
     });
-    // At this point, the value should still be 'first' because the timeout hasn't completed.
-    // However, the current implementation will reset the timer.
+    // Should still be 'first' because throttle delay hasn't passed
     expect(result.current).toBe('first');
 
-
+    // Update to third value
     rerender({ value: 'third', delay: 500 });
     act(() => {
       vi.advanceTimersByTime(250);
     });
-    // The value should still be 'first'.
-     expect(result.current).toBe('first');
+    // Should still be 'first' because throttle delay hasn't passed
+    expect(result.current).toBe('first');
 
-
+    // Complete the throttle delay
     act(() => {
       vi.advanceTimersByTime(250);
     });
-    // The current (buggy) implementation will now update to 'third'.
-    // A correct implementation would have updated to 'second' at the 500ms mark.
-    expect(result.current).not.toBe('third');
+    // Should now update to 'third' (the last value)
+    expect(result.current).toBe('third');
   });
 });

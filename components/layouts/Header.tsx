@@ -78,13 +78,13 @@ export function Header({
   });
 
   // const { trackClick, trackSearch, trackFeatureUse } = useUXAnalytics();
-  const trackClick = (): void => {
+  const trackClick = (_category: string, _action: string): void => {
     // TODO: Implement analytics tracking
   };
-  const trackSearch = (): void => {
+  const trackSearch = (_query: string, ..._args: any[]): void => {
     // TODO: Implement search analytics
   };
-  const trackFeatureUse = (): void => {
+  const trackFeatureUse = (_feature: string, _context?: string): void => {
     // TODO: Implement feature usage tracking
   };
 
@@ -103,16 +103,16 @@ export function Header({
     const newTheme = preferences.theme === 'light' ? 'dark' : 'light';
     updatePreference('theme', newTheme);
     document.documentElement.classList.toggle('dark', newTheme === 'dark');
-    trackFeatureUse('theme', 'toggle', { newTheme });
+    trackFeatureUse('theme-toggle');
   };
 
   const handleCommandPaletteOpen = () => {
-    trackFeatureUse('command-palette', 'open', { trigger: 'manual' });
+    trackFeatureUse('command-palette-open');
     commandPalette.open();
   };
 
   return (
-    <header className="relative z-50 flex h-16 items-center justify-between border-b border-slate-200/80 bg-gradient-to-r from-white to-slate-50/80 px-3 shadow-lg backdrop-blur-sm sm:px-6">
+    <header className="relative z-50 flex h-16 items-center justify-between border-b border-neutral-200 bg-gradient-to-r from-white via-neutral-50 to-neutral-100 px-3 shadow-md backdrop-blur-sm dark:border-neutral-800 dark:from-neutral-950 dark:via-neutral-900 dark:to-neutral-900 dark:bg-neutral-950 sm:px-6">
       {/* Logo and Title */}
       <motion.div
         initial={{ opacity: 0, x: -20 }}
@@ -120,17 +120,17 @@ export function Header({
         className="flex flex-shrink-0 items-center gap-2 sm:gap-4"
       >
         <div className="flex items-center gap-2 sm:gap-3">
-          <div className="from-primary flex h-8 w-8 items-center justify-center rounded-xl border border-blue-200/20 bg-gradient-to-br via-blue-600 to-blue-800 shadow-lg sm:h-10 sm:w-10">
+          <div className="flex h-8 w-8 items-center justify-center rounded-xl border border-primary-500/20 bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 shadow-md sm:h-10 sm:w-10">
             <Building2 className="h-4 w-4 text-white drop-shadow-sm sm:h-5 sm:w-5" />
           </div>
           <div className="hidden md:block">
-            <Heading level={1} size="lg" weight="bold" className="text-base sm:text-lg tracking-tight">
+            <Heading level={1} size="lg" weight="bold" className="text-base tracking-tight text-neutral-900 sm:text-lg dark:text-neutral-100">
               Dernek Yönetim Sistemi
             </Heading>
-            <Text size="xs" weight="medium" color="neutral" className="-mt-0.5">Hayır İşleri Platformu</Text>
+            <Text size="xs" weight="medium" color="neutral" className="-mt-0.5 text-neutral-600 dark:text-neutral-400">Hayır İşleri Platformu</Text>
           </div>
           <div className="block md:hidden">
-            <Heading level={1} size="sm" weight="bold" className="tracking-tight">Dernek</Heading>
+            <Heading level={1} size="sm" weight="bold" className="tracking-tight text-neutral-900 dark:text-neutral-100">Dernek</Heading>
           </div>
         </div>
       </motion.div>
@@ -145,7 +145,7 @@ export function Header({
         <Button
           variant="ghost"
           size="sm"
-          className="min-h-[44px] min-w-[44px] p-2"
+          className="min-h-[44px] min-w-[44px] p-2 text-neutral-700 hover:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-neutral-800"
           onClick={onMobileMenuToggle}
           aria-label="Menü"
         >
@@ -170,7 +170,7 @@ export function Header({
               trackSearch(query, 0);
               handleSearch(query);
             }}
-            className="w-full rounded-lg border px-4 py-2"
+            className="w-full rounded-lg border border-neutral-200 bg-white px-4 py-2 text-neutral-900 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder-neutral-500"
           />
 
           {/* Command Palette Trigger Button */}
@@ -178,8 +178,9 @@ export function Header({
             variant="ghost"
             size="sm"
             onClick={handleCommandPaletteOpen}
-            className="absolute top-1/2 right-2 h-6 w-6 -translate-y-1/2 transform p-0 opacity-60 hover:opacity-100"
+            className="absolute top-1/2 right-2 h-6 w-6 -translate-y-1/2 transform p-0 text-neutral-600 opacity-80 hover:opacity-100 dark:text-neutral-300"
             title="Komut Paleti (⌘K)"
+            aria-label="Komut paletini aç"
           >
             <Command className="h-3 w-3" />
           </Button>
@@ -197,10 +198,11 @@ export function Header({
           variant="ghost"
           size="sm"
           onClick={handleCommandPaletteOpen}
-          className="focus-corporate h-9 min-h-[44px] w-9 min-w-[44px] rounded-lg p-0 transition-all duration-200 hover:bg-slate-100/80"
+          className="focus-corporate h-9 min-h-[44px] w-9 min-w-[44px] rounded-lg p-0 text-neutral-700 transition-all duration-200 hover:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-neutral-800"
           title="Komut Paleti"
+          aria-label="Komut paletini aç"
         >
-          <Command className="h-4 w-4 text-slate-700" />
+          <Command className="h-4 w-4" />
         </Button>
 
         <Button
@@ -212,10 +214,11 @@ export function Header({
             trackClick('header', 'mobile-search-open');
             setShowEnhancedSearch(true);
           }}
-          className="focus-corporate h-9 min-h-[44px] w-9 min-w-[44px] rounded-lg p-0 transition-all duration-200 hover:bg-slate-100/80"
+          className="focus-corporate h-9 min-h-[44px] w-9 min-w-[44px] rounded-lg p-0 text-neutral-700 transition-all duration-200 hover:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-neutral-800"
           title="Arama"
+          aria-label="Aramayı aç"
         >
-          <Search className="h-4 w-4 text-slate-700" />
+          <Search className="h-4 w-4" />
         </Button>
       </motion.div>
 
@@ -232,20 +235,20 @@ export function Header({
         {/* Frontend Status */}
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1" title="Frontend Mode">
-            <div className="h-2 w-2 animate-pulse rounded-full bg-green-500" />
-            <span className="text-xs text-green-600">Online</span>
+            <div className="h-2 w-2 animate-pulse rounded-full bg-success-500" />
+            <span className="text-xs text-success-600 dark:text-success-400">Online</span>
           </div>
 
           {/* Status */}
           <div className="flex items-center gap-1" title="No Auth Required">
-            <div className="h-2 w-2 rounded-full bg-green-500" />
-            <span className="text-xs text-green-600">Pure</span>
+            <div className="h-2 w-2 rounded-full bg-success-500" />
+            <span className="text-xs text-success-600 dark:text-success-400">Pure</span>
           </div>
         </div>
 
         {/* Mobile Status */}
         <div className="sm:hidden">
-          <div className="h-2 w-2 rounded-full bg-green-500" title="Online Mode" />
+          <div className="h-2 w-2 rounded-full bg-success-500" title="Online Mode" />
         </div>
 
         {/* Theme Toggle */}
@@ -257,13 +260,14 @@ export function Header({
             e.stopPropagation();
             toggleTheme();
           }}
-          className="focus-corporate h-9 min-h-[44px] w-9 min-w-[44px] rounded-lg p-0 transition-all duration-200 hover:bg-slate-100/80"
+          className="focus-corporate h-9 min-h-[44px] w-9 min-w-[44px] rounded-lg p-0 text-neutral-700 transition-all duration-200 hover:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-neutral-800"
           title={`${preferences.theme === 'light' ? 'Karanlık' : 'Aydınlık'} Mod`}
+          aria-label={`${preferences.theme === 'light' ? 'Karanlık' : 'Aydınlık'} modu aç`}
         >
           {preferences.theme === 'light' ? (
-            <Moon className="h-4 w-4 text-slate-700" />
+            <Moon className="h-4 w-4" />
           ) : (
-            <Sun className="h-4 w-4 text-slate-700" />
+            <Sun className="h-4 w-4" />
           )}
         </Button>
 
@@ -283,27 +287,28 @@ export function Header({
               <Button
                 variant="ghost"
                 size="sm"
-                className="focus-corporate h-9 w-9 rounded-lg p-0 transition-all duration-200 hover:bg-slate-100/80"
+                className="focus-corporate h-9 w-9 rounded-lg p-0 text-neutral-700 transition-all duration-200 hover:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-neutral-800"
+                aria-label="Profil menüsü"
               >
-                <User className="h-4 w-4 text-slate-700" />
+                <User className="h-4 w-4" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-64 border-slate-200/60 p-0 shadow-xl" align="end">
-              <div className="border-b border-slate-200/60 bg-gradient-to-r from-slate-50 to-white p-4">
+            <PopoverContent className="w-64 border border-neutral-200 p-0 shadow-xl dark:border-neutral-800 dark:bg-neutral-900" align="end">
+              <div className="border-b border-neutral-200 bg-gradient-to-r from-neutral-50 to-white p-4 dark:border-neutral-800 dark:from-neutral-900 dark:to-neutral-900">
                 <div className="space-y-2">
                   <div className="flex items-center gap-3">
-                    <div className="from-primary flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br to-blue-700 shadow-lg">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 shadow-md">
                       <User className="h-5 w-5 text-white" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate font-semibold text-slate-900">
+                      <p className="truncate font-semibold text-neutral-900 dark:text-neutral-100">
                         {user?.name ?? user?.email?.split('@')[0] ?? 'Kullanıcı'}
                       </p>
-                      <p className="truncate text-sm text-slate-600">{user?.email ?? ''}</p>
+                      <p className="truncate text-sm text-neutral-600 dark:text-neutral-400">{user?.email ?? ''}</p>
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-slate-500">Rol:</span>
+                    <span className="text-xs text-neutral-500 dark:text-neutral-400">Rol:</span>
                     <Badge variant="outline" className="text-xs">
                       {user?.role
                         ? user.role.charAt(0).toUpperCase() + user.role.slice(1)
@@ -322,7 +327,7 @@ export function Header({
                     e.stopPropagation();
                     onNavigateToProfile?.();
                   }}
-                  className="min-h-[44px] w-full justify-start gap-2 text-slate-700 hover:bg-slate-50"
+                  className="min-h-[44px] w-full justify-start gap-2 text-neutral-700 hover:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-neutral-800"
                 >
                   <User className="h-4 w-4" />
                   Profil Ayarları
@@ -336,7 +341,7 @@ export function Header({
                     e.stopPropagation();
                     onNavigateToSettings?.();
                   }}
-                  className="min-h-[44px] w-full justify-start gap-2 text-slate-700 hover:bg-slate-50"
+                  className="min-h-[44px] w-full justify-start gap-2 text-neutral-700 hover:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-neutral-800"
                 >
                   <Settings className="h-4 w-4" />
                   Sistem Ayarları
@@ -351,7 +356,7 @@ export function Header({
                       e.stopPropagation();
                       onNavigateToUserManagement?.();
                     }}
-                    className="min-h-[44px] w-full justify-start gap-2 text-slate-700 hover:bg-slate-50"
+                    className="min-h-[44px] w-full justify-start gap-2 text-neutral-700 hover:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-neutral-800"
                   >
                     <User className="h-4 w-4" />
                     Kullanıcı Yönetimi
@@ -370,7 +375,7 @@ export function Header({
                       logger.error('Logout error:', error);
                     }
                   }}
-                  className="min-h-[44px] w-full justify-start gap-2 text-red-600 hover:bg-red-50 hover:text-red-700"
+                  className="min-h-[44px] w-full justify-start gap-2 text-error-600 hover:bg-error-50 hover:text-error-700 dark:text-error-400 dark:hover:bg-error-alpha-20"
                 >
                   <LogOut className="h-4 w-4" />
                   Çıkış Yap
@@ -386,11 +391,11 @@ export function Header({
         isOpen={commandPalette.isOpen}
         onClose={commandPalette.close}
         onNavigate={(module, page) => {
-          trackFeatureUse('command-palette', 'navigate', { module, page });
+          trackFeatureUse('command-palette-navigate');
           onNavigate?.(module, page);
         }}
         onQuickAction={(actionId) => {
-          trackFeatureUse('command-palette', 'quick-action', { actionId });
+          trackFeatureUse('command-palette-quick-action');
           onQuickAction?.(actionId);
         }}
         currentModule={currentModule}

@@ -90,7 +90,7 @@ export function AidApplicationsPage() {
   const [aidTypeFilter, setAidTypeFilter] = useState<string>('all');
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     applicantName: '',
     applicantId: '',
@@ -115,13 +115,13 @@ export function AidApplicationsPage() {
         console.error('Failed to load aid applications: No data');
         toast.error('Başvurular yüklenirken hata oluştu');
       } else {
-        setApplications(result.data);
+        setApplications(result.data as any);
       }
     } catch (error) {
       console.error('Error loading applications:', error);
       toast.error('Başvurular yüklenirken hata oluştu');
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
   };
 

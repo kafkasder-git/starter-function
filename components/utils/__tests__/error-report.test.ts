@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { createErrorReport, getEnvironmentInfo } from '@/components/utils/error-report';
+import { logger } from '@/lib/logging/logger';
 
 describe('getEnvironmentInfo', () => {
   it('returns environment information from the provided source', () => {
@@ -40,7 +41,7 @@ describe('getEnvironmentInfo', () => {
         throw new Error('access denied');
       },
     };
-    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const warnSpy = vi.spyOn(logger, 'warn').mockImplementation(() => {});
 
     const environment = getEnvironmentInfo({ storage });
 

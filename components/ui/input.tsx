@@ -56,6 +56,13 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     const [showPassword, setShowPassword] = React.useState(false);
     const [inputValue, setInputValue] = React.useState(value || '');
     const isPassword = type === 'password';
+
+    React.useEffect(() => {
+      if (value === undefined) {
+        return;
+      }
+      setInputValue(value);
+    }, [value]);
     const hasValue = Boolean(inputValue);
     const canClear = clearable && hasValue && !props.disabled;
     const currentLength = String(inputValue).length;

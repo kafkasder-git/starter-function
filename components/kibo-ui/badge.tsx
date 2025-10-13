@@ -50,7 +50,7 @@ function Badge({
     }
   };
 
-  const isDotVariant = variant === 'dot' || dot;
+  const isDotVariant = dot;
 
   return (
     <Comp

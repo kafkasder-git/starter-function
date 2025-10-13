@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { render } from '../../tests/utils';
-import { LoadingSpinner, PageLoading } from '../LoadingSpinner';
+import { LoadingSpinner, PageLoading } from '../shared/LoadingSpinner';
 
 describe('LoadingSpinner', () => {
   it('should render loading spinner', () => {

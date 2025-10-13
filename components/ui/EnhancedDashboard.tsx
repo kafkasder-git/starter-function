@@ -49,11 +49,11 @@ const sampleDonationData = [
 ];
 
 const sampleAidDistribution = [
-  { name: 'Gıda Yardımı', value: 35, color: '#FF6B6B' },
-  { name: 'Nakdi Yardım', value: 25, color: '#4ECDC4' },
-  { name: 'Eğitim Desteği', value: 20, color: '#45B7D1' },
-  { name: 'Sağlık Yardımı', value: 12, color: '#96CEB4' },
-  { name: 'Barınma Desteği', value: 8, color: '#FECA57' },
+  { name: 'Gıda Yardımı', value: 35, color: 'hsl(var(--primary-500))' },
+  { name: 'Nakdi Yardım', value: 25, color: 'hsl(var(--info-500))' },
+  { name: 'Eğitim Desteği', value: 20, color: 'hsl(var(--success-500))' },
+  { name: 'Sağlık Yardımı', value: 12, color: 'hsl(var(--warning-500))' },
+  { name: 'Barınma Desteği', value: 8, color: 'hsl(var(--neutral-500))' },
 ];
 
 // Recent activities interface
@@ -82,7 +82,7 @@ const recentActivities: RecentActivity[] = [
     user: 'Muhasebe Ekibi',
     amount: 5000,
     icon: 'Heart',
-    color: 'text-green-600',
+    color: 'text-success-600',
     priority: 'medium',
   },
   {
@@ -94,7 +94,7 @@ const recentActivities: RecentActivity[] = [
     status: 'pending',
     user: 'Sosyal Hizmetler',
     icon: 'Users',
-    color: 'text-blue-600',
+    color: 'text-info-600',
     priority: 'high',
   },
   {
@@ -106,7 +106,7 @@ const recentActivities: RecentActivity[] = [
     status: 'completed',
     user: 'İnsan Kaynakları',
     icon: 'UserPlus',
-    color: 'text-purple-600',
+    color: 'text-primary-600',
     priority: 'low',
   },
   {
@@ -118,7 +118,7 @@ const recentActivities: RecentActivity[] = [
     status: 'completed',
     user: 'Saha Ekibi',
     icon: 'Package',
-    color: 'text-orange-600',
+    color: 'text-warning-600',
     priority: 'medium',
   },
   {
@@ -130,7 +130,7 @@ const recentActivities: RecentActivity[] = [
     status: 'completed',
     user: 'Muhasebe Ekibi',
     icon: 'FileText',
-    color: 'text-indigo-600',
+    color: 'text-info-600',
     priority: 'high',
   },
 ];
@@ -301,7 +301,7 @@ const EnhancedDashboard = memo(
 
     return (
       <div
-        className={`p-4 sm:p-6 space-y-6 bg-gradient-to-br from-slate-50 to-gray-100 min-h-full ${className}`}
+        className={`min-h-full space-y-6 bg-gradient-to-br from-neutral-50 via-neutral-100 to-neutral-200 p-4 sm:p-6 dark:from-neutral-900 dark:via-neutral-950 dark:to-neutral-950 ${className}`}
       >
         {/* Header */}
         <motion.div
@@ -310,12 +310,12 @@ const EnhancedDashboard = memo(
           className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
         >
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Dashboard 📊</h1>
-            <p className="text-gray-600 mt-1">Dernek yönetim sistemi - Güncel durum özeti</p>
+            <h1 className="text-2xl font-bold text-neutral-900 sm:text-3xl dark:text-neutral-50">Dashboard</h1>
+            <p className="mt-1 text-neutral-600 dark:text-neutral-400">Dernek yönetim sistemi - Güncel durum özeti</p>
           </div>
 
           <div className="flex items-center gap-3">
-            <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+            <Badge variant="outline" className="border-success-200 bg-success-50 text-success-700 dark:border-success-500/40 dark:bg-success-500/10 dark:text-success-400">
               <Activity className="w-3 h-3 mr-1" />
               Sistem Aktif
             </Badge>
@@ -388,10 +388,10 @@ const EnhancedDashboard = memo(
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.5 }}
                 >
-                  <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
+                  <Card className="border border-neutral-200 bg-white/80 shadow-lg backdrop-blur-sm dark:border-neutral-700 dark:bg-neutral-900/80">
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
-                        <Calendar className="w-5 h-5 text-orange-600" />
+                        <Calendar className="h-5 w-5 text-warning-600" />
                         Yaklaşan Görevler
                       </CardTitle>
                     </CardHeader>
@@ -400,10 +400,10 @@ const EnhancedDashboard = memo(
                         {upcomingTasks.map((task) => (
                           <div
                             key={task.id}
-                            className="p-3 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors"
+                            className="rounded-lg border border-neutral-200 bg-neutral-50 p-3 transition-colors hover:bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-900/80 dark:hover:bg-neutral-800"
                           >
                             <div className="flex items-start justify-between mb-2">
-                              <h4 className="font-medium text-gray-900 text-sm">{task.title}</h4>
+                              <h4 className="text-sm font-medium text-neutral-900 dark:text-neutral-100">{task.title}</h4>
                               <Badge
                                 variant={task.priority === 'high' ? 'destructive' : 'secondary'}
                                 className="text-xs"
@@ -411,26 +411,26 @@ const EnhancedDashboard = memo(
                                 {task.priority === 'high' ? 'Acil' : 'Normal'}
                               </Badge>
                             </div>
-                            <p className="text-xs text-gray-600 mb-2">{task.description}</p>
-                            <p className="text-xs text-gray-600 mb-2">
+                            <p className="mb-2 text-xs text-neutral-600 dark:text-neutral-400">{task.description}</p>
+                            <p className="mb-2 text-xs text-neutral-600 dark:text-neutral-400">
                               {task.category} • {task.assignee}
                             </p>
 
                             {/* Progress Bar */}
                             <div className="mb-2">
-                              <div className="flex justify-between text-xs text-gray-500 mb-1">
+                              <div className="mb-1 flex justify-between text-xs text-neutral-500 dark:text-neutral-400">
                                 <span>İlerleme</span>
                                 <span>{task.progress}%</span>
                               </div>
                               <Progress
                                 value={task.progress}
-                                className="h-1.5 bg-gray-200 rounded-full"
+                                className="h-1.5 rounded-full bg-neutral-200 dark:bg-neutral-800"
                               />
                             </div>
 
                             <div className="flex items-center gap-2">
-                              <Clock className="w-3 h-3 text-gray-400" />
-                              <span className="text-xs text-gray-500">{task.deadline}</span>
+                              <Clock className="h-3 w-3 text-neutral-400" />
+                              <span className="text-xs text-neutral-500 dark:text-neutral-400">{task.deadline}</span>
                             </div>
                           </div>
                         ))}
@@ -481,7 +481,7 @@ const EnhancedDashboard = memo(
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
               >
-                <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
+                <Card className="border border-neutral-200 bg-white/80 shadow-lg backdrop-blur-sm dark:border-neutral-700 dark:bg-neutral-900/80">
                   <CardHeader>
                     <CardTitle>Son Aktiviteler</CardTitle>
                   </CardHeader>
@@ -495,17 +495,17 @@ const EnhancedDashboard = memo(
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.1 + index * 0.05 }}
-                            className="flex items-center gap-4 p-3 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer"
+                            className="flex cursor-pointer items-center gap-4 rounded-lg p-3 transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-800/80"
                           >
-                            <div className={'p-2 rounded-lg bg-gray-100 flex-shrink-0'}>
+                            <div className={'flex-shrink-0 rounded-lg bg-neutral-100 p-2 dark:bg-neutral-800'}>
                               {activity.icon &&
                                 React.createElement(activity.icon as unknown as LucideIcon, {
-                                  className: `w-4 h-4 ${activity.color ?? 'text-gray-400'}`,
+                                  className: `h-4 w-4 ${activity.color ?? 'text-neutral-400'}`,
                                 })}
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 mb-1">
-                                <h4 className="font-medium text-gray-900 text-sm">
+                                <h4 className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
                                   {activity.title}
                                 </h4>
                                 {activity.amount && (
@@ -514,8 +514,8 @@ const EnhancedDashboard = memo(
                                   </Badge>
                                 )}
                               </div>
-                              <p className="text-sm text-gray-600 mb-1">{activity.description}</p>
-                              <div className="flex items-center gap-2 text-xs text-gray-500">
+                              <p className="mb-1 text-sm text-neutral-600 dark:text-neutral-400">{activity.description}</p>
+                              <div className="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400">
                                 <span>{activity.user}</span>
                                 <span>•</span>
                                 <span>{timeAgo}</span>

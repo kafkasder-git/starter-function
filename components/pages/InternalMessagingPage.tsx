@@ -1,35 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Send, Search, Phone, Video, MoreVertical, Paperclip, Smile } from 'lucide-react';
+import { Phone, Video, MoreVertical, ArrowLeft, Users, MessageCircle } from 'lucide-react';
 import { useIsMobile } from '@/hooks/useTouchDevice';
+import { useAuthStore } from '@/stores/authStore';
+import { useMessaging } from '@/hooks/useMessaging';
+import { useRealtimeMessaging } from '@/hooks/useRealtimeMessaging';
+import { ConversationList } from '@/components/messaging/ConversationList';
+import { ConversationItem } from '@/components/messaging/ConversationItem';
+import { MessageList } from '@/components/messaging/MessageList';
+import { MessageInput } from '@/components/messaging/MessageInput';
+import { NewConversationDialog } from '@/components/messaging/NewConversationDialog';
+import { cn } from '@/lib/utils';
+import type { Conversation, Message, MessageType } from '@/types/messaging';
 
-interface User {
-  id: string;
-  name: string;
-  department: string;
-  isOnline: boolean;
-}
-
-interface Message {
-  id: string;
-  senderId: string;
-  content: string;
-  timestamp: string;
-}
-
-interface Conversation {
-  id: string;
-  participants: User[];
-  lastMessage: Message;
-  unreadCount: number;
-}
-
-const conversations: Conversation[] = [];
-const messages: Message[] = [];
+// Remove mock data - we'll use real data from hooks
 
 /**
  * InternalMessagingPage function
@@ -39,101 +26,151 @@ const messages: Message[] = [];
  */
 export function InternalMessagingPage() {
   const isMobile = useIsMobile();
-  const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
-  const [newMessage, setNewMessage] = useState('');
-  const [searchTerm, setSearchTerm] = useState('');
+  const { user } = useAuthStore();
+  const [showNewConversationDialog, setShowNewConversationDialog] = useState(false);
 
-  const handleSendMessage = () => {
-    if (newMessage.trim()) {
-      // TODO: Implement message sending
-      setNewMessage('');
+  // Messaging hooks
+  const {
+    conversations,
+    selectedConversation,
+    messages,
+    loading,
+    error,
+    loadConversations,
+    sendMessage,
+    loadMessages,
+    markAsRead,
+    deleteMessage,
+    setSelectedConversation,
+    clearError
+  } = useMessaging();
+
+  // Realtime messaging hook
+  const {
+    typingUsers,
+    onlineUsers,
+    isConnected,
+    setTyping,
+    updatePresence,
+    subscribeToConversation
+  } = useRealtimeMessaging();
+
+  // Get current conversation
+  const currentConversation = conversations.find(conv => conv.id === selectedConversation);
+
+  // Get typing users for current conversation
+  const currentTypingUsers = typingUsers
+    .filter(t => t.conversationId === selectedConversation)
+    .map(t => t.userName);
+
+  // Handle conversation selection
+  const handleConversationSelect = useCallback((conversationId: string) => {
+    setSelectedConversation(conversationId);
+  }, [setSelectedConversation]);
+
+  // Handle sending messages
+  const handleSendMessage = useCallback(async (content: string, type: MessageType, attachments?: File[]) => {
+    if (!selectedConversation) return;
+
+    try {
+      await sendMessage({
+        conversationId: selectedConversation,
+        content,
+        type,
+        attachments
+      });
+    } catch (error) {
+      console.error('Failed to send message:', error);
     }
-  };
+  }, [selectedConversation, sendMessage]);
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSendMessage();
+  // Handle typing indicator
+  const handleTyping = useCallback(async (isTyping: boolean) => {
+    if (!selectedConversation) return;
+    
+    try {
+      await setTyping(selectedConversation, isTyping);
+    } catch (error) {
+      console.error('Failed to update typing status:', error);
     }
-  };
+  }, [selectedConversation, setTyping]);
 
-  const filteredConversations = conversations.filter((conv) =>
-    conv.participants.some((participant) =>
-      participant.name.toLowerCase().includes(searchTerm.toLowerCase()),
-    ),
-  );
+  // Handle conversation creation
+  const handleConversationCreated = useCallback((conversationId: string) => {
+    setSelectedConversation(conversationId);
+    setShowNewConversationDialog(false);
+  }, [setSelectedConversation]);
 
-  const selectedConv = conversations.find((conv) => conv.id === selectedConversation);
+  // Subscribe to realtime events when conversation is selected
+  useEffect(() => {
+    if (!selectedConversation || !user) return;
+
+    const unsubscribe = subscribeToConversation(selectedConversation, {
+      onMessage: (message: Message) => {
+        // Message will be added automatically by the hook
+        // Mark as read if it's not from current user
+        if (message.senderId !== user.id) {
+          markAsRead(message.id);
+        }
+      },
+      onTyping: (indicator) => {
+        // Typing indicator is handled by the hook
+      },
+      onReadStatus: (status) => {
+        // Read status is handled by the hook
+      }
+    });
+
+    return unsubscribe;
+  }, [selectedConversation, user, subscribeToConversation, markAsRead]);
+
+  // Update presence when component mounts
+  useEffect(() => {
+    if (user) {
+      updatePresence('online');
+    }
+  }, [user, updatePresence]);
+
+  // Handle file download
+  const handleDownloadAttachment = useCallback((attachment: any) => {
+    const link = document.createElement('a');
+    link.href = attachment.fileUrl;
+    link.download = attachment.fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }, []);
+
+  // Handle message reply
+  const handleReply = useCallback((message: Message) => {
+    // TODO: Implement reply functionality
+    console.log('Reply to message:', message);
+  }, []);
+
+  // Handle message delete
+  const handleDeleteMessage = useCallback(async (messageId: string) => {
+    if (confirm('Bu mesajı silmek istediğinizden emin misiniz?')) {
+      try {
+        await deleteMessage(messageId);
+      } catch (error) {
+        console.error('Failed to delete message:', error);
+      }
+    }
+  }, [deleteMessage]);
 
   if (isMobile) {
     return (
       <div className="flex h-screen flex-col bg-gray-50">
-        {/* Header */}
-        <div className="border-b bg-white p-4">
-          <div className="flex items-center justify-between">
-            <h1 className="text-lg font-semibold">Mesajlar</h1>
-            <Button variant="outline" size="sm">
-              <Search className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-
-        {/* Conversation List */}
         {!selectedConversation ? (
-          <div className="flex-1 overflow-hidden">
-            <div className="p-4">
-              <Input
-                placeholder="Kişi ara..."
-                value={searchTerm}
-                onChange={(e) => {
-                  setSearchTerm(e.target.value);
-                }}
-                className="mb-4"
-              />
-            </div>
-            <ScrollArea className="flex-1 px-4">
-              {filteredConversations.length === 0 ? (
-                <div className="py-8 text-center text-gray-500">
-                  <p>Henüz mesaj yok</p>
-                  <p className="text-sm">Yeni mesaj göndermek için bir kişi seçin</p>
-                </div>
-              ) : (
-                filteredConversations.map((conversation) => (
-                  <div
-                    key={conversation.id}
-                    className="mb-2 flex cursor-pointer items-center rounded-lg p-3 hover:bg-gray-100"
-                    onClick={() => {
-                      setSelectedConversation(conversation.id);
-                    }}
-                  >
-                    <Avatar className="mr-3 h-10 w-10">
-                      <AvatarFallback>
-                        {conversation.participants[0]?.name.charAt(0)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center justify-between">
-                        <p className="truncate font-medium">
-                          {conversation.participants.map((p) => p.name).join(', ')}
-                        </p>
-                        <span className="text-xs text-gray-500">
-                          {conversation.lastMessage.timestamp}
-                        </span>
-                      </div>
-                      <p className="truncate text-sm text-gray-600">
-                        {conversation.lastMessage.content}
-                      </p>
-                    </div>
-                    {conversation.unreadCount > 0 && (
-                      <Badge variant="destructive" className="ml-2">
-                        {conversation.unreadCount}
-                      </Badge>
-                    )}
-                  </div>
-                ))
-              )}
-            </ScrollArea>
-          </div>
+          /* Conversation List View */
+          <ConversationList
+            conversations={conversations}
+            selectedConversationId={selectedConversation}
+            loading={loading}
+            onConversationSelect={handleConversationSelect}
+            onNewConversation={() => setShowNewConversationDialog(true)}
+            className="flex-1"
+          />
         ) : (
           /* Chat View */
           <div className="flex h-full flex-col">
@@ -144,22 +181,34 @@ export function InternalMessagingPage() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => {
-                      setSelectedConversation(null);
-                    }}
+                    onClick={() => setSelectedConversation(null)}
                     className="mr-2"
                   >
-                    ←
+                    <ArrowLeft className="h-4 w-4" />
                   </Button>
                   <Avatar className="mr-3 h-8 w-8">
-                    <AvatarFallback>{selectedConv?.participants[0]?.name.charAt(0)}</AvatarFallback>
+                    <AvatarFallback>
+                      {currentConversation?.type === 'group' 
+                        ? (currentConversation.name || 'G').charAt(0).toUpperCase()
+                        : currentConversation?.participants
+                            .filter(p => p.userId !== user?.id)[0]?.userName.charAt(0).toUpperCase() || '?'
+                      }
+                    </AvatarFallback>
                   </Avatar>
                   <div>
                     <p className="font-medium">
-                      {selectedConv?.participants.map((p) => p.name).join(', ')}
+                      {currentConversation?.type === 'group' 
+                        ? currentConversation.name
+                        : currentConversation?.participants
+                            .filter(p => p.userId !== user?.id)[0]?.userName || 'Konuşma'
+                      }
                     </p>
                     <p className="text-sm text-gray-500">
-                      {selectedConv?.participants[0]?.department}
+                      {currentConversation?.type === 'group' 
+                        ? `${currentConversation.participants.length} katılımcı`
+                        : currentConversation?.participants
+                            .filter(p => p.userId !== user?.id)[0]?.isOnline ? 'Çevrimiçi' : 'Çevrimdışı'
+                      }
                     </p>
                   </div>
                 </div>
@@ -178,60 +227,35 @@ export function InternalMessagingPage() {
             </div>
 
             {/* Messages */}
-            <ScrollArea className="flex-1 p-4">
-              {messages.length === 0 ? (
-                <div className="py-8 text-center text-gray-500">
-                  <p>Henüz mesaj yok</p>
-                  <p className="text-sm">İlk mesajı gönderin</p>
-                </div>
-              ) : (
-                messages.map((message) => (
-                  <div
-                    key={message.id}
-                    className={`mb-4 flex ${
-                      message.senderId === '1' ? 'justify-end' : 'justify-start'
-                    }`}
-                  >
-                    <div
-                      className={`max-w-xs rounded-lg px-4 py-2 ${
-                        message.senderId === '1'
-                          ? 'bg-blue-500 text-white'
-                          : 'bg-gray-200 text-gray-900'
-                      }`}
-                    >
-                      <p className="text-sm">{message.content}</p>
-                      <p className="mt-1 text-xs opacity-70">{message.timestamp}</p>
-                    </div>
-                  </div>
-                ))
-              )}
-            </ScrollArea>
+            <MessageList
+              messages={messages}
+              currentUserId={user?.id || ''}
+              loading={loading}
+              hasMoreMessages={true}
+              typingUsers={currentTypingUsers}
+              onLoadMore={() => loadMessages(selectedConversation)}
+              onReply={handleReply}
+              onDelete={handleDeleteMessage}
+              onDownloadAttachment={handleDownloadAttachment}
+              className="flex-1"
+            />
 
             {/* Message Input */}
-            <div className="border-t bg-white p-4">
-              <div className="flex items-center space-x-2">
-                <Button variant="ghost" size="sm">
-                  <Paperclip className="h-4 w-4" />
-                </Button>
-                <Input
-                  placeholder="Mesaj yazın..."
-                  value={newMessage}
-                  onChange={(e) => {
-                    setNewMessage(e.target.value);
-                  }}
-                  onKeyPress={handleKeyPress}
-                  className="flex-1"
-                />
-                <Button variant="ghost" size="sm">
-                  <Smile className="h-4 w-4" />
-                </Button>
-                <Button onClick={handleSendMessage} size="sm">
-                  <Send className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
+            <MessageInput
+              onSendMessage={handleSendMessage}
+              onTyping={handleTyping}
+              placeholder="Mesaj yazın..."
+              disabled={loading}
+            />
           </div>
         )}
+
+        {/* New Conversation Dialog */}
+        <NewConversationDialog
+          open={showNewConversationDialog}
+          onOpenChange={setShowNewConversationDialog}
+          onConversationCreated={handleConversationCreated}
+        />
       </div>
     );
   }
@@ -240,79 +264,47 @@ export function InternalMessagingPage() {
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
       <div className="w-1/3 border-r bg-white">
-        <div className="border-b p-4">
-          <h1 className="mb-4 text-xl font-semibold">Mesajlar</h1>
-          <Input
-            placeholder="Kişi ara..."
-            value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-            }}
-          />
-        </div>
-        <ScrollArea className="flex-1">
-          {filteredConversations.length === 0 ? (
-            <div className="py-8 text-center text-gray-500">
-              <p>Henüz mesaj yok</p>
-              <p className="text-sm">Yeni mesaj göndermek için bir kişi seçin</p>
-            </div>
-          ) : (
-            filteredConversations.map((conversation) => (
-              <div
-                key={conversation.id}
-                className={`cursor-pointer border-b p-4 hover:bg-gray-50 ${
-                  selectedConversation === conversation.id ? 'bg-blue-50' : ''
-                }`}
-                onClick={() => {
-                  setSelectedConversation(conversation.id);
-                }}
-              >
-                <div className="flex items-center">
-                  <Avatar className="mr-3 h-10 w-10">
-                    <AvatarFallback>{conversation.participants[0]?.name.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center justify-between">
-                      <p className="truncate font-medium">
-                        {conversation.participants.map((p) => p.name).join(', ')}
-                      </p>
-                      <span className="text-xs text-gray-500">
-                        {conversation.lastMessage.timestamp}
-                      </span>
-                    </div>
-                    <p className="truncate text-sm text-gray-600">
-                      {conversation.lastMessage.content}
-                    </p>
-                  </div>
-                  {conversation.unreadCount > 0 && (
-                    <Badge variant="destructive" className="ml-2">
-                      {conversation.unreadCount}
-                    </Badge>
-                  )}
-                </div>
-              </div>
-            ))
-          )}
-        </ScrollArea>
+        <ConversationList
+          conversations={conversations}
+          selectedConversationId={selectedConversation}
+          loading={loading}
+          onConversationSelect={handleConversationSelect}
+          onNewConversation={() => setShowNewConversationDialog(true)}
+          className="h-full"
+        />
       </div>
 
       {/* Chat Area */}
       <div className="flex flex-1 flex-col">
-        {selectedConversation ? (
+        {selectedConversation && currentConversation ? (
           <>
             {/* Chat Header */}
             <div className="border-b bg-white p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
                   <Avatar className="mr-3 h-10 w-10">
-                    <AvatarFallback>{selectedConv?.participants[0]?.name.charAt(0)}</AvatarFallback>
+                    <AvatarFallback>
+                      {currentConversation.type === 'group' 
+                        ? (currentConversation.name || 'G').charAt(0).toUpperCase()
+                        : currentConversation.participants
+                            .filter(p => p.userId !== user?.id)[0]?.userName.charAt(0).toUpperCase() || '?'
+                      }
+                    </AvatarFallback>
                   </Avatar>
                   <div>
                     <p className="font-medium">
-                      {selectedConv?.participants.map((p) => p.name).join(', ')}
+                      {currentConversation.type === 'group' 
+                        ? currentConversation.name
+                        : currentConversation.participants
+                            .filter(p => p.userId !== user?.id)[0]?.userName || 'Konuşma'
+                      }
                     </p>
                     <p className="text-sm text-gray-500">
-                      {selectedConv?.participants[0]?.department}
+                      {currentConversation.type === 'group' 
+                        ? `${currentConversation.participants.length} katılımcı`
+                        : currentConversation.participants
+                            .filter(p => p.userId !== user?.id)[0]?.isOnline ? 'Çevrimiçi' : 'Çevrimdışı'
+                      }
                     </p>
                   </div>
                 </div>
@@ -331,68 +323,44 @@ export function InternalMessagingPage() {
             </div>
 
             {/* Messages */}
-            <ScrollArea className="flex-1 p-4">
-              {messages.length === 0 ? (
-                <div className="py-8 text-center text-gray-500">
-                  <p>Henüz mesaj yok</p>
-                  <p className="text-sm">İlk mesajı gönderin</p>
-                </div>
-              ) : (
-                messages.map((message) => (
-                  <div
-                    key={message.id}
-                    className={`mb-4 flex ${
-                      message.senderId === '1' ? 'justify-end' : 'justify-start'
-                    }`}
-                  >
-                    <div
-                      className={`max-w-xs rounded-lg px-4 py-2 ${
-                        message.senderId === '1'
-                          ? 'bg-blue-500 text-white'
-                          : 'bg-gray-200 text-gray-900'
-                      }`}
-                    >
-                      <p className="text-sm">{message.content}</p>
-                      <p className="mt-1 text-xs opacity-70">{message.timestamp}</p>
-                    </div>
-                  </div>
-                ))
-              )}
-            </ScrollArea>
+            <MessageList
+              messages={messages}
+              currentUserId={user?.id || ''}
+              loading={loading}
+              hasMoreMessages={true}
+              typingUsers={currentTypingUsers}
+              onLoadMore={() => loadMessages(selectedConversation)}
+              onReply={handleReply}
+              onDelete={handleDeleteMessage}
+              onDownloadAttachment={handleDownloadAttachment}
+              className="flex-1"
+            />
 
             {/* Message Input */}
-            <div className="border-t bg-white p-4">
-              <div className="flex items-center space-x-2">
-                <Button variant="ghost" size="sm">
-                  <Paperclip className="h-4 w-4" />
-                </Button>
-                <Input
-                  placeholder="Mesaj yazın..."
-                  value={newMessage}
-                  onChange={(e) => {
-                    setNewMessage(e.target.value);
-                  }}
-                  onKeyPress={handleKeyPress}
-                  className="flex-1"
-                />
-                <Button variant="ghost" size="sm">
-                  <Smile className="h-4 w-4" />
-                </Button>
-                <Button onClick={handleSendMessage} size="sm">
-                  <Send className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
+            <MessageInput
+              onSendMessage={handleSendMessage}
+              onTyping={handleTyping}
+              placeholder="Mesaj yazın..."
+              disabled={loading}
+            />
           </>
         ) : (
           <div className="flex flex-1 items-center justify-center">
             <div className="text-center text-gray-500">
+              <MessageCircle className="h-16 w-16 mx-auto mb-4 text-gray-300" />
               <p className="text-lg font-medium">Mesaj seçin</p>
               <p className="text-sm">Bir konuşma seçerek mesajlaşmaya başlayın</p>
             </div>
           </div>
         )}
       </div>
+
+      {/* New Conversation Dialog */}
+      <NewConversationDialog
+        open={showNewConversationDialog}
+        onOpenChange={setShowNewConversationDialog}
+        onConversationCreated={handleConversationCreated}
+      />
     </div>
   );
 }

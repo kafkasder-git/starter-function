@@ -7,7 +7,7 @@
 
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Badge } from './ui/badge';
+// import { Badge } from './ui/badge';
 import { StatusBadge } from './ui/status-badge';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Button } from './ui/button';
@@ -84,13 +84,13 @@ export function RecentActivity() {
   const getStatusBadge = (status?: Activity['status']) => {
     if (!status) return null;
 
-    const statusMap: Record<Activity['status'], 'success' | 'error' | 'warning' | 'info' | 'pending'> = {
+    const statusMap: Record<string, 'success' | 'error' | 'warning' | 'info' | 'pending'> = {
       success: 'success',
       pending: 'pending',
       failed: 'error',
     };
 
-    const labels: Record<Activity['status'], string> = {
+    const labels: Record<string, string> = {
       success: 'Tamamlandı',
       pending: 'Beklemede',
       failed: 'Başarısız',
@@ -110,7 +110,7 @@ export function RecentActivity() {
   return (
     <Card className="shadow-md border-0">
       <CardHeader className="flex flex-row items-center justify-between pb-3">
-        <CardTitle size="lg">Son Aktiviteler</CardTitle>
+        <CardTitle>Son Aktiviteler</CardTitle>
         <Button variant="ghost" size="sm">
           <MoreHorizontal className="w-4 h-4" />
         </Button>

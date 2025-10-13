@@ -58,12 +58,12 @@ interface SidebarProps {
  * @returns {void} Nothing
  */
 export function Sidebar({
-  activeModule,
-  onModuleChange,
-  onSubPageChange,
-  onNavigateToProfile,
-  onNavigateToSettings,
-  onNavigateToUserManagement,
+  activeModule: _activeModule,
+  onModuleChange: _onModuleChange,
+  onSubPageChange: _onSubPageChange,
+  onNavigateToProfile: _onNavigateToProfile,
+  onNavigateToSettings: _onNavigateToSettings,
+  onNavigateToUserManagement: _onNavigateToUserManagement,
   isMobileOpen = false,
   onMobileToggle,
 }: SidebarProps) {
@@ -353,8 +353,8 @@ export function Sidebar({
       {/* Desktop Sidebar */}
       <aside
         className={`
-        hidden md:flex w-20 h-full bg-gray-900 border-r border-gray-800 flex-col
-        ${isMobileOpen ? '!flex fixed inset-y-0 left-0 z-50 w-64' : ''}
+        hidden md:flex h-full w-20 flex-col border-r border-neutral-800 bg-neutral-900 text-neutral-200
+        ${isMobileOpen ? '!flex fixed inset-y-0 left-0 z-50 w-64 bg-neutral-900' : ''}
       `}
       >
         {/* Navigation Icons */}
@@ -387,36 +387,44 @@ export function Sidebar({
                               handleModuleClick(module.id);
                             }}
                             className={cn(
-                              'w-full flex items-center justify-center p-4 rounded-lg transition-all duration-200 group relative',
+                              'group relative flex w-full items-center justify-center rounded-lg p-4 transition-all duration-200',
                               // Check if any subpage of this module is active
                               module.subPages.some(sp => currentPath === sp.href || currentPath.startsWith(`${sp.href  }/`))
-                                ? 'bg-gray-700 text-white'
-                                : 'text-gray-400 hover:bg-gray-800 hover:text-gray-200',
+                                ? 'bg-neutral-800 text-white shadow-inner'
+                                : 'text-neutral-400 hover:bg-neutral-800 hover:text-neutral-100',
                               hoveredModule === module.id &&
                                 !module.subPages.some(sp => currentPath === sp.href || currentPath.startsWith(`${sp.href  }/`)) &&
-                                'bg-gray-800',
+                                'bg-neutral-800/80',
                             )}
+                            aria-label={module.name}
                           >
                             <div className="flex-shrink-0 relative">
                               {module.icon}
                               {module.badge && (
-                                <Badge className="absolute -top-2 -right-2 w-5 h-5 p-0 bg-blue-500 text-white text-xs flex items-center justify-center">
+                                <Badge
+                                  variant="info"
+                                  size="sm"
+                                  className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center p-0"
+                                  aria-label={`${module.badge} yeni öğe`}
+                                >
                                   {module.badge}
                                 </Badge>
                               )}
                             </div>
 
+                            <span className="sr-only">{module.name}</span>
+
                             {module.subPages.some(sp => currentPath === sp.href || currentPath.startsWith(`${sp.href  }/`)) && (
-                              <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-blue-500 rounded-r-full" />
+                              <div className="absolute left-0 top-1/2 h-8 w-1 -translate-y-1/2 rounded-r-full bg-primary-500" />
                             )}
                           </button>
                         </TooltipTrigger>
                         <TooltipContent
                           side="right"
                           sideOffset={8}
-                          className="bg-gray-800 text-white border border-gray-700"
+                          className="border border-neutral-700 bg-neutral-800 text-neutral-100"
                         >
-                          <p className="font-medium">{module.name}</p>
+                          <p className="font-medium text-sm">{module.name}</p>
                         </TooltipContent>
                       </Tooltip>
                     </div>
@@ -425,7 +433,7 @@ export function Sidebar({
                   <PopoverContent
                     side="right"
                     align="start"
-                    className="w-auto p-0 ml-3 border border-gray-200 bg-white animate-in slide-in-from-left-2 fade-in-0 duration-200"
+                    className="ml-3 w-auto border border-neutral-200 bg-white p-0 animate-in slide-in-from-left-2 fade-in-0 duration-200 dark:border-neutral-700 dark:bg-neutral-900"
                     sideOffset={8}
                     onMouseEnter={handlePopoverMouseEnter}
                     onMouseLeave={handlePopoverMouseLeave}
@@ -440,18 +448,18 @@ export function Sidebar({
                   >
                     <div className="min-w-[220px] overflow-hidden rounded-lg">
                       {/* Header */}
-                      <div className="px-4 py-3 bg-gray-50 border-b border-gray-100">
-                        <h4 className="font-semibold text-gray-800 flex items-center gap-2">
+                      <div className="border-b border-neutral-200 bg-neutral-50 px-4 py-3 dark:border-neutral-700 dark:bg-neutral-900/60">
+                        <h4 className="flex items-center gap-2 font-semibold text-neutral-800 dark:text-neutral-100">
                           {module.icon}
                           {module.name}
                         </h4>
-                        <p className="text-xs text-gray-500 mt-1">
+                        <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
                           {module.subPages.length} seçenek
                         </p>
                       </div>
 
                       {/* Menu Items */}
-                      <div className="p-2 space-y-1">
+                      <div className="space-y-1 p-2">
                         {module.subPages.map((subPage, index) => {
                           const isActive = currentPath === subPage.href || currentPath.startsWith(`${subPage.href  }/`);
                           return (
@@ -459,10 +467,10 @@ export function Sidebar({
                               key={subPage.href}
                               onClick={() => { handleSubPageClick(subPage.href); }}
                               className={cn(
-                                'w-full text-left px-3 py-2.5 text-sm rounded-lg transition-all duration-200 group flex items-center justify-between animate-in fade-in-0 slide-in-from-left-1 animate-fill-both',
+                                'group flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left text-sm transition-all duration-200 animate-in fade-in-0 slide-in-from-left-1 animate-fill-both',
                                 isActive 
-                                  ? 'bg-gray-200 text-gray-900 font-semibold' 
-                                  : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100',
+                                  ? 'bg-neutral-200 font-semibold text-neutral-900 dark:bg-neutral-800 dark:text-neutral-50' 
+                                  : 'text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-200 dark:hover:bg-neutral-800 dark:hover:text-neutral-50',
                                 index === 0 ? 'animate-delay-0' :
                                 index === 1 ? 'animate-delay-50' :
                                 index === 2 ? 'animate-delay-100' :
@@ -478,10 +486,10 @@ export function Sidebar({
                             >
                               <span className="font-medium">{subPage.name}</span>
                               <div className={cn(
-                                'w-1.5 h-1.5 rounded-full transition-all duration-200 transform',
+                                'h-1.5 w-1.5 rounded-full transition-all duration-200',
                                 isActive 
-                                  ? 'bg-gray-900 opacity-100 scale-110' 
-                                  : 'bg-gray-400 opacity-0 group-hover:opacity-100 group-hover:scale-110'
+                                  ? 'bg-primary-600 opacity-100' 
+                                  : 'bg-neutral-400 opacity-0 group-hover:opacity-100'
                               )} />
                             </button>
                           );

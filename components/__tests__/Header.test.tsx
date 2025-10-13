@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor, userEvent } from '../../tests/utils';
-import { Header } from '../Header';
+import { Header } from '../layouts/Header';
 
 // Mock dependencies
 vi.mock('../../stores/authStore', () => ({

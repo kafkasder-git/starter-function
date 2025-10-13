@@ -37,7 +37,7 @@ import { cn } from './utils';
 import { buttonVariants } from '@/lib/design-system/variants';
 import { useHapticFeedback } from '../../hooks/useHapticFeedback';
 import { Tooltip, TooltipTrigger, TooltipContent } from './tooltip';
-import { Badge } from './badge';
+import { Badge, type BadgeProps } from './badge';
 
 // Ripple effect hook
 const useRipple = () => {
@@ -75,6 +75,7 @@ export interface ButtonProps
   tooltip?: string;
   badge?: string | number;
   ariaLabel?: string;
+  badgeVariant?: BadgeProps['variant'];
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
@@ -95,6 +96,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ariaLabel,
     disabled,
     children,
+    badgeVariant,
     onClick,
     ...props
   }, ref) => {
@@ -103,8 +105,22 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const { ripples, addRipple } = useRipple();
     const { triggerHaptic } = useHapticFeedback();
 
-    // Determine if button is icon-only (no text children)
-    const isIconOnly = !children || (typeof children !== 'string' && typeof children !== 'number');
+    const hasTextContent = React.useMemo(() => {
+      const inspectNode = (node: React.ReactNode): boolean => {
+        if (typeof node === 'string' || typeof node === 'number') {
+          return true;
+        }
+        if (React.isValidElement(node) && node.props?.children) {
+          return React.Children.toArray(node.props.children).some(inspectNode);
+        }
+        return false;
+      };
+
+      return React.Children.toArray(children).some(inspectNode);
+    }, [children]);
+
+    // Determine if button is icon-only (no textual content)
+    const isIconOnly = !hasTextContent;
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
       if (ripple && !isDisabled) {
@@ -116,11 +132,13 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       onClick?.(event);
     };
 
+    const resolvedBadgeVariant = badgeVariant ?? (variant === 'destructive' ? 'destructive' : 'info');
+
     const buttonElement = (
       <Comp
         data-slot="button"
         className={cn(
-          buttonVariants({ variant, size, className }),
+          buttonVariants({ variant, size, loading }),
           fullWidth && 'w-full',
           loading && 'cursor-wait',
           ripple && 'relative overflow-hidden',
@@ -149,7 +167,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {/* Badge Indicator */}
         {badge && (
           <Badge
-            variant="destructive"
+            variant={resolvedBadgeVariant}
             size="sm"
             className="absolute -top-1 -right-1 min-w-5 h-5 flex items-center justify-center px-1 rounded-full"
             aria-label={`${badge} notifications`}

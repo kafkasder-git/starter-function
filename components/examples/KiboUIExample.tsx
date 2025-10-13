@@ -103,7 +103,7 @@ export const KiboUIExample: React.FC = () => {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel required>Full Name</FormLabel>
+                    <FormLabel>Full Name *</FormLabel>
                     <FormControl>
                       <Input 
                         placeholder="Enter your full name" 
@@ -122,7 +122,7 @@ export const KiboUIExample: React.FC = () => {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel required>Email Address</FormLabel>
+                    <FormLabel>Email Address *</FormLabel>
                     <FormControl>
                       <Input 
                         type="email" 
@@ -144,7 +144,7 @@ export const KiboUIExample: React.FC = () => {
                 name="age"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel required>Age</FormLabel>
+                    <FormLabel>Age *</FormLabel>
                     <FormControl>
                       <Input 
                         type="number" 

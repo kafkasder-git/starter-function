@@ -3,7 +3,7 @@
 import { Heart, Share2, Download, Star, Calendar, Mail, Phone, Users, DollarSign, CreditCard, Activity } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, CardAction } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
@@ -48,11 +48,11 @@ export function CardExamples() {
               <CardDescription>
                 Card with an action button in the header
               </CardDescription>
-              <CardAction>
+              <div className="flex justify-end">
                 <Button variant="ghost" size="sm">
                   <Share2 className="h-4 w-4" />
                 </Button>
-              </CardAction>
+              </div>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">

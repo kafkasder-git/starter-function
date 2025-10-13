@@ -1,27 +1,45 @@
 import type { RouteObject } from 'react-router-dom';
+import { lazy, Suspense } from 'react';
 
-import DashboardPage from '../components/pages/DashboardPage';
-import BeneficiariesPage from '../components/pages/BeneficiariesPageEnhanced';
-import BeneficiaryDetailPage from '../components/pages/BeneficiaryDetailPageComprehensive';
-import AidApplicationsPage from '../components/pages/AidApplicationsPage';
-import AllAidListPage from '../components/pages/AllAidListPage';
-import DonationsPage from '../components/pages/DonationsPage';
-import ProfilePage from '../components/pages/ProfilePage';
-import SystemSettingsPage from '../components/pages/SystemSettingsPage';
-import UserManagementPage from '../components/pages/UserManagementPageReal';
-import NotFoundPage from '../components/pages/NotFoundPage';
-import LoginPage from '../components/auth/LoginPage';
-import { UIComponentsShowcase } from '../components/pages/UIComponentsShowcase';
-import { FormExamplesPage } from '../components/pages/FormExamplesPage';
-import BursStudentsPage from '../components/pages/BursStudentsPage';
-import BursApplicationsPage from '../components/pages/BursApplicationsPage';
-import BulkMessagePage from '../components/pages/BulkMessagePage';
-import { FinanceIncomePage } from '../components/pages/FinanceIncomePage';
-import ApplicationWorkflowPage from '../components/pages/ApplicationWorkflowPage';
-import LegalDocumentsPage from '../components/pages/LegalDocumentsPage';
-import TasksPage from '../components/pages/TasksPage';
-import MeetingsPage from '../components/pages/MeetingsPage';
-import PartnersPage from '../components/pages/PartnersPage';
+// Lazy load components for better performance
+const DashboardPage = lazy(() => import('../components/pages/DashboardPage'));
+const BeneficiariesPage = lazy(() => import('../components/pages/BeneficiariesPageEnhanced'));
+const BeneficiaryDetailPage = lazy(() => import('../components/pages/BeneficiaryDetailPageComprehensive'));
+const AidApplicationsPage = lazy(() => import('../components/pages/AidApplicationsPage'));
+const AllAidListPage = lazy(() => import('../components/pages/AllAidListPage'));
+const DonationsPage = lazy(() => import('../components/pages/DonationsPage'));
+const ProfilePage = lazy(() => import('../components/pages/ProfilePage'));
+const SystemSettingsPage = lazy(() => import('../components/pages/SystemSettingsPage'));
+const UserManagementPage = lazy(() => import('../components/pages/UserManagementPageReal'));
+const NotFoundPage = lazy(() => import('../components/pages/NotFoundPage'));
+const LoginPage = lazy(() => import('../components/auth/LoginPage'));
+const UIComponentsShowcase = lazy(() => import('../components/pages/UIComponentsShowcase'));
+const FormExamplesPage = lazy(() => import('../components/pages/FormExamplesPage'));
+const GanttExample = lazy(() => import('../components/examples/GanttExample'));
+const KiboUIExample = lazy(() => import('../components/examples/KiboUIExample'));
+const BursStudentsPage = lazy(() => import('../components/pages/BursStudentsPage'));
+const BursApplicationsPage = lazy(() => import('../components/pages/BursApplicationsPage'));
+const BulkMessagePage = lazy(() => import('../components/pages/BulkMessagePage'));
+const FinanceIncomePage = lazy(() => import('../components/pages/FinanceIncomePage'));
+const ApplicationWorkflowPage = lazy(() => import('../components/pages/ApplicationWorkflowPage'));
+const LegalDocumentsPage = lazy(() => import('../components/pages/LegalDocumentsPage'));
+const TasksPage = lazy(() => import('../components/pages/TasksPage'));
+const MeetingsPage = lazy(() => import('../components/pages/MeetingsPage'));
+const PartnersPage = lazy(() => import('../components/pages/PartnersPage'));
+
+// Loading component
+const PageLoading = () => (
+  <div className="flex items-center justify-center min-h-screen">
+    <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+  </div>
+);
+
+// Wrapper component for Suspense
+const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => (
+  <Suspense fallback={<PageLoading />}>
+    {children}
+  </Suspense>
+);
 
 /**
  * Public routes configuration
@@ -30,7 +48,7 @@ import PartnersPage from '../components/pages/PartnersPage';
 export const publicRoutes: RouteObject[] = [
   {
     path: '/login',
-    element: <LoginPage />,
+    element: <SuspenseWrapper><LoginPage /></SuspenseWrapper>,
   },
 ];
 
@@ -62,6 +80,14 @@ export const protectedRoutes: RouteObject[] = [
       {
         path: 'genel/form-examples',
         element: <FormExamplesPage />,
+      },
+      {
+        path: 'genel/gantt',
+        element: <GanttExample />,
+      },
+      {
+        path: 'genel/kibo-ui',
+        element: <KiboUIExample />,
       },
       // Aid management module
       {

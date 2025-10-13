@@ -4,7 +4,7 @@
  */
 
 import { describe, expect, it, vi, beforeEach } from 'vitest';
-import { environment } from '../../lib/environment';
+import { environment, validateEnvironment, isProduction, isDevelopment, isTest, getEnvironmentInfo } from '@/lib/environment';
 
 // Mock environment variables
 const mockEnv = {
@@ -69,7 +69,6 @@ describe('Environment Service', () => {
 
   describe('Environment Validation', () => {
     it('should validate required environment variables', () => {
-      const { validateEnvironment } = require('../../lib/environment');
       const result = validateEnvironment();
       
       expect(result).toBeDefined();
@@ -120,8 +119,6 @@ describe('Environment Service', () => {
 
   describe('Helper Functions', () => {
     it('should provide environment helper functions', () => {
-      const { isProduction, isDevelopment, isTest, getEnvironmentInfo } = require('../../lib/environment');
-      
       expect(typeof isProduction).toBe('function');
       expect(typeof isDevelopment).toBe('function');
       expect(typeof isTest).toBe('function');
