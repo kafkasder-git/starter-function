@@ -259,7 +259,7 @@ const AppWithNavigation = memo(() => {
           {/* Protected routes */}
           <Route element={<AppContent />}>
             {protectedRoutes.map((route, index) => (
-              <Route key={index} path={route.path} index={route.index} element={route.element}>
+              <Route key={index} path={route.path} element={route.element}>
                 {route.children?.map((childRoute, childIndex) => (
                   <Route
                     key={childIndex}

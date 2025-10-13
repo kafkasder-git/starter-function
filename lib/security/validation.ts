@@ -182,7 +182,7 @@ export const validateField = {
   },
 
   // Common date validation helper
-  private validateDate(value: string, fieldName?: string, comparison?: 'future' | 'past'): FieldValidationResult => {
+  validateDate: (value: string, fieldName?: string, comparison?: 'future' | 'past'): FieldValidationResult => {
     const date = new Date(value);
     const now = new Date();
 
@@ -211,11 +211,11 @@ export const validateField = {
   },
 
   futureDate: (value: string, fieldName?: string): FieldValidationResult => {
-    return this.validateDate(value, fieldName, 'future');
+    return validation.validateDate(value, fieldName, 'future');
   },
 
   pastDate: (value: string, fieldName?: string): FieldValidationResult => {
-    return this.validateDate(value, fieldName, 'past');
+    return validation.validateDate(value, fieldName, 'past');
   },
 
   url: (value: string): FieldValidationResult => {

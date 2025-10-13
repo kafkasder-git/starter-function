@@ -14,7 +14,7 @@ import { authLogger } from '../lib/logging';
 import { ROLE_PERMISSIONS, UserRole, type Permission } from '../types/auth';
 import { normalizeRoleToEnglish } from '../lib/roleMapping';
 import { AppwriteException } from 'appwrite';
-import { getMockAuthService, mockUsers } from '../lib/mock/mockData';
+import { getMockAuthService } from '../lib/mock/mockData';
 
 // Error type for Appwrite auth operations
 // interface AuthError {
