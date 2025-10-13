@@ -7,7 +7,6 @@
 
 'use client';
 
-import { useTheme } from 'next-themes';
 import { toast, Toaster as Sonner } from 'sonner';
 import { CheckCircle2, XCircle, AlertTriangle, Info } from 'lucide-react';
 import { Button } from './button';
