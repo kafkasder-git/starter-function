@@ -15,8 +15,11 @@ import { Heading } from './ui/heading';
 import { Text } from './ui/text';
 import { Heart, Users, HelpingHand, Calendar, MoreHorizontal } from 'lucide-react';
 import { useRelativeTime } from '../hooks/useRelativeTime';
-// import { aidRequestsService } from '../../services/aidRequestsService';
-// import { logger } from '../../lib/logging/logger';
+import { beneficiariesService } from '../services/beneficiariesService';
+import { donationsService } from '../services/donationsService';
+import { membersService } from '../services/membersService';
+import { aidRequestsService } from '../services/aidRequestsService';
+import { logger } from '../lib/logging/logger';
 
 interface Activity {
   id: string;
@@ -46,48 +49,134 @@ export function RecentActivity() {
         setLoading(true);
         setError(null);
 
-        // TODO: Replace with actual service call
-        // const response = await activitiesService.getRecentActivities();
-        // setActivities(response.data);
+        logger.info('Fetching recent activities from services...');
 
-        // Mock data for demonstration
-        const mockActivities: Activity[] = [
+        // Fetch recent data from all services
+        const [beneficiariesResult, donationsResult, membersResult, aidRequestsResult] = await Promise.all([
+          beneficiariesService.getBeneficiaries({ page: 1, limit: 5 }),
+          donationsService.getDonations({ page: 1, limit: 5 }),
+          membersService.getMembers({ page: 1, limit: 5 }),
+          aidRequestsService.getAidRequests({ page: 1, limit: 5 })
+        ]);
+
+        const activities: Activity[] = [];
+
+        // Process beneficiaries as activities
+        if (beneficiariesResult.data) {
+          beneficiariesResult.data.forEach((beneficiary, index) => {
+            activities.push({
+              id: `beneficiary-${beneficiary.id}`,
+              type: 'aid',
+              title: 'İhtiyaç Sahibi Kaydı',
+              description: `${beneficiary.name} sisteme ihtiyaç sahibi olarak eklendi.`,
+              timestamp: beneficiary.created_at || new Date().toISOString(),
+              user: beneficiary.name,
+              status: beneficiary.status === 'active' ? 'success' : 'pending',
+            });
+          });
+        }
+
+        // Process donations as activities
+        if (donationsResult.data) {
+          donationsResult.data.forEach((donation, index) => {
+            activities.push({
+              id: `donation-${donation.id}`,
+              type: 'donation',
+              title: 'Bağış Kaydı',
+              description: `${donation.donor_name} tarafından ${donation.amount}₺ bağış yapıldı.`,
+              timestamp: donation.donation_date || new Date().toISOString(),
+              user: donation.donor_name,
+              amount: donation.amount,
+              status: donation.status === 'completed' ? 'success' : 
+                     donation.status === 'pending' ? 'pending' : 'failed',
+            });
+          });
+        }
+
+        // Process members as activities
+        if (membersResult.data) {
+          membersResult.data.forEach((member, index) => {
+            activities.push({
+              id: `member-${member.id}`,
+              type: 'member',
+              title: 'Üye Kaydı',
+              description: `${member.name} sisteme üye olarak eklendi.`,
+              timestamp: member.joined_date || new Date().toISOString(),
+              user: member.name,
+              status: member.status === 'active' ? 'success' : 'pending',
+            });
+          });
+        }
+
+        // Process aid requests as activities
+        if (aidRequestsResult.data) {
+          aidRequestsResult.data.forEach((request, index) => {
+            activities.push({
+              id: `aid-request-${request.id}`,
+              type: 'aid',
+              title: 'Yardım Başvurusu',
+              description: `${request.applicant_name} tarafından ${request.aid_type} yardım talebi yapıldı.`,
+              timestamp: request.application_date || new Date().toISOString(),
+              user: request.applicant_name,
+              amount: request.requested_amount,
+              status: request.status === 'approved' ? 'success' : 
+                     request.status === 'pending' ? 'pending' : 'failed',
+            });
+          });
+        }
+
+        // Sort activities by timestamp (most recent first)
+        activities.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+
+        // Take only the most recent 10 activities
+        const recentActivities = activities.slice(0, 10);
+
+        logger.info('Recent activities fetched successfully', { count: recentActivities.length });
+        setActivities(recentActivities);
+
+        // If no activities found, show some mock data as fallback
+        if (recentActivities.length === 0) {
+          const mockActivities: Activity[] = [
+            {
+              id: 'mock-1',
+              type: 'aid',
+              title: 'Yeni Yardım Başvurusu',
+              description: 'Sistem henüz aktivite kaydı bulunamadı. Veriler yüklenirken bu örnek gösterilmektedir.',
+              timestamp: new Date().toISOString(),
+              user: 'Sistem',
+              status: 'pending',
+            },
+            {
+              id: 'mock-2',
+              type: 'donation',
+              title: 'Bağış Kaydı',
+              description: 'İlk bağış kaydınız burada görünecek.',
+              timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+              user: 'Muhasebe Ekibi',
+              amount: 0,
+              status: 'success',
+            },
+          ];
+          setActivities(mockActivities);
+        }
+
+      } catch (err) {
+        logger.error('Failed to fetch recent activities:', err);
+        setError('Aktiviteler yüklenirken bir hata oluştu.');
+        
+        // Show fallback mock data on error
+        const fallbackActivities: Activity[] = [
           {
-            id: '1',
+            id: 'error-1',
             type: 'aid',
-            title: 'Yeni Yardım Başvurusu',
-            description: 'Ahmet Yılmaz tarafından maddi yardım talebi yapıldı.',
+            title: 'Veri Yükleme Hatası',
+            description: 'Aktiviteler yüklenirken hata oluştu. Lütfen sayfayı yenileyin.',
             timestamp: new Date().toISOString(),
-            user: 'Ahmet Yılmaz',
-            status: 'pending',
-          },
-          {
-            id: '2',
-            type: 'donation',
-            title: 'Bağış Kaydı',
-            description: 'ABC Şirketi tarafından 5.000₺ bağış yapıldı.',
-            timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-            user: 'Muhasebe Ekibi',
-            amount: 5000,
-            status: 'success',
-          },
-          {
-            id: '3',
-            type: 'member',
-            title: 'Yeni Üye Kaydı',
-            description: 'Elif Öztürk sisteme üye olarak eklendi.',
-            timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
-            user: 'İnsan Kaynakları',
-            status: 'success',
+            user: 'Sistem',
+            status: 'failed',
           },
         ];
-
-        // Simulate API delay
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        setActivities(mockActivities);
-      } catch (err) {
-        setError('Aktiviteler yüklenirken bir hata oluştu.');
-        console.error('RecentActivity fetch error:', err);
+        setActivities(fallbackActivities);
       } finally {
         setLoading(false);
       }

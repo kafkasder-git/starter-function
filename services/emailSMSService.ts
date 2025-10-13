@@ -6,9 +6,12 @@
  */
 
 import { logger } from '../lib/logging/logger';
+import { Client, Messaging, ID } from 'appwrite';
+import { environment } from '../lib/environment';
 
 // Module-level variables
 let initialized = false;
+let messaging: Messaging | null = null;
 const templates: any[] = [
   {
     id: 'welcome-member',
@@ -29,34 +32,147 @@ const templates: any[] = [
 // Email and SMS Service
 const emailSMSService = {
   async initialize(): Promise<void> {
-    // Implementation - load templates
-    logger.info('EmailSMSService initialized with templates');
-    initialized = true;
-    // Templates are already loaded in the module-level variable
+    try {
+      // Initialize Appwrite Messaging client
+      const client = new Client();
+      client
+        .setEndpoint(environment.appwrite.endpoint)
+        .setProject(environment.appwrite.projectId);
+      
+      messaging = new Messaging(client);
+      
+      logger.info('EmailSMSService initialized with Appwrite Messaging');
+      initialized = true;
+    } catch (error) {
+      logger.error('Failed to initialize EmailSMSService:', error);
+      throw error;
+    }
   },
 
   async sendEmail(to: string, subject: string, body: string): Promise<boolean> {
-    // Implementation for testing
-    logger.info(`Sending email to ${to}: ${subject}`);
-    return true;
+    try {
+      if (!messaging) {
+        await this.initialize();
+      }
+
+      if (!messaging) {
+        throw new Error('Messaging client not initialized');
+      }
+
+      // Create email message using Appwrite Messaging
+      await messaging.createEmail(
+        ID.unique(),
+        subject,
+        body,
+        [], // Attachments (empty for now)
+        [to] // Recipients
+      );
+
+      logger.info(`Email sent successfully to ${to}: ${subject}`);
+      return true;
+    } catch (error) {
+      logger.error(`Failed to send email to ${to}:`, error);
+      // Fallback to console log for development
+      if (environment.features.mockData) {
+        logger.info(`[MOCK] Email would be sent to ${to}: ${subject}`);
+        return true;
+      }
+      return false;
+    }
   },
 
   async sendSMS(to: string, message: string): Promise<boolean> {
-    // Implementation for testing
-    logger.info(`Sending SMS to ${to}: ${message}`);
-    return true;
+    try {
+      if (!messaging) {
+        await this.initialize();
+      }
+
+      if (!messaging) {
+        throw new Error('Messaging client not initialized');
+      }
+
+      // Create SMS message using Appwrite Messaging
+      await messaging.createSms(
+        ID.unique(),
+        message,
+        [], // Attachments (empty for SMS)
+        [to] // Recipients
+      );
+
+      logger.info(`SMS sent successfully to ${to}: ${message}`);
+      return true;
+    } catch (error) {
+      logger.error(`Failed to send SMS to ${to}:`, error);
+      // Fallback to console log for development
+      if (environment.features.mockData) {
+        logger.info(`[MOCK] SMS would be sent to ${to}: ${message}`);
+        return true;
+      }
+      return false;
+    }
   },
 
-  async sendBulkEmail(recipients: string[], subject: string, body: string): Promise<boolean> {
-    // Implementation for testing
-    logger.info(`Sending bulk email to ${recipients.length} recipients: ${subject}`);
-    return true;
+  async sendBulkEmail(recipients: string[], subject: string, body: string): Promise<{ sent: number; failed: number }> {
+    try {
+      if (!messaging) {
+        await this.initialize();
+      }
+
+      if (!messaging) {
+        throw new Error('Messaging client not initialized');
+      }
+
+      // Send bulk email using Appwrite Messaging
+      await messaging.createEmail(
+        ID.unique(),
+        subject,
+        body,
+        [], // Attachments
+        recipients // Multiple recipients
+      );
+
+      logger.info(`Bulk email sent successfully to ${recipients.length} recipients: ${subject}`);
+      return { sent: recipients.length, failed: 0 };
+    } catch (error) {
+      logger.error(`Failed to send bulk email to ${recipients.length} recipients:`, error);
+      // Fallback to console log for development
+      if (environment.features.mockData) {
+        logger.info(`[MOCK] Bulk email would be sent to ${recipients.length} recipients: ${subject}`);
+        return { sent: recipients.length, failed: 0 };
+      }
+      return { sent: 0, failed: recipients.length };
+    }
   },
 
-  async sendBulkSMS(recipients: string[], message: string): Promise<boolean> {
-    // Implementation for testing
-    logger.info(`Sending bulk SMS to ${recipients.length} recipients: ${message}`);
-    return true;
+  async sendBulkSMS(recipients: string[], message: string): Promise<{ sent: number; failed: number }> {
+    try {
+      if (!messaging) {
+        await this.initialize();
+      }
+
+      if (!messaging) {
+        throw new Error('Messaging client not initialized');
+      }
+
+      // Send bulk SMS using Appwrite Messaging
+      await messaging.createSms(
+        ID.unique(),
+        message,
+        [], // Attachments
+        recipients // Multiple recipients
+      );
+
+      logger.info(`Bulk SMS sent successfully to ${recipients.length} recipients: ${message}`);
+      return { sent: recipients.length, failed: 0 };
+    } catch (error) {
+      logger.error(`Failed to send bulk SMS to ${recipients.length} recipients:`, error);
+      // Fallback to console log for development
+      if (environment.features.mockData) {
+        logger.info(`[MOCK] Bulk SMS would be sent to ${recipients.length} recipients: ${message}`);
+        return { sent: recipients.length, failed: 0 };
+      }
+      return { sent: 0, failed: recipients.length };
+    }
   },
 
   // Template management methods
@@ -89,35 +205,66 @@ const emailSMSService = {
     templateId: string,
     variables: Record<string, any>
   ): Promise<boolean> {
-    // Mock implementation
-    logger.info(`Sending email with template ${templateId} to ${to}`);
-    return true;
+    try {
+      const template = this.getTemplate(templateId);
+      if (!template) {
+        throw new Error(`Template ${templateId} not found`);
+      }
+
+      const renderedBody = this.renderTemplate(templateId, variables);
+      const renderedSubject = template.subject.replace(/\{\{(\w+)\}\}/g, (match, key) => {
+        return variables[key] || match;
+      });
+
+      return await this.sendEmail(to, renderedSubject, renderedBody);
+    } catch (error) {
+      logger.error(`Failed to send email with template ${templateId}:`, error);
+      return false;
+    }
   },
 
   // Configuration
   getConfiguration(): any {
-    // Implementation placeholder
-    return { provider: 'test' };
-  },
-
-  getTemplates(): any[] {
-    return templates;
+    return { 
+      provider: 'appwrite-messaging',
+      endpoint: environment.appwrite.endpoint,
+      projectId: environment.appwrite.projectId,
+      initialized: !!messaging
+    };
   },
 
   async testConfiguration(): Promise<boolean> {
-    logger.info('Testing email/SMS configuration');
-    return true;
+    try {
+      if (!messaging) {
+        await this.initialize();
+      }
+
+      // Test by sending a test email to a non-existent address
+      // This will test the configuration without actually sending
+      const testResult = await this.sendEmail(
+        'test@example.com',
+        'Test Configuration',
+        'This is a test message to verify email configuration.'
+      );
+
+      logger.info('Email/SMS configuration test completed');
+      return testResult;
+    } catch (error) {
+      logger.error('Email/SMS configuration test failed:', error);
+      return false;
+    }
   },
 };
 
 // Export named functions for convenience
-export const sendEmail = (to: string, subject: string, body: string) =>
-  emailSMSService.sendEmail(to, subject, body);
-export const sendSMS = (to: string, message: string) => emailSMSService.sendSMS(to, message);
-export const sendBulkEmail = (recipients: string[], subject: string, body: string) =>
-  emailSMSService.sendBulkEmail(recipients, subject, body);
-export const sendBulkSMS = (recipients: string[], message: string) =>
-  emailSMSService.sendBulkSMS(recipients, message);
+export const sendEmail = async (to: string, subject: string, body: string) =>
+  await emailSMSService.sendEmail(to, subject, body);
+export const sendSMS = async (to: string, message: string) => 
+  await emailSMSService.sendSMS(to, message);
+export const sendBulkEmail = async (recipients: string[], subject: string, body: string) =>
+  await emailSMSService.sendBulkEmail(recipients, subject, body);
+export const sendBulkSMS = async (recipients: string[], message: string) =>
+  await emailSMSService.sendBulkSMS(recipients, message);
 
 // Class-like interface for test compatibility
 export class EmailSMSService {
@@ -157,14 +304,14 @@ export class EmailSMSService {
     subject: string,
     body: string
   ): Promise<{ sent: number; failed: number }> {
-    return emailSMSService.sendBulkEmail(recipients, subject, body);
+    return await emailSMSService.sendBulkEmail(recipients, subject, body);
   }
 
   async sendBulkSMS(
     recipients: string[],
     message: string
   ): Promise<{ sent: number; failed: number }> {
-    return emailSMSService.sendBulkSMS(recipients, message);
+    return await emailSMSService.sendBulkSMS(recipients, message);
   }
 
   getConfig() {

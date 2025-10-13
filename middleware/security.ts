@@ -10,6 +10,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { rateLimit } from './rateLimit';
 import { validateCSRF } from './csrf';
 import { InputSanitizer } from '../lib/security/InputSanitizer';
+import { Client, JWT } from 'appwrite';
+import { environment } from '../lib/environment';
 
 import { logger } from '../lib/logging/logger';
 // Security middleware for API routes
@@ -89,17 +91,72 @@ export class SecurityMiddleware {
     const token = authHeader.substring(7);
 
     try {
-      // TODO: Implement Appwrite JWT validation
-      // For now, return a placeholder implementation
-      logger.warn('Appwrite JWT validation not yet implemented in security middleware');
+      // Initialize Appwrite client for JWT validation
+      const client = new Client();
+      client
+        .setEndpoint(environment.appwrite.endpoint)
+        .setProject(environment.appwrite.projectId);
+
+      // Create JWT instance for token validation
+      const jwt = new JWT(client);
+
+      // Verify the JWT token
+      const session = await jwt.verify(token);
+
+      if (!session) {
+        return {
+          success: false,
+          error: 'Invalid token',
+          status: 401,
+        };
+      }
+
+      // Check if token is expired
+      if (session.expire && session.expire < Date.now()) {
+        return {
+          success: false,
+          error: 'Token expired',
+          status: 401,
+        };
+      }
+
+      // Extract user information from session
+      const user = {
+        id: session.userId,
+        role: session.role || 'viewer',
+        permissions: session.labels || [],
+        email: session.email,
+        name: session.name,
+        sessionId: session.$id,
+      };
+
+      logger.info('JWT validation successful', { userId: user.id, role: user.role });
 
       return {
-        success: false,
-        error: 'Authentication not implemented for Appwrite',
-        status: 501,
+        success: true,
+        user,
       };
     } catch (error) {
-      logger.error('Authentication error:', error);
+      logger.error('JWT validation failed:', error);
+      
+      // Check if it's a specific JWT error
+      if (error instanceof Error) {
+        if (error.message.includes('expired')) {
+          return {
+            success: false,
+            error: 'Token expired',
+            status: 401,
+          };
+        }
+        if (error.message.includes('invalid')) {
+          return {
+            success: false,
+            error: 'Invalid token',
+            status: 401,
+          };
+        }
+      }
+
       return {
         success: false,
         error: 'Authentication failed',
@@ -170,6 +227,9 @@ export class SecurityMiddleware {
       id: string;
       role: string;
       permissions: string[];
+      email?: string;
+      name?: string;
+      sessionId?: string;
     }
   ) {
     const url = new URL(request.url);

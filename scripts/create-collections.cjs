@@ -142,8 +142,7 @@ async function createCollections() {
       console.log(`📝 ${collection.name} collection olusturuluyor...`);
       
       // Collection oluştur
-      const collectionResult = await databases.createCollection(
-        PROJECT_ID,
+      const collectionResult = await databases.create(
         DATABASE_ID,
         collection.id,
         collection.name,
@@ -159,7 +158,6 @@ async function createCollections() {
         try {
           if (attr.type === 'string') {
             await databases.createStringAttribute(
-              PROJECT_ID,
               DATABASE_ID,
               collection.id,
               attr.key,
@@ -171,7 +169,6 @@ async function createCollections() {
             console.log(`  ✓ String attribute: ${attr.key}`);
           } else if (attr.type === 'datetime') {
             await databases.createDatetimeAttribute(
-              PROJECT_ID,
               DATABASE_ID,
               collection.id,
               attr.key,
@@ -182,7 +179,6 @@ async function createCollections() {
             console.log(`  ✓ Datetime attribute: ${attr.key}`);
           } else if (attr.type === 'boolean') {
             await databases.createBooleanAttribute(
-              PROJECT_ID,
               DATABASE_ID,
               collection.id,
               attr.key,
@@ -193,7 +189,6 @@ async function createCollections() {
             console.log(`  ✓ Boolean attribute: ${attr.key}`);
           } else if (attr.type === 'integer') {
             await databases.createIntegerAttribute(
-              PROJECT_ID,
               DATABASE_ID,
               collection.id,
               attr.key,
@@ -214,7 +209,6 @@ async function createCollections() {
       for (const index of collection.indexes) {
         try {
           await databases.createIndex(
-            PROJECT_ID,
             DATABASE_ID,
             collection.id,
             index.key,
