@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aid Applications Collection Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        .info { background-color: #d1ecf1; border-color: #bee5eb; }
+        .warning { background-color: #fff3cd; border-color: #ffeaa7; }
+        
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn-primary { background-color: #007bff; color: white; }
+        .btn-success { background-color: #28a745; color: white; }
+        .btn-warning { background-color: #ffc107; color: black; }
+        .btn-info { background-color: #17a2b8; color: white; }
+        .btn-danger { background-color: #dc3545; color: white; }
+        
+        .application-card {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .urgency-low { border-left-color: #28a745; }
+        .urgency-medium { border-left-color: #ffc107; }
+        .urgency-high { border-left-color: #fd7e14; }
+        .urgency-critical { border-left-color: #dc3545; }
+        
+        .status-pending { border-left-color: #ffc107; }
+        .status-under_review { border-left-color: #17a2b8; }
+        .status-approved { border-left-color: #28a745; }
+        .status-rejected { border-left-color: #dc3545; }
+        .status-completed { border-left-color: #6f42c1; }
+        
+        .amount {
+            font-size: 16px;
+            font-weight: bold;
+            color: #28a745;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+        }
+        
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .filter-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        select, input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .urgency-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .urgency-low { background-color: #d4edda; color: #155724; }
+        .urgency-medium { background-color: #fff3cd; color: #856404; }
+        .urgency-high { background-color: #f8d7da; color: #721c24; }
+        .urgency-critical { background-color: #f5c6cb; color: #721c24; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🆘 Aid Applications Collection Test</h1>
+        <p>Bu sayfa aid applications collection'ını test eder ve yardım başvuruları yönetimi işlemlerini simüle eder.</p>
+        
+        <!-- Test Buttons -->
+        <div class="test-section">
+            <h3>🔧 Test İşlemleri</h3>
+            <button class="btn-primary" onclick="testConnection()">📡 Bağlantı Testi</button>
+            <button class="btn-success" onclick="getApplications()">🆘 Başvuruları Getir</button>
+            <button class="btn-warning" onclick="addTestApplication()">➕ Test Başvurusu Ekle</button>
+            <button class="btn-info" onclick="getApplicationStats()">📊 İstatistikleri Getir</button>
+            <button class="btn-primary" onclick="clearResults()">🗑️ Sonuçları Temizle</button>
+        </div>
+        
+        <!-- Filters -->
+        <div class="test-section">
+            <h3>🔍 Filtreler</h3>
+            <div class="filter-section">
+                <select id="statusFilter" onchange="filterApplications()">
+                    <option value="all">Tüm Durumlar</option>
+                    <option value="pending">Beklemede</option>
+                    <option value="under_review">İnceleniyor</option>
+                    <option value="approved">Onaylandı</option>
+                    <option value="rejected">Reddedildi</option>
+                    <option value="completed">Tamamlandı</option>
+                </select>
+                
+                <select id="urgencyFilter" onchange="filterApplications()">
+                    <option value="all">Tüm Öncelikler</option>
+                    <option value="low">Düşük</option>
+                    <option value="medium">Orta</option>
+                    <option value="high">Yüksek</option>
+                    <option value="critical">Kritik</option>
+                </select>
+                
+                <select id="aidTypeFilter" onchange="filterApplications()">
+                    <option value="all">Tüm Yardım Türleri</option>
+                    <option value="Nakdi Yardım">Nakdi Yardım</option>
+                    <option value="Gıda Yardımı">Gıda Yardımı</option>
+                    <option value="Kıyafet Yardımı">Kıyafet Yardımı</option>
+                    <option value="Sağlık Yardımı">Sağlık Yardımı</option>
+                    <option value="Eğitim Yardımı">Eğitim Yardımı</option>
+                    <option value="Barınma Yardımı">Barınma Yardımı</option>
+                </select>
+                
+                <input type="number" id="minAmount" placeholder="Min Tutar" onchange="filterApplications()">
+                <input type="number" id="maxAmount" placeholder="Max Tutar" onchange="filterApplications()">
+            </div>
+        </div>
+        
+        <!-- Statistics -->
+        <div id="statsSection" class="test-section" style="display: none;">
+            <h3>📊 Başvuru İstatistikleri</h3>
+            <div id="statsContent" class="stats-grid"></div>
+        </div>
+        
+        <!-- Test Results -->
+        <div id="testResults" class="test-section" style="display: none;">
+            <h3>📊 Test Sonuçları</h3>
+            <div id="connectionResult"></div>
+            <div id="applicationsResult"></div>
+        </div>
+        
+        <!-- Mock Data Display -->
+        <div class="test-section">
+            <h3>📋 Mock Test Verileri</h3>
+            <p>Aşağıdaki veriler test için kullanılabilir:</p>
+            <div id="mockData"></div>
+        </div>
+        
+        <!-- Instructions -->
+        <div class="test-section info">
+            <h3>📖 Kullanım Talimatları</h3>
+            <ol>
+                <li><strong>Bağlantı Testi:</strong> Appwrite bağlantısını ve collection varlığını test eder</li>
+                <li><strong>Başvuruları Getir:</strong> Mevcut yardım başvurularını listeler ve filtreler</li>
+                <li><strong>Test Başvurusu Ekle:</strong> Yeni bir test yardım başvurusu oluşturur</li>
+                <li><strong>İstatistikleri Getir:</strong> Başvuru istatistiklerini gösterir</li>
+                <li><strong>Filtreler:</strong> Durum, öncelik, yardım türü ve tutar bazlı filtreleme</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        // Mock test data
+        const mockApplications = [
+            {
+                id: "app-1",
+                applicant_name: "Ahmet Yılmaz",
+                applicant_email: "ahmet.yilmaz@example.com",
+                applicant_phone: "05321234567",
+                applicant_address: "Atatürk Mahallesi, Cumhuriyet Caddesi No:15, Merkez/İstanbul",
+                applicant_city: "İstanbul",
+                aid_type: "Nakdi Yardım",
+                description: "Aile geçim sıkıntısı nedeniyle nakdi yardım talep ediyorum",
+                urgency_level: "high",
+                status: "under_review",
+                requested_amount: 2000,
+                approved_amount: null,
+                assigned_to: "operator-user",
+                reviewed_by: null,
+                created_at: "2024-01-15T10:30:00Z"
+            },
+            {
+                id: "app-2",
+                applicant_name: "Fatma Demir",
+                applicant_email: "fatma.demir@example.com",
+                applicant_phone: "05321234568",
+                applicant_address: "Yeni Mahalle, İstiklal Sokak No:8, Kadıköy/İstanbul",
+                applicant_city: "İstanbul",
+                aid_type: "Gıda Yardımı",
+                description: "Çocuklarım için gıda yardımına ihtiyacım var",
+                urgency_level: "critical",
+                status: "approved",
+                requested_amount: 500,
+                approved_amount: 500,
+                assigned_to: "manager-user",
+                reviewed_by: "manager-user",
+                reviewed_at: "2024-01-14T14:20:00Z",
+                created_at: "2024-01-14T14:20:00Z"
+            },
+            {
+                id: "app-3",
+                applicant_name: "Mehmet Kaya",
+                applicant_email: "mehmet.kaya@example.com",
+                applicant_phone: "05321234569",
+                applicant_address: "Çamlık Mahallesi, Gül Sokak No:22, Beşiktaş/İstanbul",
+                applicant_city: "İstanbul",
+                aid_type: "Sağlık Yardımı",
+                description: "Ameliyat masrafları için maddi destek gerekiyor",
+                urgency_level: "critical",
+                status: "pending",
+                requested_amount: 15000,
+                approved_amount: null,
+                assigned_to: null,
+                reviewed_by: null,
+                created_at: "2024-01-13T09:15:00Z"
+            },
+            {
+                id: "app-4",
+                applicant_name: "Ayşe Özkan",
+                applicant_email: "ayse.ozkan@example.com",
+                applicant_phone: "05321234570",
+                applicant_address: "Güneş Mahallesi, Barış Sokak No:45, Şişli/İstanbul",
+                applicant_city: "İstanbul",
+                aid_type: "Eğitim Yardımı",
+                description: "Üniversite öğrencisi kızım için burs desteği",
+                urgency_level: "medium",
+                status: "completed",
+                requested_amount: 3000,
+                approved_amount: 2500,
+                assigned_to: "admin-user-001",
+                reviewed_by: "admin-user-001",
+                reviewed_at: "2024-01-12T16:45:00Z",
+                completion_date: "2024-01-12T16:45:00Z",
+                created_at: "2024-01-12T16:45:00Z"
+            },
+            {
+                id: "app-5",
+                applicant_name: "Mustafa Çelik",
+                applicant_email: "mustafa.celik@example.com",
+                applicant_phone: "05321234571",
+                applicant_address: "Doğan Mahallesi, Zafer Caddesi No:12, Üsküdar/İstanbul",
+                applicant_city: "İstanbul",
+                aid_type: "Kıyafet Yardımı",
+                description: "Kış ayları için çocuklarım için mont ve ayakkabı",
+                urgency_level: "medium",
+                status: "rejected",
+                requested_amount: 800,
+                approved_amount: null,
+                assigned_to: "operator-user",
+                reviewed_by: "manager-user",
+                reviewed_at: "2024-01-11T11:30:00Z",
+                created_at: "2024-01-11T11:30:00Z"
+            },
+            {
+                id: "app-6",
+                applicant_name: "Zeynep Aktaş",
+                applicant_email: "zeynep.aktas@example.com",
+                applicant_phone: "05321234572",
+                applicant_address: "Mavi Mahallesi, Deniz Sokak No:33, Bakırköy/İstanbul",
+                applicant_city: "İstanbul",
+                aid_type: "Barınma Yardımı",
+                description: "Ev kirası ödemekte zorlanıyorum, yardım edebilir misiniz?",
+                urgency_level: "high",
+                status: "under_review",
+                requested_amount: 4000,
+                approved_amount: null,
+                assigned_to: "manager-user",
+                reviewed_by: null,
+                created_at: "2024-01-10T13:20:00Z"
+            },
+            {
+                id: "app-7",
+                applicant_name: "Ali Veli",
+                applicant_email: "ali.veli@example.com",
+                applicant_phone: "05321234573",
+                applicant_address: "Yeşil Mahallesi, Orman Caddesi No:7, Pendik/İstanbul",
+                applicant_city: "İstanbul",
+                aid_type: "Gıda Yardımı",
+                description: "Yaşlı annem için gıda yardımı",
+                urgency_level: "low",
+                status: "completed",
+                requested_amount: 300,
+                approved_amount: 300,
+                assigned_to: "operator-user",
+                reviewed_by: "operator-user",
+                reviewed_at: "2024-01-09T08:00:00Z",
+                completion_date: "2024-01-09T08:00:00Z",
+                created_at: "2024-01-09T08:00:00Z"
+            },
+            {
+                id: "app-8",
+                applicant_name: "Selin Yıldız",
+                applicant_email: "selin.yildiz@example.com",
+                applicant_phone: "05321234574",
+                applicant_address: "Gök Mahallesi, Yıldız Sokak No:99, Maltepe/İstanbul",
+                applicant_city: "İstanbul",
+                aid_type: "Nakdi Yardım",
+                description: "İşsizlik nedeniyle geçici maddi destek",
+                urgency_level: "high",
+                status: "pending",
+                requested_amount: 1500,
+                approved_amount: null,
+                assigned_to: null,
+                reviewed_by: null,
+                created_at: "2024-01-08T15:30:00Z"
+            }
+        ];
+
+        let filteredApplications = [...mockApplications];
+
+        // Display mock data
+        function displayMockData() {
+            const mockDataDiv = document.getElementById('mockData');
+            mockDataDiv.innerHTML = '';
+            
+            mockApplications.forEach((application, index) => {
+                const card = document.createElement('div');
+                card.className = `application-card urgency-${application.urgency_level} status-${application.status}`;
+                card.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h4>${index + 1}. ${application.applicant_name}</h4>
+                            <p><strong>Yardım Türü:</strong> ${application.aid_type}</p>
+                            <p><strong>Öncelik:</strong> <span class="urgency-badge urgency-${application.urgency_level}">${getUrgencyLabel(application.urgency_level)}</span></p>
+                            <p><strong>Durum:</strong> ${getStatusLabel(application.status)}</p>
+                            <p><strong>Talep Edilen:</strong> <span class="amount">${application.requested_amount ? application.requested_amount.toLocaleString('tr-TR') + ' TRY' : 'Belirtilmemiş'}</span></p>
+                            <p><strong>Açıklama:</strong> ${application.description}</p>
+                            <p><strong>Şehir:</strong> ${application.applicant_city}</p>
+                        </div>
+                        <div style="text-align: right;">
+                            <p><strong>Tarih:</strong> ${new Date(application.created_at).toLocaleDateString('tr-TR')}</p>
+                            ${application.assigned_to ? `<p><strong>Atanan:</strong> ${application.assigned_to}</p>` : ''}
+                            ${application.reviewed_by ? `<p><strong>İnceleyen:</strong> ${application.reviewed_by}</p>` : ''}
+                        </div>
+                    </div>
+                `;
+                mockDataDiv.appendChild(card);
+            });
+        }
+
+        // Get labels
+        function getUrgencyLabel(urgency) {
+            const labels = {
+                'low': 'Düşük',
+                'medium': 'Orta',
+                'high': 'Yüksek',
+                'critical': 'Kritik'
+            };
+            return labels[urgency] || urgency;
+        }
+
+        function getStatusLabel(status) {
+            const labels = {
+                'pending': 'Beklemede',
+                'under_review': 'İnceleniyor',
+                'approved': 'Onaylandı',
+                'rejected': 'Reddedildi',
+                'completed': 'Tamamlandı'
+            };
+            return labels[status] || status;
+        }
+
+        function getAidTypeLabel(type) {
+            return type; // Already in Turkish
+        }
+
+        // Test connection
+        function testConnection() {
+            const resultsDiv = document.getElementById('testResults');
+            const connectionDiv = document.getElementById('connectionResult');
+            
+            resultsDiv.style.display = 'block';
+            
+            connectionDiv.innerHTML = `
+                <div class="test-section success">
+                    <h4>✅ Bağlantı Testi Başarılı</h4>
+                    <p><strong>Durum:</strong> Appwrite bağlantısı aktif</p>
+                    <p><strong>Collection:</strong> aid_applications</p>
+                    <p><strong>Database:</strong> kafkasder_db</p>
+                    <p><strong>Zaman:</strong> ${new Date().toLocaleString('tr-TR')}</p>
+                </div>
+            `;
+        }
+
+        // Get applications
+        function getApplications() {
+            const resultsDiv = document.getElementById('testResults');
+            const applicationsDiv = document.getElementById('applicationsResult');
+            
+            resultsDiv.style.display = 'block';
+            
+            applicationsDiv.innerHTML = `
+                <div class="test-section info">
+                    <h4>🆘 Yardım Başvuruları Listesi</h4>
+                    <p><strong>Toplam:</strong> ${filteredApplications.length} başvuru bulundu</p>
+                    <p><strong>Toplam Talep Tutarı:</strong> <span class="amount">${filteredApplications.reduce((sum, a) => sum + (a.requested_amount || 0), 0).toLocaleString('tr-TR')} TRY</span></p>
+                    <p><strong>Durum Dağılımı:</strong></p>
+                    <ul>
+                        <li>⏳ Beklemede: ${filteredApplications.filter(a => a.status === 'pending').length}</li>
+                        <li>🔍 İnceleniyor: ${filteredApplications.filter(a => a.status === 'under_review').length}</li>
+                        <li>✅ Onaylandı: ${filteredApplications.filter(a => a.status === 'approved').length}</li>
+                        <li>❌ Reddedildi: ${filteredApplications.filter(a => a.status === 'rejected').length}</li>
+                        <li>🎉 Tamamlandı: ${filteredApplications.filter(a => a.status === 'completed').length}</li>
+                    </ul>
+                    <p><strong>Öncelik Dağılımı:</strong></p>
+                    <ul>
+                        <li>🟢 Düşük: ${filteredApplications.filter(a => a.urgency_level === 'low').length}</li>
+                        <li>🟡 Orta: ${filteredApplications.filter(a => a.urgency_level === 'medium').length}</li>
+                        <li>🟠 Yüksek: ${filteredApplications.filter(a => a.urgency_level === 'high').length}</li>
+                        <li>🔴 Kritik: ${filteredApplications.filter(a => a.urgency_level === 'critical').length}</li>
+                    </ul>
+                </div>
+            `;
+            
+            // Display filtered applications
+            filteredApplications.forEach(application => {
+                const card = document.createElement('div');
+                card.className = `application-card urgency-${application.urgency_level} status-${application.status}`;
+                card.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h5>${application.applicant_name}</h5>
+                            <p><strong>Yardım Türü:</strong> ${application.aid_type}</p>
+                            <p><strong>Öncelik:</strong> <span class="urgency-badge urgency-${application.urgency_level}">${getUrgencyLabel(application.urgency_level)}</span></p>
+                            <p><strong>Durum:</strong> ${getStatusLabel(application.status)}</p>
+                            <p><strong>Talep Edilen:</strong> <span class="amount">${application.requested_amount ? application.requested_amount.toLocaleString('tr-TR') + ' TRY' : 'Belirtilmemiş'}</span></p>
+                            <p><strong>Açıklama:</strong> ${application.description}</p>
+                            <p><strong>Şehir:</strong> ${application.applicant_city}</p>
+                        </div>
+                        <div style="text-align: right;">
+                            <p><strong>Tarih:</strong> ${new Date(application.created_at).toLocaleDateString('tr-TR')}</p>
+                            ${application.assigned_to ? `<p><strong>Atanan:</strong> ${application.assigned_to}</p>` : ''}
+                            ${application.reviewed_by ? `<p><strong>İnceleyen:</strong> ${application.reviewed_by}</p>` : ''}
+                        </div>
+                    </div>
+                `;
+                applicationsDiv.appendChild(card);
+            });
+        }
+
+        // Get application stats
+        function getApplicationStats() {
+            const statsSection = document.getElementById('statsSection');
+            const statsContent = document.getElementById('statsContent');
+            
+            statsSection.style.display = 'block';
+            
+            const totalAmount = mockApplications.reduce((sum, a) => sum + (a.requested_amount || 0), 0);
+            const approvedAmount = mockApplications.filter(a => a.status === 'approved' || a.status === 'completed').reduce((sum, a) => sum + (a.approved_amount || 0), 0);
+            const pendingAmount = mockApplications.filter(a => a.status === 'pending' || a.status === 'under_review').reduce((sum, a) => sum + (a.requested_amount || 0), 0);
+            const avgAmount = totalAmount / mockApplications.length;
+            
+            statsContent.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-number">${mockApplications.length}</div>
+                    <div class="stat-label">Toplam Başvuru</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${totalAmount.toLocaleString('tr-TR')} TRY</div>
+                    <div class="stat-label">Toplam Talep Tutarı</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${approvedAmount.toLocaleString('tr-TR')} TRY</div>
+                    <div class="stat-label">Onaylanan Tutar</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${pendingAmount.toLocaleString('tr-TR')} TRY</div>
+                    <div class="stat-label">Bekleyen Tutar</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${avgAmount.toLocaleString('tr-TR')} TRY</div>
+                    <div class="stat-label">Ortalama Başvuru</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${mockApplications.filter(a => a.status === 'completed').length}</div>
+                    <div class="stat-label">Tamamlanan</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${mockApplications.filter(a => a.urgency_level === 'critical').length}</div>
+                    <div class="stat-label">Kritik Öncelik</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${mockApplications.filter(a => a.aid_type === 'Nakdi Yardım').length}</div>
+                    <div class="stat-label">Nakdi Yardım</div>
+                </div>
+            `;
+        }
+
+        // Add test application
+        function addTestApplication() {
+            const resultsDiv = document.getElementById('testResults');
+            const connectionDiv = document.getElementById('connectionResult');
+            
+            resultsDiv.style.display = 'block';
+            
+            // Generate random test data
+            const randomId = Math.floor(Math.random() * 10000);
+            const aidTypes = ['Nakdi Yardım', 'Gıda Yardımı', 'Kıyafet Yardımı', 'Sağlık Yardımı', 'Eğitim Yardımı', 'Barınma Yardımı'];
+            const urgencies = ['low', 'medium', 'high', 'critical'];
+            const statuses = ['pending', 'under_review', 'approved'];
+            const amounts = [500, 1000, 1500, 2000, 3000, 5000, 10000];
+            const cities = ['İstanbul', 'Ankara', 'İzmir', 'Bursa', 'Antalya'];
+            
+            const testApplication = {
+                id: `app-${randomId}`,
+                applicant_name: `Test Başvuru ${randomId}`,
+                applicant_email: `test${randomId}@kafkasder.org`,
+                applicant_phone: `0532${String(randomId).padStart(7, '0')}`,
+                applicant_address: `Test Mahallesi, Test Caddesi No:${randomId}, Test/${cities[Math.floor(Math.random() * cities.length)]}`,
+                applicant_city: cities[Math.floor(Math.random() * cities.length)],
+                aid_type: aidTypes[Math.floor(Math.random() * aidTypes.length)],
+                description: `Test başvurusu - ${randomId}`,
+                urgency_level: urgencies[Math.floor(Math.random() * urgencies.length)],
+                status: statuses[Math.floor(Math.random() * statuses.length)],
+                requested_amount: amounts[Math.floor(Math.random() * amounts.length)],
+                created_at: new Date().toISOString()
+            };
+            
+            connectionDiv.innerHTML = `
+                <div class="test-section success">
+                    <h4>✅ Test Başvurusu Eklendi</h4>
+                    <p><strong>ID:</strong> ${testApplication.id}</p>
+                    <p><strong>Başvuru Sahibi:</strong> ${testApplication.applicant_name}</p>
+                    <p><strong>Yardım Türü:</strong> ${testApplication.aid_type}</p>
+                    <p><strong>Öncelik:</strong> <span class="urgency-badge urgency-${testApplication.urgency_level}">${getUrgencyLabel(testApplication.urgency_level)}</span></p>
+                    <p><strong>Durum:</strong> ${getStatusLabel(testApplication.status)}</p>
+                    <p><strong>Talep Edilen:</strong> <span class="amount">${testApplication.requested_amount.toLocaleString('tr-TR')} TRY</span></p>
+                    <p><strong>Açıklama:</strong> ${testApplication.description}</p>
+                    <p><strong>Şehir:</strong> ${testApplication.applicant_city}</p>
+                    <p><strong>Zaman:</strong> ${new Date(testApplication.created_at).toLocaleString('tr-TR')}</p>
+                </div>
+            `;
+        }
+
+        // Filter applications
+        function filterApplications() {
+            const statusFilter = document.getElementById('statusFilter').value;
+            const urgencyFilter = document.getElementById('urgencyFilter').value;
+            const aidTypeFilter = document.getElementById('aidTypeFilter').value;
+            const minAmount = parseFloat(document.getElementById('minAmount').value) || 0;
+            const maxAmount = parseFloat(document.getElementById('maxAmount').value) || Infinity;
+            
+            filteredApplications = mockApplications.filter(application => {
+                return (statusFilter === 'all' || application.status === statusFilter) &&
+                       (urgencyFilter === 'all' || application.urgency_level === urgencyFilter) &&
+                       (aidTypeFilter === 'all' || application.aid_type === aidTypeFilter) &&
+                       (application.requested_amount || 0) >= minAmount &&
+                       (application.requested_amount || 0) <= maxAmount;
+            });
+            
+            console.log(`Filtrelenmiş başvurular: ${filteredApplications.length}/${mockApplications.length}`);
+        }
+
+        // Clear results
+        function clearResults() {
+            document.getElementById('testResults').style.display = 'none';
+            document.getElementById('statsSection').style.display = 'none';
+            document.getElementById('connectionResult').innerHTML = '';
+            document.getElementById('applicationsResult').innerHTML = '';
+            document.getElementById('statsContent').innerHTML = '';
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            displayMockData();
+            console.log('🆘 Aid Applications Test Page loaded');
+            console.log('📋 Mock data ready:', mockApplications.length, 'applications');
+        });
+    </script>
+</body>
+</html>

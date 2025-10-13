@@ -20,6 +20,7 @@ const FormExamplesPage = lazy(() => import('../components/pages/FormExamplesPage
 const GanttExample = lazy(() => import('../components/examples/GanttExample'));
 const KiboUIExample = lazy(() => import('../components/examples/KiboUIExample'));
 const CardFlipExample = lazy(() => import('../components/examples/CardFlipExample'));
+// const TestPagesMain = lazy(() => import('../components/pages/TestPages.tsx').then(m => ({ default: m.TestPagesMain })));
 const BursStudentsPage = lazy(() => import('../components/pages/BursStudentsPage'));
 const BursApplicationsPage = lazy(() => import('../components/pages/BursApplicationsPage'));
 const OrphanListPage = lazy(() => import('../components/pages/OrphanListPage'));
@@ -140,6 +141,14 @@ export const protectedRoutes: RouteObject[] = [
           </SuspenseWrapper>
         ),
       },
+      // {
+      //   path: 'genel/test-pages',
+      //   element: (
+      //     <SuspenseWrapper>
+      //       <TestPagesMain />
+      //     </SuspenseWrapper>
+      //   ),
+      // },
       // Aid management module
       {
         path: 'yardim',
