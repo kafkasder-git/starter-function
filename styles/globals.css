@@ -635,46 +635,7 @@ h4 {
   line-height: var(--leading-normal);
 }
 
-/* Form Typography */
-/* Deprecated: Use labelVariants from design system */
-.form-label {
-  font-size: var(--text-sm);
-  font-weight: var(--font-medium);
-  line-height: var(--leading-normal);
-  color: var(--foreground);
-  margin-bottom: 0.5rem;
-  display: block;
-}
-
-/* Deprecated: Use labelVariants from design system */
-.form-label.required::after {
-  content: ' *';
-  color: var(--destructive);
-  font-weight: var(--font-semibold);
-}
-
-.form-input {
-  font-size: var(--text-base);
-  font-weight: var(--font-normal);
-  line-height: var(--leading-normal);
-}
-
-/* Deprecated: Use helperTextVariants({ variant: 'default' }) from design system */
-.form-helper-text {
-  font-size: var(--text-xs);
-  color: var(--muted-foreground);
-  line-height: var(--leading-normal);
-  margin-top: 0.25rem;
-}
-
-/* Deprecated: Use helperTextVariants({ variant: 'error' }) from design system */
-.form-error-text {
-  font-size: var(--text-xs);
-  color: var(--destructive);
-  line-height: var(--leading-normal);
-  margin-top: 0.25rem;
-  font-weight: var(--font-medium);
-}
+/* Form Typography - Use design system variants instead */
 
 /* Card Typography */
 .card-title {
