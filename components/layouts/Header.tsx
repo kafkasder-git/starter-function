@@ -144,12 +144,12 @@ export function Header({
       >
         <Button
           variant="ghost"
-          size="sm"
-          className="min-h-[44px] min-w-[44px] p-2 text-neutral-700 hover:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-neutral-800"
+          size="icon"
+          className="text-neutral-700 hover:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-neutral-800"
           onClick={onMobileMenuToggle}
           aria-label="Menü"
         >
-          <Menu className="h-5 w-5" />
+          <Menu className="h-4 w-4" />
         </Button>
       </motion.div>
 
