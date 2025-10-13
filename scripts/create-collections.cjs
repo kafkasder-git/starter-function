@@ -1,9 +1,17 @@
 /**
- * @fileoverview Appwrite Collection Creator Script
+ * @fileoverview Appwrite Collection Creator Script (CommonJS)
  * @description Bu script gerekli Appwrite collection'larını oluşturur
  */
 
-import { databases, ID } from '../lib/appwrite.js';
+const { Client, Databases, ID } = require('appwrite');
+
+// Appwrite client setup
+const client = new Client();
+client
+  .setEndpoint('https://fra.cloud.appwrite.io/v1')
+  .setProject('68e99f6c000183bafb39');
+
+const databases = new Databases(client);
 
 const PROJECT_ID = '68e99f6c000183bafb39';
 const DATABASE_ID = 'kafkasder_db';
@@ -149,19 +157,19 @@ async function createCollections() {
       // Attributes ekle
       for (const attr of collection.attributes) {
         try {
-          await databases.createStringAttribute(
-            PROJECT_ID,
-            DATABASE_ID,
-            collection.id,
-            attr.key,
-            attr.size || 255,
-            attr.required,
-            attr.default,
-            attr.array
-          );
-          console.log(`  ✓ String attribute: ${attr.key}`);
-        } catch (attrError) {
-          if (attr.type === 'datetime') {
+          if (attr.type === 'string') {
+            await databases.createStringAttribute(
+              PROJECT_ID,
+              DATABASE_ID,
+              collection.id,
+              attr.key,
+              attr.size || 255,
+              attr.required,
+              attr.default,
+              attr.array
+            );
+            console.log(`  ✓ String attribute: ${attr.key}`);
+          } else if (attr.type === 'datetime') {
             await databases.createDatetimeAttribute(
               PROJECT_ID,
               DATABASE_ID,
@@ -197,6 +205,8 @@ async function createCollections() {
             );
             console.log(`  ✓ Integer attribute: ${attr.key}`);
           }
+        } catch (attrError) {
+          console.log(`  ⚠️ Attribute olusturulamadi: ${attr.key}`, attrError.message);
         }
       }
       
@@ -214,7 +224,7 @@ async function createCollections() {
           );
           console.log(`  ✓ Index: ${index.key} (${index.type})`);
         } catch (indexError) {
-          console.log(`  ⚠️ Index oluşturulamadı: ${index.key}`, indexError.message);
+          console.log(`  ⚠️ Index olusturulamadi: ${index.key}`, indexError.message);
         }
       }
       

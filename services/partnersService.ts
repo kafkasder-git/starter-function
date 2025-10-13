@@ -8,6 +8,13 @@
 import { db, collections, queryHelpers } from '../lib/database';
 import { logger } from '../lib/logging/logger';
 import { useAuthStore } from '../stores/authStore';
+import type { 
+  PartnerStats, 
+  MonthlyTrend, 
+  TopDonor, 
+  DonationFrequency,
+  SponsorOrganization 
+} from '../types/partners';
 
 // Partner interfaces
 export interface Partner {
@@ -160,36 +167,80 @@ const partnersService = {
   /**
    * Map Partner to SponsorOrganization interface (compatibility method)
    */
-  mapPartnerToSponsor(partner: Partner): SponsorOrganization {
-    return {
-      id: partner.id,
-      name: partner.name,
-      type: partner.partner_type === 'sponsor' ? 'Kurumsal Sponsor' : partner.partner_type,
-      contactPerson: partner.contact_person || '',
-      phone: partner.phone || '',
-      email: partner.email || '',
-      address: partner.address || '',
-      status:
-        partner.status === 'active'
-          ? 'Aktif'
-          : partner.status === 'inactive'
-            ? 'Pasif'
-            : partner.status,
-      totalSponsorship: 0, // TODO: Calculate from donations table
-      currentProjects: 0, // TODO: Calculate from projects table
-      completedProjects: 0, // TODO: Calculate from projects table
-      lastSponsorshipDate: partner.relationship_start,
-      contractStart: partner.relationship_start,
-      contractEnd: partner.relationship_end || '',
-      sponsorshipAreas: partner.services_provided || [],
-      rating: partner.rating || 0,
-      website: partner.website || '',
-      taxNumber: partner.tax_number || '',
-      description: partner.notes || '',
-      logo: '', // TODO: Add logo field to partners table
-      tags: [], // TODO: Add tags field to partners table
-      donorCount: 0, // TODO: Calculate from donations table
-    };
+  async mapPartnerToSponsor(partner: Partner): Promise<SponsorOrganization> {
+    try {
+      // Donations tablosundan gerçek hesaplamalar
+      const { data: donations } = await db.list(collections.DONATIONS, [
+        queryHelpers.equal('partner_id', partner.id),
+        queryHelpers.order('desc', 'created_at')
+      ]);
+
+      const totalSponsorship = donations?.documents?.reduce((sum, d) => sum + (d.amount || 0), 0) || 0;
+      const donorCount = new Set(donations?.documents?.map(d => d.donor_id).filter(Boolean)).size || 0;
+      const lastSponsorshipDate = donations?.documents?.[0]?.created_at || partner.relationship_start;
+
+      return {
+        id: partner.id,
+        name: partner.name,
+        type: partner.partner_type === 'sponsor' ? 'Kurumsal Sponsor' : partner.partner_type,
+        contactPerson: partner.contact_person || '',
+        phone: partner.phone || '',
+        email: partner.email || '',
+        address: partner.address || '',
+        status:
+          partner.status === 'active'
+            ? 'Aktif'
+            : partner.status === 'inactive'
+              ? 'Pasif'
+              : partner.status,
+        totalSponsorship,
+        currentProjects: 0, // TODO: Calculate from projects table when available
+        completedProjects: 0, // TODO: Calculate from projects table when available
+        lastSponsorshipDate,
+        contractStart: partner.relationship_start,
+        contractEnd: partner.relationship_end || '',
+        sponsorshipAreas: partner.services_provided || [],
+        rating: partner.rating || 0,
+        website: partner.website || '',
+        taxNumber: partner.tax_number || '',
+        description: partner.notes || '',
+        logo: partner.logo_url || '', // Logo field added
+        tags: partner.tags || [], // Tags field added
+        donorCount,
+      };
+    } catch (error) {
+      logger.error('Error calculating partner statistics:', error);
+      // Fallback to basic data if calculation fails
+      return {
+        id: partner.id,
+        name: partner.name,
+        type: partner.partner_type === 'sponsor' ? 'Kurumsal Sponsor' : partner.partner_type,
+        contactPerson: partner.contact_person || '',
+        phone: partner.phone || '',
+        email: partner.email || '',
+        address: partner.address || '',
+        status:
+          partner.status === 'active'
+            ? 'Aktif'
+            : partner.status === 'inactive'
+              ? 'Pasif'
+              : partner.status,
+        totalSponsorship: 0,
+        currentProjects: 0,
+        completedProjects: 0,
+        lastSponsorshipDate: partner.relationship_start,
+        contractStart: partner.relationship_start,
+        contractEnd: partner.relationship_end || '',
+        sponsorshipAreas: partner.services_provided || [],
+        rating: partner.rating || 0,
+        website: partner.website || '',
+        taxNumber: partner.tax_number || '',
+        description: partner.notes || '',
+        logo: partner.logo_url || '',
+        tags: partner.tags || [],
+        donorCount: 0,
+      };
+    }
   },
 
   /**
@@ -556,6 +607,150 @@ const partnersService = {
         error: 'Beklenmeyen bir hata oluştu',
       };
     }
+  },
+
+  /**
+   * Get partner statistics
+   */
+  async getPartnerStats(partnerId: string): Promise<PartnersApiResponse<PartnerStats>> {
+    try {
+      logger.info('Fetching partner statistics', { partnerId });
+
+      // Get partner donations
+      const { data: donations, error: donationsError } = await db.list(collections.DONATIONS, [
+        queryHelpers.equal('partner_id', partnerId),
+        queryHelpers.order('desc', 'created_at')
+      ]);
+
+      if (donationsError) {
+        logger.error('Error fetching partner donations', donationsError);
+        return {
+          data: null,
+          error: 'Partner bağışları yüklenirken bir hata oluştu',
+        };
+      }
+
+      const donationsList = donations?.documents || [];
+      
+      // Calculate statistics
+      const totalDonations = donationsList.reduce((sum, d) => sum + (d.amount || 0), 0);
+      const donorCount = new Set(donationsList.map(d => d.donor_id).filter(Boolean)).size;
+      const lastDonationDate = donationsList[0]?.created_at || null;
+      
+      // Monthly donation trend (last 12 months)
+      const monthlyTrend = this.calculateMonthlyTrend(donationsList);
+      
+      // Top donors
+      const topDonors = this.calculateTopDonors(donationsList);
+      
+      // Donation frequency
+      const donationFrequency = this.calculateDonationFrequency(donationsList);
+
+      const stats: PartnerStats = {
+        partnerId,
+        totalDonations,
+        donorCount,
+        lastDonationDate,
+        monthlyTrend,
+        topDonors,
+        donationFrequency,
+        averageDonation: donationsList.length > 0 ? totalDonations / donationsList.length : 0,
+        totalDonationsCount: donationsList.length,
+        lastUpdated: new Date().toISOString(),
+      };
+
+      logger.info('Successfully calculated partner statistics', { 
+        partnerId, 
+        totalDonations, 
+        donorCount 
+      });
+
+      return {
+        data: stats,
+        error: null,
+      };
+    } catch (error) {
+      logger.error('Unexpected error calculating partner statistics', error);
+      return {
+        data: null,
+        error: 'Beklenmeyen bir hata oluştu',
+      };
+    }
+  },
+
+  /**
+   * Calculate monthly donation trend
+   */
+  calculateMonthlyTrend(donations: any[]): MonthlyTrend[] {
+    const monthlyData: { [key: string]: { amount: number; count: number } } = {};
+    
+    donations.forEach(donation => {
+      const date = new Date(donation.created_at);
+      const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+      
+      if (!monthlyData[monthKey]) {
+        monthlyData[monthKey] = { amount: 0, count: 0 };
+      }
+      
+      monthlyData[monthKey].amount += donation.amount || 0;
+      monthlyData[monthKey].count += 1;
+    });
+
+    return Object.entries(monthlyData)
+      .map(([month, data]) => ({
+        month,
+        amount: data.amount,
+        count: data.count,
+      }))
+      .sort((a, b) => a.month.localeCompare(b.month))
+      .slice(-12); // Last 12 months
+  },
+
+  /**
+   * Calculate top donors
+   */
+  calculateTopDonors(donations: any[]): TopDonor[] {
+    const donorTotals: { [key: string]: { donorId: string; total: number; count: number } } = {};
+    
+    donations.forEach(donation => {
+      if (donation.donor_id) {
+        if (!donorTotals[donation.donor_id]) {
+          donorTotals[donation.donor_id] = {
+            donorId: donation.donor_id,
+            total: 0,
+            count: 0,
+          };
+        }
+        
+        donorTotals[donation.donor_id].total += donation.amount || 0;
+        donorTotals[donation.donor_id].count += 1;
+      }
+    });
+
+    return Object.values(donorTotals)
+      .sort((a, b) => b.total - a.total)
+      .slice(0, 10); // Top 10 donors
+  },
+
+  /**
+   * Calculate donation frequency
+   */
+  calculateDonationFrequency(donations: any[]): DonationFrequency {
+    const now = new Date();
+    const oneMonthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    const threeMonthsAgo = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
+    const oneYearAgo = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+
+    const lastMonth = donations.filter(d => new Date(d.created_at) >= oneMonthAgo).length;
+    const lastThreeMonths = donations.filter(d => new Date(d.created_at) >= threeMonthsAgo).length;
+    const lastYear = donations.filter(d => new Date(d.created_at) >= oneYearAgo).length;
+
+    return {
+      lastMonth,
+      lastThreeMonths,
+      lastYear,
+      total: donations.length,
+    };
   },
 };
 
