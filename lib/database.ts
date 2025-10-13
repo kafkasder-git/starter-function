@@ -29,6 +29,8 @@ import type { Models } from 'appwrite';
  */
 export const collections = {
   USER_PROFILES: 'user_profiles',
+  USERS: 'users', // Yeni eklenen - kullanıcı yönetimi için
+  USER_ACTIVITIES: 'user_activities', // Yeni eklenen - kullanıcı aktiviteleri için
   BENEFICIARIES: 'beneficiaries',
   DONATIONS: 'donations',
   AID_APPLICATIONS: 'aid_applications',
