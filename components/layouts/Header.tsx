@@ -286,8 +286,8 @@ export function Header({
             <PopoverTrigger asChild>
               <Button
                 variant="ghost"
-                size="sm"
-                className="focus-corporate h-9 w-9 rounded-lg p-0 text-neutral-700 transition-all duration-200 hover:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-neutral-800"
+                size="icon"
+                className="text-neutral-700 hover:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-neutral-800"
                 aria-label="Profil menüsü"
               >
                 <User className="h-4 w-4" />
