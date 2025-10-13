@@ -10,16 +10,20 @@
  */
 export const ROLE_MAPPING = {
   // Turkish to English
-  yönetici: 'admin',
-  müdür: 'manager',
-  operatör: 'operator',
-  görüntüleyici: 'viewer',
+  'süper_yönetici': 'super_admin',
+  'yönetici': 'admin',
+  'müdür': 'manager',
+  'operatör': 'operator',
+  'görüntüleyici': 'viewer',
+  'gönüllü': 'volunteer',
 
   // English to Turkish
-  admin: 'yönetici',
-  manager: 'müdür',
-  operator: 'operatör',
-  viewer: 'görüntüleyici',
+  'super_admin': 'süper_yönetici',
+  'admin': 'yönetici',
+  'manager': 'müdür',
+  'operator': 'operatör',
+  'viewer': 'görüntüleyici',
+  'volunteer': 'gönüllü',
 } as const;
 
 /**
@@ -36,14 +40,14 @@ export function normalizeRoleToEnglish(role: string): string {
   const normalized = role.toLowerCase();
 
   // Already English
-  if (['admin', 'manager', 'operator', 'viewer'].includes(normalized)) {
+  if (['super_admin', 'admin', 'manager', 'operator', 'viewer', 'volunteer'].includes(normalized)) {
     return normalized;
   }
 
   // Turkish to English
   if (normalized in ROLE_MAPPING) {
     const mapped = ROLE_MAPPING[normalized as keyof typeof ROLE_MAPPING];
-    if (['admin', 'manager', 'operator', 'viewer'].includes(mapped)) {
+    if (['super_admin', 'admin', 'manager', 'operator', 'viewer', 'volunteer'].includes(mapped)) {
       return mapped;
     }
   }
@@ -65,14 +69,14 @@ export function normalizeRoleToTurkish(role: string): string {
   const normalized = role.toLowerCase();
 
   // Already Turkish
-  if (['yönetici', 'müdür', 'operatör', 'görüntüleyici'].includes(normalized)) {
+  if (['süper_yönetici', 'yönetici', 'müdür', 'operatör', 'görüntüleyici', 'gönüllü'].includes(normalized)) {
     return normalized;
   }
 
   // English to Turkish
   if (normalized in ROLE_MAPPING) {
     const mapped = ROLE_MAPPING[normalized as keyof typeof ROLE_MAPPING];
-    if (['yönetici', 'müdür', 'operatör', 'görüntüleyici'].includes(mapped)) {
+    if (['süper_yönetici', 'yönetici', 'müdür', 'operatör', 'görüntüleyici', 'gönüllü'].includes(mapped)) {
       return mapped;
     }
   }
@@ -89,6 +93,8 @@ export function normalizeRoleToTurkish(role: string): string {
  */
 export function getRoleDisplayName(role: string, language: 'tr' | 'en' = 'tr'): string {
   const displayNames: Record<string, { tr: string; en: string }> = {
+    super_admin: { tr: 'Süper Yönetici', en: 'Super Administrator' },
+    süper_yönetici: { tr: 'Süper Yönetici', en: 'Super Administrator' },
     admin: { tr: 'Yönetici', en: 'Administrator' },
     yönetici: { tr: 'Yönetici', en: 'Administrator' },
     manager: { tr: 'Müdür', en: 'Manager' },
@@ -97,6 +103,8 @@ export function getRoleDisplayName(role: string, language: 'tr' | 'en' = 'tr'): 
     operatör: { tr: 'Operatör', en: 'Operator' },
     viewer: { tr: 'Görüntüleyici', en: 'Viewer' },
     görüntüleyici: { tr: 'Görüntüleyici', en: 'Viewer' },
+    volunteer: { tr: 'Gönüllü', en: 'Volunteer' },
+    gönüllü: { tr: 'Gönüllü', en: 'Volunteer' },
   };
 
   const normalized = role.toLowerCase();
