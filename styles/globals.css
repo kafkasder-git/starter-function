@@ -652,18 +652,7 @@ h4 {
   line-height: var(--leading-normal);
 }
 
-/* Button Typography */
-.btn-text {
-  font-size: var(--text-sm);
-  font-weight: var(--font-medium);
-  line-height: var(--leading-normal);
-}
-
-.btn-text-lg {
-  font-size: var(--text-base);
-  font-weight: var(--font-medium);
-  line-height: var(--leading-normal);
-}
+/* Button Typography - Use buttonVariants from design system */
 
 /* Dark mode smooth transitions */
 html {
