@@ -7,10 +7,10 @@
 
 'use client';
 
+import * as React from 'react';
 import { toast, Toaster as Sonner } from 'sonner';
 import { CheckCircle2, XCircle, AlertTriangle, Info } from 'lucide-react';
 import { Button } from './button';
-import * as React from 'react';
 
 interface ToasterProps {
   theme?: 'light' | 'dark' | 'system';

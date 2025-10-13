@@ -10,29 +10,22 @@ import { toast as sonnerToast } from 'sonner';
 /**
  * useToast function
  *
- * @param {Object} params - Function parameters
- * @returns {void} Nothing
+ * @returns {Object} Toast functions
  */
 export function useToast() {
-  const toast = (options: {
-    title?: string;
-    description?: string;
-    variant?: 'default' | 'destructive';
-  }) => {
-    const { title, description, variant = 'default' } = options;
-    
-    if (variant === 'destructive') {
-      sonnerToast.error(title || 'Hata', {
-        description: description,
-      });
-    } else {
-      sonnerToast.success(title || 'Başarılı', {
-        description: description,
-      });
-    }
-  };
-
   return {
-    toast,
+    toast: sonnerToast,
+    success: (title: string, description?: string) => {
+      sonnerToast.success(title, { description });
+    },
+    error: (title: string, description?: string) => {
+      sonnerToast.error(title, { description });
+    },
+    warning: (title: string, description?: string) => {
+      sonnerToast.warning(title, { description });
+    },
+    info: (title: string, description?: string) => {
+      sonnerToast.info(title, { description });
+    }
   };
 }
