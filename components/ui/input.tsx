@@ -99,29 +99,29 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 
     const inputType = isPassword && showPassword ? 'text' : type;
 
-    // Size variants
+    // Size variants - standardized for consistency
     const sizeClasses = {
-      sm: 'h-8 px-2.5 py-1 text-xs',
-      md: 'h-10 px-3 py-2 text-base md:text-sm',
-      lg: 'h-12 px-4 py-3 text-base',
+      sm: 'h-9 px-3 py-2 text-sm',
+      md: 'h-10 px-3 py-2 text-sm',
+      lg: 'h-11 px-4 py-2.5 text-base',
     };
 
     const iconSizeClasses = {
-      sm: 'h-3.5 w-3.5',
+      sm: 'h-4 w-4',
       md: 'h-4 w-4',
       lg: 'h-5 w-5',
     };
 
     const prefixPaddingClasses = {
-      sm: 'pl-8',
+      sm: 'pl-9',
       md: 'pl-10',
-      lg: 'pl-12',
+      lg: 'pl-11',
     };
 
     const suffixPaddingClasses = {
-      sm: 'pr-8',
+      sm: 'pr-9',
       md: 'pr-10',
-      lg: 'pr-12',
+      lg: 'pr-11',
     };
 
     return (

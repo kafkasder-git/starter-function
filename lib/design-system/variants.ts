@@ -29,64 +29,61 @@ import { type VariantProps, cva } from 'class-variance-authority';
 
 // Button Variants
 export const buttonVariants = cva(
-  // Base styles applied to all button variants
+  // Base styles applied to all button variants with consistent touch targets
   [
-    'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium',
-    'transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
+    'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium',
+    'min-h-[44px] transition-all duration-200',
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
     'disabled:pointer-events-none disabled:opacity-50',
-    'active:scale-[0.98] transition-transform duration-75',
+    'active:scale-[0.98]',
   ],
   {
     variants: {
       variant: {
         default: [
-          'bg-primary-500 text-white shadow hover:bg-primary-600',
-          'focus-visible:ring-primary-500',
+          'bg-primary-500 text-white shadow-sm hover:bg-primary-600',
+          'focus-visible:ring-primary-500/20',
         ],
         destructive: [
           'bg-error-500 text-white shadow-sm hover:bg-error-600',
-          'focus-visible:ring-error-500',
+          'focus-visible:ring-error-500/20',
         ],
         outline: [
           'border border-neutral-200 bg-white shadow-sm hover:bg-neutral-50 hover:text-neutral-900',
-          'focus-visible:ring-primary-500',
+          'focus-visible:ring-primary-500/20',
         ],
         secondary: [
           'bg-neutral-100 text-neutral-900 shadow-sm hover:bg-neutral-200',
-          'focus-visible:ring-neutral-500',
+          'focus-visible:ring-neutral-500/20',
         ],
         ghost: [
           'hover:bg-neutral-100 hover:text-neutral-900',
-          'focus-visible:ring-neutral-500',
+          'focus-visible:ring-neutral-500/20',
         ],
         link: [
           'text-primary-500 underline-offset-4 hover:underline',
-          'focus-visible:ring-primary-500',
+          'focus-visible:ring-primary-500/20 min-h-0',
         ],
         success: [
           'bg-success-500 text-white shadow-sm hover:bg-success-600',
-          'focus-visible:ring-success-500',
+          'focus-visible:ring-success-500/20',
         ],
         warning: [
           'bg-warning-500 text-white shadow-sm hover:bg-warning-600',
-          'focus-visible:ring-warning-500',
+          'focus-visible:ring-warning-500/20',
         ],
         info: [
           'bg-info-500 text-white shadow-sm hover:bg-info-600',
-          'focus-visible:ring-info-500',
-        ],
-        primaryGradient: [
-          'bg-primary-500 bg-gradient-to-r from-primary-500 via-info-500 to-primary-600 text-white shadow hover:from-primary-600 hover:via-info-600 hover:to-primary-700',
-          'focus-visible:ring-primary-500',
+          'focus-visible:ring-info-500/20',
         ],
       },
       size: {
-        xs: 'h-7 px-2 text-xs',
-        sm: 'h-8 px-3 text-xs',
-        default: 'h-9 px-4 py-2',
-        lg: 'h-10 px-6 text-base',
+        xs: 'h-8 min-h-[32px] px-2.5 text-xs',
+        sm: 'h-9 min-h-[36px] px-3 text-xs',
+        default: 'h-10 px-4',
+        lg: 'h-11 px-6 text-base',
         xl: 'h-12 px-8 text-lg',
-        icon: 'h-9 w-9 p-0',
+        icon: 'h-10 w-10 min-h-[40px] min-w-[40px] p-0',
       },
       loading: {
         true: 'cursor-not-allowed opacity-70',

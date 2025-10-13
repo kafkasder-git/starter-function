@@ -1,6 +1,6 @@
 import type { Config } from 'tailwindcss';
 import { tailwindAnimationConfig } from './lib/design-system/animations.js';
-import { colorTokens } from './lib/design-system/tokens.js';
+import { colorTokens, zIndexTokens } from './lib/design-system/tokens.js';
 
 export default {
   content: [
@@ -15,6 +15,9 @@ export default {
         '88': '22rem',
         '128': '32rem',
       },
+
+      // Z-Index Scale from design tokens
+      zIndex: zIndexTokens,
 
       // Typography Scale
       fontSize: {

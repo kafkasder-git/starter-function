@@ -144,12 +144,12 @@ export function Header({
       >
         <Button
           variant="ghost"
-          size="sm"
-          className="min-h-[44px] min-w-[44px] p-2 text-neutral-700 hover:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-neutral-800"
+          size="icon"
+          className="text-neutral-700 hover:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-neutral-800"
           onClick={onMobileMenuToggle}
           aria-label="Menü"
         >
-          <Menu className="h-5 w-5" />
+          <Menu className="h-4 w-4" />
         </Button>
       </motion.div>
 
@@ -195,9 +195,9 @@ export function Header({
       >
         <Button
           variant="ghost"
-          size="sm"
+          size="icon"
           onClick={handleCommandPaletteOpen}
-          className="focus-corporate h-9 min-h-[44px] w-9 min-w-[44px] rounded-lg p-0 text-neutral-700 transition-all duration-200 hover:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-neutral-800"
+          className="text-neutral-700 hover:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-neutral-800"
           title="Komut Paleti"
           aria-label="Komut paletini aç"
         >
@@ -206,14 +206,14 @@ export function Header({
 
         <Button
           variant="ghost"
-          size="sm"
+          size="icon"
           onClick={(e: React.MouseEvent) => {
             e.preventDefault();
             e.stopPropagation();
             trackClick('header', 'mobile-search-open');
             setShowEnhancedSearch(true);
           }}
-          className="focus-corporate h-9 min-h-[44px] w-9 min-w-[44px] rounded-lg p-0 text-neutral-700 transition-all duration-200 hover:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-neutral-800"
+          className="text-neutral-700 hover:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-neutral-800"
           title="Arama"
           aria-label="Aramayı aç"
         >
@@ -231,35 +231,24 @@ export function Header({
         {/* Performance Indicators */}
         <PerformanceIndicator className="hidden lg:flex" />
 
-        {/* Frontend Status */}
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1" title="Frontend Mode">
+        {/* Frontend Status - hidden on mobile for space */}
+        <div className="hidden sm:flex items-center gap-2">
+          <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-success-50 dark:bg-success-950" title="Frontend Mode">
             <div className="h-2 w-2 animate-pulse rounded-full bg-success-500" />
-            <span className="text-xs text-success-600 dark:text-success-400">Online</span>
+            <span className="text-xs font-medium text-success-700 dark:text-success-400">Online</span>
           </div>
-
-          {/* Status */}
-          <div className="flex items-center gap-1" title="No Auth Required">
-            <div className="h-2 w-2 rounded-full bg-success-500" />
-            <span className="text-xs text-success-600 dark:text-success-400">Pure</span>
-          </div>
-        </div>
-
-        {/* Mobile Status */}
-        <div className="sm:hidden">
-          <div className="h-2 w-2 rounded-full bg-success-500" title="Online Mode" />
         </div>
 
         {/* Theme Toggle */}
         <Button
           variant="ghost"
-          size="sm"
+          size="icon"
           onClick={(e: React.MouseEvent) => {
             e.preventDefault();
             e.stopPropagation();
             toggleTheme();
           }}
-          className="focus-corporate h-9 min-h-[44px] w-9 min-w-[44px] rounded-lg p-0 text-neutral-700 transition-all duration-200 hover:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-neutral-800"
+          className="text-neutral-700 hover:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-neutral-800"
           title={`${preferences.theme === 'light' ? 'Karanlık' : 'Aydınlık'} Mod`}
           aria-label={`${preferences.theme === 'light' ? 'Karanlık' : 'Aydınlık'} modu aç`}
         >
@@ -285,8 +274,8 @@ export function Header({
             <PopoverTrigger asChild>
               <Button
                 variant="ghost"
-                size="sm"
-                className="focus-corporate h-9 w-9 rounded-lg p-0 text-neutral-700 transition-all duration-200 hover:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-neutral-800"
+                size="icon"
+                className="text-neutral-700 hover:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-neutral-800"
                 aria-label="Profil menüsü"
               >
                 <User className="h-4 w-4" />
@@ -317,16 +306,16 @@ export function Header({
                 </div>
               </div>
 
-              <div className="p-2">
+              <div className="p-2 space-y-1">
                 <Button
                   variant="ghost"
-                  size="sm"
+                  size="default"
                   onClick={(e: React.MouseEvent) => {
                     e.preventDefault();
                     e.stopPropagation();
                     onNavigateToProfile?.();
                   }}
-                  className="min-h-[44px] w-full justify-start gap-2 text-neutral-700 hover:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-neutral-800"
+                  className="w-full justify-start gap-2 text-neutral-700 hover:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-neutral-800"
                 >
                   <User className="h-4 w-4" />
                   Profil Ayarları
@@ -334,13 +323,13 @@ export function Header({
 
                 <Button
                   variant="ghost"
-                  size="sm"
+                  size="default"
                   onClick={(e: React.MouseEvent) => {
                     e.preventDefault();
                     e.stopPropagation();
                     onNavigateToSettings?.();
                   }}
-                  className="min-h-[44px] w-full justify-start gap-2 text-neutral-700 hover:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-neutral-800"
+                  className="w-full justify-start gap-2 text-neutral-700 hover:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-neutral-800"
                 >
                   <Settings className="h-4 w-4" />
                   Sistem Ayarları
@@ -349,13 +338,13 @@ export function Header({
                 {user?.role === 'admin' && (
                   <Button
                     variant="ghost"
-                    size="sm"
+                    size="default"
                     onClick={(e: React.MouseEvent) => {
                       e.preventDefault();
                       e.stopPropagation();
                       onNavigateToUserManagement?.();
                     }}
-                    className="min-h-[44px] w-full justify-start gap-2 text-neutral-700 hover:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-neutral-800"
+                    className="w-full justify-start gap-2 text-neutral-700 hover:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-neutral-800"
                   >
                     <User className="h-4 w-4" />
                     Kullanıcı Yönetimi
@@ -364,7 +353,7 @@ export function Header({
 
                 <Button
                   variant="ghost"
-                  size="sm"
+                  size="default"
                   onClick={async (e: React.MouseEvent) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -374,7 +363,7 @@ export function Header({
                       logger.error('Logout error:', error);
                     }
                   }}
-                  className="min-h-[44px] w-full justify-start gap-2 text-error-600 hover:bg-error-50 hover:text-error-700 dark:text-error-400 dark:hover:bg-error-alpha-20"
+                  className="w-full justify-start gap-2 text-error-600 hover:bg-error-50 hover:text-error-700 dark:text-error-400 dark:hover:bg-error-950/50"
                 >
                   <LogOut className="h-4 w-4" />
                   Çıkış Yap
