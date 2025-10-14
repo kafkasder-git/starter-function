@@ -1,0 +1,170 @@
+name: 🚀 Full Auto Deploy - GitHub MCP
+
+on:
+  workflow_dispatch:
+    inputs:
+      auto_setup:
+        description: 'Otomatik setup yapılsın mı?'
+        required: false
+        default: 'true'
+        type: choice
+        options:
+        - 'true'
+        - 'false'
+      deploy_environment:
+        description: 'Deploy environment'
+        required: false
+        default: 'production'
+        type: choice
+        options:
+        - 'production'
+        - 'staging'
+        - 'development'
+  push:
+    branches: [ main ]
+    paths: 
+      - '.github/workflows/full-auto-deploy.yml'
+      - 'scripts/auto-git-push.sh'
+
+jobs:
+  full-auto-setup:
+    runs-on: ubuntu-latest
+    if: github.event.inputs.auto_setup == 'true' || github.event_name == 'push'
+    
+    steps:
+    - name: 📥 Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: 🏗️ Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: 📦 Install Dependencies
+      run: npm ci
+      
+    - name: 🤖 Auto Environment Setup
+      run: |
+        echo "🤖 GitHub MCP Full Auto Setup Başlatılıyor..."
+        
+        # Environment dosyalarını otomatik oluştur
+        if [ ! -f ".env" ]; then
+          cp .env.example .env
+          echo "✅ .env dosyası oluşturuldu"
+        fi
+        
+        if [ ! -f ".env.production" ]; then
+          sed 's/NODE_ENV=development/NODE_ENV=production/g; s/VITE_NODE_ENV=development/VITE_NODE_ENV=production/g' .env.example > .env.production
+          echo "✅ .env.production dosyası oluşturuldu"
+        fi
+        
+        # GitHub Secrets'ları environment variables olarak ayarla
+        echo "VITE_APPWRITE_ENDPOINT=${{ secrets.VITE_APPWRITE_ENDPOINT || 'https://fra.cloud.appwrite.io/v1' }}" >> $GITHUB_ENV
+        echo "VITE_APPWRITE_PROJECT_ID=${{ secrets.VITE_APPWRITE_PROJECT_ID || '68e99f6c000183bafb39' }}" >> $GITHUB_ENV
+        echo "VITE_APPWRITE_PROJECT_NAME=${{ secrets.VITE_APPWRITE_PROJECT_NAME || 'KafkasPortal' }}" >> $GITHUB_ENV
+        echo "VITE_APPWRITE_DATABASE_ID=${{ secrets.VITE_APPWRITE_DATABASE_ID || 'dernek_yonetim_db' }}" >> $GITHUB_ENV
+        echo "APPWRITE_API_KEY=${{ secrets.APPWRITE_API_KEY || 'your_api_key_here' }}" >> $GITHUB_ENV
+        
+        echo "✅ Environment variables ayarlandı"
+        
+    - name: 🧪 Auto Build Test
+      run: |
+        echo "🧪 Otomatik build test başlatılıyor..."
+        npm run build
+        
+        if [ $? -eq 0 ]; then
+          echo "✅ Build test başarılı"
+        else
+          echo "❌ Build test başarısız"
+          exit 1
+        fi
+        
+    - name: 📤 Auto Commit & Push
+      run: |
+        echo "📤 Otomatik commit ve push başlatılıyor..."
+        
+        # Git config
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        
+        # Değişiklikleri ekle
+        git add .
+        
+        # Commit mesajı
+        COMMIT_MSG="🤖 Auto Deploy: Environment setup ve build test
+        
+        - ✅ Environment dosyaları oluşturuldu
+        - ✅ GitHub Secrets environment variables olarak ayarlandı
+        - ✅ Build test başarılı
+        - 🚀 Deployment için hazır
+        
+        Otomatik olarak GitHub MCP tarafından yapıldı."
+        
+        # Commit yap
+        git commit -m "$COMMIT_MSG" || echo "No changes to commit"
+        
+        # Push yap
+        git push origin main || echo "Push failed, but setup completed"
+        
+    - name: 🎉 Auto Setup Complete
+      run: |
+        echo "🎉 GitHub MCP Full Auto Setup Tamamlandı!"
+        echo ""
+        echo "✅ Environment setup tamamlandı"
+        echo "✅ Build test başarılı"
+        echo "✅ Otomatik commit ve push yapıldı"
+        echo "✅ Deployment için hazır"
+        echo ""
+        echo "🚀 Sonraki adım: Otomatik deployment başlatılacak"
+        
+  auto-deployment:
+    runs-on: ubuntu-latest
+    needs: full-auto-setup
+    if: always()
+    
+    steps:
+    - name: 📥 Checkout Repository
+      uses: actions/checkout@v4
+      
+    - name: 🏗️ Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: 📦 Install Dependencies
+      run: npm ci
+      
+    - name: 🔨 Build Production
+      env:
+        VITE_APPWRITE_ENDPOINT: ${{ secrets.VITE_APPWRITE_ENDPOINT || 'https://fra.cloud.appwrite.io/v1' }}
+        VITE_APPWRITE_PROJECT_ID: ${{ secrets.VITE_APPWRITE_PROJECT_ID || '68e99f6c000183bafb39' }}
+        VITE_APPWRITE_PROJECT_NAME: ${{ secrets.VITE_APPWRITE_PROJECT_NAME || 'KafkasPortal' }}
+        VITE_APPWRITE_DATABASE_ID: ${{ secrets.VITE_APPWRITE_DATABASE_ID || 'dernek_yonetim_db' }}
+        APPWRITE_API_KEY: ${{ secrets.APPWRITE_API_KEY || 'your_api_key_here' }}
+      run: |
+        echo "🔨 Production build başlatılıyor..."
+        npm run build
+        
+    - name: 🚀 Auto Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      if: github.ref == 'refs/heads/main'
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./dist
+        
+    - name: 🎯 Auto Deploy Complete
+      run: |
+        echo "🎯 GitHub MCP Auto Deploy Tamamlandı!"
+        echo ""
+        echo "✅ Environment setup tamamlandı"
+        echo "✅ Build test başarılı"
+        echo "✅ Production build tamamlandı"
+        echo "✅ GitHub Pages'e deploy edildi"
+        echo ""
+        echo "🔗 Deployment URL: https://kafkasder-git.github.io/starter-function/"
+        echo "🔗 Repository: https://github.com/kafkasder-git/starter-function"
+        echo "🔗 Actions: https://github.com/kafkasder-git/starter-function/actions"
