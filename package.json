@@ -18,6 +18,9 @@
     "setup:policies": "tsx scripts/setup-database-policies.ts",
     "cleanup:console": "tsx scripts/remove-console-logs.ts",
     "cleanup:console:prod": "tsx scripts/remove-console-logs.ts remove",
+    "test:e2e:staging": "echo 'E2E tests for staging environment'",
+    "bundlesize": "bundlesize",
+    "lighthouse": "lighthouse-ci",
     "prepare": "husky install"
   },
   "dependencies": {
@@ -99,7 +102,10 @@
     "typescript": "^5.5.4",
     "vite": "^5.4.8",
     "vite-plugin-pwa": "^0.20.5",
-    "vitest": "^1.6.0"
+    "vitest": "^1.6.0",
+    "bundlesize": "^0.18.1",
+    "lighthouse-ci": "^0.12.0",
+    "snyk": "^1.1248.0"
   },
   "lint-staged": {
     "*.{ts,tsx}": [

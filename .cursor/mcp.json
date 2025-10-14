@@ -1,7 +1,3 @@
 {
-  "mcpServers": {
-    "starter-function Docs": {
-      "url": "https://gitmcp.io/kafkasder-git/starter-function"
-    }
-  }
+  "mcpServers": {}
 }

@@ -1,0 +1,26 @@
+{
+  "name": "dernek-ys-appwrite-function",
+  "version": "1.0.0",
+  "description": "Appwrite Function for Dernek Yönetim Sistemi",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node index.js",
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "dependencies": {
+    "node-appwrite": "^9.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "appwrite",
+    "function",
+    "dernek",
+    "yönetim",
+    "sistemi"
+  ],
+  "author": "Dernek Yönetim Sistemi Team",
+  "license": "MIT"
+}
