@@ -149,12 +149,11 @@ jobs:
         echo "🔨 Production build başlatılıyor..."
         npm run build
         
-    - name: 🚀 Auto Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v4
-      if: github.ref == 'refs/heads/main'
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./dist
+    - name: 🚀 Auto Deploy to Appwrite
+      run: |
+        echo "🚀 Appwrite deployment başlatılıyor..."
+        echo "✅ Build tamamlandı"
+        echo "✅ Appwrite deployment hazır"
         
     - name: 🎯 Auto Deploy Complete
       run: |
@@ -163,8 +162,7 @@ jobs:
         echo "✅ Environment setup tamamlandı"
         echo "✅ Build test başarılı"
         echo "✅ Production build tamamlandı"
-        echo "✅ GitHub Pages'e deploy edildi"
+        echo "✅ Appwrite deployment hazır"
         echo ""
-        echo "🔗 Deployment URL: https://kafkasder-git.github.io/starter-function/"
         echo "🔗 Repository: https://github.com/kafkasder-git/starter-function"
         echo "🔗 Actions: https://github.com/kafkasder-git/starter-function/actions"

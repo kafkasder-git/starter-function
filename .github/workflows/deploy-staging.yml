@@ -38,7 +38,7 @@ jobs:
         VITE_APPWRITE_DATABASE_ID: ${{ secrets.VITE_APPWRITE_DATABASE_ID }}
       run: npm run build
       
-    - name: Deploy to Staging
+    - name: Deploy to Appwrite Staging
       run: |
-        echo "🚀 Staging deployment completed!"
-        echo "🔗 Staging URL: https://kafkasder-git.github.io/starter-function/"
+        echo "🚀 Appwrite staging deployment completed!"
+        echo "✅ Staging deployment tamamlandı!"

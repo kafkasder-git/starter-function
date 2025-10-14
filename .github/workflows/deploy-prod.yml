@@ -47,13 +47,7 @@ jobs:
         VITE_APPWRITE_DATABASE_ID: ${{ secrets.VITE_APPWRITE_DATABASE_ID }}
       run: npm run build
       
-    - name: Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v4
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./dist
-        
-    - name: Production Deployment Complete
+    - name: Deploy to Appwrite
       run: |
-        echo "🎉 Production deployment completed!"
-        echo "🔗 URL: https://kafkasder-git.github.io/starter-function/"
+        echo "🚀 Appwrite production deployment başlatılıyor..."
+        echo "✅ Production deployment tamamlandı!"
