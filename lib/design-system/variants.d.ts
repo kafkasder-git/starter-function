@@ -26,7 +26,7 @@
  */
 import { type VariantProps } from 'class-variance-authority';
 export declare const buttonVariants: (props?: ({
-    variant?: "default" | "info" | "success" | "warning" | "destructive" | "secondary" | "link" | "outline" | "ghost" | null | undefined;
+    variant?: "default" | "info" | "success" | "warning" | "link" | "destructive" | "secondary" | "outline" | "ghost" | null | undefined;
     size?: "default" | "xs" | "sm" | "lg" | "xl" | "icon" | null | undefined;
     loading?: boolean | null | undefined;
 } & import("class-variance-authority/types").ClassProp) | undefined) => string;

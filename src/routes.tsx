@@ -17,9 +17,6 @@ const NotFoundPage = lazy(() => import('../components/pages/NotFoundPage'));
 const LoginPage = lazy(() => import('../components/auth/LoginPage'));
 const UIComponentsShowcase = lazy(() => import('../components/pages/UIComponentsShowcase'));
 const FormExamplesPage = lazy(() => import('../components/pages/FormExamplesPage'));
-const GanttExample = lazy(() => import('../components/examples/GanttExample'));
-const KiboUIExample = lazy(() => import('../components/examples/KiboUIExample'));
-const CardFlipExample = lazy(() => import('../components/examples/CardFlipExample'));
 // const TestPagesMain = lazy(() => import('../components/pages/TestPages.tsx').then(m => ({ default: m.TestPagesMain })));
 const BursStudentsPage = lazy(() => import('../components/pages/BursStudentsPage'));
 const BursApplicationsPage = lazy(() => import('../components/pages/BursApplicationsPage'));
@@ -114,30 +111,6 @@ export const protectedRoutes: RouteObject[] = [
         element: (
           <SuspenseWrapper>
             <FormExamplesPage />
-          </SuspenseWrapper>
-        ),
-      },
-      {
-        path: 'genel/gantt',
-        element: (
-          <SuspenseWrapper>
-            <GanttExample />
-          </SuspenseWrapper>
-        ),
-      },
-      {
-        path: 'genel/kibo-ui',
-        element: (
-          <SuspenseWrapper>
-            <KiboUIExample />
-          </SuspenseWrapper>
-        ),
-      },
-      {
-        path: 'genel/card-flip',
-        element: (
-          <SuspenseWrapper>
-            <CardFlipExample />
           </SuspenseWrapper>
         ),
       },

@@ -48,7 +48,7 @@ declare const _default: {
                 'elevation-5': string;
             };
             container: {
-                center: boolean;
+                center: true;
                 padding: string;
                 screens: {
                     sm: string;
@@ -455,36 +455,36 @@ declare const _default: {
                 readonly tooltip: "1800";
             };
             fontSize: {
-                xs: (string | {
+                xs: [string, {
                     lineHeight: string;
-                })[];
-                sm: (string | {
+                }];
+                sm: [string, {
                     lineHeight: string;
-                })[];
-                base: (string | {
+                }];
+                base: [string, {
                     lineHeight: string;
-                })[];
-                lg: (string | {
+                }];
+                lg: [string, {
                     lineHeight: string;
-                })[];
-                xl: (string | {
+                }];
+                xl: [string, {
                     lineHeight: string;
-                })[];
-                '2xl': (string | {
+                }];
+                '2xl': [string, {
                     lineHeight: string;
-                })[];
-                '3xl': (string | {
+                }];
+                '3xl': [string, {
                     lineHeight: string;
-                })[];
-                '4xl': (string | {
+                }];
+                '4xl': [string, {
                     lineHeight: string;
-                })[];
-                '5xl': (string | {
+                }];
+                '5xl': [string, {
                     lineHeight: string;
-                })[];
-                '6xl': (string | {
+                }];
+                '6xl': [string, {
                     lineHeight: string;
-                })[];
+                }];
             };
         };
     };
