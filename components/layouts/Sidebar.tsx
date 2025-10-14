@@ -57,12 +57,12 @@ interface SidebarProps {
  * @returns {void} Nothing
  */
 export function Sidebar({
-  activeModule: _activeModule,
-  onModuleChange: _onModuleChange,
-  onSubPageChange: _onSubPageChange,
-  onNavigateToProfile: _onNavigateToProfile,
-  onNavigateToSettings: _onNavigateToSettings,
-  onNavigateToUserManagement: _onNavigateToUserManagement,
+  activeModule,
+  onModuleChange,
+  onSubPageChange,
+  onNavigateToProfile,
+  onNavigateToSettings,
+  onNavigateToUserManagement,
   isMobileOpen = false,
   onMobileToggle,
 }: SidebarProps) {
@@ -73,7 +73,7 @@ export function Sidebar({
   const [isPopoverHovered, setIsPopoverHovered] = useState(false);
 
   // Auth context for permission checks
-  const { user: _user } = useAuthStore();
+  const { user } = useAuthStore();
 
   // Permission checks - will be used in future features
   // const canViewReports =

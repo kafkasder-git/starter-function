@@ -62,7 +62,7 @@ export function LoginForm() {
       
       // Başarılı giriş sonrası yönlendirme
       navigate('/dashboard');
-    } catch (_error) {
+    } catch {
       // Hata zaten auth store'da handle ediliyor
       // console.error('Giriş hatası:', error); // TODO: Implement proper error handling
     } finally {

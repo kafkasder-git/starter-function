@@ -227,7 +227,7 @@ export const InteractiveChart = memo(
             </ResponsiveContainer>
           );
 
-        default: // line
+        case 'line':
           return (
             <ResponsiveContainer width="100%" height="100%">
               <LineChart {...chartProps}>
@@ -246,6 +246,9 @@ export const InteractiveChart = memo(
               </LineChart>
             </ResponsiveContainer>
           );
+
+        default:
+          return null;
       }
     }, [loading, processedData, activeType, color]);
 

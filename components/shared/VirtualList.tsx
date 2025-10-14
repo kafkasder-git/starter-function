@@ -122,21 +122,21 @@ VirtualList.displayName = 'VirtualList';
 // Specific implementations for common use cases
 
 interface BeneficiaryVirtualListProps {
-  beneficiaries: Array<{
+  beneficiaries: {
     id: string;
     name: string;
     city: string;
     status: string;
-  }>;
+  }[];
   height: number;
   onBeneficiaryClick: (id: string) => void;
 }
 
-export const BeneficiaryVirtualList = memo(function BeneficiaryVirtualList({
+export const BeneficiaryVirtualList = memo(({
   beneficiaries,
   height,
   onBeneficiaryClick,
-}: BeneficiaryVirtualListProps) {
+}: BeneficiaryVirtualListProps) => {
   return (
     <VirtualList
       items={beneficiaries}
@@ -146,7 +146,7 @@ export const BeneficiaryVirtualList = memo(function BeneficiaryVirtualList({
         <div
           key={item.id}
           className="flex items-center p-4 border-b hover:bg-gray-50 cursor-pointer"
-          onClick={() => onBeneficiaryClick(item.id)}
+          onClick={() => { onBeneficiaryClick(item.id); }}
         >
           <div className="flex-1">
             <h4 className="font-medium text-gray-900">{item.name}</h4>
@@ -170,22 +170,22 @@ export const BeneficiaryVirtualList = memo(function BeneficiaryVirtualList({
 });
 
 interface DonationVirtualListProps {
-  donations: Array<{
+  donations: {
     id: string;
     amount: number;
     donor: string;
     date: string;
     status: string;
-  }>;
+  }[];
   height: number;
   onDonationClick: (id: string) => void;
 }
 
-export const DonationVirtualList = memo(function DonationVirtualList({
+export const DonationVirtualList = memo(({
   donations,
   height,
   onDonationClick,
-}: DonationVirtualListProps) {
+}: DonationVirtualListProps) => {
   return (
     <VirtualList
       items={donations}
@@ -195,7 +195,7 @@ export const DonationVirtualList = memo(function DonationVirtualList({
         <div
           key={item.id}
           className="flex items-center p-4 border-b hover:bg-gray-50 cursor-pointer"
-          onClick={() => onDonationClick(item.id)}
+          onClick={() => { onDonationClick(item.id); }}
         >
           <div className="flex-1">
             <h4 className="font-medium text-gray-900">{item.donor}</h4>

@@ -3,7 +3,7 @@
  * @description Genel dashboard ve istatistikler
  */
 
-import { useEffect, useState, useMemo, useCallback, memo } from 'react';
+import { useEffect, useState, useCallback, memo } from 'react';
 import { useAuthStore } from '@/stores/authStore';
 import { databaseService } from '@/services/databaseService';
 import { messagingService } from '@/services/messagingService';
@@ -37,7 +37,7 @@ interface DashboardStats {
   recentMessages: any[];
 }
 
-const DashboardPage = memo(function DashboardPage() {
+const DashboardPage = memo(() => {
   const { user, logout } = useAuthStore();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);

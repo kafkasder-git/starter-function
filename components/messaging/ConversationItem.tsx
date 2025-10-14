@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { MoreHorizontal, CheckCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { Conversation } from '@/types/messaging';
+import type { Conversation, MessageType } from '@/types/messaging';
 
 interface ConversationItemProps {
   conversation: Conversation;
@@ -70,13 +70,13 @@ export function ConversationItem({
     const message = conversation.lastMessage;
 
     switch (message.type) {
-      case 'text':
+      case MessageType.TEXT:
         return message.content || 'Mesaj';
-      case 'file':
+      case MessageType.FILE:
         return '📎 Dosya';
-      case 'voice':
+      case MessageType.VOICE:
         return '🎤 Sesli mesaj';
-      case 'system':
+      case MessageType.SYSTEM:
         return message.content || 'Sistem mesajı';
       default:
         return 'Mesaj';

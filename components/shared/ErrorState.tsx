@@ -37,7 +37,7 @@ interface ErrorStateProps {
  * Error state component for showing error messages and recovery options
  * Farklı hata türleri için özelleştirilmiş mesajlar ve çözüm önerileri
  */
-const ErrorStateComponent = memo(function ErrorState({
+const ErrorStateComponent = memo(({
   title,
   message,
   error,
@@ -48,7 +48,7 @@ const ErrorStateComponent = memo(function ErrorState({
   size = 'md',
   type = 'generic',
   showDetails = false
-}: ErrorStateProps) {
+}: ErrorStateProps) => {
   const sizeClasses = {
     sm: 'py-8',
     md: 'py-12',
@@ -225,7 +225,7 @@ const ErrorStateComponent = memo(function ErrorState({
 
 // Predefined error states for common scenarios
 export const ErrorStates = {
-  NetworkError: memo(function NetworkErrorState({ onRetry }: { onRetry?: () => void }) {
+  NetworkError: memo(({ onRetry }: { onRetry?: () => void }) => {
     return (
       <ErrorStateComponent
         type="network"
@@ -235,7 +235,7 @@ export const ErrorStates = {
     );
   }),
 
-  ServerError: memo(function ServerErrorState({ onRetry }: { onRetry?: () => void }) {
+  ServerError: memo(({ onRetry }: { onRetry?: () => void }) => {
     return (
       <ErrorStateComponent
         type="server"
@@ -245,7 +245,7 @@ export const ErrorStates = {
     );
   }),
 
-  DatabaseError: memo(function DatabaseErrorState({ onRetry }: { onRetry?: () => void }) {
+  DatabaseError: memo(({ onRetry }: { onRetry?: () => void }) => {
     return (
       <ErrorStateComponent
         type="database"
@@ -255,7 +255,7 @@ export const ErrorStates = {
     );
   }),
 
-  NotFound: memo(function NotFoundErrorState({ onGoHome }: { onGoHome?: () => void }) {
+  NotFound: memo(({ onGoHome }: { onGoHome?: () => void }) => {
     return (
       <ErrorStateComponent
         type="notFound"
@@ -264,13 +264,13 @@ export const ErrorStates = {
     );
   }),
 
-  GenericError: memo(function GenericErrorState({ 
+  GenericError: memo(({ 
     error, 
     onRetry 
   }: { 
     error?: Error | string;
     onRetry?: () => void;
-  }) {
+  }) => {
     return (
       <ErrorStateComponent
         type="generic"
@@ -320,7 +320,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
         <div className="min-h-screen flex items-center justify-center p-4">
           <FallbackComponent 
             error={this.state.error}
-            onRetry={() => this.setState({ hasError: false, error: undefined })}
+            onRetry={() => { this.setState({ hasError: false, error: undefined }); }}
           />
         </div>
       );

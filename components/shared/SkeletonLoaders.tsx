@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils';
 /**
  * Table skeleton loader
  */
-export const TableSkeleton = memo(function TableSkeleton({ 
+export const TableSkeleton = memo(({ 
   rows = 5, 
   columns = 4,
   className 
@@ -21,7 +21,7 @@ export const TableSkeleton = memo(function TableSkeleton({
   rows?: number;
   columns?: number;
   className?: string;
-}) {
+}) => {
   return (
     <div className={cn('space-y-4', className)}>
       {/* Header skeleton */}
@@ -46,13 +46,13 @@ export const TableSkeleton = memo(function TableSkeleton({
 /**
  * Card list skeleton loader
  */
-export const CardListSkeleton = memo(function CardListSkeleton({ 
+export const CardListSkeleton = memo(({ 
   count = 3,
   className 
 }: { 
   count?: number;
   className?: string;
-}) {
+}) => {
   return (
     <div className={cn('grid gap-4', className)}>
       {Array.from({ length: count }).map((_, i) => (
@@ -77,11 +77,11 @@ export const CardListSkeleton = memo(function CardListSkeleton({
 /**
  * Dashboard stats skeleton
  */
-export const DashboardStatsSkeleton = memo(function DashboardStatsSkeleton({ 
+export const DashboardStatsSkeleton = memo(({ 
   className 
 }: { 
   className?: string;
-}) {
+}) => {
   return (
     <div className={cn('grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6', className)}>
       {Array.from({ length: 4 }).map((_, i) => (
@@ -104,13 +104,13 @@ export const DashboardStatsSkeleton = memo(function DashboardStatsSkeleton({
 /**
  * Beneficiary list skeleton
  */
-export const BeneficiaryListSkeleton = memo(function BeneficiaryListSkeleton({ 
+export const BeneficiaryListSkeleton = memo(({ 
   count = 5,
   className 
 }: { 
   count?: number;
   className?: string;
-}) {
+}) => {
   return (
     <div className={cn('space-y-4', className)}>
       {Array.from({ length: count }).map((_, i) => (
@@ -133,13 +133,13 @@ export const BeneficiaryListSkeleton = memo(function BeneficiaryListSkeleton({
 /**
  * Donation list skeleton
  */
-export const DonationListSkeleton = memo(function DonationListSkeleton({ 
+export const DonationListSkeleton = memo(({ 
   count = 5,
   className 
 }: { 
   count?: number;
   className?: string;
-}) {
+}) => {
   return (
     <div className={cn('space-y-4', className)}>
       {Array.from({ length: count }).map((_, i) => (
@@ -161,13 +161,13 @@ export const DonationListSkeleton = memo(function DonationListSkeleton({
 /**
  * Message list skeleton
  */
-export const MessageListSkeleton = memo(function MessageListSkeleton({ 
+export const MessageListSkeleton = memo(({ 
   count = 4,
   className 
 }: { 
   count?: number;
   className?: string;
-}) {
+}) => {
   return (
     <div className={cn('space-y-4', className)}>
       {Array.from({ length: count }).map((_, i) => (
@@ -190,13 +190,13 @@ export const MessageListSkeleton = memo(function MessageListSkeleton({
 /**
  * Form skeleton
  */
-export const FormSkeleton = memo(function FormSkeleton({ 
+export const FormSkeleton = memo(({ 
   fields = 5,
   className 
 }: { 
   fields?: number;
   className?: string;
-}) {
+}) => {
   return (
     <Card className={className}>
       <CardHeader>
@@ -222,13 +222,13 @@ export const FormSkeleton = memo(function FormSkeleton({
 /**
  * Chart skeleton
  */
-export const ChartSkeleton = memo(function ChartSkeleton({ 
+export const ChartSkeleton = memo(({ 
   height = 300,
   className 
 }: { 
   height?: number;
   className?: string;
-}) {
+}) => {
   return (
     <Card className={className}>
       <CardHeader>
@@ -263,11 +263,11 @@ export const ChartSkeleton = memo(function ChartSkeleton({
 /**
  * Page skeleton - Full page loading state
  */
-export const PageSkeleton = memo(function PageSkeleton({ 
+export const PageSkeleton = memo(({ 
   className 
 }: { 
   className?: string;
-}) {
+}) => {
   return (
     <div className={cn('space-y-6', className)}>
       {/* Header */}
@@ -291,11 +291,11 @@ export const PageSkeleton = memo(function PageSkeleton({
 /**
  * Modal skeleton
  */
-export const ModalSkeleton = memo(function ModalSkeleton({ 
+export const ModalSkeleton = memo(({ 
   className 
 }: { 
   className?: string;
-}) {
+}) => {
   return (
     <div className={cn('space-y-6', className)}>
       <div className="space-y-2">
@@ -314,11 +314,11 @@ export function useSkeletonLoading(isLoading: boolean, delay = 300) {
 
   React.useEffect(() => {
     if (isLoading) {
-      const timer = setTimeout(() => setShowSkeleton(true), delay);
-      return () => clearTimeout(timer);
-    } else {
+      const timer = setTimeout(() => { setShowSkeleton(true); }, delay);
+      return () => { clearTimeout(timer); };
+    } 
       setShowSkeleton(false);
-    }
+    
   }, [isLoading, delay]);
 
   return showSkeleton;

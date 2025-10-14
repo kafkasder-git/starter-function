@@ -16,7 +16,6 @@ import {
   MessageSquare, 
   Calendar,
   Search,
-  Plus,
   RefreshCw
 } from 'lucide-react';
 
@@ -42,7 +41,7 @@ interface EmptyStateProps {
  * Empty state component for showing when no data is available
  * Farklı modüller için özelleştirilmiş icon'lar ve mesajlar
  */
-const EmptyStateComponent = memo(function EmptyState({
+const EmptyStateComponent = memo(({
   icon,
   title,
   description,
@@ -50,7 +49,7 @@ const EmptyStateComponent = memo(function EmptyState({
   secondaryAction,
   className,
   size = 'md'
-}: EmptyStateProps) {
+}: EmptyStateProps) => {
   const sizeClasses = {
     sm: 'py-8',
     md: 'py-12',
@@ -118,7 +117,7 @@ const EmptyStateComponent = memo(function EmptyState({
 
 // Predefined empty states for common modules
 export const EmptyStates = {
-  Beneficiaries: memo(function BeneficiariesEmptyState({ onCreate }: { onCreate: () => void }) {
+  Beneficiaries: memo(({ onCreate }: { onCreate: () => void }) => {
     return (
       <EmptyStateComponent
         icon={<Users className="w-16 h-16" />}
@@ -131,14 +130,14 @@ export const EmptyStates = {
         }}
         secondaryAction={{
           label: 'Yenile',
-          onClick: () => window.location.reload(),
+          onClick: () => { window.location.reload(); },
           variant: 'outline'
         }}
       />
     );
   }),
 
-  Donations: memo(function DonationsEmptyState({ onCreate }: { onCreate: () => void }) {
+  Donations: memo(({ onCreate }: { onCreate: () => void }) => {
     return (
       <EmptyStateComponent
         icon={<Heart className="w-16 h-16" />}
@@ -151,14 +150,14 @@ export const EmptyStates = {
         }}
         secondaryAction={{
           label: 'Yenile',
-          onClick: () => window.location.reload(),
+          onClick: () => { window.location.reload(); },
           variant: 'outline'
         }}
       />
     );
   }),
 
-  Scholarships: memo(function ScholarshipsEmptyState({ onCreate }: { onCreate: () => void }) {
+  Scholarships: memo(({ onCreate }: { onCreate: () => void }) => {
     return (
       <EmptyStateComponent
         icon={<GraduationCap className="w-16 h-16" />}
@@ -171,14 +170,14 @@ export const EmptyStates = {
         }}
         secondaryAction={{
           label: 'Yenile',
-          onClick: () => window.location.reload(),
+          onClick: () => { window.location.reload(); },
           variant: 'outline'
         }}
       />
     );
   }),
 
-  Messages: memo(function MessagesEmptyState({ onNewMessage }: { onNewMessage: () => void }) {
+  Messages: memo(({ onNewMessage }: { onNewMessage: () => void }) => {
     return (
       <EmptyStateComponent
         icon={<MessageSquare className="w-16 h-16" />}
@@ -191,14 +190,14 @@ export const EmptyStates = {
         }}
         secondaryAction={{
           label: 'Yenile',
-          onClick: () => window.location.reload(),
+          onClick: () => { window.location.reload(); },
           variant: 'outline'
         }}
       />
     );
   }),
 
-  Events: memo(function EventsEmptyState({ onCreate }: { onCreate: () => void }) {
+  Events: memo(({ onCreate }: { onCreate: () => void }) => {
     return (
       <EmptyStateComponent
         icon={<Calendar className="w-16 h-16" />}
@@ -211,14 +210,14 @@ export const EmptyStates = {
         }}
         secondaryAction={{
           label: 'Yenile',
-          onClick: () => window.location.reload(),
+          onClick: () => { window.location.reload(); },
           variant: 'outline'
         }}
       />
     );
   }),
 
-  Search: memo(function SearchEmptyState({ onClearSearch }: { onClearSearch: () => void }) {
+  Search: memo(({ onClearSearch }: { onClearSearch: () => void }) => {
     return (
       <EmptyStateComponent
         icon={<Search className="w-16 h-16" />}
@@ -234,7 +233,7 @@ export const EmptyStates = {
     );
   }),
 
-  Documents: memo(function DocumentsEmptyState({ onUpload }: { onUpload: () => void }) {
+  Documents: memo(({ onUpload }: { onUpload: () => void }) => {
     return (
       <EmptyStateComponent
         icon={<FileText className="w-16 h-16" />}
@@ -247,14 +246,14 @@ export const EmptyStates = {
         }}
         secondaryAction={{
           label: 'Yenile',
-          onClick: () => window.location.reload(),
+          onClick: () => { window.location.reload(); },
           variant: 'outline'
         }}
       />
     );
   }),
 
-  Loading: memo(function LoadingEmptyState() {
+  Loading: memo(() => {
     return (
       <EmptyStateComponent
         icon={<RefreshCw className="w-16 h-16 animate-spin" />}

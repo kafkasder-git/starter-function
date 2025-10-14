@@ -16,9 +16,9 @@ client
 
 // Initialize services
 const databases = new Databases(client);
-const storage = new Storage(client);
-const functions = new Functions(client);
-const users = new Users(client);
+// const storage = new Storage(client); // TODO: Implement storage operations
+// const functions = new Functions(client); // TODO: Implement function operations
+// const users = new Users(client); // TODO: Implement user operations
 
 /**
  * Main function handler
@@ -37,7 +37,7 @@ module.exports = async (req, res) => {
             return res.json({});
         }
 
-        const { method, path, headers, body, query } = req;
+        const { method, path } = req;
         const environment = process.env.ENVIRONMENT || 'development';
 
         console.log(`[${environment}] ${method} ${path}`);
@@ -112,7 +112,7 @@ function getRoute(path, method) {
 async function handleHealthCheck(req, res) {
     try {
         // Test database connection
-        await databases.list(process.env.APPWRITE_DATABASE_ID || 'dernek_yonetim_db' || 'dernek_yonetim_db', []);
+        await databases.list(process.env.APPWRITE_DATABASE_ID || 'dernek_yonetim_db', []);
         
         return res.json({
             status: 'healthy',
@@ -141,16 +141,16 @@ async function handleGetBeneficiaries(req, res) {
         const { limit = 25, offset = 0, search = '' } = req.query;
         
         const queries = [
-            'limit(' + limit,
-            'offset(' + offset
+            `limit(${limit})`,
+            `offset(${offset})`
         ];
         
         if (search) {
-            queries.push('search("name", "' + search + '")');
+            queries.push(`search("name", "${search}")`);
         }
         
         const result = await databases.listDocuments(
-            process.env.APPWRITE_DATABASE_ID || 'dernek_yonetim_db' || 'dernek_yonetim_db',
+            process.env.APPWRITE_DATABASE_ID || 'dernek_yonetim_db',
             'beneficiaries',
             queries
         );
@@ -183,7 +183,7 @@ async function handleCreateBeneficiary(req, res) {
         }
         
         const result = await databases.createDocument(
-            process.env.APPWRITE_DATABASE_ID || 'dernek_yonetim_db' || 'dernek_yonetim_db',
+            process.env.APPWRITE_DATABASE_ID || 'dernek_yonetim_db',
             'beneficiaries',
             'unique()',
             {
@@ -219,12 +219,12 @@ async function handleGetDonations(req, res) {
         const { limit = 25, offset = 0, type = '' } = req.query;
         
         const queries = [
-            'limit(' + limit,
-            'offset(' + offset
+            `limit(${  limit}`,
+            `offset(${  offset}`
         ];
         
         if (type) {
-            queries.push('equal("type", "' + type + '")');
+            queries.push(`equal("type", "${  type  }")`);
         }
         
         const result = await databases.listDocuments(
@@ -297,12 +297,12 @@ async function handleGetMessages(req, res) {
         const { limit = 25, offset = 0, conversationId = '' } = req.query;
         
         const queries = [
-            'limit(' + limit,
-            'offset(' + offset
+            `limit(${  limit}`,
+            `offset(${  offset}`
         ];
         
         if (conversationId) {
-            queries.push('equal("conversationId", "' + conversationId + '")');
+            queries.push(`equal("conversationId", "${  conversationId  }")`);
         }
         
         const result = await databases.listDocuments(
