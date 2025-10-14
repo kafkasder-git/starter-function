@@ -3,7 +3,7 @@
  * @description Genel dashboard ve istatistikler
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo, useCallback, memo } from 'react';
 import { useAuthStore } from '@/stores/authStore';
 import { databaseService } from '@/services/databaseService';
 import { messagingService } from '@/services/messagingService';
@@ -37,15 +37,14 @@ interface DashboardStats {
   recentMessages: any[];
 }
 
-export default function DashboardPage() {
+const DashboardPage = memo(function DashboardPage() {
   const { user, logout } = useAuthStore();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Dashboard verilerini yükle
-  useEffect(() => {
-    const loadDashboardData = async () => {
+  // Memoized dashboard data loading
+  const loadDashboardData = useCallback(async () => {
       try {
         setIsLoading(true);
         setError(null);
@@ -84,19 +83,21 @@ export default function DashboardPage() {
           recentAidRequests: recentAidRequests.documents,
           recentMessages,
         });
-      } catch (_err) {
-        // TODO: Implement proper error handling
-        // console.error('Dashboard verileri yüklenemedi:', err);
+      } catch (err) {
+        console.error('Dashboard verileri yüklenemedi:', err);
         setError('Dashboard verileri yüklenemedi');
+        // TODO: Toast notification sistemi entegrasyonu
       } finally {
         setIsLoading(false);
       }
-    };
+  }, [user]);
 
+  // Dashboard verilerini yükle
+  useEffect(() => {
     if (user) {
       loadDashboardData();
     }
-  }, [user]);
+  }, [user, loadDashboardData]);
 
   // Loading state
   if (isLoading) {
@@ -392,4 +393,6 @@ export default function DashboardPage() {
       </div>
     </div>
   );
-}
+});
+
+export default DashboardPage;

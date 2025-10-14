@@ -50,34 +50,36 @@ export function LawyerAssignmentsPage() {
     lawyerId: '',
   });
 
-  // Load data on mount
+  // Load data on mount with parallel fetching
   useEffect(() => {
     const loadData = async () => {
       try {
         setLoadingConsultations(true);
-        const consResult = await legalConsultationsService.getConsultationsNeedingAssignment();
+        setLoadingLawyers(true);
+
+        // Paralel olarak her iki API call'ı yap
+        const [consResult, lawResult] = await Promise.all([
+          legalConsultationsService.getConsultationsNeedingAssignment(),
+          legalConsultationsService.getAvailableLawyers()
+        ]);
+
+        // Consultations sonucunu işle
         if (consResult.error) {
           logger.error('Failed to load consultations:', consResult.error);
         } else {
           setConsultations(consResult.data || []);
         }
-      } catch (err) {
-        logger.error('Error loading consultations:', err);
-      } finally {
-        setLoadingConsultations(false);
-      }
 
-      try {
-        setLoadingLawyers(true);
-        const lawResult = await legalConsultationsService.getAvailableLawyers();
+        // Lawyers sonucunu işle
         if (lawResult.error) {
           logger.error('Failed to load lawyers:', lawResult.error);
         } else {
           setLawyers(lawResult.data || []);
         }
       } catch (err) {
-        logger.error('Error loading lawyers:', err);
+        logger.error('Error loading data:', err);
       } finally {
+        setLoadingConsultations(false);
         setLoadingLawyers(false);
       }
     };

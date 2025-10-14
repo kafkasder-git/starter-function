@@ -606,14 +606,15 @@ export function BeneficiaryDetailPageComprehensive({
     setIsDependentPersonModalOpen(true);
   };
 
-  // family_relationships tablosu için gerekli policy'leri oluştur
+  // family_relationships tablosu için gerekli policy'leri kontrol et
   const ensureFamilyRelationshipsPolicies = async () => {
     try {
-      // TODO: Database policies should be created through migrations, not client-side code
-      // The exec_sql RPC function doesn't exist and poses security risks
-      logger.info('ℹ️ Skipping policy creation - should be handled by database migrations');
+      // Policy'ler artık scripts/setup-database-policies.ts ile oluşturuluyor
+      // Client-side'da policy oluşturma güvenlik riski oluşturuyor
+      logger.info('ℹ️ Family relationships policies should be created via migration script');
+      logger.info('ℹ️ Run: npm run setup:policies');
     } catch (error: any) {
-      logger.warn('⚠️ Could not create policies (might already exist):', error.message);
+      logger.warn('⚠️ Policy check failed:', error.message);
     }
   };
 

@@ -1,308 +1,269 @@
 /**
- * @fileoverview EmptyState Module - Application module
+ * @fileoverview EmptyState Component - Boş durumlar için UI component
  *
  * @author Dernek Yönetim Sistemi Team
  * @version 1.0.0
  */
 
-import type { ReactNode } from 'react';
-import {
-  Search,
-  Users,
-  Heart,
-  Package,
-  FileX,
-  Database,
-  Inbox,
+import React, { memo } from 'react';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { 
+  FileText, 
+  Users, 
+  Heart, 
+  GraduationCap, 
+  MessageSquare, 
   Calendar,
-  WifiOff,
-  SearchX,
-  AlertTriangle,
+  Search,
+  Plus,
+  RefreshCw
 } from 'lucide-react';
-import { Button } from '../ui/button';
-import { Card, CardContent } from '../ui/card';
-import { Heading } from '../ui/heading';
-import { Text } from '../ui/text';
-import { motion } from 'motion/react';
 
 interface EmptyStateProps {
-  icon?: ReactNode;
+  icon?: React.ReactNode;
   title: string;
   description: string;
   action?: {
     label: string;
     onClick: () => void;
+    variant?: 'default' | 'outline' | 'secondary';
   };
-  variant?: 'default' | 'search' | 'error' | 'offline' | 'no-results';
+  secondaryAction?: {
+    label: string;
+    onClick: () => void;
+    variant?: 'default' | 'outline' | 'secondary';
+  };
   className?: string;
-  animated?: boolean;
+  size?: 'sm' | 'md' | 'lg';
 }
 
 /**
- * EmptyState function
- *
- * @param {Object} params - Function parameters
- * @returns {void} Nothing
+ * Empty state component for showing when no data is available
+ * Farklı modüller için özelleştirilmiş icon'lar ve mesajlar
  */
-export function EmptyState({
+const EmptyStateComponent = memo(function EmptyState({
   icon,
   title,
   description,
   action,
-  variant = 'default',
-  className = '',
-  animated = true,
+  secondaryAction,
+  className,
+  size = 'md'
 }: EmptyStateProps) {
-  const getVariantStyles = () => {
-    switch (variant) {
-      case 'search':
-        return {
-          background: 'bg-gradient-to-br from-info-50 to-info-100',
-          iconBg: 'bg-gradient-to-br from-info-500 to-info-600',
-          buttonBg:
-            'bg-gradient-to-r from-info-600 to-info-700 hover:from-info-700 hover:to-info-800',
-        };
-      case 'error':
-        return {
-          background: 'bg-gradient-to-br from-error-50 to-error-100',
-          iconBg: 'bg-gradient-to-br from-error-500 to-error-600',
-          buttonBg:
-            'bg-gradient-to-r from-error-600 to-error-700 hover:from-error-700 hover:to-error-800',
-        };
-      case 'offline':
-        return {
-          background: 'bg-gradient-to-br from-neutral-50 to-neutral-100',
-          iconBg: 'bg-gradient-to-br from-neutral-500 to-neutral-600',
-          buttonBg:
-            'bg-gradient-to-r from-neutral-600 to-neutral-700 hover:from-neutral-700 hover:to-neutral-800',
-        };
-      case 'no-results':
-        return {
-          background: 'bg-gradient-to-br from-warning-50 to-warning-100',
-          iconBg: 'bg-gradient-to-br from-warning-500 to-warning-600',
-          buttonBg:
-            'bg-gradient-to-r from-warning-600 to-warning-700 hover:from-warning-700 hover:to-warning-800',
-        };
-      case 'default':
-      default:
-        return {
-          background: 'bg-gradient-to-br from-neutral-50 to-neutral-100',
-          iconBg: 'bg-gradient-to-br from-neutral-500 to-neutral-600',
-          buttonBg:
-            'bg-gradient-to-r from-neutral-600 to-neutral-700 hover:from-neutral-700 hover:to-neutral-800',
-        };
-    }
+  const sizeClasses = {
+    sm: 'py-8',
+    md: 'py-12',
+    lg: 'py-16'
   };
 
-  const styles = getVariantStyles();
-
-  const getDefaultIcon = () => {
-    switch (variant) {
-      case 'offline':
-        return <WifiOff className="w-10 h-10" />;
-      case 'no-results':
-        return <SearchX className="w-10 h-10" />;
-      case 'error':
-        return <AlertTriangle className="w-10 h-10" />;
-      case 'search':
-        return <SearchX className="w-10 h-10" />;
-      case 'default':
-        return <FileX className="w-10 h-10" />;
-      default:
-        return <FileX className="w-10 h-10" />;
-    }
+  const iconSizes = {
+    sm: 'text-4xl',
+    md: 'text-6xl',
+    lg: 'text-8xl'
   };
 
-  const content = (
-    <Card
-      className={`border-none shadow-lg ${styles.background} ${className}`}
-      role="status"
-      aria-live="polite"
-    >
-      <CardContent className="p-12 text-center">
-        <div className="flex flex-col items-center space-y-6">
-          {/* Icon */}
-          <div
-            className={`w-20 h-20 ${styles.iconBg} rounded-2xl flex items-center justify-center shadow-lg`}
-          >
-            <div className="text-white" aria-hidden="true">
-              {icon ?? getDefaultIcon()}
-            </div>
-          </div>
-
-          {/* Text Content */}
-          <div className="space-y-3 max-w-md">
-            <Heading level={2} size="2xl" weight="semibold" color="neutral">
-              {title}
-            </Heading>
-            <Text color="neutral" className="leading-relaxed">
-              {description}
-            </Text>
-          </div>
-
-          {/* Action Button */}
+  return (
+    <div className={cn(
+      'flex flex-col items-center justify-center text-center',
+      sizeClasses[size],
+      className
+    )}>
+      {icon && (
+        <div className={cn('text-gray-400 mb-4', iconSizes[size])}>
+          {icon}
+        </div>
+      )}
+      
+      <h3 className={cn(
+        'font-medium text-gray-900 mb-2',
+        size === 'sm' ? 'text-lg' : size === 'md' ? 'text-xl' : 'text-2xl'
+      )}>
+        {title}
+      </h3>
+      
+      <p className={cn(
+        'text-gray-500 mb-6 max-w-md',
+        size === 'sm' ? 'text-sm' : 'text-base'
+      )}>
+        {description}
+      </p>
+      
+      {(action || secondaryAction) && (
+        <div className="flex flex-col sm:flex-row gap-3">
           {action && (
             <Button
               onClick={action.onClick}
-              className={`h-12 px-6 ${styles.buttonBg} rounded-xl shadow-lg transition-all duration-300 hover:scale-105`}
-              aria-label={action.label}
+              variant={action.variant || 'default'}
+              className="min-w-[120px]"
             >
               {action.label}
             </Button>
           )}
+          
+          {secondaryAction && (
+            <Button
+              onClick={secondaryAction.onClick}
+              variant={secondaryAction.variant || 'outline'}
+              className="min-w-[120px]"
+            >
+              {secondaryAction.label}
+            </Button>
+          )}
         </div>
-      </CardContent>
-    </Card>
+      )}
+    </div>
   );
+});
 
-  if (animated) {
+// Predefined empty states for common modules
+export const EmptyStates = {
+  Beneficiaries: memo(function BeneficiariesEmptyState({ onCreate }: { onCreate: () => void }) {
     return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, ease: 'easeOut' }}
-      >
-        {content}
-      </motion.div>
+      <EmptyStateComponent
+        icon={<Users className="w-16 h-16" />}
+        title="İhtiyaç Sahibi Bulunamadı"
+        description="Henüz kayıtlı ihtiyaç sahibi bulunmuyor. Yeni bir ihtiyaç sahibi eklemek için butona tıklayın."
+        action={{
+          label: 'İhtiyaç Sahibi Ekle',
+          onClick: onCreate,
+          variant: 'default'
+        }}
+        secondaryAction={{
+          label: 'Yenile',
+          onClick: () => window.location.reload(),
+          variant: 'outline'
+        }}
+      />
     );
-  }
+  }),
 
-  return content;
-}
+  Donations: memo(function DonationsEmptyState({ onCreate }: { onCreate: () => void }) {
+    return (
+      <EmptyStateComponent
+        icon={<Heart className="w-16 h-16" />}
+        title="Bağış Bulunamadı"
+        description="Henüz kayıtlı bağış bulunmuyor. Yeni bir bağış kaydı oluşturmak için butona tıklayın."
+        action={{
+          label: 'Bağış Kaydet',
+          onClick: onCreate,
+          variant: 'default'
+        }}
+        secondaryAction={{
+          label: 'Yenile',
+          onClick: () => window.location.reload(),
+          variant: 'outline'
+        }}
+      />
+    );
+  }),
 
-// Predefined empty states for common scenarios
-export const NoSearchResults = ({
-  searchTerm,
-  onClearSearch,
-}: {
-  searchTerm: string;
-  onClearSearch: () => void;
-}) => (
-  <EmptyState
-    icon={<Search className="w-10 h-10" />}
-    title="Arama Sonucu Bulunamadı"
-    description={`"${searchTerm}" için herhangi bir sonuç bulunamadı. Farklı anahtar kelimeler deneyebilirsiniz.`}
-    action={{
-      label: 'Aramayı Temizle',
-      onClick: onClearSearch,
-    }}
-    variant="no-results"
-  />
-);
+  Scholarships: memo(function ScholarshipsEmptyState({ onCreate }: { onCreate: () => void }) {
+    return (
+      <EmptyStateComponent
+        icon={<GraduationCap className="w-16 h-16" />}
+        title="Burs Kaydı Bulunamadı"
+        description="Henüz kayıtlı burs bulunmuyor. Yeni bir burs kaydı oluşturmak için butona tıklayın."
+        action={{
+          label: 'Burs Kaydı Ekle',
+          onClick: onCreate,
+          variant: 'default'
+        }}
+        secondaryAction={{
+          label: 'Yenile',
+          onClick: () => window.location.reload(),
+          variant: 'outline'
+        }}
+      />
+    );
+  }),
 
-export const NoInternetConnection = ({ onRetry }: { onRetry?: () => void }) => (
-  <EmptyState
-    icon={<WifiOff className="w-10 h-10" />}
-    title="İnternet Bağlantısı Yok"
-    description="İnternet bağlantınızı kontrol edin ve tekrar deneyin."
-    action={
-      onRetry
-        ? {
-            label: 'Tekrar Dene',
-            onClick: onRetry,
-          }
-        : undefined
-    }
-    variant="offline"
-  />
-);
+  Messages: memo(function MessagesEmptyState({ onNewMessage }: { onNewMessage: () => void }) {
+    return (
+      <EmptyStateComponent
+        icon={<MessageSquare className="w-16 h-16" />}
+        title="Mesaj Bulunamadı"
+        description="Henüz mesajınız bulunmuyor. Yeni bir mesaj göndermek için butona tıklayın."
+        action={{
+          label: 'Yeni Mesaj',
+          onClick: onNewMessage,
+          variant: 'default'
+        }}
+        secondaryAction={{
+          label: 'Yenile',
+          onClick: () => window.location.reload(),
+          variant: 'outline'
+        }}
+      />
+    );
+  }),
 
-export const NoResultsFound = ({ onClearFilters }: { onClearFilters?: () => void }) => (
-  <EmptyState
-    icon={<SearchX className="w-10 h-10" />}
-    title="Sonuç Bulunamadı"
-    description="Arama kriterlerinizi değiştirerek tekrar deneyin."
-    action={
-      onClearFilters
-        ? {
-            label: 'Filtreleri Temizle',
-            onClick: onClearFilters,
-          }
-        : undefined
-    }
-    variant="no-results"
-  />
-);
+  Events: memo(function EventsEmptyState({ onCreate }: { onCreate: () => void }) {
+    return (
+      <EmptyStateComponent
+        icon={<Calendar className="w-16 h-16" />}
+        title="Etkinlik Bulunamadı"
+        description="Henüz kayıtlı etkinlik bulunmuyor. Yeni bir etkinlik oluşturmak için butona tıklayın."
+        action={{
+          label: 'Etkinlik Oluştur',
+          onClick: onCreate,
+          variant: 'default'
+        }}
+        secondaryAction={{
+          label: 'Yenile',
+          onClick: () => window.location.reload(),
+          variant: 'outline'
+        }}
+      />
+    );
+  }),
 
-export const ServerError = ({ onRetry }: { onRetry?: () => void }) => (
-  <EmptyState
-    icon={<AlertTriangle className="w-10 h-10" />}
-    title="Sunucu Hatası"
-    description="Bir şeyler yanlış gitti. Lütfen daha sonra tekrar deneyin."
-    action={
-      onRetry
-        ? {
-            label: 'Tekrar Dene',
-            onClick: onRetry,
-          }
-        : undefined
-    }
-    variant="error"
-  />
-);
+  Search: memo(function SearchEmptyState({ onClearSearch }: { onClearSearch: () => void }) {
+    return (
+      <EmptyStateComponent
+        icon={<Search className="w-16 h-16" />}
+        title="Arama Sonucu Bulunamadı"
+        description="Arama kriterlerinize uygun sonuç bulunamadı. Farklı anahtar kelimeler deneyin."
+        action={{
+          label: 'Aramayı Temizle',
+          onClick: onClearSearch,
+          variant: 'outline'
+        }}
+        size="sm"
+      />
+    );
+  }),
 
-export const NoMembers = ({ onAddMember }: { onAddMember: () => void }) => (
-  <EmptyState
-    icon={<Users className="w-10 h-10" />}
-    title="Henüz Üye Yok"
-    description="Derneğinize ilk üyeyi ekleyerek başlayın. Üye bilgilerini düzenleyebilir ve takip edebilirsiniz."
-    action={{
-      label: 'İlk Üyeyi Ekle',
-      onClick: onAddMember,
-    }}
-  />
-);
+  Documents: memo(function DocumentsEmptyState({ onUpload }: { onUpload: () => void }) {
+    return (
+      <EmptyStateComponent
+        icon={<FileText className="w-16 h-16" />}
+        title="Doküman Bulunamadı"
+        description="Henüz yüklenmiş doküman bulunmuyor. Yeni doküman yüklemek için butona tıklayın."
+        action={{
+          label: 'Doküman Yükle',
+          onClick: onUpload,
+          variant: 'default'
+        }}
+        secondaryAction={{
+          label: 'Yenile',
+          onClick: () => window.location.reload(),
+          variant: 'outline'
+        }}
+      />
+    );
+  }),
 
-export const NoDonations = ({ onAddDonation }: { onAddDonation: () => void }) => (
-  <EmptyState
-    icon={<Heart className="w-10 h-10" />}
-    title="Henüz Bağış Yok"
-    description="İlk bağışı kaydedin ve hayırseverlerin desteklerini takip etmeye başlayın."
-    action={{
-      label: 'İlk Bağışı Ekle',
-      onClick: onAddDonation,
-    }}
-  />
-);
+  Loading: memo(function LoadingEmptyState() {
+    return (
+      <EmptyStateComponent
+        icon={<RefreshCw className="w-16 h-16 animate-spin" />}
+        title="Yükleniyor..."
+        description="Veriler getiriliyor, lütfen bekleyin."
+        size="sm"
+      />
+    );
+  })
+};
 
-export const NoKumbaras = ({ onAddKumbara }: { onAddKumbara: () => void }) => (
-  <EmptyState
-    icon={<Package className="w-10 h-10" />}
-    title="Henüz Kumbara Yok"
-    description="İlk kumbarayı yerleştirin ve QR kodlu takip sistemi ile gelirlerinizi izlemeye başlayın."
-    action={{
-      label: 'İlk Kumbarayı Ekle',
-      onClick: onAddKumbara,
-    }}
-  />
-);
-
-export const NoData = ({
-  title = 'Veri Bulunamadı',
-  description = 'Bu bölümde henüz herhangi bir veri bulunmuyor.',
-}: {
-  title?: string;
-  description?: string;
-}) => (
-  <EmptyState icon={<Database className="w-10 h-10" />} title={title} description={description} />
-);
-
-export const NoActivity = () => (
-  <EmptyState
-    icon={<Inbox className="w-10 h-10" />}
-    title="Henüz Etkinlik Yok"
-    description="Sistem kullanımı başladığında burada son etkinlikleri göreceksiniz."
-  />
-);
-
-export const NoEvents = ({ onAddEvent }: { onAddEvent: () => void }) => (
-  <EmptyState
-    icon={<Calendar className="w-10 h-10" />}
-    title="Henüz Etkinlik Yok"
-    description="İlk etkinliğinizi ekleyin ve takvim üzerinden takip etmeye başlayın."
-    action={{
-      label: 'İlk Etkinliği Ekle',
-      onClick: onAddEvent,
-    }}
-  />
-);
+export default EmptyStateComponent;

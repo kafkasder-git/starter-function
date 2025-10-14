@@ -227,8 +227,11 @@ const InternalMessagingPage: React.FC = () => {
       if (isMobile) {
         setShowConversationList(false);
       }
-    } catch (_error) {
-      // console.error('Mesaj gönderilemedi:', error); // TODO: Implement proper error handling
+    } catch (error) {
+      console.error('Mesaj gönderilemedi:', error);
+      // Kullanıcıya hata bildirimi göster
+      // TODO: Toast notification sistemi entegrasyonu
+      alert('Mesaj gönderilirken bir hata oluştu. Lütfen tekrar deneyin.');
     }
   };
 
