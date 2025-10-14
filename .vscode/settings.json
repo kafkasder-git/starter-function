@@ -1,0 +1,22 @@
+{
+  "github-actions.workflows.pinned": [
+    "full-auto-deploy.yml",
+    "auto-setup-secrets.yml", 
+    "environment-setup.yml",
+    "appwrite-deploy.yml",
+    "node.js.yml"
+  ],
+  "github-actions.workflows.refreshInterval": 5000,
+  "github-actions.workflows.autoRefresh": true,
+  "yaml.schemas": {
+    "https://json.schemastore.org/github-workflow.json": ".github/workflows/*.yml"
+  },
+  "files.associations": {
+    "*.yml": "yaml",
+    ".github/workflows/*.yml": "yaml"
+  },
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": true
+  }
+}
