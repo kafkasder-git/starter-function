@@ -68,7 +68,6 @@ const Text = React.forwardRef<HTMLSpanElement, TextProps>(
       size,
       weight,
       color,
-      asChild,
       as = 'span',
       truncate = false,
       balance = false,

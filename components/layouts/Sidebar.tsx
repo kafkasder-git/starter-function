@@ -6,7 +6,6 @@
  */
 
 import {
-  BarChart3,
   Building2,
   Calendar,
   GraduationCap,
@@ -74,14 +73,14 @@ export function Sidebar({
   const [isPopoverHovered, setIsPopoverHovered] = useState(false);
 
   // Auth context for permission checks
-  const { user } = useAuthStore();
+  const { user: _user } = useAuthStore();
 
-  // Permission checks
-  const canViewReports =
-    user?.role === 'admin' ||
-    user?.role === 'manager' ||
-    user?.role === 'operator' ||
-    user?.role === 'viewer';
+  // Permission checks - will be used in future features
+  // const canViewReports =
+  //   user?.role === 'admin' ||
+  //   user?.role === 'manager' ||
+  //   user?.role === 'operator' ||
+  //   user?.role === 'viewer';
 
   // Dynamic modules with notification badges - CLEANED UP
   const dynamicModules: Module[] = [

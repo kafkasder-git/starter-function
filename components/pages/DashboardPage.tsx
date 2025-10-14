@@ -12,7 +12,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Heading } from '@/components/ui/heading';
 import { Text } from '@/components/ui/text';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
 import { 
   Users, 
   Heart, 
@@ -20,7 +19,6 @@ import {
   Calendar, 
   MessageSquare, 
   TrendingUp,
-  DollarSign,
   Activity,
   Bell,
   Clock
@@ -84,10 +82,11 @@ export default function DashboardPage() {
           totalMessages: messagesStats.total,
           recentDonations: recentDonations.documents,
           recentAidRequests: recentAidRequests.documents,
-          recentMessages: recentMessages,
+          recentMessages,
         });
-      } catch (err) {
-        console.error('Dashboard verileri yüklenirken hata:', err);
+      } catch (_err) {
+        // TODO: Implement proper error handling
+        // console.error('Dashboard verileri yüklenemedi:', err);
         setError('Dashboard verileri yüklenemedi');
       } finally {
         setIsLoading(false);
@@ -121,7 +120,7 @@ export default function DashboardPage() {
             <CardDescription>{error}</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button onClick={() => window.location.reload()} className="w-full">
+            <Button onClick={() => { window.location.reload(); }} className="w-full">
               Tekrar Dene
             </Button>
           </CardContent>
@@ -140,7 +139,7 @@ export default function DashboardPage() {
               Hoş Geldiniz, {user?.name || 'Kullanıcı'}!
             </Heading>
             <Text size="lg" color="neutral" className="mt-2">
-              Dernek Yönetim Sistemi Dashboard'u
+              Dernek Yönetim Sistemi Dashboard&apos;u
             </Text>
           </div>
           <div className="flex items-center space-x-4">
@@ -254,7 +253,7 @@ export default function DashboardPage() {
                   stats.recentDonations.map((donation, index) => (
                     <div key={index} className="flex items-center justify-between">
                       <div className="flex items-center space-x-3">
-                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <div className="w-2 h-2 bg-green-500 rounded-full" />
                         <div>
                           <p className="text-sm font-medium">{donation.donorName}</p>
                           <p className="text-xs text-muted-foreground">
@@ -293,7 +292,7 @@ export default function DashboardPage() {
                   stats.recentAidRequests.map((request, index) => (
                     <div key={index} className="flex items-center justify-between">
                       <div className="flex items-center space-x-3">
-                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                        <div className="w-2 h-2 bg-blue-500 rounded-full" />
                         <div>
                           <p className="text-sm font-medium">
                             {request.requestType} Başvurusu
@@ -367,21 +366,21 @@ export default function DashboardPage() {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="flex items-center space-x-3">
-                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                <div className="w-3 h-3 bg-green-500 rounded-full" />
                 <div>
                   <p className="text-sm font-medium">Veritabanı</p>
                   <p className="text-xs text-muted-foreground">Bağlantı aktif</p>
                 </div>
               </div>
               <div className="flex items-center space-x-3">
-                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                <div className="w-3 h-3 bg-green-500 rounded-full" />
                 <div>
                   <p className="text-sm font-medium">Mesajlaşma</p>
                   <p className="text-xs text-muted-foreground">Servis aktif</p>
                 </div>
               </div>
               <div className="flex items-center space-x-3">
-                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                <div className="w-3 h-3 bg-green-500 rounded-full" />
                 <div>
                   <p className="text-sm font-medium">Dosya Depolama</p>
                   <p className="text-xs text-muted-foreground">Depolama aktif</p>

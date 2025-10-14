@@ -155,9 +155,9 @@ export function MessageList({
           {/* Messages */}
           {groupedMessages.map((group, groupIndex) => (
             <div key={`group-${groupIndex}`} className="mb-4">
-              {group.messages.map((message, messageIndex) => {
-                const isOwnMessage = message.senderId === currentUserId;
-                const isLastInGroup = messageIndex === group.messages.length - 1;
+              {group.messages.map((message, _messageIndex) => {
+                const isOwnMessage = message.senderId === 'current-user'; // TODO: Get from auth store
+                // const isLastInGroup = messageIndex === group.messages.length - 1; // Will be used for future features
                 
                 return (
                   <div

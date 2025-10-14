@@ -105,7 +105,7 @@ export function BeneficiariesTestPage() {
           <CardContent>
             {loading ? (
               <div className="text-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto" />
                 <p className="mt-2 text-gray-600">Yükleniyor...</p>
               </div>
             ) : (
@@ -236,7 +236,7 @@ export function DonationsTestPage() {
           <CardContent>
             {loading ? (
               <div className="text-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto" />
                 <p className="mt-2 text-gray-600">Yükleniyor...</p>
               </div>
             ) : (
@@ -374,7 +374,7 @@ export function AidRequestsTestPage() {
           <CardContent>
             {loading ? (
               <div className="text-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto" />
                 <p className="mt-2 text-gray-600">Yükleniyor...</p>
               </div>
             ) : (

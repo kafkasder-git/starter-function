@@ -62,7 +62,6 @@ const Heading = React.forwardRef<HTMLHeadingElement, HeadingProps>(
       size,
       weight,
       color,
-      asChild,
       balance = false,
       pretty = false,
       children,
@@ -71,7 +70,7 @@ const Heading = React.forwardRef<HTMLHeadingElement, HeadingProps>(
     ref
   ) => {
     // Map semantic level to HTML element
-    const Component = `h${level}`;
+    const Component = `h${level}` as keyof JSX.IntrinsicElements;
 
     // Default size mapping based on level if no size is provided
     const defaultSize =

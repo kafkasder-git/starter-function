@@ -10,7 +10,6 @@ import {
   Users,
   Settings,
   ArrowLeft,
-  Search,
 } from 'lucide-react';
 import { useAppwriteMessaging } from '../../hooks/useAppwriteMessaging';
 import { useAppwriteConnection } from '../../hooks/useAppwriteConnection';
@@ -30,13 +29,13 @@ const InternalMessagingPage: React.FC = () => {
 
   const { isConnected: appwriteConnected } = useAppwriteConnection();
   const {
-    conversations: _messagingConversations,
+    // conversations: _messagingConversations, // Will be used in future features
     sendMessage,
-    markAsRead: _markAsRead,
-    createConversation: _createConversation,
-    joinConversation: _joinConversation,
-    loadConversations: _loadConversations,
-    loadMessages: _loadMessages,
+    // markAsRead: _markAsRead, // Will be used in future features
+    // createConversation: _createConversation, // Will be used in future features
+    // joinConversation: _joinConversation, // Will be used in future features
+    // loadConversations: _loadConversations, // Will be used in future features
+    // loadMessages: _loadMessages, // Will be used in future features
   } = useAppwriteMessaging();
 
   // Check if mobile
@@ -46,7 +45,7 @@ const InternalMessagingPage: React.FC = () => {
     };
     checkMobile();
     window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    return () => { window.removeEventListener('resize', checkMobile); };
   }, []);
 
   // Mock data - replace with real data from Appwrite
@@ -219,7 +218,7 @@ const InternalMessagingPage: React.FC = () => {
     }
   }, [selectedConversation]);
 
-  const handleSendMessage = async (content: string, type: any, attachments?: File[]) => {
+  const handleSendMessage = async (content: string, _type: any, _attachments?: File[]) => {
     if (!content.trim() || !selectedConversation) return;
 
     try {
@@ -228,8 +227,8 @@ const InternalMessagingPage: React.FC = () => {
       if (isMobile) {
         setShowConversationList(false);
       }
-    } catch (error) {
-      console.error('Mesaj gönderilemedi:', error);
+    } catch (_error) {
+      // console.error('Mesaj gönderilemedi:', error); // TODO: Implement proper error handling
     }
   };
 
@@ -243,7 +242,7 @@ const InternalMessagingPage: React.FC = () => {
 
   const handleNewConversation = () => {
     // TODO: Implement new conversation creation
-    console.log('Yeni konuşma oluştur');
+    // console.log('New conversation requested'); // Will be implemented later
   };
 
   const selectedConv = conversations.find((c) => c.id === selectedConversation);
@@ -257,7 +256,7 @@ const InternalMessagingPage: React.FC = () => {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setShowConversationList(true)}
+              onClick={() => { setShowConversationList(true); }}
               className="mr-2"
             >
               <ArrowLeft className="h-4 w-4" />

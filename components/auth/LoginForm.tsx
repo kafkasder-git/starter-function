@@ -23,7 +23,6 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Separator } from '@/components/ui/separator';
 
 const loginSchema = z.object({
   email: z.string().email('Lütfen geçerli bir email adresi giriniz'),
@@ -63,9 +62,9 @@ export function LoginForm() {
       
       // Başarılı giriş sonrası yönlendirme
       navigate('/dashboard');
-    } catch (error) {
+    } catch (_error) {
       // Hata zaten auth store'da handle ediliyor
-      console.error('Login error:', error);
+      // console.error('Giriş hatası:', error); // TODO: Implement proper error handling
     } finally {
       setIsLoading(false);
     }
