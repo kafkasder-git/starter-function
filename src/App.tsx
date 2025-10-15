@@ -7,6 +7,11 @@ import { NetworkStatus } from '../components/NetworkStatus';
 import { ToastProvider } from '../components/ToastProvider';
 import { useAuthStore } from '../stores/authStore';
 
+// Analytics
+import { analytics } from '../lib/analytics/analytics';
+import { CookieConsent } from '../components/analytics/CookieConsent';
+import { environment } from '../lib/environment';
+
 // App Management Components
 import { RouterNavigationProvider, useNavigation } from '../components/app/RouterNavigationManager';
 import { publicRoutes, protectedRoutes } from './routes';
@@ -285,6 +290,7 @@ function AppWithErrorHandling() {
   return (
     <ErrorBoundary>
       <AppWithNavigation />
+      <CookieConsent />
     </ErrorBoundary>
   );
 }
@@ -301,6 +307,17 @@ function App() {
       initializeAuth();
     }
   }, [initializeAuth, isInitialized]);
+
+  // Initialize Analytics
+  useEffect(() => {
+    if (environment.features.analytics && environment.analytics.measurementId) {
+      analytics.init({
+        measurementId: environment.analytics.measurementId,
+        enabled: environment.analytics.enabled,
+        debug: environment.analytics.debug
+      });
+    }
+  }, []);
 
   // Show loading while initializing auth
   if (!isInitialized) {

@@ -1,5 +1,6 @@
 import type { RouteObject } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
+import { analytics } from '../lib/analytics/analytics';
 
 // Lazy load components for better performance
 const DashboardPage = lazy(() => import('../components/pages/DashboardPage'));

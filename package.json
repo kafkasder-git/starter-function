@@ -116,5 +116,22 @@
     "*.{css,scss}": [
       "prettier --write"
     ]
+  },
+  "sideEffects": [
+    "**/*.css",
+    "**/*.scss",
+    "**/*.sass",
+    "**/*.less",
+    "src/index.css",
+    "src/main.tsx",
+    "src/App.tsx"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    },
+    "./styles": "./dist/styles.css"
   }
 }

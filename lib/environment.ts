@@ -102,6 +102,12 @@ export const environment: EnvironmentConfig = {
     offlineMode: getBoolEnv('VITE_ENABLE_OFFLINE_MODE', true),
   },
 
+  analytics: {
+    enabled: getBoolEnv('VITE_ENABLE_ANALYTICS', false),
+    measurementId: getEnv('VITE_GOOGLE_ANALYTICS_ID'),
+    debug: getBoolEnv('VITE_ENABLE_DEBUG', false),
+  },
+
   security: {
     csrfSecret: getEnv('VITE_CSRF_SECRET'),
     sessionTimeout: getNumberEnv('VITE_SESSION_TIMEOUT', 3600),
